@@ -13,6 +13,7 @@
  * never need to know which library is active.
  */
 import {
+  Pencil,
   Folder,
   FolderPlus,
   File,
@@ -173,6 +174,7 @@ export const faPlus = Plus
 export const faBars = Menu
 export const faQuoteLeft = Quote
 export const faXmark = X
+export const faPen = Pencil
 export const faPlay = Play
 export const faPause = Pause
 export const faBackward = SkipBack

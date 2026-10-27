@@ -968,7 +968,6 @@ export const ptBR: Record<string, string> = {
   "The final query output": "O resultado final da consulta",
   "Page {{first}}": "Página {{first}}",
   "Pages {{first}}–{{last}}": "Páginas {{first}}–{{last}}",
-  "apply code": "aplicar código",
   "Coding bar": "Barra de codificação",
   "Position of the selection": "Posição da seleção",
   "Search code": "Buscar código",
@@ -1008,4 +1007,5 @@ export const ptBR: Record<string, string> = {
   "Create a new code and apply it to the selection": "Criar um novo código e aplicá-lo à seleção",
   "{{count}} match": "{{count}} resultado",
   "{{count}} matches": "{{count}} resultados",
+  "Apply code": "Aplicar código",
 }

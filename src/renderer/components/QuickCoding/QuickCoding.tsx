@@ -37,6 +37,7 @@ import {
   type FlatCode
 } from '../../utils/apply-coding'
 import { t } from '../../i18n'
+import { Icon, faChevronDown, faXmark, faPen, faPlus } from '../Icon'
 import './QuickCoding.css'
 
 /** Recent-code shortcuts shown in the bar. */
@@ -84,7 +85,8 @@ function matchCodes(flat: FlatCode[], query: string): FlatCode[] {
 }
 
 function Swatch({ color }: { color?: string }) {
-  return <span className="qc-swatch" style={{ background: color || 'var(--text-muted)' }} />
+  // Same round pip the Code Browser uses for each code's colour.
+  return <span className="color-pip qc-swatch" style={{ background: color || '#888' }} />
 }
 
 export function QuickCoding() {
@@ -196,9 +198,11 @@ export function QuickCoding() {
     return createPortal(
       <div className="qc-bubble" style={{ left, top }} onMouseDown={keepSelection} onMouseUpCapture={(e) => e.stopPropagation()}>
         <button className="qc-bubble-main" onClick={() => setMode('bar')}>
-          {t('apply code')} <span aria-hidden className="qc-caret">▾</span>
+          {t('Apply code')} <Icon icon={faChevronDown} style={{ fontSize: 10 }} />
         </button>
-        <button className="qc-bubble-close" aria-label={t('Close')} title={t('Close')} onClick={close}>×</button>
+        <button className="secondary qc-bubble-close" aria-label={t('Close')} title={t('Close')} onClick={close}>
+          <Icon icon={faXmark} />
+        </button>
       </div>,
       document.body
     )
@@ -310,7 +314,7 @@ function CodingBar({ selection, flat, recent, pickerOpen, setPickerOpen, onApply
       </div>
 
       <div className="qc-picker-anchor">
-        <button className={`qc-btn${pickerOpen ? ' pressed' : ''}`} onClick={() => setPickerOpen(!pickerOpen)} aria-expanded={pickerOpen}>
+        <button className={`secondary qc-btn${pickerOpen ? ' pressed' : ''}`} onClick={() => setPickerOpen(!pickerOpen)} aria-expanded={pickerOpen}>
           {t('Code in…')}
         </button>
         {pickerOpen && (
@@ -326,7 +330,7 @@ function CodingBar({ selection, flat, recent, pickerOpen, setPickerOpen, onApply
       </div>
 
       <button
-        className="qc-btn"
+        className="secondary qc-btn"
         disabled={recent.length === 0}
         title={recent[0] ? t('Apply “{{name}}” again', { name: recent[0].name }) : t('No code applied yet')}
         onClick={() => recent[0] && onApply(recent[0])}
@@ -334,12 +338,12 @@ function CodingBar({ selection, flat, recent, pickerOpen, setPickerOpen, onApply
         {t('Last')}
       </button>
 
-      <button className="qc-btn" title={t('Create a new code and apply it to the selection')} onClick={onNewCode}>
+      <button className="secondary qc-btn" title={t('Create a new code and apply it to the selection')} onClick={onNewCode}>
         {t('New')}
       </button>
 
       {inVivoName && (
-        <button className="qc-btn" title={t('Create a code named “{{name}}” and apply it', { name: inVivoName })} onClick={() => onCreate(inVivoName)}>
+        <button className="secondary qc-btn" title={t('Create a code named “{{name}}” and apply it', { name: inVivoName })} onClick={() => onCreate(inVivoName)}>
           {t('New in vivo')}
         </button>
       )}
@@ -347,16 +351,18 @@ function CodingBar({ selection, flat, recent, pickerOpen, setPickerOpen, onApply
       {recent.slice(0, BAR_SHORTCUTS).map((code) => (
         <button
           key={code.guid}
-          className="qc-chip"
-          style={{ borderLeftColor: code.color || 'var(--text-muted)' }}
+          className="secondary qc-btn qc-chip"
           title={t('Apply “{{name}}”', { name: code.name })}
           onClick={() => onApply(code)}
         >
-          {code.name}
+          <Swatch color={code.color} />
+          <span className="qc-name">{code.name}</span>
         </button>
       ))}
 
-      <button className="qc-close" aria-label={t('Close coding bar')} title={t('Close coding bar')} onClick={onClose}>×</button>
+      <button className="panel-header-close qc-close" aria-label={t('Close coding bar')} title={t('Close coding bar')} onClick={onClose}>
+        <Icon icon={faXmark} />
+      </button>
     </div>
   )
 }
@@ -418,8 +424,8 @@ function CodePicker({ selectionText, flat, recent, onApply, onCreate, onNewCode 
               <span className="qc-name">{code.name}</span>
             </button>
           )}
-          <button className="qc-icon" title={t('Rename')} aria-label={t('Rename “{{name}}”', { name: code.name })} onClick={() => startRename(code)}>✎</button>
-          <button className="qc-icon" title={t('New subcode')} aria-label={t('New subcode of “{{name}}”', { name: code.name })} onClick={() => startAdd(code)}>+</button>
+          <button className="qc-icon" title={t('Rename')} aria-label={t('Rename “{{name}}”', { name: code.name })} onClick={() => startRename(code)}><Icon icon={faPen} /></button>
+          <button className="qc-icon" title={t('New subcode')} aria-label={t('New subcode of “{{name}}”', { name: code.name })} onClick={() => startAdd(code)}><Icon icon={faPlus} /></button>
         </div>
         {addingUnder === code.guid && (
           <div className="qc-row" style={{ paddingLeft: 26 + depth * 16 }}>

@@ -322,9 +322,12 @@ function CodeTreeItem({
           transition: 'background 0.1s'
         }}
         onClick={(e) => onToggleSelect(code.guid, e)}
+        // Double-click lists every passage coded with this code, across all
+        // documents, in the Query Results pane — the quickest way to review
+        // a code. Editing the code stays in the right-click menu.
         onDoubleClick={(e) => {
           e.stopPropagation()
-          onEditMemo(code.guid)
+          onQueryAllDocs(code.guid)
         }}
         onContextMenu={(e) => {
           e.preventDefault()
