@@ -679,6 +679,9 @@ export interface ElectronAPI {
   skipUpdateVersion: (version: string) => void
   remindUpdateLater: () => void
   getAppVersion: () => Promise<string>
+  /** Interface language chosen at launch ('pt-BR' or 'en'). Synchronous so
+   *  the first render is already translated. */
+  getLanguage: () => string
   checkForUpdates: () => void
   onUpdateStatus: (
     callback: (status: {

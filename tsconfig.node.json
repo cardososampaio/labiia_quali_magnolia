@@ -16,6 +16,7 @@
     "src/main/**/*",
     "src/preload/**/*",
     "src/renderer/models/types.ts",
+    "src/renderer/i18n/**/*",
     "electron.vite.config.ts"
   ]
 }

@@ -10,6 +10,7 @@ import { isMac, modKey } from '../../utils/platform'
 import { useProjectStore, useCheckoutLockedBy, checkoutLockedTitle } from '../../stores/project-store'
 import { usePreferencesStore } from '../../stores/preferences-store'
 import { codeColourPresetsFor, useCodeColourPresets } from '../../utils/code-colours'
+import { t } from '../../i18n'
 
 interface Props {
   onNewCode: () => void
@@ -455,7 +456,7 @@ function CodeTreeItem({
                   marginRight: 2
                 }}
               >
-                Merge
+                {t("Merge")}
               </span>
             )}
             <span style={{ width: isMac ? 24 : 40, minWidth: isMac ? 24 : 40, flexShrink: 0, fontSize: 10, color: 'var(--text-muted)', textAlign: 'right' }}>
@@ -511,7 +512,7 @@ function CodeTreeItem({
               setEditingLocal(true)
             }}
           >
-            Rename
+            {t("Rename")}
           </div>
           <div
             className="context-menu-item"
@@ -522,7 +523,7 @@ function CodeTreeItem({
               setShowColorPicker(true)
             }}
           >
-            Change Color
+            {t("Change Color")}
           </div>
           <div
             className="context-menu-item"
@@ -533,7 +534,7 @@ function CodeTreeItem({
               onEditMemo(code.guid)
             }}
           >
-            Edit Code
+            {t("Edit Code")}
           </div>
           <div className="context-menu-separator" />
           <div
@@ -543,7 +544,7 @@ function CodeTreeItem({
               setContextMenu(null)
             }}
           >
-            Show in All Documents
+            {t("Show in All Documents")}
           </div>
           <div
             className="context-menu-item"
@@ -552,7 +553,7 @@ function CodeTreeItem({
               setContextMenu(null)
             }}
           >
-            Show in Active Document
+            {t("Show in Active Document")}
           </div>
           <div className="context-menu-separator" />
           <div
@@ -564,7 +565,7 @@ function CodeTreeItem({
               onAddChild(code.guid)
             }}
           >
-            Add Child Code
+            {t("Add Child Code")}
           </div>
           <div
             className="context-menu-item"
@@ -575,7 +576,7 @@ function CodeTreeItem({
               onMoveCode(code.guid, null)
             }}
           >
-            Move to Top Level
+            {t("Move to Top Level")}
           </div>
           <div className="context-menu-separator" />
           <div
@@ -588,7 +589,7 @@ function CodeTreeItem({
               onDelete(code.guid)
             }}
           >
-            Delete
+            {t("Delete")}
           </div>
         </div>
       )}
@@ -599,7 +600,7 @@ function CodeTreeItem({
           onClick={() => setShowColorPicker(false)}
         >
           <div className="modal" onClick={(e) => e.stopPropagation()} style={{ minWidth: 250 }}>
-            <h2>Choose Color</h2>
+            <h2>{t("Choose Color")}</h2>
             <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8, marginTop: 8 }}>
               {colourPresets.map((c) => (
                 <div
@@ -620,7 +621,7 @@ function CodeTreeItem({
               ))}
             </div>
             <div style={{ marginTop: 12, display: 'flex', gap: 8, alignItems: 'center' }}>
-              <label style={{ fontSize: 12 }}>Custom:</label>
+              <label style={{ fontSize: 12 }}>{t("Custom:")}</label>
               <input
                 type="color"
                 value={code.color || '#888888'}
@@ -670,7 +671,7 @@ export function CodeEditDialog({
           description — the auto-width TipTap editor would otherwise size
           the modal to its longest line. A definite width makes it wrap. */}
       <div className="modal" onClick={(e) => e.stopPropagation()} style={{ width: 400 }}>
-        <h2>{isEdit ? 'Edit Code' : 'New Code'}</h2>
+        <h2>{isEdit ? t("Edit Code") : t("New Code")}</h2>
 
         {/* Name + color pip */}
         <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 10 }}>
@@ -686,7 +687,7 @@ export function CodeEditDialog({
                 border: '2px solid var(--border-color)',
                 boxSizing: 'border-box'
               }}
-              title="Choose color"
+              title={t("Choose color")}
             />
             {showColorPicker && (
               <>
@@ -727,7 +728,7 @@ export function CodeEditDialog({
                   />
                 ))}
                 <div style={{ width: '100%', display: 'flex', alignItems: 'center', gap: 6, marginTop: 4 }}>
-                  <label style={{ fontSize: 11, color: 'var(--text-secondary)' }}>Custom:</label>
+                  <label style={{ fontSize: 11, color: 'var(--text-secondary)' }}>{t("Custom:")}</label>
                   <input
                     type="color"
                     value={color}
@@ -745,7 +746,7 @@ export function CodeEditDialog({
             value={name}
             onChange={(e) => setName(e.target.value)}
             onKeyDown={(e) => e.key === 'Enter' && handleSave()}
-            placeholder="Code name..."
+            placeholder={t("Code name...")}
             autoFocus
             style={{ flex: 1 }}
           />
@@ -754,7 +755,7 @@ export function CodeEditDialog({
         {/* Description */}
         <div style={{ marginBottom: 10 }}>
           <label style={{ fontSize: 'var(--font-size-sm)', color: 'var(--text-secondary)', display: 'block', marginBottom: 4 }}>
-            Description{isEdit ? '' : ' (optional)'}
+            {t("Description")}{isEdit ? '' : t(" (optional)")}
           </label>
           <MarkdownEditor
             value={description}
@@ -785,13 +786,13 @@ export function CodeEditDialog({
             style={{ width: 40, textAlign: 'center' }}
           />
           <span style={{ fontSize: 11, color: 'var(--text-muted)' }}>
-            Hotkey for quick coding
+            {t("Hotkey for quick coding")}
           </span>
         </div>
 
         <div className="modal-actions">
-          <button className="secondary" onClick={onClose}>Cancel</button>
-          <button onClick={handleSave}>{isEdit ? 'Save' : 'Create'}</button>
+          <button className="secondary" onClick={onClose}>{t("Cancel")}</button>
+          <button onClick={handleSave}>{isEdit ? t("Save") : t("Create")}</button>
         </div>
       </div>
     </div>
@@ -898,7 +899,7 @@ export function CodeBrowser({ onNewCode, onClose, onPopOut, isPoppedOut }: Props
     (parentGuid: string) => {
       const parent = findCode(parentGuid)
       const color = parent?.color || codeColourPresetsFor(usePreferencesStore.getState())[0]
-      const guid = addCode('New Code', color, parentGuid)
+      const guid = addCode(t("New Code"), color, parentGuid)
       setEditingCodeGuid(guid)
     },
     [addCode, findCode]
@@ -953,8 +954,8 @@ export function CodeBrowser({ onNewCode, onClose, onPopOut, isPoppedOut }: Props
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             onKeyDown={(e) => { if (e.key === 'Escape') closeSearch() }}
-            placeholder="Filter codes..."
-            aria-label="Filter codes"
+            placeholder={t("Filter codes...")}
+            aria-label={t("Filter codes")}
             autoFocus
             style={{
               flex: 1,
@@ -972,14 +973,14 @@ export function CodeBrowser({ onNewCode, onClose, onPopOut, isPoppedOut }: Props
             }}
           />
         ) : (
-          <span style={{ flex: 1 }}>Codes</span>
+          <span style={{ flex: 1 }}>{t("Codes")}</span>
         )}
         {codes.length > 0 && (
           <button
             className="panel-header-search"
             onClick={() => (searchOpen ? closeSearch() : setSearchOpen(true))}
-            title={searchOpen ? 'Close search' : 'Filter codes'}
-            aria-label={searchOpen ? 'Close search' : 'Filter codes'}
+            title={searchOpen ? t("Close search") : t("Filter codes")}
+            aria-label={searchOpen ? t("Close search") : t("Filter codes")}
           >
             <Icon icon={searchOpen ? faXmark : faMagnifyingGlass} />
           </button>
@@ -987,14 +988,14 @@ export function CodeBrowser({ onNewCode, onClose, onPopOut, isPoppedOut }: Props
         <button
           className="panel-header-add"
           onClick={onNewCode}
-          title={lockedBy ? checkoutLockedTitle(lockedBy) : 'Create new code'}
-          aria-label="Create new code"
+          title={lockedBy ? checkoutLockedTitle(lockedBy) : t("Create new code")}
+          aria-label={t("Create new code")}
           style={lockedBy ? { opacity: 0.4 } : undefined}
         >
           <Icon icon={faPlus} />
         </button>
-        {onPopOut && <button className="panel-header-popout" onClick={onPopOut} title={isPoppedOut ? "Pop back in" : "Pop out"} aria-label={isPoppedOut ? "Pop pane back into main window" : "Pop pane out into its own window"}><Icon icon={isPoppedOut ? faDownLeftAndUpRightToCenter : faUpRightFromSquare} /></button>}
-        {onClose && <button className="panel-header-close" onClick={onClose} title="Close panel" aria-label="Close panel"><Icon icon={faXmark} /></button>}
+        {onPopOut && <button className="panel-header-popout" onClick={onPopOut} title={isPoppedOut ? t("Pop back in") : t("Pop out")} aria-label={isPoppedOut ? t("Pop pane back into main window") : t("Pop pane out into its own window")}><Icon icon={isPoppedOut ? faDownLeftAndUpRightToCenter : faUpRightFromSquare} /></button>}
+        {onClose && <button className="panel-header-close" onClick={onClose} title={t("Close panel")} aria-label={t("Close panel")}><Icon icon={faXmark} /></button>}
       </div>
       <div className="panel-content">
         {codes.length === 0 && (
@@ -1007,9 +1008,9 @@ export function CodeBrowser({ onNewCode, onClose, onPopOut, isPoppedOut }: Props
               fontSize: 'var(--font-size-sm)'
             }}
           >
-            No codes yet.
+            {t("No codes yet.")}
             <br />
-            Click the + button above or use Codes menu.
+            {t("Click the + button above or use Codes menu.")}
           </div>
         )}
         {codes.length > 0 && filteredCodes.length === 0 && (
@@ -1022,7 +1023,7 @@ export function CodeBrowser({ onNewCode, onClose, onPopOut, isPoppedOut }: Props
               fontSize: 'var(--font-size-sm)'
             }}
           >
-            No codes match "{trimmedSearch}".
+            {t("No codes match \"")}{trimmedSearch}".
           </div>
         )}
         {filteredCodes.map((code) => (
@@ -1060,16 +1061,16 @@ export function CodeBrowser({ onNewCode, onClose, onPopOut, isPoppedOut }: Props
         return (
           <div className="modal-overlay" onClick={() => setMergeConfirm(null)}>
             <div className="modal" onClick={(e) => e.stopPropagation()} style={{ minWidth: 400 }}>
-              <h2>Merge Codes</h2>
+              <h2>{t("Merge Codes")}</h2>
               <p style={{ fontSize: 'var(--font-size-sm)', lineHeight: 1.5, marginBottom: 12 }}>
-                Merge <strong>{sourceCode.name}</strong> into <strong>{targetCode.name}</strong>?
+                {t("Merge")}{' '}<strong>{sourceCode.name}</strong> {t("into")}{' '}<strong>{targetCode.name}</strong>?
                 {sourceCount > 0 && (
-                  <> All {sourceCount} coded segment{sourceCount !== 1 ? 's' : ''} will be recoded with <strong>{targetCode.name}</strong>.</>
+                  <> {t("All")}{' '}{sourceCount} {t("coded segment")}{sourceCount !== 1 ? 's' : ''} {t("will be recoded with")}{' '}<strong>{targetCode.name}</strong>.</>
                 )}
-                {' '}This cannot be undone.
+                {' '}{t("This cannot be undone.")}
               </p>
               <div className="modal-actions">
-                <button className="secondary" onClick={() => setMergeConfirm(null)}>Cancel</button>
+                <button className="secondary" onClick={() => setMergeConfirm(null)}>{t("Cancel")}</button>
                 <button
                   className="danger"
                   onClick={() => {
@@ -1077,7 +1078,7 @@ export function CodeBrowser({ onNewCode, onClose, onPopOut, isPoppedOut }: Props
                     setMergeConfirm(null)
                   }}
                 >
-                  Merge
+                  {t("Merge")}
                 </button>
               </div>
             </div>

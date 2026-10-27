@@ -2,6 +2,7 @@ import { app, Menu, BrowserWindow } from 'electron'
 import { checkForUpdatesManually } from './auto-updater'
 import { openBundledLicenceFile } from './licence-files'
 import { showOpenDialog } from './dialogs'
+import { t } from '../renderer/i18n'
 
 export interface WindowListEntry {
   label: string
@@ -24,18 +25,18 @@ export function buildMenu(mainWindow: BrowserWindow, openWindows?: WindowListEnt
               // Explicit label so the menu shows "About Magnolia" even
               // in dev where app.name comes from package.json's lowercase
               // "magnolia". The role still wires up the native About panel.
-              { label: 'About Magnolia', role: 'about' as const },
+              { label: t("About labiia_quali"), role: 'about' as const },
               {
-                label: 'Check for Updates…',
+                label: t("Check for Updates…"),
                 click: () => checkForUpdatesManually()
               },
               {
-                label: 'Acknowledgements',
+                label: t("Acknowledgements"),
                 click: () => openBundledLicenceFile('THIRD-PARTY-LICENSES.txt')
               },
               { type: 'separator' as const },
               {
-                label: 'Preferences...',
+                label: t("Preferences..."),
                 accelerator: 'Cmd+,',
                 click: () => {
                   const { BrowserWindow } = require('electron')
@@ -50,20 +51,20 @@ export function buildMenu(mainWindow: BrowserWindow, openWindows?: WindowListEnt
               { type: 'separator' as const },
               // Explicit label so it reads "Quit Magnolia" rather than the
               // lowercase package name app.name resolves to in dev.
-              { role: 'quit' as const, label: 'Quit Magnolia' }
+              { role: 'quit' as const, label: t("Quit labiia_quali") }
             ]
           }
         ]
       : []),
     {
-      label: 'File',
+      label: t("File"),
       submenu: [
         {
-          label: 'New Project',
+          label: t("New Project"),
           click: () => sendAction('new-project')
         },
         {
-          label: 'Open Project...',
+          label: t("Open Project..."),
           accelerator: 'CmdOrCtrl+O',
           // Show the native picker directly from the menu click instead
           // of routing the action through the renderer and back. Saves
@@ -74,8 +75,8 @@ export function buildMenu(mainWindow: BrowserWindow, openWindows?: WindowListEnt
           // reset.
           click: async () => {
             const result = await showOpenDialog(mainWindow, {
-              title: 'Open QDPX Project',
-              filters: [{ name: 'QDPX Projects', extensions: ['qdpx'] }],
+              title: t("Open QDPX Project"),
+              filters: [{ name: t('QDPX Projects'), extensions: ['qdpx'] }],
               properties: ['openFile']
             })
             if (result.canceled || result.filePaths.length === 0) return
@@ -83,23 +84,23 @@ export function buildMenu(mainWindow: BrowserWindow, openWindows?: WindowListEnt
           }
         },
         {
-          label: 'Save Project',
+          label: t("Save Project"),
           accelerator: 'CmdOrCtrl+S',
           click: () => sendAction('save-project')
         },
         {
-          label: 'Save Project As...',
+          label: t("Save Project As..."),
           accelerator: 'CmdOrCtrl+Shift+S',
           click: () => sendAction('save-project-as')
         },
         { type: 'separator' },
         {
-          label: 'Project Details...',
+          label: t("Project Details..."),
           click: () => sendAction('open-project-details')
         },
         { type: 'separator' },
         {
-          label: 'Import Document...',
+          label: t("Import Document..."),
           accelerator: 'CmdOrCtrl+I',
           click: () => sendAction('import-document')
         },
@@ -112,7 +113,7 @@ export function buildMenu(mainWindow: BrowserWindow, openWindows?: WindowListEnt
               // Magnolia's main window is the only one that owns tabs,
               // and closing it via Cmd+W would be more destructive than
               // useful when the user just wants to dismiss a tab.
-              label: 'Close Tab',
+              label: t("Close Tab"),
               accelerator: 'Cmd+W',
               click: () => {
                 const focused = BrowserWindow.getFocusedWindow()
@@ -123,11 +124,11 @@ export function buildMenu(mainWindow: BrowserWindow, openWindows?: WindowListEnt
                 }
               }
             }
-          : { role: 'quit', label: 'Quit Magnolia' }
+          : { role: 'quit', label: t("Quit labiia_quali") }
       ]
     },
     {
-      label: 'Edit',
+      label: t("Edit"),
       submenu: [
         { role: 'undo' },
         { role: 'redo' },
@@ -139,84 +140,84 @@ export function buildMenu(mainWindow: BrowserWindow, openWindows?: WindowListEnt
       ]
     },
     {
-      label: 'Codes',
+      label: t("Codes"),
       submenu: [
         {
-          label: 'New Code',
+          label: t("New Code"),
           accelerator: 'CmdOrCtrl+N',
           click: () => sendAction('new-code')
         },
         { type: 'separator' },
         {
-          label: 'Codebook',
+          label: t("Codebook"),
           click: () => sendAction('show-codebook')
         },
         { type: 'separator' },
         {
-          label: 'Import Codebook (.qdc)...',
+          label: t("Import Codebook (.qdc)..."),
           click: () => sendAction('import-codebook')
         },
         {
-          label: 'Export Codebook (.qdc)...',
+          label: t("Export Codebook (.qdc)..."),
           click: () => sendAction('export-codebook')
         }
       ]
     },
     {
-      label: 'Documents',
+      label: t("Documents"),
       submenu: [
         {
-          label: 'Import Document...',
+          label: t("Import Document..."),
           accelerator: 'CmdOrCtrl+I',
           click: () => sendAction('import-document')
         },
         { type: 'separator' },
         {
-          label: 'New Folder',
+          label: t("New Folder"),
           click: () => sendAction('new-doc-folder')
         },
         { type: 'separator' },
         {
-          label: 'Manage Document Tags...',
+          label: t("Manage Document Tags..."),
           click: () => sendAction('manage-doc-tags')
         }
       ]
     },
     {
-      label: 'View',
+      label: t("View"),
       submenu: [
         {
-          label: 'Documents',
+          label: t("Documents"),
           type: 'checkbox',
           checked: panelVisibility?.documents !== false,
           click: () => sendAction('toggle-panel-documents')
         },
         {
-          label: 'Codes',
+          label: t("Codes"),
           type: 'checkbox',
           checked: panelVisibility?.codes !== false,
           click: () => sendAction('toggle-panel-codes')
         },
         {
-          label: 'Queries',
+          label: t("Queries"),
           type: 'checkbox',
           checked: panelVisibility?.queries !== false,
           click: () => sendAction('toggle-panel-queries')
         },
         {
-          label: 'Memos',
+          label: t("Memos"),
           type: 'checkbox',
           checked: panelVisibility?.memos !== false,
           click: () => sendAction('toggle-panel-memos')
         },
         {
-          label: 'Quotes',
+          label: t("Quotes"),
           type: 'checkbox',
           checked: panelVisibility?.quotes !== false,
           click: () => sendAction('toggle-panel-quotes')
         },
         {
-          label: 'Analyses',
+          label: t("Analyses"),
           type: 'checkbox',
           checked: panelVisibility?.analyses !== false,
           click: () => sendAction('toggle-panel-analyses')
@@ -255,14 +256,14 @@ export function buildMenu(mainWindow: BrowserWindow, openWindows?: WindowListEnt
       role: 'help' as const,
       submenu: [
         {
-          label: 'Magnolia on GitHub',
+          label: t("Magnolia (original project) on GitHub"),
           click: async () => {
             const { shell } = require('electron')
             await shell.openExternal('https://github.com/caledavis/Magnolia')
           }
         },
         {
-          label: 'Sponsor Magnolia…',
+          label: t("Support Magnolia (original project)…"),
           click: async () => {
             const { shell } = require('electron')
             await shell.openExternal('https://github.com/sponsors/caledavis')
@@ -271,10 +272,10 @@ export function buildMenu(mainWindow: BrowserWindow, openWindows?: WindowListEnt
         ...(isMac ? [] : [
           { type: 'separator' as const },
           {
-            label: 'Check for Updates…',
+            label: t("Check for Updates…"),
             click: () => checkForUpdatesManually()
           },
-          { label: 'About Magnolia', role: 'about' as const }
+          { label: t("About labiia_quali"), role: 'about' as const }
         ])
       ]
     }

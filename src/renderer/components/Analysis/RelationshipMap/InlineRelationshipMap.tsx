@@ -43,6 +43,7 @@ import { useRegisterToolSave } from '../../../hooks/use-register-tool-save'
 import { buildExportSvg } from './svg-export'
 import { buildExportSvgFromDom } from './dom-svg-export'
 import { EditableTitleSuffix } from '../../EditableTitleSuffix'
+import { t } from '../../../i18n'
 
 function ToolbarBtn({ active, disabled, onClick, title, children }: {
   active?: boolean; disabled?: boolean; onClick: () => void; title?: string; children: React.ReactNode
@@ -271,7 +272,7 @@ export function InlineRelationshipMap({ mapGuid }: Props) {
     (kind: string, dropData: any, x: number, y: number) => {
       const k = kind as MapElementKind
       const baseDims = ELEMENT_DIMS[k] || { w: 140, h: 44 }
-      const label = dropData.label || 'Untitled'
+      const label = dropData.label || t("Untitled")
       const charsPerLine = Math.floor((baseDims.w - 16) / 7)
       const lines = Math.ceil(label.length / charsPerLine)
       const estimatedH = k === 'document' ? 18 + 6 + Math.max(1, lines) * 16 : baseDims.h
@@ -291,7 +292,7 @@ export function InlineRelationshipMap({ mapGuid }: Props) {
       const newEl: MapElement = {
         id: generateGuid(),
         kind: k,
-        label: dropData.label || 'Untitled',
+        label: dropData.label || t("Untitled"),
         entityGuid: dropData.entityGuid,
         codeColor: dropData.codeColor,
         snippet: dropData.snippet,
@@ -574,7 +575,7 @@ export function InlineRelationshipMap({ mapGuid }: Props) {
   }, [isExisting, flushMapSave])
 
   const handleConfirmSave = useCallback((name: string) => {
-    const trimmed = name.trim() || 'Untitled'
+    const trimmed = name.trim() || t("Untitled")
     useRelationshipMapStore.getState().setName(mapGuid, trimmed)
     setShowSaveDialog(false)
     flushMapSave()
@@ -625,7 +626,7 @@ export function InlineRelationshipMap({ mapGuid }: Props) {
             }}
           >
             <Icon icon={faCircleNodes} className="analysis-header-icon" style={{ fontSize: 16 }} />
-            Relationships:
+            {t("Relationships:")}
             <EditableTitleSuffix
               name={map.name?.trim() || 'Untitled map'}
               onRename={handleRenameMap}
@@ -643,16 +644,16 @@ export function InlineRelationshipMap({ mapGuid }: Props) {
                 : buildExportSvg(current.elements, current.connections, current.freeTexts)
               window.api.exportSvg(svg, `${current.name?.trim() || 'relationship-map'}.svg`)
             }}
-            title="Export as SVG"
+            title={t("Export as SVG")}
           >
-            Export SVG
+            {t("Export SVG")}
           </button>
           <button
             className="secondary"
             style={{ fontSize: 11, padding: '4px 14px' }}
             onClick={handleCloseTab}
           >
-            Close
+            {t("Close")}
           </button>
           {isExisting && dirty && (
             <button
@@ -660,7 +661,7 @@ export function InlineRelationshipMap({ mapGuid }: Props) {
               style={{ fontSize: 11, padding: '4px 14px' }}
               onClick={handleDiscardChanges}
             >
-              Discard Changes
+              {t("Discard Changes")}
             </button>
           )}
           <button
@@ -668,7 +669,7 @@ export function InlineRelationshipMap({ mapGuid }: Props) {
             disabled={isExisting && !dirty}
             onClick={handleSaveClick}
           >
-            {isExisting ? (dirty ? 'Update Analysis' : 'Saved') : 'Save Analysis'}
+            {isExisting ? (dirty ? t("Update Analysis") : t("Saved")) : t("Save Analysis")}
           </button>
           {/* Clearance for the floating MemoFab (28 px circle + ~8 gap)
               so the action buttons don't slide under it. Matches the
@@ -682,12 +683,12 @@ export function InlineRelationshipMap({ mapGuid }: Props) {
         {showSaveDialog && (
           <div className="modal-overlay" onClick={() => setShowSaveDialog(false)}>
             <div className="modal" onClick={(e) => e.stopPropagation()}>
-              <h2>Save Analysis</h2>
+              <h2>{t("Save Analysis")}</h2>
               <input
                 autoFocus
                 type="text"
                 defaultValue={map.name?.trim() ?? ''}
-                placeholder="Analysis name"
+                placeholder={t("Analysis name")}
                 style={{ width: '100%' }}
                 onKeyDown={(e) => {
                   if (e.key === 'Enter') handleConfirmSave((e.target as HTMLInputElement).value)
@@ -695,11 +696,11 @@ export function InlineRelationshipMap({ mapGuid }: Props) {
                 }}
               />
               <div className="modal-actions">
-                <button className="secondary" onClick={() => setShowSaveDialog(false)}>Cancel</button>
+                <button className="secondary" onClick={() => setShowSaveDialog(false)}>{t("Cancel")}</button>
                 <button onClick={(e) => {
                   const input = (e.target as HTMLElement).parentElement!.parentElement!.querySelector('input') as HTMLInputElement
                   handleConfirmSave(input.value)
-                }}>Save</button>
+                }}>{t("Save")}</button>
               </div>
             </div>
           </div>
@@ -720,50 +721,50 @@ export function InlineRelationshipMap({ mapGuid }: Props) {
           <ToolbarBtn
             active={addTextMode}
             onClick={() => setAddTextMode(!addTextMode)}
-            title="Add Text — click canvas to place text"
+            title={t("Add Text — click canvas to place text")}
           >
             <Icon icon={faFont} style={{ fontSize: 13 }} />
           </ToolbarBtn>
           <ToolbarDivider />
-          <ToolbarBtn disabled={!activeEditor} active={!!activeEditor?.isActive('paragraph')} onClick={() => { activeEditor?.chain().focus().setParagraph().run() }} title="Paragraph (body text)">
+          <ToolbarBtn disabled={!activeEditor} active={!!activeEditor?.isActive('paragraph')} onClick={() => { activeEditor?.chain().focus().setParagraph().run() }} title={t("Paragraph (body text)")}>
             <Icon icon={faParagraph} style={{ fontSize: 11 }} />
           </ToolbarBtn>
-          <ToolbarBtn disabled={!activeEditor} active={!!activeEditor?.isActive('heading', { level: 1 })} onClick={() => { activeEditor?.chain().focus().toggleHeading({ level: 1 }).run() }} title="Heading 1">
+          <ToolbarBtn disabled={!activeEditor} active={!!activeEditor?.isActive('heading', { level: 1 })} onClick={() => { activeEditor?.chain().focus().toggleHeading({ level: 1 }).run() }} title={t("Heading 1")}>
             <Icon icon={faHeading1} style={{ fontSize: 14 }} />
           </ToolbarBtn>
-          <ToolbarBtn disabled={!activeEditor} active={!!activeEditor?.isActive('heading', { level: 2 })} onClick={() => { activeEditor?.chain().focus().toggleHeading({ level: 2 }).run() }} title="Heading 2">
+          <ToolbarBtn disabled={!activeEditor} active={!!activeEditor?.isActive('heading', { level: 2 })} onClick={() => { activeEditor?.chain().focus().toggleHeading({ level: 2 }).run() }} title={t("Heading 2")}>
             <Icon icon={faHeading2} style={{ fontSize: 14 }} />
           </ToolbarBtn>
           <ToolbarDivider />
-          <ToolbarBtn disabled={!activeEditor} active={!!activeEditor?.isActive('bold')} onClick={() => { activeEditor?.chain().focus().toggleBold().run() }} title="Bold">
+          <ToolbarBtn disabled={!activeEditor} active={!!activeEditor?.isActive('bold')} onClick={() => { activeEditor?.chain().focus().toggleBold().run() }} title={t("Bold")}>
             <Icon icon={faBold} style={{ fontSize: 14 }} />
           </ToolbarBtn>
-          <ToolbarBtn disabled={!activeEditor} active={!!activeEditor?.isActive('italic')} onClick={() => { activeEditor?.chain().focus().toggleItalic().run() }} title="Italic">
+          <ToolbarBtn disabled={!activeEditor} active={!!activeEditor?.isActive('italic')} onClick={() => { activeEditor?.chain().focus().toggleItalic().run() }} title={t("Italic")}>
             <Icon icon={faItalic} style={{ fontSize: 14 }} />
           </ToolbarBtn>
-          <ToolbarBtn disabled={!activeEditor} active={!!activeEditor?.isActive('underline')} onClick={() => { activeEditor?.chain().focus().toggleUnderline().run() }} title="Underline">
+          <ToolbarBtn disabled={!activeEditor} active={!!activeEditor?.isActive('underline')} onClick={() => { activeEditor?.chain().focus().toggleUnderline().run() }} title={t("Underline")}>
             <Icon icon={faUnderline} style={{ fontSize: 14 }} />
           </ToolbarBtn>
           <ToolbarDivider />
-          <ToolbarBtn disabled={!activeEditor} active={!!activeEditor?.isActive('bulletList')} onClick={() => { activeEditor?.chain().focus().toggleBulletList().run() }} title="Bullet List">
+          <ToolbarBtn disabled={!activeEditor} active={!!activeEditor?.isActive('bulletList')} onClick={() => { activeEditor?.chain().focus().toggleBulletList().run() }} title={t("Bullet List")}>
             <Icon icon={faListUl} style={{ fontSize: 14 }} />
           </ToolbarBtn>
-          <ToolbarBtn disabled={!activeEditor} active={!!activeEditor?.isActive('orderedList')} onClick={() => { activeEditor?.chain().focus().toggleOrderedList().run() }} title="Numbered List">
+          <ToolbarBtn disabled={!activeEditor} active={!!activeEditor?.isActive('orderedList')} onClick={() => { activeEditor?.chain().focus().toggleOrderedList().run() }} title={t("Numbered List")}>
             <Icon icon={faListOl} style={{ fontSize: 14 }} />
           </ToolbarBtn>
           <ToolbarDivider />
-          <ToolbarBtn disabled={!activeEditor} active={!!activeEditor?.isActive({ textAlign: 'left' })} onClick={() => { activeEditor?.chain().focus().setTextAlign('left').run() }} title="Align Left">
+          <ToolbarBtn disabled={!activeEditor} active={!!activeEditor?.isActive({ textAlign: 'left' })} onClick={() => { activeEditor?.chain().focus().setTextAlign('left').run() }} title={t("Align Left")}>
             <Icon icon={faAlignLeft} style={{ fontSize: 14 }} />
           </ToolbarBtn>
-          <ToolbarBtn disabled={!activeEditor} active={!!activeEditor?.isActive({ textAlign: 'center' })} onClick={() => { activeEditor?.chain().focus().setTextAlign('center').run() }} title="Align Center">
+          <ToolbarBtn disabled={!activeEditor} active={!!activeEditor?.isActive({ textAlign: 'center' })} onClick={() => { activeEditor?.chain().focus().setTextAlign('center').run() }} title={t("Align Center")}>
             <Icon icon={faAlignCenter} style={{ fontSize: 14 }} />
           </ToolbarBtn>
-          <ToolbarBtn disabled={!activeEditor} active={!!activeEditor?.isActive({ textAlign: 'right' })} onClick={() => { activeEditor?.chain().focus().setTextAlign('right').run() }} title="Align Right">
+          <ToolbarBtn disabled={!activeEditor} active={!!activeEditor?.isActive({ textAlign: 'right' })} onClick={() => { activeEditor?.chain().focus().setTextAlign('right').run() }} title={t("Align Right")}>
             <Icon icon={faAlignRight} style={{ fontSize: 14 }} />
           </ToolbarBtn>
           <ToolbarDivider />
           <ColourSwatchButton
-            title="Font colour"
+            title={t("Font colour")}
             disabled={!activeEditor}
             value={activeEditor?.getAttributes('textStyle')?.color}
             onChange={(hex) => { activeEditor?.chain().focus().setColor(hex).run() }}

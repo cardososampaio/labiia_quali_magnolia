@@ -32,6 +32,7 @@ import { pdfFormat } from './formats/pdf-format'
 import { audioFormat } from './formats/audio-format'
 import { imageFormat } from './formats/image-format'
 import { videoFormat } from './formats/video-format'
+import { t } from '../i18n'
 
 const ALL_FORMATS: FormatDef[] = [
   plainTextFormat,
@@ -56,7 +57,7 @@ export function allImportExtensions(): string[] {
 }
 
 export function importFilterLabel(): string {
-  return ALL_FORMATS.filter((f) => f.extensions.length > 0).map((f) => f.label).join(' & ') + ' & Word / RTF / ODT Documents'
+  return ALL_FORMATS.filter((f) => f.extensions.length > 0).map((f) => f.label).join(' & ') + t(" & Word / RTF / ODT Documents")
 }
 
 // Extensions that are converted to PDF on import (treated as PDF in the

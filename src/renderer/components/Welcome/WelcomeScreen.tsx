@@ -5,7 +5,7 @@ import { useState, useEffect } from 'react'
 // all app artwork is in one place. Replace that one file (1440×1040 ideal)
 // to change the welcome image.
 import welcomeBgUrl from '../../../../graphic_files/welcome-bg.png'
-import magnoliaUrl from '../../assets/magnoliaqda-welcome.svg'
+import { t } from '../../i18n'
 
 export function WelcomeScreen() {
   const [recentProjects, setRecentProjects] = useState<{ name: string; path: string }[]>([])
@@ -51,32 +51,13 @@ export function WelcomeScreen() {
             vertically centred, while the sponsor link sits centred in the gap
             between the buttons and the bottom of the window. */}
         <div style={{ flex: 1 }} />
-        {/* Wordmark — same mask-recolour pattern the toolbar uses. The
-            welcome screen and PDF exports share the full-product
-            wordmark (magnoliaqda.svg); the in-app toolbar uses the
-            shorter magnolia.svg variant. Both take their colour from
-            --text-secondary so the brand reads consistently across
-            surfaces. */}
-        <div style={{ textAlign: 'center', marginBottom: 28 }}>
-          <div
-            aria-label="Magnolia"
-            style={{
-              display: 'inline-block',
-              width: 240,
-              height: 45,
-              // Same hue as the toolbar wordmark (--text-secondary) so
-              // the brand reads consistently across welcome and main app.
-              background: 'var(--text-secondary)',
-              WebkitMaskImage: `url("${magnoliaUrl}")`,
-              maskImage: `url("${magnoliaUrl}")`,
-              WebkitMaskRepeat: 'no-repeat',
-              maskRepeat: 'no-repeat',
-              WebkitMaskSize: 'contain',
-              maskSize: 'contain',
-              WebkitMaskPosition: 'center',
-              maskPosition: 'center'
-            }}
-          />
+        {/* Wordmark — set in text until labiia_quali has a visual identity
+            of its own; Magnolia's logo belongs to the original project. */}
+        <div style={{ textAlign: 'center', marginBottom: 28, color: 'var(--text-secondary)' }}>
+          <div style={{ fontSize: 30, fontWeight: 700, letterSpacing: '-0.5px', lineHeight: 1.1 }}>labiia_quali</div>
+          <div style={{ fontSize: 10.5, fontWeight: 600, letterSpacing: '1.4px', textTransform: 'uppercase', marginTop: 4 }}>
+            {t('Qualitative data analysis')}
+          </div>
         </div>
 
         <div style={{ marginBottom: 20 }}>
@@ -91,7 +72,7 @@ export function WelcomeScreen() {
               fontWeight: 600,
               color: 'var(--text-secondary)'
             }}>
-              Recent Projects
+              {t("Recent Projects")}
             </div>
             {recentProjects.length > 0 && (
               <button
@@ -99,14 +80,14 @@ export function WelcomeScreen() {
                   window.api.sendWelcomeAction('clear-recent')
                   setRecentProjects([])
                 }}
-                title="Clear recent projects"
+                title={t("Clear recent projects")}
                 className="secondary"
                 style={{
                   fontSize: 11,
                   padding: '2px 8px'
                 }}
               >
-                Clear
+                {t("Clear")}
               </button>
             )}
           </div>
@@ -125,7 +106,7 @@ export function WelcomeScreen() {
                 textAlign: 'center',
                 fontStyle: 'italic'
               }}>
-                No recent projects yet
+                {t("No recent projects yet")}
               </div>
             ) : (
               recentProjects.map((proj, i) => (
@@ -159,20 +140,20 @@ export function WelcomeScreen() {
             onClick={() => window.api.sendWelcomeAction('quit')}
             style={{ flex: 1, padding: '7px 12px', fontSize: 12, fontWeight: 600 }}
           >
-            Quit
+            {t("Quit")}
           </button>
           <button
             className="secondary"
             onClick={() => window.api.sendWelcomeAction('open-project')}
             style={{ flex: 1, padding: '7px 12px', fontSize: 12, fontWeight: 600 }}
           >
-            Open…
+            {t("Open…")}
           </button>
           <button
             onClick={() => window.api.sendWelcomeAction('new-project')}
             style={{ flex: 1, padding: '7px 12px', fontSize: 12, fontWeight: 600 }}
           >
-            New
+            {t("New")}
           </button>
         </div>
 
@@ -198,12 +179,12 @@ export function WelcomeScreen() {
             onMouseLeave={(e) => (e.currentTarget.style.color = 'var(--text-secondary)')}
           >
             <span aria-hidden>♥</span>
-            Sponsor Magnolia's development
+            {t("Based on Magnolia, by Cale Davis — support the original project")}
           </span>
           <span style={{ fontSize: 11.5, color: 'var(--text-secondary)', textAlign: 'center' }}>
-            Use Magnolia at your own risk.
+            {t("Use labiia_quali at your own risk.")}
             <br />
-            Coded by Claude.
+            {t("Coded by Claude.")}
           </span>
         </div>
       </div>

@@ -7,6 +7,7 @@ import { useDocumentStore } from '../../stores/document-store'
 import { useProjectStore, useCheckoutLockedBy, checkoutLockedTitle } from '../../stores/project-store'
 import { noteData, toDateTimeLocal, fromDateTimeLocal } from '../../utils/notes'
 import type { TextSource } from '../../models/types'
+import { t } from '../../i18n'
 
 export function NoteHeader({ source }: { source: TextSource }) {
   const lockedBy = useCheckoutLockedBy()
@@ -29,8 +30,8 @@ export function NoteHeader({ source }: { source: TextSource }) {
         type="text"
         className="note-title-input"
         value={title}
-        placeholder="Untitled note"
-        aria-label="Note title"
+        placeholder={t("Untitled note")}
+        aria-label={t("Note title")}
         onChange={(e) => updateNote(source.guid, { title: e.target.value })}
         onKeyDown={(e) => {
           // Enter moves on to writing the note.
@@ -45,8 +46,8 @@ export function NoteHeader({ source }: { source: TextSource }) {
         type="datetime-local"
         className="note-datetime-input"
         value={toDateTimeLocal(noteDateTime)}
-        aria-label="Date and time of the observation"
-        title={lockedBy ? checkoutLockedTitle(lockedBy) : 'Date and time of the observation'}
+        aria-label={t("Date and time of the observation")}
+        title={lockedBy ? checkoutLockedTitle(lockedBy) : t("Date and time of the observation")}
         onChange={(e) => {
           const iso = fromDateTimeLocal(e.target.value)
           if (iso) updateNote(source.guid, { noteDateTime: iso })

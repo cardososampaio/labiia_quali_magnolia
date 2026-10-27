@@ -18,6 +18,7 @@ import { useQueryStore } from '../../stores/query-store'
 import { useToolDirtyState } from '../../hooks/use-tool-dirty-state'
 import { useRegisterToolSave } from '../../hooks/use-register-tool-save'
 import { generateGuid } from '../../utils/guid'
+import { t } from '../../i18n'
 
 function describeDocFilter(
   df: Query['documentFilter'],
@@ -62,7 +63,7 @@ function describeDocFilter(
 function describeCondition(cond: CodeCondition, codes: { guid: string; name: string }[]): string {
   const findName = (guid: string): string => {
     const c = codes.find((c) => c.guid === guid)
-    return c?.name || 'Code'
+    return c?.name || t("Code")
   }
   switch (cond.type) {
     case 'code': return findName(cond.codeGuid) + (cond.includeSubcodes ? ' (incl. subcodes)' : '')
@@ -76,7 +77,7 @@ function describeCondition(cond: CodeCondition, codes: { guid: string; name: str
     case 'outside': return `${describeCondition(cond.condition1, codes)} outside ${describeCondition(cond.condition2, codes)}`
     case 'before': return `${describeCondition(cond.condition1, codes)} before ${describeCondition(cond.condition2, codes)}`
     case 'followedBy': return `${describeCondition(cond.condition1, codes)} followed by ${describeCondition(cond.condition2, codes)}`
-    default: return 'Query'
+    default: return t("Query")
   }
 }
 
@@ -484,7 +485,7 @@ export function QueryBuilderWindow({ initData, inTab }: Props = {}) {
           color: 'var(--text-muted)'
         }}
       >
-        Loading project data...
+        {t("Loading project data...")}
       </div>
     )
   }
@@ -520,16 +521,16 @@ export function QueryBuilderWindow({ initData, inTab }: Props = {}) {
           }}
         >
           <Icon icon={faMagnifyingGlass} className="analysis-header-icon" style={{ fontSize: 16 }} />
-          Query{editGuid ? ':' : ''}
+          {t("Query")}{editGuid ? ':' : ''}
           {editGuid && <EditableTitleSuffix name={editName} onRename={handleRenameQuery} />}
         </h2>
         <div style={{ flex: 1 }} />
         <button className="secondary" style={{ fontSize: 11, padding: '4px 14px' }} onClick={handleClose}>
-          Close
+          {t("Close")}
         </button>
         {editGuid && dirty && (
           <button className="secondary" style={{ fontSize: 11, padding: '4px 14px' }} onClick={handleDiscard}>
-            Discard Changes
+            {t("Discard Changes")}
           </button>
         )}
         <button
@@ -550,7 +551,7 @@ export function QueryBuilderWindow({ initData, inTab }: Props = {}) {
             }
           }}
         >
-          {editGuid ? (dirty ? 'Update Query' : 'Saved') : 'Save Query'}
+          {editGuid ? (dirty ? t("Update Query") : t("Saved")) : t("Save Query")}
         </button>
         {/* Clearance for the floating MemoFab. */}
         <div style={{ width: 36, flexShrink: 0 }} />
@@ -584,7 +585,7 @@ export function QueryBuilderWindow({ initData, inTab }: Props = {}) {
                     color: 'var(--text-secondary)'
                   }}
                 >
-                  Select Documents
+                  {t("Select Documents")}
                 </span>
                 <span
                   style={{
@@ -595,7 +596,7 @@ export function QueryBuilderWindow({ initData, inTab }: Props = {}) {
                     marginLeft: 'auto'
                   }}
                 >
-                  {hasDocFilters ? 'Filtered' : 'All documents'}
+                  {hasDocFilters ? t("Filtered") : t("All documents")}
                 </span>
               </div>
 
@@ -640,7 +641,7 @@ export function QueryBuilderWindow({ initData, inTab }: Props = {}) {
                   marginBottom: 10
                 }}
               >
-                Select Content
+                {t("Select Content")}
               </div>
 
               <QueryNodeEditor
@@ -661,7 +662,7 @@ export function QueryBuilderWindow({ initData, inTab }: Props = {}) {
           onClick={() => setShowSaveDialog(false)}
         >
           <div className="modal" onClick={(e) => e.stopPropagation()}>
-            <h2>Save Query</h2>
+            <h2>{t("Save Query")}</h2>
             <div style={{ marginBottom: 12 }}>
               <input
                 type="text"
@@ -670,17 +671,17 @@ export function QueryBuilderWindow({ initData, inTab }: Props = {}) {
                 onKeyDown={(e) => {
                   if (e.key === 'Enter') confirmNewQuerySave()
                 }}
-                placeholder="Query name..."
+                placeholder={t("Query name...")}
                 autoFocus
                 style={{ width: '100%' }}
               />
             </div>
             <div className="modal-actions">
               <button className="secondary" onClick={() => setShowSaveDialog(false)}>
-                Cancel
+                {t("Cancel")}
               </button>
               <button onClick={confirmNewQuerySave}>
-                Save
+                {t("Save")}
               </button>
             </div>
           </div>

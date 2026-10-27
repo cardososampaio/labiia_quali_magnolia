@@ -3,6 +3,7 @@ import type { AnalysisInitData, SurveyEntityRef } from '../../models/types'
 import type { GroupByEntry, GroupedHeader } from './group-by'
 import { Icon, faXmark, faQuestion, faUser } from '../Icon'
 import { truncate, tagColumnSources } from './analysis-helpers'
+import { t } from '../../i18n'
 
 /** One slot produced by the "Respondents" grouping: a single respondent
  *  of a survey, or the whole-survey subtotal. Tools map these into their
@@ -48,13 +49,13 @@ export function expandRespondentSlots(
     const respondents = data.surveyEntityLabels?.[sg]?.respondents ?? {}
     const ids = Object.keys(respondents)
     if (ids.length === 0) continue
-    const surveyName = data.sources.find((s) => s.guid === sg)?.name || 'Survey'
+    const surveyName = data.sources.find((s) => s.guid === sg)?.name || t("Survey")
     const before = slots.length
     for (const rid of ids) {
-      slots.push({ id: `resp:${sg}:${rid}`, label: respondents[rid] || 'Respondent', surveyGuid: sg, respondentId: rid })
+      slots.push({ id: `resp:${sg}:${rid}`, label: respondents[rid] || t("Respondent"), surveyGuid: sg, respondentId: rid })
     }
     if (includeSubtotals) {
-      slots.push({ id: `resp:${sg}:subtotal`, label: 'Subtotal', surveyGuid: sg, isSubtotal: true })
+      slots.push({ id: `resp:${sg}:subtotal`, label: t("Subtotal"), surveyGuid: sg, isSubtotal: true })
     }
     headers.push({ id: `survey:${sg}`, label: surveyName, span: slots.length - before })
   }
@@ -161,10 +162,10 @@ export function buildSurveyAwareColumns(
     }
     const before = columns.length
     for (const g of notes) {
-      columns.push({ id: `notebook:${nb.guid}:note:${g}`, label: sourceMap.get(g) || 'Note', sourceGuids: [g] })
+      columns.push({ id: `notebook:${nb.guid}:note:${g}`, label: sourceMap.get(g) || t("Note"), sourceGuids: [g] })
     }
     if (includeSubtotals) {
-      columns.push({ id: `notebook:${nb.guid}:subtotal`, label: 'Subtotal', sourceGuids: notes, isSubtotal: true })
+      columns.push({ id: `notebook:${nb.guid}:subtotal`, label: t("Subtotal"), sourceGuids: notes, isSubtotal: true })
     }
     groups.push({ id: `notebook:${nb.guid}`, label: nb.name, span: columns.length - before })
   }
@@ -173,7 +174,7 @@ export function buildSurveyAwareColumns(
       const tag = data.tags.find((t) => t.guid === entry.tagGuid)
       if (!tag) continue
       const members = tagColumnSources(data, entry.tagGuid, docCandidates)
-      columns.push({ id: `tag:${entry.tagGuid}`, label: tag.value || tag.name || 'Tag', sourceGuids: members, tagScopeGuids: [entry.tagGuid] })
+      columns.push({ id: `tag:${entry.tagGuid}`, label: tag.value || tag.name || t("Tag"), sourceGuids: members, tagScopeGuids: [entry.tagGuid] })
       groups.push({ id: `tag:${entry.tagGuid}`, label: null, span: 1 })
     } else if (entry.kind === 'category') {
       const cat = data.categories.find((c) => c.guid === entry.categoryGuid)
@@ -183,12 +184,12 @@ export function buildSurveyAwareColumns(
       const before = columns.length
       for (const tag of childTags) {
         const members = tagColumnSources(data, tag.guid, docCandidates)
-        columns.push({ id: `cat:${entry.categoryGuid}:tag:${tag.guid}`, label: tag.value || tag.name || 'Tag', sourceGuids: members, tagScopeGuids: [tag.guid] })
+        columns.push({ id: `cat:${entry.categoryGuid}:tag:${tag.guid}`, label: tag.value || tag.name || t("Tag"), sourceGuids: members, tagScopeGuids: [tag.guid] })
       }
       if (includeSubtotals) {
         const subtotalSet = new Set<string>()
         for (const tag of childTags) for (const g of tagColumnSources(data, tag.guid, docCandidates)) subtotalSet.add(g)
-        columns.push({ id: `cat:${entry.categoryGuid}:subtotal`, label: 'Subtotal', sourceGuids: [...subtotalSet], isSubtotal: true, tagScopeGuids: childTags.map((t) => t.guid) })
+        columns.push({ id: `cat:${entry.categoryGuid}:subtotal`, label: t("Subtotal"), sourceGuids: [...subtotalSet], isSubtotal: true, tagScopeGuids: childTags.map((t) => t.guid) })
       }
       groups.push({ id: `cat:${entry.categoryGuid}`, label: cat.name, span: columns.length - before })
     } else if (entry.kind === 'folder') {
@@ -202,10 +203,10 @@ export function buildSurveyAwareColumns(
       if (folderDocs.length === 0) continue
       const before = columns.length
       for (const docGuid of folderDocs) {
-        columns.push({ id: `folder:${entry.folderGuid}:doc:${docGuid}`, label: sourceMap.get(docGuid) || 'Document', sourceGuids: [docGuid] })
+        columns.push({ id: `folder:${entry.folderGuid}:doc:${docGuid}`, label: sourceMap.get(docGuid) || t("Document"), sourceGuids: [docGuid] })
       }
       if (includeSubtotals) {
-        columns.push({ id: `folder:${entry.folderGuid}:subtotal`, label: 'Subtotal', sourceGuids: [...folderDocs], isSubtotal: true })
+        columns.push({ id: `folder:${entry.folderGuid}:subtotal`, label: t("Subtotal"), sourceGuids: [...folderDocs], isSubtotal: true })
       }
       groups.push({ id: `folder:${entry.folderGuid}`, label: folder.name, span: columns.length - before })
     }
@@ -226,11 +227,11 @@ export function buildSurveyAwareColumns(
       otherGuids.push(g)
       continue
     }
-    columns.push({ id: g, label: sourceMap.get(g) || 'Document', sourceGuids: [g] })
+    columns.push({ id: g, label: sourceMap.get(g) || t("Document"), sourceGuids: [g] })
     groups.push({ id: g, label: null, span: 1 })
   }
   if (otherGuids.length > 0) {
-    columns.push({ id: '__other', label: 'Other', sourceGuids: otherGuids })
+    columns.push({ id: '__other', label: t("Other"), sourceGuids: otherGuids })
     groups.push({ id: '__other', label: null, span: 1 })
   }
   const hasGroupedHeader = groups.some((g) => g.label !== null)
@@ -309,9 +310,9 @@ export function QuestionScopeBox({
       onDrop={onDrop}
     >
       <div style={{ display: 'flex', alignItems: 'baseline', justifyContent: 'space-between', gap: 12, marginBottom: value.length > 0 ? 8 : 0, position: 'relative', zIndex: 1 }}>
-        <span style={{ fontSize: 'var(--font-size-lg)', fontWeight: 600, color: 'var(--text-secondary)' }}>Questions</span>
+        <span style={{ fontSize: 'var(--font-size-lg)', fontWeight: 600, color: 'var(--text-secondary)' }}>{t("Questions")}</span>
         <span style={{ fontSize: 11, color: 'var(--text-muted)' }}>
-          {value.length > 0 ? 'Analysis limited to these questions' : 'Drag survey questions here to scope (default: all)'}
+          {value.length > 0 ? t("Analysis limited to these questions") : t("Drag survey questions here to scope (default: all)")}
         </span>
       </div>
       {value.length > 0 && (
@@ -321,7 +322,7 @@ export function QuestionScopeBox({
             return (
               <span key={questionScopeKey(r)} style={{ display: 'inline-flex', alignItems: 'center', gap: 4, fontSize: 11, background: 'var(--bg-tertiary)', padding: '2px 8px', borderRadius: 'var(--radius-sm)' }}>
                 <Icon icon={faQuestion} style={{ fontSize: 10, color: 'var(--text-muted)' }} />
-                {truncate(live || r.label || 'Question', 40)}
+                {truncate(live || r.label || t("Question"), 40)}
                 <span onClick={() => remove(r)} style={{ fontSize: 9, color: 'var(--text-muted)', cursor: 'pointer' }}><Icon icon={faXmark} /></span>
               </span>
             )
@@ -397,9 +398,9 @@ export function RespondentScopeBox({
       onDrop={onDrop}
     >
       <div style={{ display: 'flex', alignItems: 'baseline', justifyContent: 'space-between', gap: 12, marginBottom: value.length > 0 ? 8 : 0, position: 'relative', zIndex: 1 }}>
-        <span style={{ fontSize: 'var(--font-size-lg)', fontWeight: 600, color: 'var(--text-secondary)' }}>Respondents</span>
+        <span style={{ fontSize: 'var(--font-size-lg)', fontWeight: 600, color: 'var(--text-secondary)' }}>{t("Respondents")}</span>
         <span style={{ fontSize: 11, color: 'var(--text-muted)' }}>
-          {value.length > 0 ? 'Limited to these respondents' : 'Drag survey respondents here to scope (default: all)'}
+          {value.length > 0 ? t("Limited to these respondents") : t("Drag survey respondents here to scope (default: all)")}
         </span>
       </div>
       {value.length > 0 && (
@@ -409,7 +410,7 @@ export function RespondentScopeBox({
             return (
               <span key={questionScopeKey(r)} style={{ display: 'inline-flex', alignItems: 'center', gap: 4, fontSize: 11, background: 'var(--bg-tertiary)', padding: '2px 8px', borderRadius: 'var(--radius-sm)' }}>
                 <Icon icon={faUser} style={{ fontSize: 10, color: 'var(--text-muted)' }} />
-                {truncate(live || r.label || 'Respondent', 40)}
+                {truncate(live || r.label || t("Respondent"), 40)}
                 <span onClick={() => remove(r)} style={{ fontSize: 9, color: 'var(--text-muted)', cursor: 'pointer' }}><Icon icon={faXmark} /></span>
               </span>
             )

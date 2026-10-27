@@ -75,6 +75,7 @@ import { MemoFab } from '../Memos/MemoFab'
 import { cleanCellText, buildCellText } from '../../utils/survey/cell-text'
 import { exportPdfWithHeader, buildPdfDocument, escHtml } from '../../utils/pdf-export'
 import { modKey } from '../../utils/platform'
+import { t, formatNumber } from '../../i18n'
 
 interface Props {
   source: TextSource
@@ -418,8 +419,7 @@ function formatPct(p: number): string {
  *  trailing zeros trimmed. Used for the box plot's summary line so
  *  rating-scale numbers ("3", "4") aren't shown as "3.00". */
 function formatStat(n: number): string {
-  if (Number.isInteger(n)) return String(n)
-  return Number(n.toFixed(2)).toString()
+  return formatNumber(n, { maximumFractionDigits: 2, useGrouping: false })
 }
 
 /** PlainTextSelections re-projected onto one cell — kept as the
@@ -485,10 +485,10 @@ function quoteRangesForCell(
 // render.
 
 const TYPE_LABEL: Record<SurveyQuestionType, string> = {
-  'open-ended': 'Open-ended',
-  'single-choice': 'Single choice',
-  numeric: 'Numeric',
-  'multi-select': 'Multi-select'
+  'open-ended': t("Open-ended"),
+  'single-choice': t("Single choice"),
+  numeric: t("Numeric"),
+  'multi-select': t("Multi-select")
 }
 
 /** Allowed conversions depend on column shape: single-column
@@ -552,7 +552,7 @@ function QuestionTypeBadge({
         whiteSpace: 'nowrap',
         flexShrink: 0
       }}
-      title={isClickable ? 'Click to change the detected question type' : undefined}
+      title={isClickable ? t("Click to change the detected question type") : undefined}
       onClick={(e) => {
         if (!isClickable) return
         e.stopPropagation()
@@ -681,7 +681,7 @@ function OptionListCell({
   showSwatches?: boolean
 }) {
   if (options.length === 0) {
-    return <div style={emptyAnswerStyle}>(no responses)</div>
+    return <div style={emptyAnswerStyle}>{t("(no responses)")}</div>
   }
   return (
     <ul style={{ listStyle: 'none', padding: 0, margin: '4px 0 12px 0', userSelect: 'none' }}>
@@ -791,7 +791,7 @@ function DonutChart({
       viewBox={`0 0 ${size} ${size}`}
       style={{ flexShrink: 0, marginTop: 6 }}
       role="img"
-      aria-label="Answer distribution"
+      aria-label={t("Answer distribution")}
     >
       {/* Track behind the segments so sub-pixel rounding between
           slices never reads as a gap in the ring. */}
@@ -866,7 +866,7 @@ function NumericBoxPlot({
   valueLabels?: Map<number, string>
 }) {
   if (!stats) {
-    return <div style={emptyAnswerStyle}>(no numeric responses)</div>
+    return <div style={emptyAnswerStyle}>{t("(no numeric responses)")}</div>
   }
   // Layout: box plot up top, X axis below with tick marks +
   // number labels + (optional) named-label row underneath.
@@ -970,13 +970,13 @@ function NumericBoxPlot({
       </svg>
       <div style={{ fontSize: 11, color: 'var(--text-muted)', marginTop: 4, display: 'flex', flexWrap: 'wrap', gap: 14 }}>
         <span>n = {stats.values.length}</span>
-        <span>mean {formatStat(stats.mean)}</span>
-        <span>median {formatStat(stats.median)}</span>
-        <span>mode {formatStat(stats.mode)}</span>
-        <span>IQR {formatStat(stats.q1)}–{formatStat(stats.q3)}</span>
+        <span>{t("mean")}{' '}{formatStat(stats.mean)}</span>
+        <span>{t("median")}{' '}{formatStat(stats.median)}</span>
+        <span>{t("mode")}{' '}{formatStat(stats.mode)}</span>
+        <span>{t("IQR")}{' '}{formatStat(stats.q1)}–{formatStat(stats.q3)}</span>
         {highlightValue != null && (
           <span style={{ color: 'var(--text-primary)', fontWeight: 600 }}>
-            this respondent: {formatStat(highlightValue)}
+            {t("this respondent:")}{' '}{formatStat(highlightValue)}
           </span>
         )}
       </div>
@@ -1044,7 +1044,7 @@ function SurveyCell({
   )
 
   if (!text) {
-    return <div style={emptyAnswerStyle}>(no answer)</div>
+    return <div style={emptyAnswerStyle}>{t("(no answer)")}</div>
   }
 
   return (
@@ -1102,7 +1102,7 @@ function RespondentView({
           <div style={{ flex: 1, minWidth: 0 }}>
             <h1 style={h1Style}>{respondent.displayName}</h1>
             {respondent.rawRespondentId && (
-              <div style={subtleMetaStyle}>RespondentID: {respondent.rawRespondentId}</div>
+              <div style={subtleMetaStyle}>{t("RespondentID:")}{' '}{respondent.rawRespondentId}</div>
             )}
           </div>
           <MemoFab
@@ -1403,7 +1403,7 @@ function QuestionHeader({
       </div>
       <div style={{ ...subtleMetaStyle, display: 'flex', alignItems: 'center', gap: 8 }}>
         <QuestionTypeBadge question={question} onChange={onChangeType} />
-        <span>{respondents} respondents</span>
+        <span>{respondents} {t("respondents")}</span>
       </div>
     </header>
   )
@@ -1882,8 +1882,8 @@ function SummaryView({
     const html = buildSurveySummaryHtml(survey, displayName)
     // Strip filesystem-hostile chars from the survey name so the
     // save dialog's default filename is always safe to accept as-is.
-    const safeName = (displayName || 'Survey Summary').replace(/[^a-zA-Z0-9 _-]/g, '').trim() || 'Survey Summary'
-    await exportPdfWithHeader(html, safeName, 'Export Survey Summary as PDF')
+    const safeName = (displayName || 'Survey Summary').replace(/[^a-zA-Z0-9 _-]/g, '').trim() || t("Survey Summary")
+    await exportPdfWithHeader(html, safeName, t("Export Survey Summary as PDF"))
   }, [survey, displayName])
 
   return (
@@ -1896,29 +1896,29 @@ function SummaryView({
         <div style={{ flex: 1, minWidth: 0 }}>
           <h1 style={h1Style}>{displayName}</h1>
           <div style={subtleMetaStyle}>
-            {totalRespondents} respondent{totalRespondents === 1 ? '' : 's'} ·{' '}
-            {totalQuestions} question{totalQuestions === 1 ? '' : 's'}
+            {totalRespondents} {t("respondent")}{totalRespondents === 1 ? '' : 's'} ·{' '}
+            {totalQuestions} {t("question")}{totalQuestions === 1 ? '' : 's'}
           </div>
         </div>
         <button
           className="secondary"
           style={{ fontSize: 11, padding: '3px 10px', flexShrink: 0 }}
           onClick={handleExportPdf}
-          title="Export this summary as a PDF, including each respondent's answers to open questions"
+          title={t("Export this summary as a PDF, including each respondent's answers to open questions")}
         >
-          Export PDF
+          {t("Export PDF")}
         </button>
       </div>
 
       <section style={{ marginTop: 28 }}>
-        <h2 style={summaryHeadingStyle}>Questions</h2>
+        <h2 style={summaryHeadingStyle}>{t("Questions")}</h2>
         <table style={summaryTableStyle}>
           <thead>
             <tr>
               <th style={summaryThStyle}>#</th>
-              <th style={{ ...summaryThStyle, width: '100%' }}>Question</th>
-              <th style={summaryThStyle}>Answered</th>
-              <th style={summaryThStyle}>Distribution</th>
+              <th style={{ ...summaryThStyle, width: '100%' }}>{t("Question")}</th>
+              <th style={summaryThStyle}>{t("Answered")}</th>
+              <th style={summaryThStyle}>{t("Distribution")}</th>
             </tr>
           </thead>
           <tbody>
@@ -1976,7 +1976,7 @@ function SummaryView({
                         }}
                         style={{ cursor: 'pointer', color: 'var(--accent)' }}
                       >
-                        Show answers →
+                        {t("Show answers →")}
                       </a>
                     )}
                   </td>
@@ -1988,13 +1988,13 @@ function SummaryView({
       </section>
 
       <section style={{ marginTop: 32 }}>
-        <h2 style={summaryHeadingStyle}>Respondents</h2>
+        <h2 style={summaryHeadingStyle}>{t("Respondents")}</h2>
         <table style={summaryTableStyle}>
           <thead>
             <tr>
               <th style={summaryThStyle}>#</th>
-              <th style={{ ...summaryThStyle, width: '100%' }}>Respondent</th>
-              <th style={summaryThStyle}>Completed</th>
+              <th style={{ ...summaryThStyle, width: '100%' }}>{t("Respondent")}</th>
+              <th style={summaryThStyle}>{t("Completed")}</th>
             </tr>
           </thead>
           <tbody>
@@ -2582,7 +2582,7 @@ export function SurveyViewer({ source }: Props) {
       const overlapping = clickCp != null
         ? cellMemos
             .filter((m) => m.startPosition != null && m.endPosition != null && m.startPosition <= clickCp && m.endPosition >= clickCp)
-            .map((m) => ({ guid: m.guid, title: m.title || 'Memo', startCp: m.startPosition!, endCp: m.endPosition! }))
+            .map((m) => ({ guid: m.guid, title: m.title || t("Memo"), startCp: m.startPosition!, endCp: m.endPosition! }))
         : []
 
       setMenu({
@@ -2761,7 +2761,7 @@ export function SurveyViewer({ source }: Props) {
   if (!survey) {
     return (
       <div style={{ padding: 24, color: 'var(--text-muted)' }}>
-        This survey couldn't be loaded — its parsed data is missing.
+        {t("This survey couldn't be loaded — its parsed data is missing.")}
       </div>
     )
   }
@@ -2829,10 +2829,10 @@ export function SurveyViewer({ source }: Props) {
           />
         )}
         {view.mode === 'respondent' && !respondent && (
-          <div style={{ color: 'var(--text-muted)' }}>Select a respondent on the left.</div>
+          <div style={{ color: 'var(--text-muted)' }}>{t("Select a respondent on the left.")}</div>
         )}
         {view.mode === 'question' && !question && (
-          <div style={{ color: 'var(--text-muted)' }}>Select a question on the left.</div>
+          <div style={{ color: 'var(--text-muted)' }}>{t("Select a question on the left.")}</div>
         )}
       </div>
 
@@ -2851,15 +2851,15 @@ export function SurveyViewer({ source }: Props) {
             className="context-menu-item"
             onClick={() => { useNewCodeTriggerStore.getState().request(); closeMenu() }}
           >
-            New Code
+            {t("New Code")}
           </div>
           <div className="context-menu-separator" />
 
           {showApply && (
             <>
-              <div style={menuSectionLabelStyle}>Apply Code</div>
+              <div style={menuSectionLabelStyle}>{t("Apply Code")}</div>
               <div style={menuHintStyle}>
-                To apply any code, select content and drag the code from the Code Browser to the selection.
+                {t("To apply any code, select content and drag the code from the Code Browser to the selection.")}
               </div>
               {hotkeyCodes.map(({ code }) => (
                 <div
@@ -2876,7 +2876,7 @@ export function SurveyViewer({ source }: Props) {
               ))}
               {hotkeyCodes.length === 0 && (
                 <div className="context-menu-item" style={{ color: 'var(--text-muted)', pointerEvents: 'none' }}>
-                  No hotkeys assigned — right-click a code to assign one
+                  {t("No hotkeys assigned — right-click a code to assign one")}
                 </div>
               )}
             </>
@@ -2886,7 +2886,7 @@ export function SurveyViewer({ source }: Props) {
 
           {showRemove && (
             <>
-              <div style={menuSectionLabelStyle}>Remove Code</div>
+              <div style={menuSectionLabelStyle}>{t("Remove Code")}</div>
               {menu!.existingCodings.map((ec) => {
                 const code = findCode(ec.codeGuid)
                 return (
@@ -2897,7 +2897,7 @@ export function SurveyViewer({ source }: Props) {
                     onClick={() => handleRemoveCoding(ec.selectionGuid, ec.codingGuid)}
                   >
                     <span className="color-pip" style={{ background: code?.color || '#888' }} />
-                    {code?.name ?? 'Unknown'}
+                    {code?.name ?? t("Unknown")}
                   </div>
                 )
               })}
@@ -2908,7 +2908,7 @@ export function SurveyViewer({ source }: Props) {
             <>
               <div className="context-menu-separator" />
               <div className="context-menu-item" onClick={handleAddQuote}>
-                Add as Quote
+                {t("Add as Quote")}
               </div>
             </>
           )}
@@ -2917,7 +2917,7 @@ export function SurveyViewer({ source }: Props) {
             <>
               <div className="context-menu-separator" />
               <div className="context-menu-item" onClick={handleAddContentMemo}>
-                Add Selection Memo
+                {t("Add Selection Memo")}
               </div>
             </>
           )}
@@ -2925,7 +2925,7 @@ export function SurveyViewer({ source }: Props) {
           {showDeleteMemo && (
             <>
               <div className="context-menu-separator" />
-              <div style={menuSectionLabelStyle}>Delete Memo</div>
+              <div style={menuSectionLabelStyle}>{t("Delete Memo")}</div>
               {menu!.overlappingMemos.map((m) => (
                 <div
                   key={m.guid}

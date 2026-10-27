@@ -24,6 +24,7 @@
 import { useState, useEffect, useRef } from 'react'
 import { createPortal } from 'react-dom'
 import { Icon, faAppWindow, faCheck } from '../Icon'
+import { t } from '../../i18n'
 
 export interface StudioPanelToggle {
   /** Stable key the host switches on in `onToggle`. */
@@ -108,7 +109,7 @@ export function StudioPopover({ panels, onToggle }: Props) {
         ref={buttonRef}
         type="button"
         className="app-toolbar-btn"
-        title="Show or hide workspace panels"
+        title={t("Show or hide workspace panels")}
         aria-haspopup="menu"
         aria-expanded={open}
         onClick={() => setOpen((v) => !v)}
@@ -135,7 +136,7 @@ export function StudioPopover({ panels, onToggle }: Props) {
         }}
       >
         <Icon icon={faAppWindow} style={{ fontSize: 20 }} />
-        <span className="toolbar-label" style={{ fontSize: 9, whiteSpace: 'nowrap', fontWeight: 400, color: 'var(--text-secondary)', transition: 'color 0.12s' }}>Studio</span>
+        <span className="toolbar-label" style={{ fontSize: 9, whiteSpace: 'nowrap', fontWeight: 400, color: 'var(--text-secondary)', transition: 'color 0.12s' }}>{t("Studio")}</span>
       </button>
 
       {open && pos && createPortal(
@@ -146,7 +147,7 @@ export function StudioPopover({ panels, onToggle }: Props) {
           style={{ position: 'fixed', top: pos.top, left: pos.left, transform: 'none', zIndex: 10000 }}
         >
           <div className="analysis-popover-arrow" style={{ left: pos.arrowLeft, transform: 'rotate(45deg)' }} />
-          <div className="analysis-popover-title">Panels</div>
+          <div className="analysis-popover-title">{t("Panels")}</div>
           <div className="studio-popover-list">
             {panels.map((panel) => (
               <button

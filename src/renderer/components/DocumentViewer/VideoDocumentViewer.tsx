@@ -22,6 +22,7 @@ import { Icon, faPlay, faPause, faBackward, faForward, faVolumeHigh, faVolumeLow
 import { formatTime, clamp, snapTimeToSecond, DEFAULT_PX_PER_SECOND } from './video-time-utils'
 import { decodePeaks } from '../../utils/waveform-peaks'
 import type { TextSource, VideoFormatData } from '../../models/types'
+import { t } from '../../i18n'
 
 interface Props {
   source: TextSource
@@ -359,14 +360,14 @@ export function VideoDocumentViewer({ source, content }: Props) {
           onMouseDown={() => startHold(() => rewind(2))}
           onMouseUp={stopHold}
           onMouseLeave={stopHold}
-          title="Rewind (hold to repeat)"
+          title={t("Rewind (hold to repeat)")}
         >
           <Icon icon={faBackward} />
         </button>
         <button
           style={buttonStyle(isPlaying)}
           onClick={togglePlayPause}
-          title={isPlaying ? 'Pause' : 'Play'}
+          title={isPlaying ? t("Pause") : t("Play")}
         >
           <Icon icon={isPlaying ? faPause : faPlay} />
         </button>
@@ -375,7 +376,7 @@ export function VideoDocumentViewer({ source, content }: Props) {
           onMouseDown={() => startHold(() => fastForward(2))}
           onMouseUp={stopHold}
           onMouseLeave={stopHold}
-          title="Fast Forward (hold to repeat)"
+          title={t("Fast Forward (hold to repeat)")}
         >
           <Icon icon={faForward} />
         </button>
@@ -401,7 +402,7 @@ export function VideoDocumentViewer({ source, content }: Props) {
         <button
           style={buttonStyle(false)}
           onClick={() => setMuted((m) => !m)}
-          title={muted ? 'Unmute' : 'Mute'}
+          title={muted ? t("Unmute") : t("Mute")}
         >
           <Icon icon={faVolumeXmark} />
         </button>
@@ -414,7 +415,7 @@ export function VideoDocumentViewer({ source, content }: Props) {
             setVolume((v) => Math.max(0, v - 0.1))
             if (muted) setMuted(false)
           }}
-          title="Volume down"
+          title={t("Volume down")}
         >
           <Icon icon={faVolumeLow} />
         </button>
@@ -430,7 +431,7 @@ export function VideoDocumentViewer({ source, content }: Props) {
             if (muted && parseFloat(e.target.value) > 0) setMuted(false)
           }}
           style={{ width: 70, flexShrink: 0, ['--filled' as any]: `${(muted ? 0 : volume) * 100}%` }}
-          title="Volume"
+          title={t("Volume")}
         />
         <button
           style={{ ...buttonStyle(false), border: 'none', background: 'transparent', width: 20 }}
@@ -438,7 +439,7 @@ export function VideoDocumentViewer({ source, content }: Props) {
             setVolume((v) => Math.min(1, v + 0.1))
             if (muted) setMuted(false)
           }}
-          title="Volume up"
+          title={t("Volume up")}
         >
           <Icon icon={faVolumeHigh} />
         </button>

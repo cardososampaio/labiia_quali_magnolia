@@ -1,6 +1,7 @@
 import { useState, type ReactElement } from 'react'
 import { useDocumentStore } from '../stores/document-store'
 import type { MissingBinary } from '../models/types'
+import { t } from '../i18n'
 
 /**
  * Surfaced after opening a project that declares PDF/image/audio/video
@@ -77,13 +78,11 @@ export function MissingBinariesBanner({
         </span>
         <div style={{ flex: 1 }}>
           <div style={{ fontWeight: 600, marginBottom: 6 }}>
-            {missing.length} document{plural} {missing.length === 1 ? 'is' : 'are'} missing
-            {' '}their file{plural} from this project
+            {missing.length} {t("document")}{plural} {missing.length === 1 ? 'is' : 'are'} {t("missing")}
+            {' '}{t("their file")}{plural} {t("from this project")}
           </div>
           <div style={{ marginBottom: 8, color: '#9a3412' }}>
-            Their content was never stored in the .qdpx and can&apos;t be recovered from the
-            file. Re-import the original{plural} to repair the project — your codes are kept,
-            and the next save embeds the file{plural} permanently.
+            {t("Their content was never stored in the .qdpx and can't be recovered from the file. Re-import the original")}{plural} {t("to repair the project — your codes are kept, and the next save embeds the file")}{plural} {t("permanently.")}
           </div>
           <ul style={{ listStyle: 'none', margin: 0, padding: 0, display: 'flex', flexDirection: 'column', gap: 6 }}>
             {missing.map((m) => (
@@ -105,7 +104,7 @@ export function MissingBinariesBanner({
                     cursor: busyGuid === m.guid ? 'default' : 'pointer'
                   }}
                 >
-                  {busyGuid === m.guid ? 'Re-importing…' : 'Re-import…'}
+                  {busyGuid === m.guid ? t("Re-importing…") : t("Re-import…")}
                 </button>
               </li>
             ))}
@@ -121,7 +120,7 @@ export function MissingBinariesBanner({
         <button
           type="button"
           onClick={onDismiss}
-          title="Dismiss"
+          title={t("Dismiss")}
           style={{
             flexShrink: 0,
             border: 'none',

@@ -3,6 +3,7 @@ import { useMemoStore } from '../../stores/memo-store'
 import { Icon, MEMO_ICON } from '../Icon'
 import { generateGuid } from '../../utils/guid'
 import type { Memo, MemoEditInitData } from '../../models/types'
+import { t } from '../../i18n'
 
 /** Layout variant shared by every FAB kind. */
 interface BaseProps {
@@ -197,7 +198,7 @@ export function MemoFab(props: Props) {
     e.stopPropagation()
     if (isUnsaved) {
       const what = kind === 'saved-query' ? 'query' : 'analysis'
-      window.alert(`Save the ${what} first to attach a memo.`)
+      window.alert(t("Save the {{what}} first to attach a memo.", { what: what }))
       return
     }
     if (memo) {
@@ -270,12 +271,12 @@ export function MemoFab(props: Props) {
       onMouseLeave={() => setHovered(false)}
       title={
         isUnsaved
-          ? `Save the ${kind === 'saved-query' ? 'query' : 'analysis'} to attach a memo`
+          ? t("Save the {{x0}} to attach a memo", { x0: kind === 'saved-query' ? 'query' : 'analysis' })
           : hasMemo
-            ? 'Open memo'
-            : 'Add memo'
+            ? t("Open memo")
+            : t("Add memo")
       }
-      aria-label={hasMemo ? 'Open memo' : 'Add memo'}
+      aria-label={hasMemo ? t("Open memo") : t("Add memo")}
       style={{
         ...(variant === 'absolute' ? {
           position: 'absolute' as const,

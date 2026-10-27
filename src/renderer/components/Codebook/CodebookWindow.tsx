@@ -6,6 +6,7 @@ import type { Code, CodebookInitData } from '../../models/types'
 import { exportPdfWithHeader, buildPdfDocument, escHtml } from '../../utils/pdf-export'
 import { modKey } from '../../utils/platform'
 import { useCodeColourPresets } from '../../utils/code-colours'
+import { t } from '../../i18n'
 
 function flattenCodes(codes: Code[]): Code[] {
   const result: Code[] = []
@@ -48,7 +49,7 @@ function CompactCodeEntry({
           onSelectCode(code.guid)
         }}
         onDoubleClick={() => onEditCode(code.guid)}
-        title="Double-click to edit"
+        title={t("Double-click to edit")}
       >
         <span
           className="color-pip"
@@ -95,7 +96,7 @@ function EditCodeDialog({
   return (
     <div className="modal-overlay" onClick={onClose} style={{ position: 'fixed' }}>
       <div className="modal" onClick={(e) => e.stopPropagation()} style={{ minWidth: 420 }}>
-        <h2 style={{ margin: '0 0 12px' }}>Edit Code</h2>
+        <h2 style={{ margin: '0 0 12px' }}>{t("Edit Code")}</h2>
 
         <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 10 }}>
           <div style={{ position: 'relative', flexShrink: 0 }}>
@@ -110,7 +111,7 @@ function EditCodeDialog({
                 border: '2px solid var(--border-color)',
                 boxSizing: 'border-box'
               }}
-              title="Choose color"
+              title={t("Choose color")}
             />
             {showColorPicker && (
               <div
@@ -149,7 +150,7 @@ function EditCodeDialog({
                   />
                 ))}
                 <div style={{ width: '100%', display: 'flex', alignItems: 'center', gap: 6, marginTop: 4 }}>
-                  <label style={{ fontSize: 11, color: 'var(--text-secondary)' }}>Custom:</label>
+                  <label style={{ fontSize: 11, color: 'var(--text-secondary)' }}>{t("Custom:")}</label>
                   <input
                     type="color"
                     value={color}
@@ -173,7 +174,7 @@ function EditCodeDialog({
                 onSave(name.trim(), color, memo, hk)
               }
             }}
-            placeholder="Code name..."
+            placeholder={t("Code name...")}
             autoFocus
             style={{ flex: 1 }}
           />
@@ -182,7 +183,7 @@ function EditCodeDialog({
         {/* Description */}
         <div style={{ marginBottom: 10 }}>
           <label style={{ fontSize: 'var(--font-size-sm)', color: 'var(--text-secondary)', display: 'block', marginBottom: 4 }}>
-            Description
+            {t("Description")}
           </label>
           <MarkdownEditor
             value={memo}
@@ -207,12 +208,12 @@ function EditCodeDialog({
             style={{ width: 40, textAlign: 'center' }}
           />
           <span style={{ fontSize: 11, color: 'var(--text-muted)' }}>
-            Hotkey for quick coding
+            {t("Hotkey for quick coding")}
           </span>
         </div>
 
         <div className="modal-actions">
-          <button className="secondary" onClick={onClose}>Cancel</button>
+          <button className="secondary" onClick={onClose}>{t("Cancel")}</button>
           <button
             onClick={() => {
               if (name.trim()) {
@@ -221,7 +222,7 @@ function EditCodeDialog({
               }
             }}
           >
-            Save
+            {t("Save")}
           </button>
         </div>
       </div>
@@ -266,8 +267,8 @@ function buildCodebookHtml(codes: Code[]): string {
 `
 
   return buildPdfDocument({
-    title: 'Codebook',
-    subtitle: `${allCodes.length} code${allCodes.length !== 1 ? 's' : ''} &mdash; exported ${escHtml(now)}`,
+    title: t("Codebook"),
+    subtitle: t("{{length}} code{{x1}} &mdash; exported {{x2}}", { length: allCodes.length, x1: allCodes.length !== 1 ? 's' : '', x2: escHtml(now) }),
     body,
     extraCss
   })
@@ -278,7 +279,7 @@ function CodeDetailPane({ code }: { code: Code | null }) {
   if (!code) {
     return (
       <div style={{ padding: 20, textAlign: 'center', color: 'var(--text-muted)', fontSize: 'var(--font-size-sm)' }}>
-        Select a code to see its details.
+        {t("Select a code to see its details.")}
       </div>
     )
   }
@@ -295,7 +296,7 @@ function CodeDetailPane({ code }: { code: Code | null }) {
         />
       ) : (
         <div style={{ fontSize: 'var(--font-size-sm)', color: 'var(--text-muted)', fontStyle: 'italic' }}>
-          No memo
+          {t("No memo")}
         </div>
       )}
     </div>
@@ -348,7 +349,7 @@ export function CodebookWindow() {
 
   const handleExportPdf = useCallback(async () => {
     const html = buildCodebookHtml(codes)
-    await exportPdfWithHeader(html, 'Codebook')
+    await exportPdfWithHeader(html, t("Codebook"))
   }, [codes])
 
   const handleExportQdc = useCallback(async () => {
@@ -383,33 +384,33 @@ export function CodebookWindow() {
         WebkitAppRegion: 'drag' as any
       }}>
         <span style={{ fontWeight: 600, fontSize: 'var(--font-size-base)', flex: 1 }}>
-          Codebook
+          {t("Codebook")}
           <span style={{ fontWeight: 400, fontSize: 11, color: 'var(--text-muted)', marginLeft: 8 }}>
-            {allCodes.length} code{allCodes.length !== 1 ? 's' : ''}
+            {allCodes.length} {t("code")}{allCodes.length !== 1 ? 's' : ''}
           </span>
         </span>
         <button
           className="secondary"
           style={{ fontSize: 11, padding: '3px 8px', WebkitAppRegion: 'no-drag' as any }}
           onClick={handleImportQdc}
-          title="Import .qdc"
+          title={t("Import .qdc")}
         >
-          Import QDC
+          {t("Import QDC")}
         </button>
         <button
           className="secondary"
           style={{ fontSize: 11, padding: '3px 8px', WebkitAppRegion: 'no-drag' as any }}
           onClick={handleExportQdc}
-          title="Export .qdc"
+          title={t("Export .qdc")}
         >
-          Export QDC
+          {t("Export QDC")}
         </button>
         <button
           className="secondary"
           style={{ fontSize: 11, padding: '3px 8px', WebkitAppRegion: 'no-drag' as any }}
           onClick={handleExportPdf}
         >
-          Export PDF
+          {t("Export PDF")}
         </button>
       </div>
 
@@ -419,7 +420,7 @@ export function CodebookWindow() {
         <div style={{ width: '50%', borderRight: '1px solid var(--border-color)', overflowY: 'auto' }}>
           {codes.length === 0 ? (
             <div className="empty-state" style={{ padding: 20, textAlign: 'center', color: 'var(--text-muted)', fontSize: 'var(--font-size-sm)' }}>
-              No codes yet.
+              {t("No codes yet.")}
             </div>
           ) : (
             <>

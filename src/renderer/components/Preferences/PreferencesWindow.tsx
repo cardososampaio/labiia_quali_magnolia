@@ -12,6 +12,7 @@
 import { useState, useEffect, useCallback, useRef } from 'react'
 import { Icon, faGear } from '../Icon'
 import { COLOURFUL_INTERFACE_ENABLED, colourfulInterfaceFromSaved } from '../../utils/colourful-interface'
+import { t, LANGUAGES, DEFAULT_LANGUAGE, getLanguage, normalizeLanguage, type Language } from '../../i18n'
 
 interface FootPedalMappings {
   playPause: string
@@ -44,6 +45,8 @@ interface Preferences {
   toolbarStyle: ToolbarStyle
   /** Dark toolbar plus colour-coded icons. */
   colourfulInterface: boolean
+  /** Interface language; takes effect on the next launch. */
+  language: Language
 }
 
 const DEFAULT_PREFS: Preferences = {
@@ -64,12 +67,13 @@ const DEFAULT_PREFS: Preferences = {
   interfaceScale: 1,
   userName: '',
   toolbarStyle: 'icons',
-  colourfulInterface: COLOURFUL_INTERFACE_ENABLED
+  colourfulInterface: COLOURFUL_INTERFACE_ENABLED,
+  language: DEFAULT_LANGUAGE
 }
 
 const TOOLBAR_STYLE_OPTIONS: { id: ToolbarStyle; label: string }[] = [
-  { id: 'icons', label: 'Icons' },
-  { id: 'icons-and-text', label: 'Icons and Text' }
+  { id: 'icons', label: t("Icons") },
+  { id: 'icons-and-text', label: t("Icons and Text") }
 ]
 
 const SPEED_OPTIONS = [0.5, 0.75, 1, 1.25, 1.5, 2]
@@ -86,13 +90,13 @@ interface ThemeOption {
 }
 
 const THEME_OPTIONS: ThemeOption[] = [
-  { id: 'magnolia',      label: 'Magnolia',      swatch: { bg: '#C8D0DA', surface: '#FFFFFF', accent: '#2563EB' } },
-  { id: 'magnolia-dark', label: 'Magnolia Dark', swatch: { bg: '#14181E', surface: '#252B35', accent: '#5B8FFF' } },
-  { id: 'granola',       label: 'Granola',       swatch: { bg: '#f1e6cf', surface: '#ffffff', accent: '#c97134' } },
-  { id: 'granola-dark',  label: 'Granola Dark',  swatch: { bg: '#1f1a14', surface: '#2d271f', accent: '#e08a4a' } },
-  { id: '',              label: 'Clean',         swatch: { bg: '#ffffff', surface: '#ececec', accent: '#007AFF' } },
-  { id: 'dark',          label: 'Clean Dark',    swatch: { bg: '#1e1e2e', surface: '#2a2a3c', accent: '#0a84ff' } },
-  { id: 'high-contrast', label: 'High Contrast', swatch: { bg: '#000000', surface: '#ffffff', accent: '#ffff00' } }
+  { id: 'magnolia',      label: t("Magnolia"),      swatch: { bg: '#C8D0DA', surface: '#FFFFFF', accent: '#2563EB' } },
+  { id: 'magnolia-dark', label: t("Magnolia Dark"), swatch: { bg: '#14181E', surface: '#252B35', accent: '#5B8FFF' } },
+  { id: 'granola',       label: t("Granola"),       swatch: { bg: '#f1e6cf', surface: '#ffffff', accent: '#c97134' } },
+  { id: 'granola-dark',  label: t("Granola Dark"),  swatch: { bg: '#1f1a14', surface: '#2d271f', accent: '#e08a4a' } },
+  { id: '',              label: t("Clean"),         swatch: { bg: '#ffffff', surface: '#ececec', accent: '#007AFF' } },
+  { id: 'dark',          label: t("Clean Dark"),    swatch: { bg: '#1e1e2e', surface: '#2a2a3c', accent: '#0a84ff' } },
+  { id: 'high-contrast', label: t("High Contrast"), swatch: { bg: '#000000', surface: '#ffffff', accent: '#ffff00' } }
 ]
 
 type CategoryId = 'appearance' | 'general' | 'media-playback' | 'paper-size' | 'updates' | 'support'
@@ -103,12 +107,12 @@ interface Category {
 }
 
 const CATEGORIES: Category[] = [
-  { id: 'general',        label: 'General' },
-  { id: 'appearance',     label: 'Appearance' },
-  { id: 'media-playback', label: 'Media Playback' },
-  { id: 'paper-size',     label: 'Paper Size' },
-  { id: 'updates',        label: 'Updates' },
-  { id: 'support',        label: 'Support Magnolia' }
+  { id: 'general',        label: t("General") },
+  { id: 'appearance',     label: t("Appearance") },
+  { id: 'media-playback', label: t("Media Playback") },
+  { id: 'paper-size',     label: t("Paper Size") },
+  { id: 'updates',        label: t("Updates") },
+  { id: 'support',        label: t('About labiia_quali') }
 ]
 
 // Lets callers outside this module (e.g. the toolbar wordmark, when it's
@@ -127,7 +131,7 @@ export function requestPreferencesCategory(category: CategoryId): void {
   }
 }
 
-/** GitHub Sponsors page for funding Magnolia's development. */
+/** GitHub Sponsors page of Magnolia, the project labiia_quali is based on. */
 const SPONSOR_URL = 'https://github.com/sponsors/caledavis'
 
 /** Latest release page — where users on builds that can't self-update (e.g.
@@ -177,7 +181,7 @@ function KeyCaptureInput({ value, onChange, label }: { value: string; onChange: 
       <input
         ref={inputRef}
         readOnly
-        value={capturing ? 'Press a key...' : value}
+        value={capturing ? t('Press a key...') : value}
         onClick={() => setCapturing(true)}
         onBlur={() => setCapturing(false)}
         style={{
@@ -219,7 +223,7 @@ function AppearanceSettings({
 }) {
   return (
     <div style={{ marginBottom: 24 }}>
-      <h3 style={{ fontSize: 13, fontWeight: 600, marginBottom: 14, color: 'var(--text-secondary)' }}>Theme</h3>
+      <h3 style={{ fontSize: 13, fontWeight: 600, marginBottom: 14, color: 'var(--text-secondary)' }}>{t("Theme")}</h3>
       <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
         {THEME_OPTIONS.map((opt) => {
           const selected = opt.id === value
@@ -257,7 +261,7 @@ function AppearanceSettings({
                 <div style={{ fontSize: 12.5, fontWeight: 600, color: 'var(--text-primary)' }}>
                   {opt.label}
                   {opt.id === 'magnolia' && (
-                    <span style={{ fontSize: 10, color: 'var(--text-muted)', fontWeight: 500, marginLeft: 6 }}>(default)</span>
+                    <span style={{ fontSize: 10, color: 'var(--text-muted)', fontWeight: 500, marginLeft: 6 }}>{t("(default)")}</span>
                   )}
                 </div>
               </div>
@@ -269,7 +273,7 @@ function AppearanceSettings({
         })}
       </div>
 
-      <h3 style={{ fontSize: 13, fontWeight: 600, marginTop: 24, marginBottom: 10, color: 'var(--text-secondary)' }}>Interface Scale</h3>
+      <h3 style={{ fontSize: 13, fontWeight: 600, marginTop: 24, marginBottom: 10, color: 'var(--text-secondary)' }}>{t("Interface Scale")}</h3>
       <select
         value={scale}
         onChange={(e) => onScaleChange(parseFloat(e.target.value))}
@@ -284,7 +288,7 @@ function AppearanceSettings({
         ))}
       </select>
 
-      <h3 style={{ fontSize: 13, fontWeight: 600, marginTop: 24, marginBottom: 10, color: 'var(--text-secondary)' }}>Toolbar Style</h3>
+      <h3 style={{ fontSize: 13, fontWeight: 600, marginTop: 24, marginBottom: 10, color: 'var(--text-secondary)' }}>{t("Toolbar Style")}</h3>
       <select
         value={toolbarStyle}
         onChange={(e) => onToolbarStyleChange(e.target.value as ToolbarStyle)}
@@ -303,10 +307,10 @@ function AppearanceSettings({
           COLOURFUL_INTERFACE_ENABLED in utils/colourful-interface.ts. */}
       {COLOURFUL_INTERFACE_ENABLED && (
         <>
-          <h3 style={{ fontSize: 13, fontWeight: 600, marginTop: 24, marginBottom: 10, color: 'var(--text-secondary)' }}>Colour</h3>
+          <h3 style={{ fontSize: 13, fontWeight: 600, marginTop: 24, marginBottom: 10, color: 'var(--text-secondary)' }}>{t("Colour")}</h3>
           <label style={{ display: 'flex', alignItems: 'center', gap: 8, fontSize: 12, color: 'var(--text-primary)', cursor: 'pointer' }}>
             <input type="checkbox" checked={colourful} onChange={(e) => onColourfulChange(e.target.checked)} />
-            Colourful interface
+            {t("Colourful interface")}
           </label>
         </>
       )}
@@ -321,16 +325,38 @@ function GeneralSettings({
   prefs: Preferences
   save: (updated: Preferences) => void
 }) {
+  // The running windows keep the language they opened with; a change only
+  // applies after restarting, so unsaved project work is never discarded.
+  const restartNeeded = prefs.language !== getLanguage()
   return (
     <div style={{ marginBottom: 24 }}>
-      <h3 style={{ fontSize: 13, fontWeight: 600, marginBottom: 10, color: 'var(--text-secondary)' }}>Your Name</h3>
+      <h3 style={{ fontSize: 13, fontWeight: 600, marginBottom: 10, color: 'var(--text-secondary)' }}>{t('Language')}</h3>
+      <select
+        value={prefs.language}
+        onChange={(e) => save({ ...prefs, language: normalizeLanguage(e.target.value) })}
+        style={{
+          padding: '4px 8px', fontSize: 12,
+          border: '1px solid var(--border-color)', borderRadius: 'var(--radius-sm)',
+          background: 'var(--bg-input)', color: 'var(--text-primary)', cursor: 'pointer'
+        }}
+      >
+        {LANGUAGES.map((lang) => (
+          <option key={lang.id} value={lang.id}>{lang.label}</option>
+        ))}
+      </select>
+      <p style={{ fontSize: 11, color: restartNeeded ? 'var(--accent)' : 'var(--text-muted)', marginTop: 8, marginBottom: 24, lineHeight: 1.5 }}>
+        {restartNeeded
+          ? t('The new language will be used the next time you open labiia_quali.')
+          : t('Language of menus, buttons and messages. Changes apply the next time you open labiia_quali.')}
+      </p>
+      <h3 style={{ fontSize: 13, fontWeight: 600, marginBottom: 10, color: 'var(--text-secondary)' }}>{t("Your Name")}</h3>
       <p style={{ fontSize: 11, color: 'var(--text-muted)', marginBottom: 12, lineHeight: 1.5 }}>
-        Your name allows colleagues to identify your changes to a project when merging different versions, and is saved into the project file itself whenever you're the last person to edit it.
+        {t("Your name allows colleagues to identify your changes to a project when merging different versions, and is saved into the project file itself whenever you're the last person to edit it.")}
       </p>
       <input
         type="text"
         value={prefs.userName}
-        placeholder="Enter your name"
+        placeholder={t("Enter your name")}
         onChange={(e) => save({ ...prefs, userName: e.target.value })}
         style={{
           width: 240, padding: '4px 8px', fontSize: 12,
@@ -356,30 +382,29 @@ function MediaPlaybackSettings({
       {/* Foot Pedal / Key Mappings */}
       <div style={{ marginBottom: 24 }}>
         <h3 style={{ fontSize: 13, fontWeight: 600, marginBottom: 10, color: 'var(--text-secondary)' }}>
-          Audio Playback Key Mappings
+          {t("Audio Playback Key Mappings")}
         </h3>
         <p style={{ fontSize: 11, color: 'var(--text-muted)', marginBottom: 12, lineHeight: 1.5 }}>
-          Map keyboard keys or foot pedal buttons to audio playback controls.
-          Click an input field and press the desired key combination.
+          {t("Map keyboard keys or foot pedal buttons to audio playback controls. Click an input field and press the desired key combination.")}
         </p>
         <KeyCaptureInput
-          label="Play / Pause"
+          label={t("Play / Pause")}
           value={prefs.footPedalMappings.playPause}
           onChange={(v) => updateMapping('playPause', v)}
         />
         <KeyCaptureInput
-          label="Rewind"
+          label={t("Rewind")}
           value={prefs.footPedalMappings.rewind}
           onChange={(v) => updateMapping('rewind', v)}
         />
         <KeyCaptureInput
-          label="Fast Forward"
+          label={t("Fast Forward")}
           value={prefs.footPedalMappings.fastForward}
           onChange={(v) => updateMapping('fastForward', v)}
         />
 
         <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 8, marginTop: 12 }}>
-          <label style={{ width: 120, fontSize: 12, fontWeight: 600, color: 'var(--text-secondary)' }}>Rewind seconds</label>
+          <label style={{ width: 120, fontSize: 12, fontWeight: 600, color: 'var(--text-secondary)' }}>{t("Rewind seconds")}</label>
           <input
             type="number"
             min={1}
@@ -395,7 +420,7 @@ function MediaPlaybackSettings({
         </div>
 
         <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 8 }}>
-          <label style={{ width: 120, fontSize: 12, fontWeight: 600, color: 'var(--text-secondary)' }}>Forward seconds</label>
+          <label style={{ width: 120, fontSize: 12, fontWeight: 600, color: 'var(--text-secondary)' }}>{t("Forward seconds")}</label>
           <input
             type="number"
             min={1}
@@ -413,7 +438,7 @@ function MediaPlaybackSettings({
 
       {/* Default playback speed */}
       <div style={{ marginBottom: 24 }}>
-        <h3 style={{ fontSize: 13, fontWeight: 600, marginBottom: 10, color: 'var(--text-secondary)' }}>Default Playback Speed</h3>
+        <h3 style={{ fontSize: 13, fontWeight: 600, marginBottom: 10, color: 'var(--text-secondary)' }}>{t("Default Playback Speed")}</h3>
         <select
           value={prefs.defaultPlaybackSpeed}
           onChange={(e) => save({ ...prefs, defaultPlaybackSpeed: parseFloat(e.target.value) })}
@@ -443,9 +468,9 @@ function PaperSizeSettings({
 }) {
   return (
     <div style={{ marginBottom: 24 }}>
-      <h3 style={{ fontSize: 13, fontWeight: 600, marginBottom: 10, color: 'var(--text-secondary)' }}>Paper Size</h3>
+      <h3 style={{ fontSize: 13, fontWeight: 600, marginBottom: 10, color: 'var(--text-secondary)' }}>{t("Paper Size")}</h3>
       <p style={{ fontSize: 11, color: 'var(--text-muted)', marginBottom: 12, lineHeight: 1.5 }}>
-        Page size for PDFs Magnolia exports (coded documents, query results, codebooks, the logbook, and survey summaries).
+        {t('Page size for exported PDFs (coded documents, query results, codebooks, the logbook, and survey summaries).')}
       </p>
       <select
         value={prefs.paperSize}
@@ -474,11 +499,11 @@ type UpdateStatus = {
  *  track the state reported by the main process over 'update:status'. */
 function UpdateStatusLine({ status }: { status: UpdateStatus }) {
   const map: Record<UpdateStatus['state'], { color: string; text: string }> = {
-    checking:      { color: 'var(--text-muted)',   text: 'Checking for updates…' },
-    'up-to-date':  { color: 'var(--success)',      text: `You're up to date${status.version ? ` (version ${status.version})` : ''}.` },
-    available:     { color: 'var(--accent)',       text: `Update available${status.version ? ` — version ${status.version}` : ''}. It's downloading now; you'll be prompted to install it shortly.` },
-    error:         { color: 'var(--danger)',       text: `Couldn't check for updates: ${status.message ?? 'unknown error'}` },
-    'dev-disabled':{ color: 'var(--text-muted)',   text: 'Update checks are disabled in development builds.' }
+    checking:      { color: 'var(--text-muted)',   text: t('Checking for updates…') },
+    'up-to-date':  { color: 'var(--success)',      text: status.version ? t("You're up to date (version {{version}}).", { version: status.version }) : t("You're up to date.") },
+    available:     { color: 'var(--accent)',       text: t("Update available{{version}}. It's downloading now; you'll be prompted to install it shortly.", { version: status.version ? ` — ${status.version}` : '' }) },
+    error:         { color: 'var(--danger)',       text: t("Couldn't check for updates: {{message}}", { message: status.message ?? t('unknown error') }) },
+    'dev-disabled':{ color: 'var(--text-muted)',   text: t('Automatic updates are not available yet') }
   }
   const { color, text } = map[status.state]
   return <div style={{ fontSize: 11.5, color, marginTop: 12, lineHeight: 1.5 }}>{text}</div>
@@ -533,15 +558,13 @@ function UpdatesSettings() {
 
   return (
     <div style={{ marginBottom: 24 }}>
-      <h3 style={{ fontSize: 13, fontWeight: 600, marginBottom: 10, color: 'var(--text-secondary)' }}>Software Updates</h3>
+      <h3 style={{ fontSize: 13, fontWeight: 600, marginBottom: 10, color: 'var(--text-secondary)' }}>{t("Software Updates")}</h3>
       <p style={{ fontSize: 11, color: 'var(--text-muted)', marginBottom: 14, lineHeight: 1.5 }}>
-        Magnolia checks for updates automatically in the background. If that
-        doesn't work on your computer (for example on a managed or restricted
-        machine), you can check for a new version here at any time.
+        {t('labiia_quali does not publish updates yet. New versions must be installed manually.')}
       </p>
 
       <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 14 }}>
-        <span style={{ fontSize: 12, fontWeight: 600, color: 'var(--text-secondary)' }}>Current version</span>
+        <span style={{ fontSize: 12, fontWeight: 600, color: 'var(--text-secondary)' }}>{t("Current version")}</span>
         <span style={{ fontSize: 12, fontFamily: 'var(--font-mono)', color: 'var(--text-primary)' }}>
           {version ?? '…'}
         </span>
@@ -562,11 +585,10 @@ function UpdatesSettings() {
           }}
         >
           <div style={{ fontSize: 12, fontWeight: 600, color: 'var(--text-primary)', marginBottom: 4 }}>
-            A new version{badge.latestVersion ? ` (${badge.latestVersion})` : ''} is available
+            {t("A new version")}{badge.latestVersion ? ` (${badge.latestVersion})` : ''} {t("is available")}
           </div>
           <div style={{ fontSize: 11, color: 'var(--text-secondary)', marginBottom: 10, lineHeight: 1.5 }}>
-            If Magnolia doesn't update itself, download the latest version from the
-            releases page.
+            {t("If labiia_quali doesn't update itself, download the latest version from the releases page.")}
           </div>
           <a
             href={RELEASES_URL}
@@ -583,7 +605,7 @@ function UpdatesSettings() {
               textDecoration: 'none'
             }}
           >
-            Download latest version
+            {t("Download latest version")}
           </a>
         </div>
       )}
@@ -594,7 +616,7 @@ function UpdatesSettings() {
         onClick={check}
         style={{ fontSize: 12, padding: '6px 16px' }}
       >
-        {checking ? 'Checking…' : 'Check for Updates'}
+        {checking ? t("Checking…") : t("Check for Updates")}
       </button>
 
       {checking
@@ -608,21 +630,17 @@ function SupportSettings() {
   return (
     <div style={{ marginBottom: 24 }}>
       <h3 style={{ fontSize: 13, fontWeight: 600, marginBottom: 10, color: 'var(--text-secondary)' }}>
-        Support Magnolia
+        {t('About labiia_quali')}
       </h3>
       <p style={{ fontSize: 11.5, color: 'var(--text-secondary)', marginBottom: 12, lineHeight: 1.6 }}>
-        Magnolia is free and open-source, with no ads, subscriptions, or cloud
-        lock-in. It's built and maintained independently. If it's useful in your
-        work, sponsoring its development helps keep it free and funds new
-        features, fixes, and ongoing support.
+        {t('labiia_quali is free and open-source qualitative data analysis software for Brazilian researchers. It is based on Magnolia, free software created and maintained by Dr Cale Davis, and is distributed under the same licence (EUPL-1.2).')}
       </p>
       <p style={{ fontSize: 11.5, color: 'var(--text-muted)', marginBottom: 16, lineHeight: 1.6 }}>
-        You can sponsor monthly or make a one-off contribution through GitHub
-        Sponsors. The link opens in your browser.
+        {t('If labiia_quali is useful in your work, consider supporting the original Magnolia project through GitHub Sponsors. The link opens in your browser.')}
       </p>
 
       <p style={{ fontSize: 11.5, color: 'var(--text-secondary)', marginBottom: 16, lineHeight: 1.6 }}>
-        Magnolia was created by and is maintained by Dr Cale Davis.
+        {t('Magnolia was created by and is maintained by Dr Cale Davis.')}
       </p>
 
       {/* The main window's setWindowOpenHandler routes target=_blank links
@@ -645,7 +663,7 @@ function SupportSettings() {
         }}
       >
         <span aria-hidden style={{ fontSize: 13 }}>♥</span>
-        Sponsor Magnolia on GitHub
+        {t('Support Magnolia on GitHub')}
       </a>
 
       <p style={{ fontSize: 10.5, color: 'var(--text-muted)', marginTop: 14, fontFamily: 'var(--font-mono)' }}>
@@ -699,6 +717,7 @@ export function PreferencesWindow({ onClose }: PreferencesWindowProps = {}) {
           interfaceScale: typeof data.interfaceScale === 'number' ? data.interfaceScale : DEFAULT_PREFS.interfaceScale,
           toolbarStyle: data.toolbarStyle === 'icons-and-text' ? 'icons-and-text' : DEFAULT_PREFS.toolbarStyle,
           colourfulInterface: colourfulInterfaceFromSaved(data.colourfulInterface),
+          language: normalizeLanguage(data.language),
           footPedalMappings: { ...DEFAULT_PREFS.footPedalMappings, ...(data.footPedalMappings || {}) }
         })
       }
@@ -748,7 +767,7 @@ export function PreferencesWindow({ onClose }: PreferencesWindowProps = {}) {
     document.documentElement.toggleAttribute('data-colourful', colourfulInterface)
   }, [prefs, save])
 
-  if (!loaded) return <div style={{ padding: 20, color: 'var(--text-muted)' }}>Loading...</div>
+  if (!loaded) return <div style={{ padding: 20, color: 'var(--text-muted)' }}>{t("Loading...")}</div>
 
   const selected = CATEGORIES.find((c) => c.id === selectedCategory) ?? CATEGORIES[0]
 
@@ -772,7 +791,7 @@ export function PreferencesWindow({ onClose }: PreferencesWindowProps = {}) {
       <div style={{ padding: '14px 20px 6px', flexShrink: 0, display: 'flex', alignItems: 'center', gap: 8 }}>
         <h2 style={{ margin: 0, fontSize: 18, fontWeight: 600, display: 'flex', alignItems: 'center', gap: 8, color: 'var(--text-secondary)' }}>
           <Icon icon={faGear} className="analysis-header-icon" style={{ fontSize: 16 }} />
-          Preferences
+          {t("Preferences")}
         </h2>
         <div style={{ flex: 1 }} />
         <button
@@ -780,7 +799,7 @@ export function PreferencesWindow({ onClose }: PreferencesWindowProps = {}) {
           style={{ fontSize: 11, padding: '4px 14px' }}
           onClick={() => (onClose ? onClose() : window.close())}
         >
-          Close
+          {t("Close")}
         </button>
       </div>
 

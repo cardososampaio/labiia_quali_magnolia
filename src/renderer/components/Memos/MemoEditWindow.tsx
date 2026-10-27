@@ -1,6 +1,7 @@
 import { useState, useCallback, useEffect } from 'react'
 import { MarkdownEditor } from '../MarkdownEditor'
 import type { Memo, MemoEditInitData } from '../../models/types'
+import { t } from '../../i18n'
 
 export function MemoEditWindow() {
   const [memo, setMemo] = useState<Memo | null>(null)
@@ -64,7 +65,7 @@ export function MemoEditWindow() {
 
   const handleDelete = useCallback(() => {
     if (!memo) return
-    if (!window.confirm(`Delete memo "${memo.title || 'Untitled'}"? This cannot be undone.`)) return
+    if (!window.confirm(t("Delete memo \"{{x0}}\"? This cannot be undone.", { x0: memo.title || 'Untitled' }))) return
     // For an unsaved draft (isNew), there's nothing to remove from the
     // store yet — just close. Otherwise tell the main window to drop
     // it and propagate to anything that references the memo.
@@ -75,7 +76,7 @@ export function MemoEditWindow() {
   if (!memo) {
     return (
       <div style={{ padding: 20, textAlign: 'center', color: 'var(--text-muted)' }}>
-        Loading...
+        {t("Loading...")}
       </div>
     )
   }
@@ -94,7 +95,7 @@ export function MemoEditWindow() {
           type="text"
           value={title}
           onChange={(e) => handleTitleChange(e.target.value)}
-          placeholder="Memo title..."
+          placeholder={t("Memo title...")}
           style={{
             width: '100%',
             fontSize: 16,
@@ -129,18 +130,18 @@ export function MemoEditWindow() {
       }}>
         {!isNew && (
           <button className="danger" style={{ fontSize: 11, padding: '4px 14px' }} onClick={handleDelete}>
-            Delete
+            {t("Delete")}
           </button>
         )}
         <span style={{ flex: 1 }} />
         <button className="secondary" style={{ fontSize: 11, padding: '4px 14px' }} onClick={() => window.close()}>
-          Cancel
+          {t("Cancel")}
         </button>
         <button className="secondary" style={{ fontSize: 11, padding: '4px 14px' }} onClick={handleSave} disabled={!dirty}>
-          Save
+          {t("Save")}
         </button>
         <button style={{ fontSize: 11, padding: '4px 14px' }} onClick={handleSaveAndClose}>
-          Save &amp; Close
+          {t("Save & Close")}
         </button>
       </div>
     </div>

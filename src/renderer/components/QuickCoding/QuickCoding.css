@@ -1,0 +1,294 @@
+/* Quick coding: selection bubble, coding bar and code picker. Colours come
+   from the theme variables so every theme (light, dark, high contrast)
+   applies. Stacked below context menus and modal dialogs (z-index 1000). */
+
+.qc-bubble {
+  position: fixed;
+  z-index: 900;
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  padding: 3px 4px 3px 6px;
+  background: var(--bg-secondary);
+  border: 1px solid var(--border-color);
+  border-radius: 999px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.10), 0 6px 18px rgba(0, 0, 0, 0.14);
+  font-family: var(--font-family);
+  animation: qc-pop 0.12s ease-out;
+}
+
+@keyframes qc-pop {
+  from { opacity: 0; transform: translateY(4px) scale(0.97); }
+  to { opacity: 1; transform: none; }
+}
+
+.qc-bubble button {
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-family: inherit;
+}
+
+.qc-bubble-main {
+  padding: 4px 10px;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--accent);
+  border-radius: 999px;
+}
+
+.qc-bubble-main:hover { background: var(--selection-bg); }
+.qc-caret { font-size: 10px; margin-left: 2px; }
+
+.qc-bubble-close {
+  width: 22px;
+  height: 22px;
+  font-size: 15px;
+  line-height: 1;
+  color: var(--text-muted);
+  border-radius: 50%;
+}
+
+.qc-bubble-close:hover { background: var(--bg-tertiary); color: var(--text-primary); }
+
+.qc-bar {
+  position: fixed;
+  z-index: 900;
+  left: 50%;
+  bottom: 18px;
+  transform: translateX(-50%);
+  max-width: calc(100vw - 32px);
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 7px 8px;
+  background: var(--bg-secondary);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-md);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.10), 0 8px 24px rgba(0, 0, 0, 0.16);
+  font-family: var(--font-family);
+  font-size: 12.5px;
+  color: var(--text-primary);
+  animation: qc-pop 0.12s ease-out;
+}
+
+.qc-position,
+.qc-btn,
+.qc-chip,
+.qc-input {
+  height: 28px;
+  box-sizing: border-box;
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-sm);
+  font-family: inherit;
+  font-size: inherit;
+}
+
+.qc-position {
+  display: inline-flex;
+  align-items: center;
+  padding: 0 8px;
+  color: var(--text-secondary);
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+.qc-input {
+  padding: 0 8px;
+  background: var(--bg-input);
+  color: var(--text-primary);
+  outline: none;
+}
+
+.qc-input:focus { border-color: var(--accent); }
+.qc-search { position: relative; }
+.qc-search .qc-input { width: 190px; }
+
+.qc-btn,
+.qc-chip {
+  padding: 0 10px;
+  background: var(--bg-primary);
+  color: var(--text-primary);
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.qc-btn:hover:not(:disabled),
+.qc-chip:hover { background: var(--selection-bg); }
+.qc-btn.pressed { background: var(--selection-bg); border-color: var(--accent); }
+.qc-btn:disabled { color: var(--text-muted); cursor: default; opacity: 0.7; }
+
+.qc-chip {
+  max-width: 140px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  border-left-width: 4px;
+}
+
+.qc-flash {
+  min-width: 0;
+  max-width: 220px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  color: var(--success);
+  font-size: 11.5px;
+}
+
+.qc-flash:empty { display: none; }
+
+.qc-close {
+  width: 24px;
+  height: 24px;
+  border: none;
+  border-radius: 50%;
+  background: none;
+  color: var(--text-muted);
+  font-size: 16px;
+  line-height: 1;
+  cursor: pointer;
+}
+
+.qc-close:hover { background: var(--bg-tertiary); color: var(--text-primary); }
+
+/* Popups open upward because the bar sits at the bottom of the window. */
+.qc-suggestions,
+.qc-picker {
+  position: absolute;
+  bottom: calc(100% + 8px);
+  left: 0;
+  background: var(--bg-secondary);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-md);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08), 0 8px 24px rgba(0, 0, 0, 0.16);
+  overflow: hidden;
+}
+
+.qc-suggestions {
+  width: 280px;
+  padding: 4px 0;
+}
+
+.qc-suggestion,
+.qc-row-main,
+.qc-new {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+  padding: 6px 12px;
+  border: none;
+  background: none;
+  color: var(--text-primary);
+  font-family: inherit;
+  font-size: 12.5px;
+  text-align: left;
+  cursor: pointer;
+}
+
+.qc-suggestion.active,
+.qc-row:hover { background: var(--selection-bg); }
+.qc-create { color: var(--accent); }
+
+.qc-swatch {
+  flex-shrink: 0;
+  width: 10px;
+  height: 10px;
+  border-radius: 2px;
+}
+
+.qc-name {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.qc-path {
+  margin-left: auto;
+  padding-left: 8px;
+  color: var(--text-muted);
+  font-size: 11px;
+  white-space: nowrap;
+}
+
+.qc-picker-anchor { position: relative; }
+
+.qc-picker {
+  width: 330px;
+  display: flex;
+  flex-direction: column;
+  max-height: min(440px, calc(100vh - 120px));
+}
+
+.qc-preview {
+  padding: 10px 12px 4px;
+  color: var(--text-secondary);
+  font-size: 12px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.qc-picker-search {
+  margin: 8px 12px;
+  height: 32px;
+}
+
+.qc-list {
+  flex: 1;
+  min-height: 60px;
+  overflow-y: auto;
+  border-top: 1px solid var(--border-color);
+  padding: 4px 0;
+}
+
+.qc-heading {
+  padding: 8px 12px 4px;
+  color: var(--text-muted);
+  font-size: 10.5px;
+  font-weight: 700;
+  letter-spacing: 0.6px;
+  text-transform: uppercase;
+}
+
+.qc-row {
+  display: flex;
+  align-items: center;
+  padding-right: 6px;
+}
+
+.qc-row-main { flex: 1; min-width: 0; padding-left: 0; }
+.qc-row-main:disabled { color: var(--text-muted); cursor: default; }
+
+.qc-icon {
+  flex-shrink: 0;
+  width: 24px;
+  height: 24px;
+  border: none;
+  border-radius: var(--radius-sm);
+  background: none;
+  color: var(--text-muted);
+  font-size: 13px;
+  cursor: pointer;
+  opacity: 0;
+}
+
+.qc-row:hover .qc-icon,
+.qc-icon:focus-visible { opacity: 1; }
+.qc-icon:hover { background: var(--bg-tertiary); color: var(--accent); }
+.qc-inline { flex: 1; height: 26px; margin: 2px 0; }
+
+.qc-empty {
+  padding: 12px;
+  color: var(--text-muted);
+  font-size: 12px;
+}
+
+.qc-new {
+  border-top: 1px solid var(--border-color);
+  padding: 10px 12px;
+  color: var(--accent);
+  font-weight: 600;
+}
+
+.qc-new:hover { background: var(--selection-bg); }

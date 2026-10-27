@@ -4,10 +4,11 @@
  * so parseDocument returns null.
  */
 import type { FormatDef } from '../format-registry'
+import { t } from '../../i18n'
 
 export const audioFormat: FormatDef = {
   sourceType: 'audio',
-  label: 'Audio Files',
+  label: t("Audio Files"),
   extensions: ['wav', 'mp3', 'ogg', 'flac', 'm4a', 'aac'],
   parseDocument: () => null
 }

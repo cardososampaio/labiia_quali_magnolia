@@ -9,6 +9,7 @@ import { generateGuid } from '../../utils/guid'
 import { isToolTab } from '../../utils/tab-ids'
 import { useClampedMenuPosition } from '../../utils/use-clamped-menu-position'
 import type { Memo, MemoType, MemoEditInitData } from '../../models/types'
+import { t } from '../../i18n'
 
 function formatDate(iso: string): string {
   const d = new Date(iso)
@@ -78,7 +79,7 @@ function MemoItem({
           textOverflow: 'ellipsis',
           whiteSpace: 'nowrap'
         }}>
-          {memo.title || 'Untitled Memo'}
+          {memo.title || t("Untitled Memo")}
         </span>
       </div>
       <div style={{ fontSize: 10, color: 'var(--text-muted)' }}>
@@ -212,7 +213,7 @@ function AnalysisMemoGroups({
         <span style={{ fontSize: 10, width: 12, textAlign: 'center', opacity: 0.6 }}>
           <Icon icon={sectionExpanded ? faChevronDown : faChevronRight} />
         </span>
-        <span style={{ flex: 1 }}>Analysis Memos</span>
+        <span style={{ flex: 1 }}>{t("Analysis Memos")}</span>
         <span style={{ fontSize: 10, color: 'var(--text-muted)' }}>{total}</span>
       </div>
       {sectionExpanded && groups.map((g) => (
@@ -435,7 +436,7 @@ export function MemosPane({ onClose, onPopOut, isPoppedOut }: Props) {
       }
     }
     const nameFor = (guid: string): string =>
-      savedAnalyses.find((a) => a.guid === guid)?.name?.trim() || 'Untitled map'
+      savedAnalyses.find((a) => a.guid === guid)?.name?.trim() || t("Untitled map")
     const groups = Array.from(byAnalysis.entries())
       .map(([guid, list]) => ({ guid, name: nameFor(guid), memos: list }))
       .sort((a, b) => a.name.localeCompare(b.name))
@@ -591,7 +592,7 @@ export function MemosPane({ onClose, onPopOut, isPoppedOut }: Props) {
     const memo = findMemo(guid)
     if (!memo || memo.type === 'project') return
     if (memo.type === 'document' || memo.type === 'content') {
-      if (!confirm(`Moving this memo to Project Memos will break its link to the document. Continue?`)) return
+      if (!confirm(t("Moving this memo to Project Memos will break its link to the document. Continue?"))) return
     }
     changeMemoType(guid, 'project', { sourceGuids: undefined, sourceGuid: undefined, startPosition: undefined, endPosition: undefined })
   }, [findMemo, changeMemoType])
@@ -605,8 +606,8 @@ export function MemosPane({ onClose, onPopOut, isPoppedOut }: Props) {
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             onKeyDown={(e) => { if (e.key === 'Escape') closeSearch() }}
-            placeholder="Filter memos..."
-            aria-label="Filter memos"
+            placeholder={t("Filter memos...")}
+            aria-label={t("Filter memos")}
             autoFocus
             style={{
               flex: 1,
@@ -624,14 +625,14 @@ export function MemosPane({ onClose, onPopOut, isPoppedOut }: Props) {
             }}
           />
         ) : (
-          <span style={{ flex: 1 }}>Memos</span>
+          <span style={{ flex: 1 }}>{t("Memos")}</span>
         )}
         {memos.length > 0 && (
           <button
             className="panel-header-search"
             onClick={() => (searchOpen ? closeSearch() : setSearchOpen(true))}
-            title={searchOpen ? 'Close search' : 'Filter memos'}
-            aria-label={searchOpen ? 'Close search' : 'Filter memos'}
+            title={searchOpen ? t("Close search") : t("Filter memos")}
+            aria-label={searchOpen ? t("Close search") : t("Filter memos")}
           >
             <Icon icon={searchOpen ? faXmark : faMagnifyingGlass} />
           </button>
@@ -639,8 +640,8 @@ export function MemosPane({ onClose, onPopOut, isPoppedOut }: Props) {
         <button
           className="panel-header-add"
           onClick={handleNewMemoClick}
-          title={lockedBy ? checkoutLockedTitle(lockedBy) : 'Add memo'}
-          aria-label="Add memo"
+          title={lockedBy ? checkoutLockedTitle(lockedBy) : t("Add memo")}
+          aria-label={t("Add memo")}
           style={lockedBy ? { opacity: 0.4 } : undefined}
         >
           <Icon icon={faPlus} />
@@ -665,19 +666,19 @@ export function MemosPane({ onClose, onPopOut, isPoppedOut }: Props) {
               }}
             >
               <div className="context-menu-item" onClick={() => handleCreateMemo('project')}>
-                Project Memo
+                {t("Project Memo")}
               </div>
               {viewedDocumentGuid && (
                 <div className="context-menu-item" onClick={() => handleCreateMemo('document')}>
-                  Document Memo
+                  {t("Document Memo")}
                 </div>
               )}
             </div>
           </>,
           document.body
         )}
-        {onPopOut && <button className="panel-header-popout" onClick={onPopOut} title={isPoppedOut ? "Pop back in" : "Pop out"} aria-label={isPoppedOut ? "Pop pane back into main window" : "Pop pane out into its own window"}><Icon icon={isPoppedOut ? faDownLeftAndUpRightToCenter : faUpRightFromSquare} /></button>}
-        {onClose && <button className="panel-header-close" onClick={onClose} title="Close panel" aria-label="Close panel"><Icon icon={faXmark} /></button>}
+        {onPopOut && <button className="panel-header-popout" onClick={onPopOut} title={isPoppedOut ? t("Pop back in") : t("Pop out")} aria-label={isPoppedOut ? t("Pop pane back into main window") : t("Pop pane out into its own window")}><Icon icon={isPoppedOut ? faDownLeftAndUpRightToCenter : faUpRightFromSquare} /></button>}
+        {onClose && <button className="panel-header-close" onClick={onClose} title={t("Close panel")} aria-label={t("Close panel")}><Icon icon={faXmark} /></button>}
       </div>
 
       <div className="panel-content">
@@ -703,19 +704,19 @@ export function MemosPane({ onClose, onPopOut, isPoppedOut }: Props) {
             <>
               {firstShown === null && !trimmedSearch && (
                 <div className="empty-state" style={{ padding: 20, textAlign: 'center', color: 'var(--text-muted)', fontSize: 'var(--font-size-sm)' }}>
-                  No memos yet.
+                  {t("No memos yet.")}
                   <br />
-                  Click the + button above, or right-click a selection in a document and choose "Add Memo".
+                  {t("Click the + button above, or right-click a selection in a document and choose \"Add Memo\".")}
                 </div>
               )}
               {firstShown === null && trimmedSearch && (
                 <div className="empty-state" style={{ padding: 20, textAlign: 'center', color: 'var(--text-muted)', fontSize: 'var(--font-size-sm)' }}>
-                  No memos match "{trimmedSearch}".
+                  {t("No memos match \"")}{trimmedSearch}".
                 </div>
               )}
               {showProject && (
                 <MemoSection
-                  title="Project Memos"
+                  title={t("Project Memos")}
                   memos={visibleProject}
                   selectedGuids={selectedGuids}
                   onItemClick={handleItemClick}
@@ -731,7 +732,7 @@ export function MemosPane({ onClose, onPopOut, isPoppedOut }: Props) {
               )}
               {showDocument && (
                 <MemoSection
-                  title="Document Memos"
+                  title={t("Document Memos")}
                   memos={visibleDocument}
                   selectedGuids={selectedGuids}
                   onItemClick={handleItemClick}
@@ -746,7 +747,7 @@ export function MemosPane({ onClose, onPopOut, isPoppedOut }: Props) {
               )}
               {showContent && (
                 <MemoSection
-                  title="Selection Memos"
+                  title={t("Selection Memos")}
                   memos={visibleContent}
                   selectedGuids={selectedGuids}
                   onItemClick={handleItemClick}
@@ -800,7 +801,7 @@ export function MemosPane({ onClose, onPopOut, isPoppedOut }: Props) {
                   openMemoEdit(memoContextMenu.target.guid)
                 }}
               >
-                Edit Memo
+                {t("Edit Memo")}
               </div>
             )}
             {selectedGuids.size <= 1 && <div className="context-menu-separator" />}
@@ -813,7 +814,7 @@ export function MemosPane({ onClose, onPopOut, isPoppedOut }: Props) {
                 bulkDelete()
               }}
             >
-              {selectedGuids.size > 1 ? `Delete ${selectedGuids.size} memos` : 'Delete Memo'}
+              {selectedGuids.size > 1 ? t("Delete {{size}} memos", { size: selectedGuids.size }) : t("Delete Memo")}
             </div>
           </div>
         </>
@@ -828,16 +829,16 @@ export function MemosPane({ onClose, onPopOut, isPoppedOut }: Props) {
         >
           <div className="modal" onClick={(e) => e.stopPropagation()}>
             <h2 style={{ margin: '0 0 12px' }}>
-              {bulkDeleteConfirm.length > 1 ? `Delete ${bulkDeleteConfirm.length} memos` : 'Delete Memo'}
+              {bulkDeleteConfirm.length > 1 ? t("Delete {{length}} memos", { length: bulkDeleteConfirm.length }) : t("Delete Memo")}
             </h2>
             <p style={{ margin: '0 0 16px', fontSize: 'var(--font-size-sm)' }}>
               {bulkDeleteConfirm.length > 1
-                ? `Delete ${bulkDeleteConfirm.length} memos? This cannot be undone.`
-                : `Delete "${bulkDeleteConfirm[0].title || 'Untitled Memo'}"? This cannot be undone.`}
+                ? t("Delete {{length}} memos? This cannot be undone.", { length: bulkDeleteConfirm.length })
+                : t("Delete \"{{x0}}\"? This cannot be undone.", { x0: bulkDeleteConfirm[0].title || 'Untitled Memo' })}
             </p>
             <div className="modal-actions">
-              <button className="secondary" onClick={() => setBulkDeleteConfirm(null)}>Cancel</button>
-              <button style={{ background: 'var(--danger)' }} onClick={confirmBulkDelete}>Delete</button>
+              <button className="secondary" onClick={() => setBulkDeleteConfirm(null)}>{t("Cancel")}</button>
+              <button style={{ background: 'var(--danger)' }} onClick={confirmBulkDelete}>{t("Delete")}</button>
             </div>
           </div>
         </div>

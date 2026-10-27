@@ -12,6 +12,7 @@ import {
   type DocumentFilterState
 } from '../DocumentSelector/DocumentSelector'
 import type { Code, CodeCondition, Query } from '../../models/types'
+import { t } from '../../i18n'
 
 interface Props {
   onClose: () => void
@@ -121,7 +122,7 @@ export function QueryBuilderDialog({ onClose }: Props) {
           pointerEvents: 'auto'
         }}
       >
-        <h2>Build Query</h2>
+        <h2>{t("Build Query")}</h2>
 
         {/* Scrollable body */}
         <div style={{ flex: 1, overflowY: 'auto', paddingRight: 4 }}>
@@ -145,7 +146,7 @@ export function QueryBuilderDialog({ onClose }: Props) {
                   color: 'var(--text-secondary)'
                 }}
               >
-                Select Documents
+                {t("Select Documents")}
               </span>
               <span
                 style={{
@@ -156,7 +157,7 @@ export function QueryBuilderDialog({ onClose }: Props) {
                   marginLeft: 'auto'
                 }}
               >
-                {hasDocFilters ? 'Filtered' : 'All documents'}
+                {hasDocFilters ? t("Filtered") : t("All documents")}
               </span>
             </div>
 
@@ -188,7 +189,7 @@ export function QueryBuilderDialog({ onClose }: Props) {
                 marginBottom: 10
               }}
             >
-              For this content...
+              {t("For this content...")}
             </div>
 
             <QueryNodeEditor
@@ -201,10 +202,10 @@ export function QueryBuilderDialog({ onClose }: Props) {
         {/* ── Actions ── */}
         <div className="modal-actions" style={{ paddingTop: 10 }}>
           <button className="secondary" onClick={onClose}>
-            Cancel
+            {t("Cancel")}
           </button>
           <button onClick={handleRun} disabled={!codeCondition}>
-            Run Query
+            {t("Run Query")}
           </button>
         </div>
       </div>

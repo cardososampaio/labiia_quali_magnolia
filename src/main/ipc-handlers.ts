@@ -22,6 +22,7 @@ import {
 import { getLastImportDir, setLastImportDir } from './import-dirs'
 import { showOpenDialog, showSaveDialog } from './dialogs'
 import type { Project, Code } from '../renderer/models/types'
+import { t } from '../renderer/i18n'
 
 /**
  * Read a media binary for a viewer. The renderer holds an opaque
@@ -100,7 +101,7 @@ export function registerIpcHandlers(): void {
 
   ipcMain.handle('open-project', async (event) => {
     const result = await showOpenDialog(event.sender, {
-      title: 'Open QDPX Project',
+      title: t("Open QDPX Project"),
       filters: [{ name: 'QDPX Projects', extensions: ['qdpx'] }],
       properties: ['openFile']
     })
@@ -123,7 +124,7 @@ export function registerIpcHandlers(): void {
   // before the picker even opened.
   ipcMain.handle('pick-project-file', async (event) => {
     const result = await showOpenDialog(event.sender, {
-      title: 'Open QDPX Project',
+      title: t("Open QDPX Project"),
       filters: [{ name: 'QDPX Projects', extensions: ['qdpx'] }],
       properties: ['openFile']
     })
@@ -145,7 +146,7 @@ export function registerIpcHandlers(): void {
       let filePath = data.filePath
       if (!filePath) {
         const result = await showSaveDialog(event.sender, {
-          title: 'Save QDPX Project',
+          title: t("Save QDPX Project"),
           defaultPath: `${data.project.name}.qdpx`,
           filters: [{ name: 'QDPX Projects', extensions: ['qdpx'] }]
         })
@@ -193,7 +194,7 @@ export function registerIpcHandlers(): void {
 
   ipcMain.handle('create-new-project-file', async (event) => {
     const result = await showSaveDialog(event.sender, {
-      title: 'Create New Project',
+      title: t("Create New Project"),
       defaultPath: 'Untitled.qdpx',
       filters: [{ name: 'QDPX Projects', extensions: ['qdpx'] }]
     })
@@ -203,14 +204,14 @@ export function registerIpcHandlers(): void {
       const projectName = await createEmptyProjectFile(filePath)
       return { filePath, projectName }
     } catch (err) {
-      dialog.showErrorBox('Failed to create project', String(err))
+      dialog.showErrorBox(t("Failed to create project"), String(err))
       return null
     }
   })
 
   ipcMain.handle('save-project-as', async (event, data: { project: Project; sourceContents: Record<string, string>; currentFilePath?: string }) => {
     const result = await showSaveDialog(event.sender, {
-      title: 'Save QDPX Project As',
+      title: t("Save QDPX Project As"),
       defaultPath: `${data.project.name}.qdpx`,
       filters: [{ name: 'QDPX Projects', extensions: ['qdpx'] }]
     })
@@ -524,7 +525,7 @@ export function registerIpcHandlers(): void {
 
   ipcMain.handle('import-text-file', async (event) => {
     const result = await showOpenDialog(event.sender, {
-      title: 'Import Document',
+      title: t("Import Document"),
       defaultPath: await getLastImportDir(getActiveProjectPath()),
       filters: [{ name: 'Supported Documents', extensions: SUPPORTED_EXTENSIONS }],
       properties: ['openFile', 'multiSelections']
@@ -547,7 +548,7 @@ export function registerIpcHandlers(): void {
       const dot = name.lastIndexOf('.')
       const ext = dot > 0 ? name.slice(dot + 1).toLowerCase() : ''
       if (!ext) return "Files without an extension can't be imported."
-      if (!SUPPORTED_EXTENSIONS.includes(ext)) return `Magnolia can't import .${ext} files.`
+      if (!SUPPORTED_EXTENSIONS.includes(ext)) return t("labiia_quali can't import .{{ext}} files.", { ext })
       return null
     }
     const reasons = await Promise.all(filePaths.map(rejectReason))
@@ -577,7 +578,7 @@ export function registerIpcHandlers(): void {
       return SUPPORTED_EXTENSIONS
     }
     const result = await showOpenDialog(event.sender, {
-      title: 'Re-import Document',
+      title: t("Re-import Document"),
       defaultPath: await getLastImportDir(getActiveProjectPath()),
       filters: [{ name: 'Supported Documents', extensions: extsFor(sourceType) }],
       properties: ['openFile']
@@ -635,7 +636,7 @@ export function registerIpcHandlers(): void {
 
   ipcMain.handle('import-transcript', async (event) => {
     const result = await showOpenDialog(event.sender, {
-      title: 'Import Transcript',
+      title: t("Import Transcript"),
       defaultPath: await getLastImportDir(getActiveProjectPath()),
       filters: [
         { name: 'Text Files', extensions: ['txt', 'md', 'markdown', 'srt', 'vtt', 'html', 'htm'] }
@@ -660,7 +661,7 @@ export function registerIpcHandlers(): void {
       footerTemplate?: string
     ) => {
       const result = await showSaveDialog(event.sender, {
-        title: dialogTitle || 'Export as PDF',
+        title: dialogTitle || t("Export as PDF"),
         defaultPath: `${defaultName}.pdf`,
         filters: [{ name: 'PDF Documents', extensions: ['pdf'] }]
       })
@@ -727,7 +728,7 @@ export function registerIpcHandlers(): void {
 
   ipcMain.handle('export-codebook', async (event, codes: Code[]) => {
     const result = await showSaveDialog(event.sender, {
-      title: 'Export Codebook',
+      title: t("Export Codebook"),
       defaultPath: 'Codebook.qdc',
       filters: [{ name: 'REFI-QDA Codebook', extensions: ['qdc'] }]
     })
@@ -739,7 +740,7 @@ export function registerIpcHandlers(): void {
 
   ipcMain.handle('import-codebook', async (event) => {
     const result = await showOpenDialog(event.sender, {
-      title: 'Import Codebook',
+      title: t("Import Codebook"),
       filters: [{ name: 'REFI-QDA Codebook', extensions: ['qdc'] }],
       properties: ['openFile']
     })

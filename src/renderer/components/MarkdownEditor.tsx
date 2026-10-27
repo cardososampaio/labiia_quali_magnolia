@@ -6,6 +6,7 @@ import StarterKit from '@tiptap/starter-kit'
 import { Markdown } from 'tiptap-markdown'
 import { useEffect, useCallback, useMemo, useRef } from 'react'
 import { Icon, faBold, faItalic, faUnderline, faListUl, faListOl, faHeading1, faHeading2 } from './Icon'
+import { t } from '../i18n'
 
 interface Props {
   value: string
@@ -147,14 +148,14 @@ export function MarkdownEditor({ value, onChange, autoFocus, style, onEnterKey, 
               <ToolbarButton
                 active={editor.isActive('heading', { level: 1 })}
                 onClick={() => toggle(() => editor.chain().toggleHeading({ level: 1 }).run())}
-                title="Heading 1"
+                title={t("Heading 1")}
               >
                 <Icon icon={faHeading1} style={{ fontSize: 14 }} />
               </ToolbarButton>
               <ToolbarButton
                 active={editor.isActive('heading', { level: 2 })}
                 onClick={() => toggle(() => editor.chain().toggleHeading({ level: 2 }).run())}
-                title="Heading 2"
+                title={t("Heading 2")}
               >
                 <Icon icon={faHeading2} style={{ fontSize: 14 }} />
               </ToolbarButton>
@@ -167,21 +168,21 @@ export function MarkdownEditor({ value, onChange, autoFocus, style, onEnterKey, 
           <ToolbarButton
             active={editor.isActive('bold')}
             onClick={() => toggle(() => editor.chain().toggleBold().run())}
-            title="Bold"
+            title={t("Bold")}
           >
             <Icon icon={faBold} style={{ fontSize: 14 }} />
           </ToolbarButton>
           <ToolbarButton
             active={editor.isActive('italic')}
             onClick={() => toggle(() => editor.chain().toggleItalic().run())}
-            title="Italic"
+            title={t("Italic")}
           >
             <Icon icon={faItalic} style={{ fontSize: 14 }} />
           </ToolbarButton>
           <ToolbarButton
             active={editor.isActive('underline')}
             onClick={() => toggle(() => editor.chain().toggleUnderline().run())}
-            title="Underline"
+            title={t("Underline")}
           >
             <Icon icon={faUnderline} style={{ fontSize: 14 }} />
           </ToolbarButton>
@@ -192,14 +193,14 @@ export function MarkdownEditor({ value, onChange, autoFocus, style, onEnterKey, 
           <ToolbarButton
             active={editor.isActive('bulletList')}
             onClick={() => toggle(() => editor.chain().toggleBulletList().run())}
-            title="Bullet List"
+            title={t("Bullet List")}
           >
             <Icon icon={faListUl} style={{ fontSize: 14 }} />
           </ToolbarButton>
           <ToolbarButton
             active={editor.isActive('orderedList')}
             onClick={() => toggle(() => editor.chain().toggleOrderedList().run())}
-            title="Numbered List"
+            title={t("Numbered List")}
           >
             <Icon icon={faListOl} style={{ fontSize: 14 }} />
           </ToolbarButton>

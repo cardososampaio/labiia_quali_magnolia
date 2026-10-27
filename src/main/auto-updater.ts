@@ -26,6 +26,7 @@
  */
 import { app, BrowserWindow, dialog, Notification, ipcMain } from 'electron'
 import { autoUpdater } from 'electron-updater'
+import { t } from '../renderer/i18n'
 import { execFileSync } from 'child_process'
 import { join } from 'path'
 import { existsSync, readFileSync, writeFileSync } from 'fs'
@@ -51,6 +52,11 @@ function startShipItJob(): void {
     // No job submitted (nothing staged) or already running — nothing to do.
   }
 }
+
+/** labiia_quali has no release channel of its own yet. The inherited updater
+ *  points at Magnolia's GitHub releases and would replace this app with
+ *  Magnolia, so update checks stay off until labiia_quali publishes releases. */
+const UPDATES_ENABLED = false
 
 let mainWindowRef: BrowserWindow | null = null
 let manualCheckInProgress = false
@@ -160,6 +166,7 @@ export function getUpdateBadgeState(): UpdateBadgeState {
 /** Re-evaluate the badge: fetch the latest published version, compare to this
  *  build, and raise the badge if it's newer and not skipped. Silent on failure. */
 export async function refreshUpdateBadge(): Promise<void> {
+  if (!UPDATES_ENABLED) return
   const currentVersion = app.getVersion()
 
   // Dev-only override for testing the badge UI without a real newer release or
@@ -217,6 +224,7 @@ export function initAutoUpdater(mainWindow: BrowserWindow, onQuitForUpdate: () =
   mainWindowRef = mainWindow
   onQuitForUpdateRef = onQuitForUpdate
   badgeState = { available: false, latestVersion: null, currentVersion: app.getVersion() }
+  if (!UPDATES_ENABLED) return
 
   // "Later → install on quit": when the app quits with a staged update,
   // Squirrel.Mac is meant to install it on quit, but it hits the same
@@ -275,9 +283,9 @@ export function initAutoUpdater(mainWindow: BrowserWindow, onQuitForUpdate: () =
       } else {
         dialog.showMessageBox(mainWindowRef ?? undefined as any, {
           type: 'info',
-          message: 'Magnolia is up to date',
-          detail: `Version ${info.version} is the latest available.`,
-          buttons: ['OK']
+          message: t("labiia_quali is up to date"),
+          detail: t("Version {{version}} is the latest available.", { version: info.version }),
+          buttons: [t("OK")]
         })
       }
     }
@@ -292,9 +300,9 @@ export function initAutoUpdater(mainWindow: BrowserWindow, onQuitForUpdate: () =
       } else {
         dialog.showMessageBox(mainWindowRef ?? undefined as any, {
           type: 'error',
-          message: 'Could not check for updates',
+          message: t("Could not check for updates"),
           detail: err?.message ?? String(err),
-          buttons: ['OK']
+          buttons: [t("OK")]
         })
       }
     }
@@ -315,7 +323,7 @@ export function initAutoUpdater(mainWindow: BrowserWindow, onQuitForUpdate: () =
     // Subtle OS notification — non-blocking, won't pull focus mid-session.
     if (Notification.isSupported()) {
       new Notification({
-        title: 'Magnolia update ready',
+        title: t("labiia_quali update ready"),
         body: `Version ${info.version} is ready to install.`
       }).show()
     }
@@ -338,9 +346,9 @@ export function initAutoUpdater(mainWindow: BrowserWindow, onQuitForUpdate: () =
       dialog
         .showMessageBox(undefined as never, {
           type: 'info',
-          message: `Magnolia ${info.version} is ready to install`,
-          detail: 'Restart now to apply the update, or quit later — it installs automatically.',
-          buttons: ['Restart now', 'Later'],
+          message: t("labiia_quali {{version}} is ready to install", { version: info.version }),
+          detail: t("Restart now to apply the update, or quit later — it installs automatically."),
+          buttons: [t("Restart now"), t("Later")],
           defaultId: 0,
           cancelId: 1
         })
@@ -368,15 +376,15 @@ export function initAutoUpdater(mainWindow: BrowserWindow, onQuitForUpdate: () =
  *  the check happened. 'menu' reports via native dialogs; 'preferences' reports
  *  inline through the 'update:status' channel. */
 export function checkForUpdatesManually(source: 'menu' | 'preferences' = 'menu'): void {
-  if (!app.isPackaged) {
+  if (!app.isPackaged || !UPDATES_ENABLED) {
     if (source === 'preferences') {
       sendUpdateStatus({ state: 'dev-disabled' })
     } else {
       dialog.showMessageBox(mainWindowRef ?? undefined as any, {
         type: 'info',
-        message: 'Update checks are disabled in development',
-        detail: 'Run a packaged build (`npm run package:mac/win/linux`) to test the update flow.',
-        buttons: ['OK']
+        message: t('Automatic updates are not available yet'),
+        detail: t('labiia_quali does not publish updates yet. New versions must be installed manually.'),
+        buttons: [t("OK")]
       })
     }
     return
@@ -393,9 +401,9 @@ export function checkForUpdatesManually(source: 'menu' | 'preferences' = 'menu')
     } else {
       dialog.showMessageBox(mainWindowRef ?? undefined as any, {
         type: 'error',
-        message: 'Could not check for updates',
+        message: t("Could not check for updates"),
         detail: err?.message ?? String(err),
-        buttons: ['OK']
+        buttons: [t("OK")]
       })
     }
   })

@@ -9,6 +9,7 @@ import { useClampedMenuPosition } from '../../utils/use-clamped-menu-position'
 import { renderPdfRegionThumbnail } from '../../utils/pdf-thumbnail'
 import { renderImageRegionThumbnail } from '../../utils/image-thumbnail'
 import { useProjectStore, useCheckoutLockedBy, checkoutLockedTitle } from '../../stores/project-store'
+import { t } from '../../i18n'
 
 interface Props {
   onClose?: () => void
@@ -155,8 +156,8 @@ export function QuotesPane({ onClose, onPopOut, isPoppedOut }: Props) {
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             onKeyDown={(e) => { if (e.key === 'Escape') closeSearch() }}
-            placeholder="Filter quotes..."
-            aria-label="Filter quotes"
+            placeholder={t("Filter quotes...")}
+            aria-label={t("Filter quotes")}
             autoFocus
             style={{
               flex: 1,
@@ -174,32 +175,32 @@ export function QuotesPane({ onClose, onPopOut, isPoppedOut }: Props) {
             }}
           />
         ) : (
-          <span style={{ flex: 1 }}>Quotes</span>
+          <span style={{ flex: 1 }}>{t("Quotes")}</span>
         )}
         {quotes.length > 0 && (
           <button
             className="panel-header-search"
             onClick={() => (searchOpen ? closeSearch() : setSearchOpen(true))}
-            title={searchOpen ? 'Close search' : 'Filter quotes'}
-            aria-label={searchOpen ? 'Close search' : 'Filter quotes'}
+            title={searchOpen ? t("Close search") : t("Filter quotes")}
+            aria-label={searchOpen ? t("Close search") : t("Filter quotes")}
           >
             <Icon icon={searchOpen ? faXmark : faMagnifyingGlass} />
           </button>
         )}
-        {onPopOut && <button className="panel-header-popout" onClick={onPopOut} title={isPoppedOut ? "Pop back in" : "Pop out"} aria-label={isPoppedOut ? "Pop pane back into main window" : "Pop pane out into its own window"}><Icon icon={isPoppedOut ? faDownLeftAndUpRightToCenter : faUpRightFromSquare} /></button>}
-        {onClose && <button className="panel-header-close" onClick={onClose} title="Close panel" aria-label="Close panel"><Icon icon={faXmark} /></button>}
+        {onPopOut && <button className="panel-header-popout" onClick={onPopOut} title={isPoppedOut ? t("Pop back in") : t("Pop out")} aria-label={isPoppedOut ? t("Pop pane back into main window") : t("Pop pane out into its own window")}><Icon icon={isPoppedOut ? faDownLeftAndUpRightToCenter : faUpRightFromSquare} /></button>}
+        {onClose && <button className="panel-header-close" onClick={onClose} title={t("Close panel")} aria-label={t("Close panel")}><Icon icon={faXmark} /></button>}
       </div>
       <div className="panel-content">
         {quotes.length === 0 && (
           <div className="empty-state" style={{ padding: 20, textAlign: 'center', color: 'var(--text-muted)', fontSize: 'var(--font-size-sm)' }}>
-            No quotes yet.
+            {t("No quotes yet.")}
             <br />
-            Right-click a selection in a document and choose "Add as Quote".
+            {t("Right-click a selection in a document and choose \"Add as Quote\".")}
           </div>
         )}
         {quotes.length > 0 && filteredGroups.length === 0 && (
           <div className="empty-state" style={{ padding: 20, textAlign: 'center', color: 'var(--text-muted)', fontSize: 'var(--font-size-sm)' }}>
-            No quotes match "{trimmedSearch}".
+            {t("No quotes match \"")}{trimmedSearch}".
           </div>
         )}
         {filteredGroups.map((group) => {
@@ -290,7 +291,7 @@ export function QuotesPane({ onClose, onPopOut, isPoppedOut }: Props) {
                         maxW={240}
                         maxH={160}
                       />
-                      <span style={{ fontSize: 10, color: 'var(--text-muted)' }}>Page {q.pdfRegion.page}</span>
+                      <span style={{ fontSize: 10, color: 'var(--text-muted)' }}>{t("Page")}{' '}{q.pdfRegion.page}</span>
                     </div>
                   ) : (
                     <span style={{
@@ -336,7 +337,7 @@ export function QuotesPane({ onClose, onPopOut, isPoppedOut }: Props) {
               setContextMenu(null)
             }}
           >
-            Copy Quote
+            {t("Copy Quote")}
           </div>
           <div className="context-menu-separator" />
           <div
@@ -349,7 +350,7 @@ export function QuotesPane({ onClose, onPopOut, isPoppedOut }: Props) {
               removeQuote(contextMenu.guid)
             }}
           >
-            Delete Quote
+            {t("Delete Quote")}
           </div>
         </div>
       )}

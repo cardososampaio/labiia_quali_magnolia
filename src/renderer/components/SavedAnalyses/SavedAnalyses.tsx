@@ -9,6 +9,7 @@ import { TOOL_REGISTRY } from '../../utils/tool-registry'
 import { toolColors } from '../../utils/tool-colors'
 import { makeMapTabId } from '../../utils/tab-ids'
 import { useClampedMenuPosition } from '../../utils/use-clamped-menu-position'
+import { t } from '../../i18n'
 
 interface Props {
   onOpen: (toolType: AnalysisToolType, savedConfig: any) => void
@@ -240,8 +241,8 @@ export function SavedAnalyses({ onOpen, onClose, onPopOut, isPoppedOut, findMemo
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             onKeyDown={(e) => { if (e.key === 'Escape') closeSearch() }}
-            placeholder="Filter analyses..."
-            aria-label="Filter analyses"
+            placeholder={t("Filter analyses...")}
+            aria-label={t("Filter analyses")}
             autoFocus
             style={{
               flex: 1,
@@ -259,32 +260,32 @@ export function SavedAnalyses({ onOpen, onClose, onPopOut, isPoppedOut, findMemo
             }}
           />
         ) : (
-          <span style={{ flex: 1 }}>Analyses</span>
+          <span style={{ flex: 1 }}>{t("Analyses")}</span>
         )}
         {savedAnalyses.length > 0 && (
           <button
             className="panel-header-search"
             onClick={() => (searchOpen ? closeSearch() : setSearchOpen(true))}
-            title={searchOpen ? 'Close search' : 'Filter analyses'}
-            aria-label={searchOpen ? 'Close search' : 'Filter analyses'}
+            title={searchOpen ? t("Close search") : t("Filter analyses")}
+            aria-label={searchOpen ? t("Close search") : t("Filter analyses")}
           >
             <Icon icon={searchOpen ? faXmark : faMagnifyingGlass} />
           </button>
         )}
-        {onPopOut && <button className="panel-header-popout" onClick={onPopOut} title={isPoppedOut ? "Pop back in" : "Pop out"} aria-label={isPoppedOut ? "Pop pane back into main window" : "Pop pane out into its own window"}><Icon icon={isPoppedOut ? faDownLeftAndUpRightToCenter : faUpRightFromSquare} /></button>}
-        {onClose && <button className="panel-header-close" onClick={onClose} title="Close panel" aria-label="Close panel"><Icon icon={faXmark} /></button>}
+        {onPopOut && <button className="panel-header-popout" onClick={onPopOut} title={isPoppedOut ? t("Pop back in") : t("Pop out")} aria-label={isPoppedOut ? t("Pop pane back into main window") : t("Pop pane out into its own window")}><Icon icon={isPoppedOut ? faDownLeftAndUpRightToCenter : faUpRightFromSquare} /></button>}
+        {onClose && <button className="panel-header-close" onClick={onClose} title={t("Close panel")} aria-label={t("Close panel")}><Icon icon={faXmark} /></button>}
       </div>
       <div className="panel-content">
         {savedAnalyses.length === 0 && (
           <div className="empty-state" style={{ padding: 20, textAlign: 'center', color: 'var(--text-muted)', fontSize: 'var(--font-size-sm)' }}>
-            No saved analyses.
+            {t("No saved analyses.")}
             <br />
-            Open an analysis tool and click Save Analysis.
+            {t("Open an analysis tool and click Save Analysis.")}
           </div>
         )}
         {savedAnalyses.length > 0 && filteredGroups.length === 0 && (
           <div className="empty-state" style={{ padding: 20, textAlign: 'center', color: 'var(--text-muted)', fontSize: 'var(--font-size-sm)' }}>
-            No analyses match "{trimmedSearch}".
+            {t("No analyses match \"")}{trimmedSearch}".
           </div>
         )}
         {filteredGroups.map((group, idx) => {
@@ -389,7 +390,7 @@ export function SavedAnalyses({ onOpen, onClose, onPopOut, isPoppedOut, findMemo
                           <Icon
                             icon={MEMO_ICON}
                             style={{ fontSize: 11, color: 'var(--memo-icon-color)', flexShrink: 0, cursor: 'pointer' }}
-                            title="Open memo"
+                            title={t("Open memo")}
                             onClick={(e) => {
                               ;(e as any).stopPropagation()
                               onOpenAnalysisMemo?.(sa.guid)
@@ -426,7 +427,7 @@ export function SavedAnalyses({ onOpen, onClose, onPopOut, isPoppedOut, findMemo
                   setContextMenu(null)
                 }}
               >
-                Open
+                {t("Open")}
               </div>
               <div
                 className="context-menu-item"
@@ -441,7 +442,7 @@ export function SavedAnalyses({ onOpen, onClose, onPopOut, isPoppedOut, findMemo
                   }
                 }}
               >
-                Rename
+                {t("Rename")}
               </div>
               {onOpenAnalysisMemo && (
                 <div
@@ -453,7 +454,7 @@ export function SavedAnalyses({ onOpen, onClose, onPopOut, isPoppedOut, findMemo
                     onOpenAnalysisMemo(contextMenu.guid)
                   }}
                 >
-                  {findMemoGuidForAnalysis?.(contextMenu.guid) ? 'View Memo' : 'Add Memo'}
+                  {findMemoGuidForAnalysis?.(contextMenu.guid) ? t("View Memo") : t("Add Memo")}
                 </div>
               )}
               <div className="context-menu-separator" />
@@ -465,7 +466,7 @@ export function SavedAnalyses({ onOpen, onClose, onPopOut, isPoppedOut, findMemo
             title={lockedBy ? checkoutLockedTitle(lockedBy) : undefined}
             onClick={requestBulkDelete}
           >
-            {selectedGuids.size > 1 ? `Delete ${selectedGuids.size} analyses` : 'Delete'}
+            {selectedGuids.size > 1 ? t("Delete {{size}} analyses", { size: selectedGuids.size }) : t("Delete")}
           </div>
         </div>
       )}
@@ -479,15 +480,15 @@ export function SavedAnalyses({ onOpen, onClose, onPopOut, isPoppedOut, findMemo
         >
           <div className="modal" onClick={(e) => e.stopPropagation()}>
             <h2 style={{ margin: '0 0 12px' }}>
-              {deleteConfirm.length > 1 ? `Delete ${deleteConfirm.length} analyses` : 'Delete analysis'}
+              {deleteConfirm.length > 1 ? t("Delete {{length}} analyses", { length: deleteConfirm.length }) : t("Delete analysis")}
             </h2>
             <p style={{ margin: '0 0 16px', fontSize: 'var(--font-size-sm)' }}>
               {deleteConfirm.length > 1
-                ? `Delete ${deleteConfirm.length} saved analyses? Any of them currently open in a tab or window will be closed. This cannot be undone.`
-                : `Delete "${deleteConfirm[0].name}"? If it's currently open, it will be closed. This cannot be undone.`}
+                ? t("Delete {{length}} saved analyses? Any of them currently open in a tab or window will be closed. This cannot be undone.", { length: deleteConfirm.length })
+                : t("Delete \"{{name}}\"? If it's currently open, it will be closed. This cannot be undone.", { name: deleteConfirm[0].name })}
             </p>
             <div className="modal-actions">
-              <button className="secondary" onClick={() => setDeleteConfirm(null)}>Cancel</button>
+              <button className="secondary" onClick={() => setDeleteConfirm(null)}>{t("Cancel")}</button>
               <button
                 style={{ background: 'var(--danger)' }}
                 onClick={() => {
@@ -499,7 +500,7 @@ export function SavedAnalyses({ onOpen, onClose, onPopOut, isPoppedOut, findMemo
                   if (toDelete) deleteAnalyses(toDelete)
                 }}
               >
-                Delete
+                {t("Delete")}
               </button>
             </div>
           </div>

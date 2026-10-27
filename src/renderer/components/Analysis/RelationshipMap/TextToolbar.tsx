@@ -1,5 +1,6 @@
 import type { Editor } from '@tiptap/react'
 import { Icon, faBold, faItalic, faUnderline, faHeading1, faHeading2 } from '../../Icon'
+import { t } from '../../../i18n'
 
 interface Props {
   editor: Editor | null
@@ -65,14 +66,14 @@ export function TextToolbar({ editor }: Props) {
       <ToolbarButton
         active={editor.isActive('heading', { level: 1 })}
         onClick={() => editor.chain().focus().toggleHeading({ level: 1 }).run()}
-        title="Heading 1"
+        title={t("Heading 1")}
       >
         <Icon icon={faHeading1} style={{ fontSize: 14 }} />
       </ToolbarButton>
       <ToolbarButton
         active={editor.isActive('heading', { level: 2 })}
         onClick={() => editor.chain().focus().toggleHeading({ level: 2 }).run()}
-        title="Heading 2"
+        title={t("Heading 2")}
       >
         <Icon icon={faHeading2} style={{ fontSize: 14 }} />
       </ToolbarButton>
@@ -83,21 +84,21 @@ export function TextToolbar({ editor }: Props) {
       <ToolbarButton
         active={editor.isActive('bold')}
         onClick={() => editor.chain().focus().toggleBold().run()}
-        title="Bold"
+        title={t("Bold")}
       >
         <Icon icon={faBold} style={{ fontSize: 14 }} />
       </ToolbarButton>
       <ToolbarButton
         active={editor.isActive('italic')}
         onClick={() => editor.chain().focus().toggleItalic().run()}
-        title="Italic"
+        title={t("Italic")}
       >
         <Icon icon={faItalic} style={{ fontSize: 14 }} />
       </ToolbarButton>
       <ToolbarButton
         active={editor.isActive('underline')}
         onClick={() => editor.chain().focus().toggleUnderline().run()}
-        title="Underline"
+        title={t("Underline")}
       >
         <Icon icon={faUnderline} style={{ fontSize: 14 }} />
       </ToolbarButton>
@@ -123,10 +124,10 @@ export function TextToolbar({ editor }: Props) {
           cursor: 'pointer'
         }}
       >
-        <option value="">Size</option>
+        <option value="">{t("Size")}</option>
         {FONT_SIZES.map((s) => (
           <option key={s} value={s}>
-            {s}px
+            {s}{t("px")}
           </option>
         ))}
       </select>

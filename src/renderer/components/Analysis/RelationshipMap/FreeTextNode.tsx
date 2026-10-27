@@ -7,6 +7,7 @@ import { TextStyle } from '@tiptap/extension-text-style'
 import { Color } from '@tiptap/extension-color'
 import type { FreeTextElement } from './types'
 import { FREE_TEXT_DEFAULT_WIDTH, FREE_TEXT_DEFAULT_HEIGHT } from './types'
+import { t } from '../../../i18n'
 
 interface Props {
   freeText: FreeTextElement
@@ -350,7 +351,7 @@ export function FreeTextNode({ freeText, selected, focused, zoom, onMouseDown, o
       />
       {!focused && !freeText.content && (
         <div style={{ position: 'absolute', inset: 4, fontSize: 12, color: 'var(--text-muted, #8e8e93)', pointerEvents: 'none' }}>
-          Double-click to edit
+          {t("Double-click to edit")}
         </div>
       )}
       {showHandles && ALL_HANDLES.map((pos) => (
@@ -369,8 +370,8 @@ export function FreeTextNode({ freeText, selected, focused, zoom, onMouseDown, o
             e.preventDefault()
             onConnectorMouseDown(e, freeText.id)
           }}
-          title="Drag to connect"
-          aria-label="Drag to connect this text to another node"
+          title={t("Drag to connect")}
+          aria-label={t("Drag to connect this text to another node")}
           style={{
             position: 'absolute',
             right: -16,

@@ -1,6 +1,7 @@
 import { Icon, faExclamationTriangle } from '../Icon'
 import { useProjectStore } from '../../stores/project-store'
 import { usePreferencesStore } from '../../stores/preferences-store'
+import { t } from '../../i18n'
 
 /** Toolbar checkout-lock alert. Checkout itself is now automatic (first
  *  edit auto-claims the lock — see App.tsx's dirty-transition effect) and
@@ -41,7 +42,7 @@ export function CheckOutButton(): JSX.Element | null {
         }}
       >
         <Icon icon={faExclamationTriangle} />
-        <span className="toolbar-label" style={{ whiteSpace: 'nowrap' }}>Locked</span>
+        <span className="toolbar-label" style={{ whiteSpace: 'nowrap' }}>{t("Locked")}</span>
       </button>
     </div>
   )

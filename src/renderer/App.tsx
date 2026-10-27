@@ -31,14 +31,14 @@ import type { CodebookInitData, QueryResultsInitData } from './models/types'
 /** Human-readable tool names — used for the per-tool ad-hoc tab titles
  *  ("Code Frequencies (3)") and elsewhere. */
 const ANALYSIS_TOOL_TITLES: Record<string, string> = {
-  'code-cooccurrences': 'Code Co-Occurrences',
-  'codes-in-documents': 'Codes in Documents',
-  'framework-matrix': 'Framework Matrix',
-  'results-in-documents': 'Results in Documents',
-  'code-frequencies': 'Code Frequencies',
-  'code-orders': 'Code Orders',
-  'word-frequencies': 'Word Frequencies',
-  'reports': 'Report'
+  'code-cooccurrences': t("Code Co-Occurrences"),
+  'codes-in-documents': t("Codes in Documents"),
+  'framework-matrix': t("Framework Matrix"),
+  'results-in-documents': t("Results in Documents"),
+  'code-frequencies': t("Code Frequencies"),
+  'code-orders': t("Code Orders"),
+  'word-frequencies': t("Word Frequencies"),
+  'reports': t("Report")
 }
 
 /** Flatten a code tree, tagging each code with its parent guid */
@@ -74,12 +74,14 @@ import { requestPreferencesCategory } from './components/Preferences/Preferences
 import type { PersistedTab, PersistedTabState, MissingBinary, CheckoutMarker } from './models/types'
 import { MissingBinariesBanner } from './components/MissingBinariesBanner'
 import { CheckoutConflictDialog } from './components/CheckoutConflictDialog'
+import { QuickCoding } from './components/QuickCoding/QuickCoding'
 import { StealBackDialog } from './components/StealBackDialog'
 import { NameGateOverlay } from './components/NameGateOverlay'
 import { CheckOutButton } from './components/Toolbar/CheckOutButton'
 // ES import so Vite bundles + hashes the Magnolia toolbar icon for production.
-import magnoliaIconUrl from './assets/magnoliaicononly.svg'
+import labiiaIconUrl from './assets/labiia-icon.png'
 import { usePendingSelectionStore } from './stores/pending-selection-store'
+import { applyCodeToSelection } from './utils/apply-coding'
 import { useNewCodeTriggerStore } from './stores/new-code-trigger-store'
 import { generateGuid } from './utils/guid'
 import { ProjectDetailsDialog } from './components/ProjectDetails/ProjectDetailsDialog'
@@ -92,6 +94,7 @@ import { HelpPopover } from './components/Toolbar/HelpPopover'
 import { WindowControls } from './components/Toolbar/WindowControls'
 import type { Project, Query, CodeCondition, Code, TextSource, QDASet, LogbookInitData, AnalysisInitData, AnalysisToolType, PlainTextSelection, Memo, MemoEditInitData, SurveyCellScopeArgs } from './models/types'
 import { buildSurveyEntityLabels } from './utils/survey/survey-labels'
+import { t } from './i18n'
 
 /** Fold the survey-cell scope carried by an analysis cell-click into the
  *  documentFilter of the Query being generated, so it re-runs against the
@@ -113,12 +116,12 @@ function applySurveyScopeToFilter(
 
 function describeCondition(cond: CodeCondition, findCode: (guid: string) => Code | undefined, depth?: number): string {
   const d = depth ?? 0
-  const codeName = (guid: string) => findCode(guid)?.name ?? 'Code'
+  const codeName = (guid: string) => findCode(guid)?.name ?? t("Code")
   switch (cond.type) {
     case 'code':
       return codeName(cond.codeGuid) + (cond.includeSubcodes ? ' (incl. subcodes)' : '')
     case 'text':
-      return cond.searchText ? `"${cond.searchText}"` : 'Text'
+      return cond.searchText ? `"${cond.searchText}"` : t("Text")
     case 'and':
       return cond.conditions.map((c) => describeCondition(c, findCode, d + 1)).join(' AND ')
     case 'or':
@@ -136,9 +139,9 @@ function describeCondition(cond: CodeCondition, findCode: (guid: string) => Code
     case 'before':
       return `(${describeCondition(cond.condition1, findCode, d + 1)}) before (${describeCondition(cond.condition2, findCode, d + 1)})`
     case 'followedBy':
-      return `(${describeCondition(cond.condition1, findCode, d + 1)}) followed by (${describeCondition(cond.condition2, findCode, d + 1)})`
+      return t("({{x0}}) followed by ({{x1}})", { x0: describeCondition(cond.condition1, findCode, d + 1), x1: describeCondition(cond.condition2, findCode, d + 1) })
     default:
-      return 'Query'
+      return t("Query")
   }
 }
 
@@ -257,7 +260,7 @@ function App() {
           }
         ])
       } catch (err: any) {
-        window.alert(`Could not parse ${suggestedName}:\n\n${err?.message || String(err)}`)
+        window.alert(t("Could not parse {{suggestedName}}:\n\n{{x1}}", { suggestedName: suggestedName, x1: err?.message || String(err) }))
       }
     },
     []
@@ -456,7 +459,7 @@ function App() {
     // Saved relationship maps open as a tab.
     if (toolType === 'relationship-map') {
       const guid = savedConfig?.guid
-      const name = savedConfig?.name ?? 'Relationship Map'
+      const name = savedConfig?.name ?? t("Relationship Map")
       if (guid) {
         const rmStore = useRelationshipMapStore.getState()
         rmStore.loadSavedMap(guid, name, {
@@ -491,7 +494,7 @@ function App() {
     ats.add(tabId, {
       toolType: toolType as any,
       savedAnalysisGuid: savedGuid,
-      title: savedConfig?.name ?? 'Analysis',
+      title: savedConfig?.name ?? t("Analysis"),
       config: savedConfig,
       poppedOut: false
     })
@@ -751,8 +754,8 @@ function App() {
     const userGuid = generateGuid()
     projectStore.loadProject({
       name: projectName,
-      origin: `Magnolia ${__APP_VERSION__}`,
-      users: [{ guid: userGuid, name: 'User' }],
+      origin: `labiia_quali ${__APP_VERSION__}`,
+      users: [{ guid: userGuid, name: t("User") }],
       creatingUserGUID: userGuid,
       creationDateTime: new Date().toISOString(),
       filePath,
@@ -784,7 +787,7 @@ function App() {
     if (!filePath) return
     loadInProgressRef.current = true
     cancelPendingAutoSave()
-    setLoadProgress({ stage: 'Opening project…', current: 0, total: 0 })
+    setLoadProgress({ stage: t("Opening project…"), current: 0, total: 0 })
     try {
       setMissingBinaries([])
       const data = await window.api.openProjectPath(filePath)
@@ -803,7 +806,7 @@ function App() {
       const { sourceContents, ...project } = data
       const steps: { label: string; run: () => void }[] = [
         {
-          label: 'Project metadata',
+          label: t("Project metadata"),
           run: () =>
             projectStore.loadProject({
               name: project.name,
@@ -818,32 +821,32 @@ function App() {
               savedAnalyses: project.savedAnalyses
             })
         },
-        { label: 'Documents', run: () => documentStore.setSources(project.sources, sourceContents) },
-        { label: 'Folders', run: () => documentStore.setFolders((project as any).folders ?? [], (project as any).sourceFolder ?? {}) },
-        { label: 'Codes', run: () => codeStore.setCodes(project.codes) },
+        { label: t("Documents"), run: () => documentStore.setSources(project.sources, sourceContents) },
+        { label: t("Folders"), run: () => documentStore.setFolders((project as any).folders ?? [], (project as any).sourceFolder ?? {}) },
+        { label: t("Codes"), run: () => codeStore.setCodes(project.codes) },
         {
-          label: 'Tags',
+          label: t("Tags"),
           run: () => {
             tagStore.setTags(project.sets)
             tagStore.setCategories(project.tagCategories ?? [])
           }
         },
         {
-          label: 'Queries',
+          label: t("Queries"),
           run: () => {
             queryStore.clearQuery()
             queryStore.setSavedQueries(project.savedQueries ?? [])
           }
         },
-        { label: 'Logbook', run: () => logbookStore.setEntries(project.logbookEntries ?? []) },
-        { label: 'Memos', run: () => memoStore.setMemos(project.memos ?? []) },
-        { label: 'Quotes', run: () => useQuoteStore.getState().setQuotes(project.quotes ?? []) },
+        { label: t("Logbook"), run: () => logbookStore.setEntries(project.logbookEntries ?? []) },
+        { label: t("Memos"), run: () => memoStore.setMemos(project.memos ?? []) },
+        { label: t("Quotes"), run: () => useQuoteStore.getState().setQuotes(project.quotes ?? []) },
         // Tabs runs LAST so it can validate ids against every store
         // populated above (sources, savedAnalyses, etc.).
-        { label: 'Tabs', run: () => restoreTabState((project as any).tabState) }
+        { label: t("Tabs"), run: () => restoreTabState((project as any).tabState) }
       ]
       for (let i = 0; i < steps.length; i++) {
-        setLoadProgress({ stage: `Populating ${steps[i].label}`, current: i + 1, total: steps.length })
+        setLoadProgress({ stage: t("Populating {{label}}", { label: steps[i].label }), current: i + 1, total: steps.length })
         // Yield so React paints the progress bar update and browser repaints
         // before the synchronous store-set triggers a heavy re-render.
         await new Promise((r) => setTimeout(r, 0))
@@ -1310,7 +1313,7 @@ function App() {
       addedDirect = true
     }
     if (errors.length > 0) {
-      window.alert(`Could not import ${errors.length} file${errors.length > 1 ? 's' : ''}:\n\n${errors.join('\n')}`)
+      window.alert(t("Could not import {{length}} file{{x1}}:\n\n{{x2}}", { length: errors.length, x1: errors.length > 1 ? 's' : '', x2: errors.join('\n') }))
     }
     flushImportSave(addedDirect)
   }, [documentStore, queueSurveyImport, flushImportSave, checkoutLockedBy, setCheckoutConflict])
@@ -1360,7 +1363,7 @@ function App() {
       addedDirect = true
     }
     if (errors.length > 0) {
-      window.alert(`Could not import ${errors.length} file${errors.length > 1 ? 's' : ''}:\n\n${errors.join('\n')}`)
+      window.alert(t("Could not import {{length}} file{{x1}}:\n\n{{x2}}", { length: errors.length, x1: errors.length > 1 ? 's' : '', x2: errors.join('\n') }))
     }
     flushImportSave(addedDirect)
   }, [documentStore, queueSurveyImport, flushImportSave, checkoutLockedBy, setCheckoutConflict])
@@ -1385,7 +1388,7 @@ function App() {
       ats.add(tabId, {
         toolType: 'query-builder',
         savedAnalysisGuid: editSavedQueryGuid,
-        title: sq?.name ?? 'Query Builder',
+        title: sq?.name ?? t("Query Builder"),
         config: { editSavedQueryGuid },
         poppedOut: false
       })
@@ -1406,7 +1409,7 @@ function App() {
     const counter = ats.nextCounter('query-builder')
     ats.add(tabId, {
       toolType: 'query-builder',
-      title: `Query Builder (${counter})`,
+      title: t("Query Builder ({{counter}})", { counter: counter }),
       config: editCurrentQuery ? { editCurrentQuery: true } : undefined,
       poppedOut: false
     })
@@ -1532,85 +1535,7 @@ function App() {
     // click.
     if (guid) {
       const ps = usePendingSelectionStore.getState().selection
-      if (ps?.kind === 'text') {
-        const ds = useDocumentStore.getState()
-        const src = ds.sources.find((s) => s.guid === ps.sourceGuid)
-        const existingSel = src?.selections.find(
-          (s) => s.startPosition === ps.startCp && s.endPosition === ps.endCp
-        )
-        if (existingSel) {
-          if (!existingSel.codings.some((c) => c.codeGuid === guid)) {
-            ds.addCodingToSelection(ps.sourceGuid, existingSel.guid, guid)
-          }
-        } else {
-          const truncatedName = ps.selectedText.length > 60
-            ? ps.selectedText.slice(0, 57) + '...'
-            : ps.selectedText
-          const selGuid = ds.addSelection(ps.sourceGuid, ps.startCp, ps.endCp, truncatedName)
-          ds.addCodingToSelection(ps.sourceGuid, selGuid, guid)
-        }
-      } else if (ps?.kind === 'survey-cell') {
-        // Survey-cell pending: apply the freshly-created code to
-        // every cell in the (possibly multi-cell) pending selection.
-        // Same reuse-an-existing-selection-on-the-same-bounds rule
-        // as the text branch, so multiple "+ Code" rounds stack
-        // codings on the same cell range rather than piling up
-        // duplicate selection rows.
-        const ds = useDocumentStore.getState()
-        for (const cell of ps.cells) {
-          const src = ds.sources.find((s) => s.guid === ps.sourceGuid)
-          const existingSel = src?.selections.find(
-            (s) =>
-              s.surveyCell &&
-              s.surveyCell.respondentId === cell.respondentId &&
-              s.surveyCell.questionId === cell.questionId &&
-              s.startPosition === cell.start &&
-              s.endPosition === cell.end
-          )
-          if (existingSel) {
-            if (!existingSel.codings.some((c) => c.codeGuid === guid)) {
-              ds.addCodingToSelection(ps.sourceGuid, existingSel.guid, guid)
-            }
-          } else {
-            const truncatedName = cell.selectedText.length > 60
-              ? cell.selectedText.slice(0, 57) + '...'
-              : cell.selectedText
-            const selGuid = ds.addSelection(
-              ps.sourceGuid,
-              cell.start,
-              cell.end,
-              truncatedName,
-              undefined,
-              { respondentId: cell.respondentId, questionId: cell.questionId }
-            )
-            ds.addCodingToSelection(ps.sourceGuid, selGuid, guid)
-          }
-        }
-      } else if (ps?.kind === 'region') {
-        const ds = useDocumentStore.getState()
-        const src = ds.sources.find((s) => s.guid === ps.sourceGuid)
-        // Match an existing region selection within a half-pixel
-        // tolerance (matches the viewer's own applyCodingToRegion
-        // behaviour) so repeated "+ Code" rounds stack on the same
-        // region.
-        const r = ps.pdfRegion
-        const existingSel = src?.selections.find(
-          (s) => s.pdfRegion &&
-            s.pdfRegion.page === r.page &&
-            Math.abs(s.pdfRegion.x - r.x) < 0.5 &&
-            Math.abs(s.pdfRegion.y - r.y) < 0.5 &&
-            Math.abs(s.pdfRegion.width - r.width) < 0.5 &&
-            Math.abs(s.pdfRegion.height - r.height) < 0.5
-        )
-        if (existingSel) {
-          if (!existingSel.codings.some((c) => c.codeGuid === guid)) {
-            ds.addCodingToSelection(ps.sourceGuid, existingSel.guid, guid)
-          }
-        } else {
-          const selGuid = ds.addSelection(ps.sourceGuid, 0, 0, `Region p${r.page}`, r)
-          ds.addCodingToSelection(ps.sourceGuid, selGuid, guid)
-        }
-      }
+      if (ps) applyCodeToSelection(ps, guid)
     }
   }, [codeStore, pendingCodeAllNewCode])
 
@@ -1643,7 +1568,7 @@ function App() {
           handleNewCode()
           break
         case 'new-doc-folder':
-          documentStore.addFolder('New Folder')
+          documentStore.addFolder(t("New Folder"))
           break
         case 'manage-doc-tags':
           setShowManageDocTags(true)
@@ -1783,7 +1708,7 @@ function App() {
 
   // Update window title with project file name and dirty indicator
   useEffect(() => {
-    let name = 'Untitled Project'
+    let name = t("Untitled Project")
     if (projectStore.filePath) {
       // Extract filename without extension from the file path
       const parts = projectStore.filePath.replace(/\\/g, '/').split('/')
@@ -1792,8 +1717,8 @@ function App() {
     } else if (projectStore.name) {
       name = projectStore.name
     }
-    const dirty = projectStore.isDirty ? ' — Edited' : ''
-    document.title = `${name}${dirty} — Magnolia`
+    const dirty = projectStore.isDirty ? t(" — Edited") : ''
+    document.title = `${name}${dirty} — labiia_quali`
   }, [projectStore.name, projectStore.filePath, projectStore.isDirty])
 
   // Listen for memo updates from the memo edit window
@@ -2027,7 +1952,7 @@ function App() {
     const unsub = window.api.onOpenRecentProject(async (filePath) => {
       loadInProgressRef.current = true
       cancelPendingAutoSave()
-      setLoadProgress({ stage: 'Opening project…', current: 0, total: 0 })
+      setLoadProgress({ stage: t("Opening project…"), current: 0, total: 0 })
       setMissingBinaries([])
       try {
         const data = await window.api.openProjectPath(filePath)
@@ -2042,7 +1967,7 @@ function App() {
         const { sourceContents, ...project } = data
         const steps: { label: string; run: () => void }[] = [
           {
-            label: 'Project metadata',
+            label: t("Project metadata"),
             run: () =>
               useProjectStore.getState().loadProject({
                 name: project.name,
@@ -2057,30 +1982,30 @@ function App() {
                 savedAnalyses: project.savedAnalyses
               })
           },
-          { label: 'Documents', run: () => useDocumentStore.getState().setSources(project.sources, sourceContents) },
-          { label: 'Folders', run: () => useDocumentStore.getState().setFolders((project as any).folders ?? [], (project as any).sourceFolder ?? {}) },
-          { label: 'Codes', run: () => useCodeStore.getState().setCodes(project.codes) },
+          { label: t("Documents"), run: () => useDocumentStore.getState().setSources(project.sources, sourceContents) },
+          { label: t("Folders"), run: () => useDocumentStore.getState().setFolders((project as any).folders ?? [], (project as any).sourceFolder ?? {}) },
+          { label: t("Codes"), run: () => useCodeStore.getState().setCodes(project.codes) },
           {
-            label: 'Tags',
+            label: t("Tags"),
             run: () => {
               useTagStore.getState().setTags(project.sets)
               useTagStore.getState().setCategories(project.tagCategories ?? [])
             }
           },
           {
-            label: 'Queries',
+            label: t("Queries"),
             run: () => {
               useQueryStore.getState().clearQuery()
               useQueryStore.getState().setSavedQueries(project.savedQueries ?? [])
             }
           },
-          { label: 'Logbook', run: () => useLogbookStore.getState().setEntries(project.logbookEntries ?? []) },
-          { label: 'Memos', run: () => useMemoStore.getState().setMemos(project.memos ?? []) },
-          { label: 'Quotes', run: () => useQuoteStore.getState().setQuotes(project.quotes ?? []) },
-          { label: 'Tabs', run: () => restoreTabState((project as any).tabState) }
+          { label: t("Logbook"), run: () => useLogbookStore.getState().setEntries(project.logbookEntries ?? []) },
+          { label: t("Memos"), run: () => useMemoStore.getState().setMemos(project.memos ?? []) },
+          { label: t("Quotes"), run: () => useQuoteStore.getState().setQuotes(project.quotes ?? []) },
+          { label: t("Tabs"), run: () => restoreTabState((project as any).tabState) }
         ]
         for (let i = 0; i < steps.length; i++) {
-          setLoadProgress({ stage: `Populating ${steps[i].label}`, current: i + 1, total: steps.length })
+          setLoadProgress({ stage: t("Populating {{label}}", { label: steps[i].label }), current: i + 1, total: steps.length })
           await new Promise((r) => setTimeout(r, 0))
           steps[i].run()
         }
@@ -2161,7 +2086,7 @@ function App() {
       const myName = usePreferencesStore.getState().userName.trim()
       const currentMarker = ps.filePath ? await window.api.readCheckoutMarker(ps.filePath) : null
       if (currentMarker && myName && currentMarker.userName === myName && ps.filePath) {
-        setLoadProgress({ stage: 'Releasing control…', current: 0, total: 0 })
+        setLoadProgress({ stage: t("Releasing control…"), current: 0, total: 0 })
         try {
           await Promise.all([
             window.api.checkInProject(ps.filePath, myName),
@@ -2186,8 +2111,8 @@ function App() {
       const userGuid = ps.users[0]?.guid ?? generateGuid()
       ps.loadProject({
         name: projectName,
-        origin: `Magnolia ${__APP_VERSION__}`,
-        users: [{ guid: userGuid, name: 'User' }],
+        origin: `labiia_quali ${__APP_VERSION__}`,
+        users: [{ guid: userGuid, name: t("User") }],
         creatingUserGUID: userGuid,
         creationDateTime: new Date().toISOString(),
         filePath,
@@ -2407,7 +2332,7 @@ function App() {
             ? saved.name
             : describeQuery(qs.currentQuery!, codeStore.findCode, documentStore.sources, tagStore.tags)
         })()
-      : 'Query Results'
+      : t("Query Results")
     const isUnsaved = qs.isActive && qs.currentQuery
       ? !qs.savedQueries.some((sq) => JSON.stringify(sq.query) === JSON.stringify(qs.currentQuery))
       : false
@@ -2558,31 +2483,16 @@ function App() {
             gap: 8
           }}
         >
-          <div
-            aria-label="Magnolia"
-            // Masked so the icon is themed to the toolbar's icon hue, like
-            // the old wordmark. viewBox 42×49 (~0.857:1) → 21×24 fills the
-            // box with no padding at the original ~24px height.
-            style={{
-              width: 21,
-              height: 24,
-              flexShrink: 0,
-              background: 'var(--text-secondary)',
-              WebkitMaskImage: `url("${magnoliaIconUrl}")`,
-              maskImage: `url("${magnoliaIconUrl}")`,
-              WebkitMaskRepeat: 'no-repeat',
-              maskRepeat: 'no-repeat',
-              WebkitMaskSize: 'contain',
-              maskSize: 'contain',
-              WebkitMaskPosition: 'center',
-              maskPosition: 'center',
-              pointerEvents: 'none'
-            }}
+          <img
+            src={labiiaIconUrl}
+            alt={t("labiia_quali")}
+            draggable={false}
+            style={{ width: 24, height: 24, flexShrink: 0, pointerEvents: 'none' }}
           />
           <button
             type="button"
             className="app-toolbar-btn"
-            title="Project info"
+            title={t("Project info")}
             onClick={() => setShowProjectDetails(true)}
             style={{
               border: 'none',
@@ -2660,10 +2570,10 @@ function App() {
           <div className="app-toolbar-scroll-inner" style={{ display: 'flex', alignItems: 'center', gap: 10, margin: '0 auto' }}>
           <div className="app-toolbar-pill" style={TOOLBAR_PILL_STYLE}>
           {[
-            { icon: faSquareArrowRightEnter, label: 'Import', action: () => handleImportDocument(), locks: true },
-            { icon: faBook, label: 'Codebook', action: () => openCodebook() },
-            { icon: faNotebookPen, label: 'Logbook', action: () => openLogbook() },
-            { icon: faTags, label: 'Tags', action: () => setShowManageDocTags(true) }
+            { icon: faSquareArrowRightEnter, label: t("Import"), action: () => handleImportDocument(), locks: true },
+            { icon: faBook, label: t("Codebook"), action: () => openCodebook() },
+            { icon: faNotebookPen, label: t("Logbook"), action: () => openLogbook() },
+            { icon: faTags, label: t("Tags"), action: () => setShowManageDocTags(true) }
           ].map((item, idx) => {
             const itemLocked = !!(item as { locks?: boolean }).locks && !!checkoutLockedBy
             return [
@@ -2712,7 +2622,7 @@ function App() {
           <div className="app-toolbar-pill" style={TOOLBAR_PILL_STYLE}>
             <button
               className="app-toolbar-btn"
-              title="Merge a project into this one"
+              title={t("Merge a project into this one")}
               onClick={() => handleMergeProject()}
               style={{
                 display: 'flex',
@@ -2741,7 +2651,7 @@ function App() {
                   "merge" toward the currently-open project, the reverse
                   direction of a git merge arrow, hence the flip. */}
               <Icon icon={faGitMerge} style={{ fontSize: 20, transform: 'scale(-1, -1)' }} />
-              <span className="toolbar-label" style={{ fontSize: 9, whiteSpace: 'nowrap', fontWeight: 400 }}>Merge</span>
+              <span className="toolbar-label" style={{ fontSize: 9, whiteSpace: 'nowrap', fontWeight: 400 }}>{t("Merge")}</span>
             </button>
           </div>
 
@@ -2753,7 +2663,7 @@ function App() {
               wrong. */}
           <button
             className="app-toolbar-btn"
-            title="Query"
+            title={t("Query")}
             onClick={() => openQueryBuilder()}
             style={{
               display: 'flex',
@@ -2778,7 +2688,7 @@ function App() {
             }}
           >
             <Icon icon={faMagnifyingGlass} style={{ fontSize: 20 }} />
-            <span className="toolbar-label" style={{ fontSize: 9, whiteSpace: 'nowrap', fontWeight: 400, color: 'var(--text-secondary)', transition: 'color 0.12s' }}>Query</span>
+            <span className="toolbar-label" style={{ fontSize: 9, whiteSpace: 'nowrap', fontWeight: 400, color: 'var(--text-secondary)', transition: 'color 0.12s' }}>{t("Query")}</span>
           </button>
 
           <ToolbarDivider />
@@ -2798,12 +2708,12 @@ function App() {
               without this a closed panel could never be reopened. */}
           <StudioPopover
             panels={[
-              { id: 'documents', label: 'Documents', visible: panelVisibility.documents },
-              { id: 'codes', label: 'Codes', visible: panelVisibility.codes },
-              { id: 'queries', label: 'Queries', visible: !queryResultsClosed },
-              { id: 'memos', label: 'Memos', visible: panelVisibility.memos },
-              { id: 'quotes', label: 'Quotes', visible: panelVisibility.quotes },
-              { id: 'analyses', label: 'Analyses', visible: panelVisibility.analyses },
+              { id: 'documents', label: t("Documents"), visible: panelVisibility.documents },
+              { id: 'codes', label: t("Codes"), visible: panelVisibility.codes },
+              { id: 'queries', label: t("Queries"), visible: !queryResultsClosed },
+              { id: 'memos', label: t("Memos"), visible: panelVisibility.memos },
+              { id: 'quotes', label: t("Quotes"), visible: panelVisibility.quotes },
+              { id: 'analyses', label: t("Analyses"), visible: panelVisibility.analyses },
             ]}
             onToggle={(id) => {
               if (id === 'queries') setQueryResultsClosed((prev) => !prev)
@@ -2816,8 +2726,8 @@ function App() {
               nudge dot (jumps straight to Settings → Updates when set). */}
           <button
             className="app-toolbar-btn"
-            title={updateBadgeAvailable ? 'A new version is available — open Preferences → Updates' : 'Preferences'}
-            aria-label={updateBadgeAvailable ? 'Open Preferences — update available' : 'Open Preferences'}
+            title={updateBadgeAvailable ? t("A new version is available — open Preferences → Updates") : t("Preferences")}
+            aria-label={updateBadgeAvailable ? t("Open Preferences — update available") : t("Open Preferences")}
             onClick={() => {
               if (updateBadgeAvailable) requestPreferencesCategory('updates')
               useDocumentStore.getState().openToolTab(PREFERENCES_TAB_ID)
@@ -2847,7 +2757,7 @@ function App() {
             }}
           >
             <Icon icon={faGear} style={{ fontSize: 20 }} />
-            <span className="toolbar-label" style={{ fontSize: 9, whiteSpace: 'nowrap', fontWeight: 400 }}>Preferences</span>
+            <span className="toolbar-label" style={{ fontSize: 9, whiteSpace: 'nowrap', fontWeight: 400 }}>{t("Preferences")}</span>
             {updateBadgeAvailable && (
               // Update-available nudge dot, anchored to the Settings button.
               <span
@@ -2927,7 +2837,7 @@ function App() {
                     if (panels.length > 0) panels.push(<PanelResizeHandle key="rh-d" style={rh} />)
                     panels.push(
                       <Panel key="documents" defaultSize={35} minSize={15}>
-                        <div style={{ height: '100%', opacity: mergeActive ? 0.62 : 1, pointerEvents: mergeActive ? 'none' : undefined, transition: 'opacity 0.15s' }} title={mergeActive ? 'Finish or cancel the merge to use other panels' : undefined} onMouseDown={() => setActivePanel('documents')}>
+                        <div style={{ height: '100%', opacity: mergeActive ? 0.62 : 1, pointerEvents: mergeActive ? 'none' : undefined, transition: 'opacity 0.15s' }} title={mergeActive ? t("Finish or cancel the merge to use other panels") : undefined} onMouseDown={() => setActivePanel('documents')}>
                           <DocumentBrowser
                             onImport={handleImportDocument}
                             onSurveyImport={queueSurveyImport}
@@ -2944,7 +2854,7 @@ function App() {
                     if (panels.length > 0) panels.push(<PanelResizeHandle key="rh-c" style={rh} />)
                     panels.push(
                       <Panel key="codes" defaultSize={35} minSize={15}>
-                        <div style={{ height: '100%', opacity: (reportsToolActive || mergeActive) ? 0.62 : 1, pointerEvents: (reportsToolActive || mergeActive) ? 'none' : undefined, transition: 'opacity 0.15s' }} title={mergeActive ? 'Finish or cancel the merge to use other panels' : reportsToolActive ? 'Codes can’t be added to a report' : undefined} onMouseDown={() => setActivePanel('codes')}>
+                        <div style={{ height: '100%', opacity: (reportsToolActive || mergeActive) ? 0.62 : 1, pointerEvents: (reportsToolActive || mergeActive) ? 'none' : undefined, transition: 'opacity 0.15s' }} title={mergeActive ? t("Finish or cancel the merge to use other panels") : reportsToolActive ? t("Codes can’t be added to a report") : undefined} onMouseDown={() => setActivePanel('codes')}>
                           <CodeBrowser onNewCode={handleNewCode} onClose={() => closePanel('codes')} />
                         </div>
                       </Panel>
@@ -2987,7 +2897,7 @@ function App() {
                     if (panels.length > 0) panels.push(<PanelResizeHandle key="rh-m" style={rh} />)
                     panels.push(
                       <Panel key="memos" defaultSize={33} minSize={15}>
-                        <div style={{ height: '100%', opacity: mergeActive ? 0.62 : 1, pointerEvents: mergeActive ? 'none' : undefined, transition: 'opacity 0.15s' }} title={mergeActive ? 'Finish or cancel the merge to use other panels' : undefined}>
+                        <div style={{ height: '100%', opacity: mergeActive ? 0.62 : 1, pointerEvents: mergeActive ? 'none' : undefined, transition: 'opacity 0.15s' }} title={mergeActive ? t("Finish or cancel the merge to use other panels") : undefined}>
                           <MemosPane onClose={() => closePanel('memos')} />
                         </div>
                       </Panel>
@@ -2997,7 +2907,7 @@ function App() {
                     if (panels.length > 0) panels.push(<PanelResizeHandle key="rh-qt" style={rh} />)
                     panels.push(
                       <Panel key="quotes" defaultSize={33} minSize={15}>
-                        <div style={{ height: '100%', opacity: (queryBuilderActive || mergeActive) ? 0.62 : 1, pointerEvents: (queryBuilderActive || mergeActive) ? 'none' : undefined, transition: 'opacity 0.15s' }} title={mergeActive ? 'Finish or cancel the merge to use other panels' : queryBuilderActive ? 'Quotes can’t be added to a query' : undefined}>
+                        <div style={{ height: '100%', opacity: (queryBuilderActive || mergeActive) ? 0.62 : 1, pointerEvents: (queryBuilderActive || mergeActive) ? 'none' : undefined, transition: 'opacity 0.15s' }} title={mergeActive ? t("Finish or cancel the merge to use other panels") : queryBuilderActive ? t("Quotes can’t be added to a query") : undefined}>
                           <QuotesPane onClose={() => closePanel('quotes')} />
                         </div>
                       </Panel>
@@ -3007,7 +2917,7 @@ function App() {
                     if (panels.length > 0) panels.push(<PanelResizeHandle key="rh-a" style={rh} />)
                     panels.push(
                       <Panel key="analyses" defaultSize={34} minSize={15}>
-                        <div style={{ height: '100%', opacity: (queryBuilderActive || mergeActive) ? 0.62 : 1, pointerEvents: (queryBuilderActive || mergeActive) ? 'none' : undefined, transition: 'opacity 0.15s' }} title={mergeActive ? 'Finish or cancel the merge to use other panels' : queryBuilderActive ? 'Analyses can’t be added to a query' : undefined}>
+                        <div style={{ height: '100%', opacity: (queryBuilderActive || mergeActive) ? 0.62 : 1, pointerEvents: (queryBuilderActive || mergeActive) ? 'none' : undefined, transition: 'opacity 0.15s' }} title={mergeActive ? t("Finish or cancel the merge to use other panels") : queryBuilderActive ? t("Analyses can’t be added to a query") : undefined}>
                           <SavedAnalyses
                             onOpen={openSavedAnalysis}
                             onClose={() => closePanel('analyses')}
@@ -3035,7 +2945,7 @@ function App() {
         )}
         {!queryResultsHidden && (
           <Panel defaultSize={30} minSize={10} collapsible>
-          <div style={{ height: '100%', opacity: mergeActive ? 0.62 : 1, pointerEvents: mergeActive ? 'none' : undefined, transition: 'opacity 0.15s' }} title={mergeActive ? 'Finish or cancel the merge to use other panels' : undefined}>
+          <div style={{ height: '100%', opacity: mergeActive ? 0.62 : 1, pointerEvents: mergeActive ? 'none' : undefined, transition: 'opacity 0.15s' }} title={mergeActive ? t("Finish or cancel the merge to use other panels") : undefined}>
           <QueryResultViewer
             sidebar={
               <SavedQueries
@@ -3116,6 +3026,8 @@ function App() {
         )}
       </PanelGroup>
 
+      <QuickCoding />
+
       {showNewCodeDialog && (
         <CodeEditDialog
           onSave={handleCreateCode}
@@ -3130,7 +3042,7 @@ function App() {
       {showSaveQueryDialog && (
         <div className="modal-overlay" onClick={() => setShowSaveQueryDialog(false)}>
           <div className="modal" onClick={(e) => e.stopPropagation()}>
-            <h2>Save Query</h2>
+            <h2>{t("Save Query")}</h2>
             <div style={{ marginBottom: 12 }}>
               <input
                 type="text"
@@ -3142,14 +3054,14 @@ function App() {
                     setShowSaveQueryDialog(false)
                   }
                 }}
-                placeholder="Query name..."
+                placeholder={t("Query name...")}
                 autoFocus
                 style={{ width: '100%' }}
               />
             </div>
             <div className="modal-actions">
               <button className="secondary" onClick={() => setShowSaveQueryDialog(false)}>
-                Cancel
+                {t("Cancel")}
               </button>
               <button
                 onClick={() => {
@@ -3159,7 +3071,7 @@ function App() {
                   }
                 }}
               >
-                Save
+                {t("Save")}
               </button>
             </div>
           </div>

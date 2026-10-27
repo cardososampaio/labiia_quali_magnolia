@@ -1,4 +1,5 @@
 import { Icon, faUpRightFromSquare } from '../Icon'
+import { t } from '../../i18n'
 
 interface Props {
   open: boolean
@@ -11,21 +12,21 @@ interface Props {
  *  THIRD-PARTY-LICENSES.txt button is for. Order is intentional:
  *  the bigger / more recognisable projects come first. */
 const BUNDLED_LIBRARIES: { name: string; role: string; licence: string }[] = [
-  { name: 'Electron', role: 'desktop runtime', licence: 'MIT' },
+  { name: 'Electron', role: t('desktop runtime'), licence: 'MIT' },
   { name: 'React', role: 'UI framework', licence: 'MIT' },
-  { name: 'TipTap', role: 'rich-text editor for memos', licence: 'MIT' },
+  { name: 'TipTap', role: t("rich-text editor for memos"), licence: 'MIT' },
   { name: 'PDF.js', role: 'PDF rendering', licence: 'Apache-2.0' },
   { name: 'mammoth', role: '.docx → HTML conversion', licence: 'BSD-2-Clause' },
-  { name: 'libheif-js', role: 'HEIC / HEIF image decoding', licence: 'LGPL-3.0' },
-  { name: 'utif', role: 'TIFF image decoding', licence: 'MIT' },
+  { name: 'libheif-js', role: t("HEIC / HEIF image decoding"), licence: 'LGPL-3.0' },
+  { name: 'utif', role: t("TIFF image decoding"), licence: 'MIT' },
   { name: 'xlsx', role: '.xlsx survey import', licence: 'Apache-2.0' },
-  { name: 'JSZip', role: 'QDPX project archive read/write', licence: 'MIT' },
+  { name: 'JSZip', role: t("QDPX project archive read/write"), licence: 'MIT' },
   { name: 'fast-xml-parser', role: 'QDPX XML parsing', licence: 'MIT' },
-  { name: 'marked', role: 'Markdown rendering', licence: 'MIT' },
-  { name: 'music-metadata', role: 'audio metadata', licence: 'MIT' },
-  { name: 'react-resizable-panels', role: 'split-pane layout', licence: 'MIT' },
-  { name: 'Zustand', role: 'state management', licence: 'MIT' },
-  { name: 'Lucide', role: 'icon set', licence: 'ISC' },
+  { name: 'marked', role: t("Markdown rendering"), licence: 'MIT' },
+  { name: 'music-metadata', role: t("audio metadata"), licence: 'MIT' },
+  { name: 'react-resizable-panels', role: t("split-pane layout"), licence: 'MIT' },
+  { name: 'Zustand', role: t("state management"), licence: 'MIT' },
+  { name: 'Lucide', role: t("icon set"), licence: 'ISC' },
   { name: 'electron-updater', role: 'auto-update', licence: 'MIT' }
 ]
 
@@ -44,18 +45,18 @@ export function LicenceDialog({ open, onClose }: Props) {
         onClick={(e) => e.stopPropagation()}
         style={{ width: 560, maxWidth: '92vw', maxHeight: '85vh', display: 'flex', flexDirection: 'column' }}
       >
-        <h2 style={{ margin: '0 0 12px', fontSize: 16, fontWeight: 600 }}>Licence & Attributions</h2>
+        <h2 style={{ margin: '0 0 12px', fontSize: 16, fontWeight: 600 }}>{t("Licence & Attributions")}</h2>
 
         <div style={{ overflowY: 'auto', flex: 1, paddingRight: 4 }}>
           <p style={{ margin: '0 0 8px', fontSize: 'var(--font-size-base)', lineHeight: 1.5 }}>
-            <strong>Magnolia is free and open-source software.</strong>
+            <strong>{t("labiia_quali is free and open-source software, based on Magnolia by Cale Davis.")}</strong>
           </p>
           <p style={{ margin: '0 0 8px', fontSize: 'var(--font-size-sm)', color: 'var(--text-secondary)', lineHeight: 1.5 }}>
-            Released under the{' '}
-            <strong style={{ color: 'var(--text-primary)' }}>European Union Public Licence (EUPL) v1.2</strong>.
-            You are free to use, study, copy, modify, and redistribute Magnolia, including for commercial
-            purposes. Derivative works must be distributed under the EUPL or one of its compatible licences,
-            and their source code must be made available.
+            {t("Released under the")}{' '}
+            <strong style={{ color: 'var(--text-primary)' }}>{t("European Union Public Licence (EUPL) v1.2")}</strong>{t(". You are free to use, study, copy, modify, and redistribute the software, including for commercial purposes. Derivative works must be distributed under the EUPL or one of its compatible licences, and their source code must be made available.")}
+          </p>
+          <p style={{ margin: '0 0 8px', fontSize: 'var(--font-size-sm)', color: 'var(--text-secondary)', lineHeight: 1.5 }}>
+            {t('Original work: Magnolia, © 2026 Cale Davis (github.com/caledavis/Magnolia).')}
           </p>
 
           <button
@@ -63,7 +64,7 @@ export function LicenceDialog({ open, onClose }: Props) {
             onClick={() => window.api.openLicence()}
             style={{ display: 'inline-flex', alignItems: 'center', gap: 6, marginTop: 4 }}
           >
-            View full licence text <Icon icon={faUpRightFromSquare} style={{ fontSize: 10 }} />
+            {t("View full licence text")}{' '}<Icon icon={faUpRightFromSquare} style={{ fontSize: 10 }} />
           </button>
 
           <h3
@@ -76,11 +77,10 @@ export function LicenceDialog({ open, onClose }: Props) {
               color: 'var(--text-muted)'
             }}
           >
-            Bundled Libraries
+            {t("Bundled Libraries")}
           </h3>
           <p style={{ margin: '0 0 10px', fontSize: 'var(--font-size-sm)', color: 'var(--text-secondary)', lineHeight: 1.5 }}>
-            Magnolia is built on top of these open-source projects. Full attribution and licence text
-            for every dependency is bundled with the app.
+            {t("labiia_quali is built on top of these open-source projects. Full attribution and licence text for every dependency is bundled with the app.")}
           </p>
 
           <div
@@ -126,12 +126,12 @@ export function LicenceDialog({ open, onClose }: Props) {
             onClick={() => window.api.openAcknowledgements()}
             style={{ display: 'inline-flex', alignItems: 'center', gap: 6, marginTop: 12 }}
           >
-            View full attributions <Icon icon={faUpRightFromSquare} style={{ fontSize: 10 }} />
+            {t("View full attributions")}{' '}<Icon icon={faUpRightFromSquare} style={{ fontSize: 10 }} />
           </button>
         </div>
 
         <div className="modal-actions" style={{ marginTop: 12 }}>
-          <button onClick={onClose}>Close</button>
+          <button onClick={onClose}>{t("Close")}</button>
         </div>
       </div>
     </div>

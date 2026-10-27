@@ -33,6 +33,7 @@ import type { Code, Memo, MemoEditInitData, PlainTextSelection } from '../../mod
 import { usePendingSelectionStore } from '../../stores/pending-selection-store'
 import { useNewCodeTriggerStore } from '../../stores/new-code-trigger-store'
 import { modKey } from '../../utils/platform'
+import { t } from '../../i18n'
 
 interface LabelContextMenu {
   x: number
@@ -222,17 +223,7 @@ export function VideoTranscriptView({
     selectedText: string
   } | null>(null)
 
-  // Mirror to the global pending-selection-store so the New Code dialog
-  // can apply a freshly-created code to whatever the user has selected
-  // here. (Same plumbing as the plain-text and PDF viewers.)
   const setGlobalPendingSelection = usePendingSelectionStore((s) => s.setSelection)
-  useEffect(() => {
-    if (pendingTextRange) {
-      setGlobalPendingSelection({ kind: 'text', sourceGuid, ...pendingTextRange })
-    } else {
-      setGlobalPendingSelection(null)
-    }
-  }, [pendingTextRange, sourceGuid, setGlobalPendingSelection])
 
   // Codepoint offset at the START of each content line (newline-delimited
   // split of `content`). Used to convert between character positions and
@@ -908,6 +899,25 @@ export function VideoTranscriptView({
     [sourceGuid, addTimeRangeSelection, addCodingToSelection, timeForLine]
   )
 
+  // Mirror to the global pending-selection-store so the New Code dialog and
+  // the quick-coding bar can apply a code to whatever the user has selected
+  // here. Selected lines carry their span on the video timeline, so those
+  // codes become time-range codings, the same as dropping a code here.
+  useEffect(() => {
+    if (!pendingTextRange) {
+      setGlobalPendingSelection(null)
+      return
+    }
+    const timeRange = pendingLineRange
+      ? (() => {
+          const startTime = snapTimeToSecond(timeForLine(pendingLineRange.startLine, 'start'))
+          const endTime = Math.max(startTime + 1, snapTimeToSecond(timeForLine(pendingLineRange.endLine, 'end')))
+          return { startTime, endTime, startLine: pendingLineRange.startLine, endLine: pendingLineRange.endLine }
+        })()
+      : undefined
+    setGlobalPendingSelection({ kind: 'text', sourceGuid, ...pendingTextRange, timeRange })
+  }, [pendingTextRange, pendingLineRange, sourceGuid, setGlobalPendingSelection, timeForLine])
+
   // --- Transcript right-click menu --------------------------------------
   // Resolve the line range from the current text selection (preferred) or,
   // if there is none, from the line element the user right-clicked. Phantom
@@ -1059,7 +1069,7 @@ export function VideoTranscriptView({
                     e.stopPropagation()
                     onTimestampClick(row.time)
                   } : undefined}
-                  title={isFinite(row.time) ? 'Click to seek here' : undefined}
+                  title={isFinite(row.time) ? t("Click to seek here") : undefined}
                 />
                 {(() => {
                   const contentIdx = row.contentIdx
@@ -1168,7 +1178,7 @@ export function VideoTranscriptView({
                   e.stopPropagation()
                   onTimestampClick(row.time)
                 } : undefined}
-                title={onTimestampClick ? 'Click to seek here' : undefined}
+                title={onTimestampClick ? t("Click to seek here") : undefined}
               />
               <span style={{ flex: 1 }}>{'\u00A0'}</span>
             </div>
@@ -1208,7 +1218,7 @@ export function VideoTranscriptView({
                     hollow dots). The caps still show past the handle
                     on their outer side. */}
                 <div
-                  title="Drag to rebind bracket start to a different line"
+                  title={t("Drag to rebind bracket start to a different line")}
                   style={{
                     position: 'absolute',
                     left: barLeft - 1, top: top - 2,
@@ -1241,7 +1251,7 @@ export function VideoTranscriptView({
                   }}
                 />
                 <div
-                  title="Drag to rebind bracket end to a different line"
+                  title={t("Drag to rebind bracket end to a different line")}
                   style={{
                     position: 'absolute',
                     left: barLeft - 1, top: top + height - 4,
@@ -1291,7 +1301,7 @@ export function VideoTranscriptView({
                 maxWidth={labelMaxWidthFor(p.labelLeft)}
                 text={p.codeName}
                 locked={isLocked}
-                title={`${code?.name ?? 'Code'} — click to lock highlight, double-click to seek, right-click for options`}
+                title={t("{{x0}} — click to lock highlight, double-click to seek, right-click for options", { x0: code?.name ?? 'Code' })}
                 onMouseEnter={() => setHoveredSelGuid(p.selGuid)}
                 onMouseLeave={() => setHoveredSelGuid(null)}
                 onClick={(e) => {
@@ -1349,7 +1359,7 @@ export function VideoTranscriptView({
               const items = qs.map((q) => ({
                 guid: q.guid,
                 type: 'content' as const,
-                title: 'Quote',
+                title: t("Quote"),
                 content: '',
                 createdDateTime: '',
                 startPosition: q.startCp,
@@ -1376,7 +1386,7 @@ export function VideoTranscriptView({
             }}
           >
             <span style={{ color: 'var(--text-muted)', fontSize: 13 }}>
-              Select transcript lines first, or drop on the code track above
+              {t("Select transcript lines first, or drop on the code track above")}
             </span>
           </div>
         )}
@@ -1392,7 +1402,7 @@ export function VideoTranscriptView({
             }}
           >
             <span style={{ color: 'var(--accent)', fontWeight: 600, fontSize: 14 }}>
-              Drop code to apply to selection ({formatTimestamp(timeForLine(pendingLineRange.startLine, 'start'))} – {formatTimestamp(timeForLine(pendingLineRange.endLine, 'end'))})
+              {t("Drop code to apply to selection (")}{formatTimestamp(timeForLine(pendingLineRange.startLine, 'start'))} – {formatTimestamp(timeForLine(pendingLineRange.endLine, 'end'))})
             </span>
           </div>
         )}
@@ -1416,7 +1426,7 @@ export function VideoTranscriptView({
             onClick={(e) => e.stopPropagation()}
           >
             <div style={{ padding: '4px 14px', fontSize: 11, color: 'var(--text-muted)', fontWeight: 600, userSelect: 'none' }}>
-              {code?.name ?? 'Code'} — {formatTimestamp(labelMenu.startTime)}
+              {code?.name ?? t("Code")} — {formatTimestamp(labelMenu.startTime)}
             </div>
             <div className="context-menu-separator" />
             <div
@@ -1434,7 +1444,7 @@ export function VideoTranscriptView({
                 setLabelMenu(null)
               }}
             >
-              Add as Quote
+              {t("Add as Quote")}
             </div>
             <div
               className="context-menu-item"
@@ -1455,7 +1465,7 @@ export function VideoTranscriptView({
                 setLabelMenu(null)
               }}
             >
-              Add Selection Memo
+              {t("Add Selection Memo")}
             </div>
             <div className="context-menu-separator" />
             <div
@@ -1470,7 +1480,7 @@ export function VideoTranscriptView({
                 setLabelMenu(null)
               }}
             >
-              Remove Code
+              {t("Remove Code")}
             </div>
           </div>
         )
@@ -1499,16 +1509,16 @@ export function VideoTranscriptView({
               useNewCodeTriggerStore.getState().request()
               setTranscriptMenu(null)
             }}>
-              New Code
+              {t("New Code")}
             </div>
             <div className="context-menu-separator" />
             {range && (
               <>
                 <div style={{ padding: '4px 14px', fontSize: 11, color: 'var(--text-muted)', fontWeight: 600, userSelect: 'none' }}>
-                  Apply Code
+                  {t("Apply Code")}
                 </div>
                 <div style={{ padding: '0 14px 6px', fontSize: 11, color: 'var(--text-muted)', lineHeight: 1.4, maxWidth: 220, userSelect: 'none' }}>
-                  To apply any code, select content and drag the code from the Code Browser to the selection.
+                  {t("To apply any code, select content and drag the code from the Code Browser to the selection.")}
                 </div>
                 {hotkeyCodes.map((code) => (
                   <div
@@ -1528,7 +1538,7 @@ export function VideoTranscriptView({
                 ))}
                 {hotkeyCodes.length === 0 && (
                   <div className="context-menu-item" style={{ color: 'var(--menu-fg-muted)', pointerEvents: 'none' }}>
-                    No hotkeys assigned — right-click a code to assign one
+                    {t("No hotkeys assigned — right-click a code to assign one")}
                   </div>
                 )}
                 <div className="context-menu-separator" />
@@ -1554,7 +1564,7 @@ export function VideoTranscriptView({
                     setTranscriptMenu(null)
                   }}
                 >
-                  Add as Quote
+                  {t("Add as Quote")}
                 </div>
               </>
             )}
@@ -1594,7 +1604,7 @@ export function VideoTranscriptView({
                   setTranscriptMenu(null)
                 }}
               >
-                Add Selection Memo
+                {t("Add Selection Memo")}
               </div>
             )}
           </div>
@@ -1658,7 +1668,7 @@ export function VideoTranscriptView({
                     color: memoPopup.isQuote ? 'var(--quote-icon-color)' : undefined
                   }}
                 />
-                <span style={{ flex: 1 }}>{m.title || (memoPopup.isQuote ? 'Quote' : 'Untitled Memo')}</span>
+                <span style={{ flex: 1 }}>{m.title || (memoPopup.isQuote ? t("Quote") : t("Untitled Memo"))}</span>
               </div>
             ))}
             {memoPopup.isQuote && memoPopup.showDelete && memoPopup.items.map((m) => (
@@ -1679,7 +1689,7 @@ export function VideoTranscriptView({
                   setHoveredRange(null)
                 }}
               >
-                Delete &quot;{(m.title || 'Quote').slice(0, 20)}&quot;
+                {t("Delete \"")}{(m.title || t("Quote")).slice(0, 20)}{t("\"")}
               </div>
             ))}
             {!memoPopup.isQuote && memoPopup.showDelete && memoPopup.items.map((m) => (
@@ -1700,7 +1710,7 @@ export function VideoTranscriptView({
                   setHoveredRange(null)
                 }}
               >
-                Delete &quot;{(m.title || 'Untitled Memo').slice(0, 20)}&quot;
+                {t("Delete \"")}{(m.title || t("Untitled Memo")).slice(0, 20)}{t("\"")}
               </div>
             ))}
           </div>

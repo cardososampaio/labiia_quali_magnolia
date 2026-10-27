@@ -10,6 +10,7 @@ import { QueryResultsBody, groupByDocument } from './QueryResultsBody'
 import { QueryLoadingBar } from './QueryLoadingBar'
 import { exportPdfWithHeader, buildPdfDocument, escHtml } from '../../utils/pdf-export'
 import { EditableTitleSuffix } from '../EditableTitleSuffix'
+import { t } from '../../i18n'
 
 export function QueryResultsWindow() {
   const [data, setData] = useState<QueryResultsInitData | null>(null)
@@ -172,7 +173,7 @@ export function QueryResultsWindow() {
 
   const handleExportPdf = useCallback(async () => {
     if (!data || groups.length === 0) return
-    const title = data.queryName || 'Query Results'
+    const title = data.queryName || t("Query Results")
     const now = new Date().toLocaleString()
 
     // Pre-render thumbnails for region-based results so they embed as
@@ -268,7 +269,7 @@ export function QueryResultsWindow() {
 
     const html = buildPdfDocument({
       title,
-      subtitle: `${data.results.length} match${data.results.length !== 1 ? 'es' : ''} in ${groups.length} document${groups.length !== 1 ? 's' : ''} &mdash; exported ${escHtml(now)}`,
+      subtitle: t("{{length}} match{{x1}} in {{x2}} document{{x3}} &mdash; exported {{x4}}", { length: data.results.length, x1: data.results.length !== 1 ? 'es' : '', x2: groups.length, x3: groups.length !== 1 ? 's' : '', x4: escHtml(now) }),
       body,
       extraCss
     })
@@ -311,7 +312,7 @@ export function QueryResultsWindow() {
           color: 'var(--text-muted)'
         }}
       >
-        Loading query results...
+        {t("Loading query results...")}
       </div>
     )
   }
@@ -321,7 +322,7 @@ export function QueryResultsWindow() {
   // QueryResultViewer uses when a sidebar is present.
   const header = (
     <div className="panel-header query-results-header">
-      <span>Query{activeSavedQuery ? ':' : (data.queryName ? ':' : '')}</span>
+      <span>{t("Query")}{activeSavedQuery ? ':' : (data.queryName ? ':' : '')}</span>
       {activeSavedQuery ? (
         <span style={{ marginLeft: 4 }}>
           <EditableTitleSuffix
@@ -343,9 +344,9 @@ export function QueryResultsWindow() {
               style={{ fontSize: 11, padding: '2px 8px', marginRight: 4 }}
               onClick={handleSelectDocuments}
               disabled={data.isLoading}
-              title="Select all documents and respondents in these results in the Document Browser — then drag a tag onto them to tag all at once"
+              title={t("Select all documents and respondents in these results in the Document Browser — then drag a tag onto them to tag all at once")}
             >
-              Select Documents
+              {t("Select Documents")}
             </button>
           )}
           {data.results.length > 0 && (
@@ -356,9 +357,9 @@ export function QueryResultsWindow() {
                 style={{ fontSize: 11, padding: '2px 8px' }}
                 onClick={() => setCodeAllMenu(codeAllMenu ? null : 'context')}
                 disabled={data.isLoading}
-                title={`Apply a code to all ${data.results.length} results`}
+                title={t("Apply a code to all {{length}} results", { length: data.results.length })}
               >
-                Code All ({data.results.length})
+                {t("Code All (")}{data.results.length})
               </button>
 
               {codeAllMenu && popoverPos && createPortal(
@@ -387,7 +388,7 @@ export function QueryResultsWindow() {
                         onMouseEnter={(e) => e.currentTarget.style.background = 'var(--bg-tertiary)'}
                         onMouseLeave={(e) => e.currentTarget.style.background = 'transparent'}
                       >
-                        New Code...
+                        {t("New Code...")}
                       </div>
                       <div
                         className="context-menu-item"
@@ -396,7 +397,7 @@ export function QueryResultsWindow() {
                         onMouseEnter={(e) => e.currentTarget.style.background = 'var(--bg-tertiary)'}
                         onMouseLeave={(e) => e.currentTarget.style.background = 'transparent'}
                       >
-                        Existing Codes...
+                        {t("Existing Codes...")}
                       </div>
                     </div>
                   )}
@@ -410,7 +411,7 @@ export function QueryResultsWindow() {
                       padding: 12,
                       minWidth: 240
                     }}>
-                      <div style={{ fontSize: 12, fontWeight: 600, marginBottom: 8 }}>Apply Existing Codes</div>
+                      <div style={{ fontSize: 12, fontWeight: 600, marginBottom: 8 }}>{t("Apply Existing Codes")}</div>
                       <div
                         onDragOver={(e) => {
                           if (e.dataTransfer.types.includes('application/x-magnolia-code') || e.dataTransfer.types.includes('application/x-magnolia-codes')) {
@@ -436,10 +437,10 @@ export function QueryResultsWindow() {
                           justifyContent: 'center'
                         }}
                       >
-                        Drop codes here to apply to all results
+                        {t("Drop codes here to apply to all results")}
                       </div>
                       <div style={{ display: 'flex', justifyContent: 'flex-end', marginTop: 8 }}>
-                        <button className="secondary" style={{ fontSize: 11, padding: '3px 10px' }} onClick={() => setCodeAllMenu(null)}>Close</button>
+                        <button className="secondary" style={{ fontSize: 11, padding: '3px 10px' }} onClick={() => setCodeAllMenu(null)}>{t("Close")}</button>
                       </div>
                     </div>
                   )}
@@ -453,30 +454,30 @@ export function QueryResultsWindow() {
             className="secondary"
             onClick={() => window.api.sendQueryResultsAction('edit-query')}
           >
-            Edit Query
+            {t("Edit Query")}
           </button>
           <button
             style={{ fontSize: 11, padding: '2px 8px', marginRight: 4 }}
             className="secondary"
             onClick={handleExportPdf}
             disabled={data.isLoading}
-            title="Export results as PDF"
+            title={t("Export results as PDF")}
           >
-            Export PDF
+            {t("Export PDF")}
           </button>
           <button
             style={{ fontSize: 11, padding: '2px 8px', marginRight: 4 }}
             className="secondary"
             onClick={() => window.api.sendQueryResultsAction('clear-query')}
           >
-            Clear
+            {t("Clear")}
           </button>
           {data.isUnsaved && (
             <button
               style={{ fontSize: 11, padding: '2px 8px', marginRight: 4 }}
               onClick={() => window.api.sendQueryResultsAction('save-query')}
             >
-              Save Query
+              {t("Save Query")}
             </button>
           )}
         </>
@@ -484,7 +485,7 @@ export function QueryResultsWindow() {
       <button
         className="panel-header-popout"
         onClick={() => window.close()}
-        title="Pop back into main window"
+        title={t("Pop back into main window")}
       >
         <Icon icon={faDownLeftAndUpRightToCenter} />
       </button>

@@ -1,8 +1,9 @@
 import type { FormatDef } from '../format-registry'
+import { t } from '../../i18n'
 
 export const plainTextFormat: FormatDef = {
   sourceType: 'text',
-  label: 'Text Files',
+  label: t("Text Files"),
   extensions: ['txt'],
   parseDocument: () => null,
 }

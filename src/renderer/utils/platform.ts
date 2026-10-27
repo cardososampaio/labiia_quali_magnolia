@@ -1,3 +1,5 @@
+import { t } from '../i18n'
+
 /**
  * True when running on macOS. Keyboard-shortcut hints elsewhere in the
  * renderer show the platform's actual modifier — the underlying handlers
@@ -14,4 +16,4 @@ export function modKey(key: string | number): string {
 }
 
 /** OS-appropriate label for an Option/Alt click-modifier hint. */
-export const altClickHint = isMac ? '⌥-click' : 'Alt-click'
+export const altClickHint = isMac ? '⌥-click' : t('Alt-click')

@@ -1,3 +1,5 @@
+import { t } from '../i18n'
+
 /**
  * Timestamp utilities for audio transcription.
  *
@@ -332,7 +334,7 @@ export function parseNoScribeHtmlTranscript(raw: string): ParsedTranscript | nul
     if (note) notes.push(note)
   } else {
     const audio = raw.match(/<meta\s+name="audio_source"\s+content="([^"]*)"/i)
-    if (audio && audio[1]) notes.push(`Audio file: ${audio[1]}`)
+    if (audio && audio[1]) notes.push(t('Audio file: {{name}}', { name: audio[1] }))
   }
 
   return { content: lines.join('\n'), lineTimes, notes, segments }

@@ -31,6 +31,7 @@ import { renameSavedAnalysis } from '../../utils/rename-saved-analysis'
 import { useToolDirtyState } from '../../hooks/use-tool-dirty-state'
 import { useRegisterToolSave } from '../../hooks/use-register-tool-save'
 import { useThemeSvgColors, SVG_FONT_FAMILY } from '../../utils/use-theme-svg-colors'
+import { t, formatNumber } from '../../i18n'
 
 interface Props {
   data: AnalysisInitData
@@ -203,7 +204,7 @@ export function CodeFrequencies({ data: propData, savedConfig, inTab }: Props) {
 
   const handleExportCsv = useCallback(() => {
     const colNames = columns.map((c) => c.label)
-    const rows: string[][] = [['Code', ...colNames]]
+    const rows: string[][] = [[t("Code"), ...colNames]]
     for (let i = 0; i < codeGuids.length; i++) {
       rows.push([codeMap.get(codeGuids[i])?.name || '', ...grid[i].map((v) => v.toFixed(1) + '%')])
     }
@@ -354,16 +355,16 @@ export function CodeFrequencies({ data: propData, savedConfig, inTab }: Props) {
       <div style={{ padding: '14px 20px 6px', flexShrink: 0, display: 'flex', alignItems: 'center', gap: 8 }}>
         <h2 style={{ margin: 0, fontSize: 18, fontWeight: 600, display: 'flex', alignItems: 'center', gap: 8, color: 'var(--text-secondary)' }}>
           <Icon icon={faChartBar} className="analysis-header-icon" style={{ fontSize: 16 }} />
-          Code Frequencies{isExisting ? ':' : ''}
+          {t("Code Frequencies")}{isExisting ? ':' : ''}
           {isExisting && <EditableTitleSuffix name={analysisName} onRename={handleRename} />}
         </h2>
         <div style={{ flex: 1 }} />
         <button className="secondary" style={{ fontSize: 11, padding: '4px 14px' }} onClick={() => inTab ? inTab.onClose() : window.close()}>
-          Close
+          {t("Close")}
         </button>
         {isExisting && dirty && (
           <button className="secondary" style={{ fontSize: 11, padding: '4px 14px' }} onClick={handleDiscard}>
-            Discard Changes
+            {t("Discard Changes")}
           </button>
         )}
         {isExisting ? (
@@ -372,11 +373,11 @@ export function CodeFrequencies({ data: propData, savedConfig, inTab }: Props) {
             disabled={!dirty}
             onClick={() => { handleSave(analysisName) }}
           >
-            {dirty ? 'Update Analysis' : 'Saved'}
+            {dirty ? t("Update Analysis") : t("Saved")}
           </button>
         ) : (
           <button style={{ fontSize: 11, padding: '4px 14px' }} onClick={() => setShowSaveDialog(true)}>
-            Save Analysis
+            {t("Save Analysis")}
           </button>
         )}
         {/* Clearance for the floating MemoFab. */}
@@ -386,24 +387,24 @@ export function CodeFrequencies({ data: propData, savedConfig, inTab }: Props) {
       {showSaveDialog && (
         <div className="modal-overlay" onClick={() => setShowSaveDialog(false)}>
           <div className="modal" onClick={(e) => e.stopPropagation()}>
-            <h2>Save Analysis</h2>
+            <h2>{t("Save Analysis")}</h2>
             <input
               autoFocus
               type="text"
               defaultValue={analysisName}
-              placeholder="Analysis name"
+              placeholder={t("Analysis name")}
               style={{ width: '100%' }}
               onKeyDown={(e) => {
-                if (e.key === 'Enter') handleSave((e.target as HTMLInputElement).value.trim() || 'Untitled')
+                if (e.key === 'Enter') handleSave((e.target as HTMLInputElement).value.trim() || t("Untitled"))
                 if (e.key === 'Escape') setShowSaveDialog(false)
               }}
             />
             <div className="modal-actions">
-              <button className="secondary" onClick={() => setShowSaveDialog(false)}>Cancel</button>
+              <button className="secondary" onClick={() => setShowSaveDialog(false)}>{t("Cancel")}</button>
               <button onClick={(e) => {
                 const input = (e.target as HTMLElement).parentElement!.parentElement!.querySelector('input') as HTMLInputElement
-                handleSave(input.value.trim() || 'Untitled')
-              }}>Save</button>
+                handleSave(input.value.trim() || t("Untitled"))
+              }}>{t("Save")}</button>
             </div>
           </div>
         </div>
@@ -414,7 +415,7 @@ export function CodeFrequencies({ data: propData, savedConfig, inTab }: Props) {
         <div className="analysis-section" style={{ marginBottom: 14 }}>
           <div onClick={() => setDocSectionOpen(!docSectionOpen)} style={{ display: 'flex', alignItems: 'center', gap: 8, cursor: 'pointer', userSelect: 'none' }}>
             <Icon icon={docSectionOpen ? faChevronDown : faChevronRight} style={{ fontSize: 12, color: 'var(--text-muted)' }} />
-            <span style={{ fontSize: 'var(--font-size-lg)', fontWeight: 600, color: 'var(--text-secondary)' }}>Select Documents</span>
+            <span style={{ fontSize: 'var(--font-size-lg)', fontWeight: 600, color: 'var(--text-secondary)' }}>{t("Select Documents")}</span>
           </div>
           {docSectionOpen && (
             <div style={{ marginTop: 10, minHeight: 160 }}>
@@ -438,9 +439,9 @@ export function CodeFrequencies({ data: propData, savedConfig, inTab }: Props) {
           onDrop={handleTagDrop}
         >
           <div style={{ display: 'flex', alignItems: 'baseline', justifyContent: 'space-between', gap: 12, marginBottom: groupBy.length > 0 ? 8 : 0, position: 'relative', zIndex: 1 }}>
-            <span style={{ fontSize: 'var(--font-size-lg)', fontWeight: 600, color: 'var(--text-secondary)' }}>Group by</span>
+            <span style={{ fontSize: 'var(--font-size-lg)', fontWeight: 600, color: 'var(--text-secondary)' }}>{t("Group by")}</span>
             <span style={{ fontSize: 11, color: 'var(--text-muted)' }}>
-              Drag tags, categories, or folders here
+              {t("Drag tags, categories, or folders here")}
             </span>
           </div>
           <div style={{ position: 'relative', zIndex: 1 }}>
@@ -481,15 +482,15 @@ export function CodeFrequencies({ data: propData, savedConfig, inTab }: Props) {
           onDrop={(e) => { setDropOver(false); handleDrop(e) }}
         >
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 10, position: 'relative', zIndex: 1 }}>
-            <span style={{ fontSize: 'var(--font-size-lg)', fontWeight: 600, color: 'var(--text-secondary)' }}>Frequency Grid</span>
+            <span style={{ fontSize: 'var(--font-size-lg)', fontWeight: 600, color: 'var(--text-secondary)' }}>{t("Frequency Grid")}</span>
             <div style={{ display: 'flex', alignItems: 'center', gap: 6, position: 'relative' }}>
               <button className="secondary" style={{ fontSize: 10, padding: '3px 8px' }} onClick={handleExportCsv} disabled={codeGuids.length === 0}>
-                Export CSV
+                {t("Export CSV")}
               </button>
               <button
                 onClick={() => setShowInfo((v) => !v)}
-                title="How are these percentages calculated?"
-                aria-label="How are these percentages calculated?"
+                title={t("How are these percentages calculated?")}
+                aria-label={t("How are these percentages calculated?")}
                 style={{
                   background: 'none', border: 'none', padding: 2,
                   color: showInfo ? 'var(--accent)' : 'var(--text-muted)',
@@ -520,17 +521,17 @@ export function CodeFrequencies({ data: propData, savedConfig, inTab }: Props) {
                     }}
                     onClick={(e) => e.stopPropagation()}
                   >
-                    <div style={{ fontWeight: 600, fontSize: 12, marginBottom: 6 }}>How frequencies are calculated</div>
+                    <div style={{ fontWeight: 600, fontSize: 12, marginBottom: 6 }}>{t("How frequencies are calculated")}</div>
                     <div style={{ color: 'var(--text-secondary)', marginBottom: 8 }}>
-                      Each cell shows the proportion of one source covered by one code, expressed as a percentage. The denominator depends on the source kind:
+                      {t("Each cell shows the proportion of one source covered by one code, expressed as a percentage. The denominator depends on the source kind:")}
                     </div>
                     <ul style={{ margin: '0 0 8px 16px', padding: 0, color: 'var(--text-secondary)' }}>
-                      <li style={{ marginBottom: 4 }}><strong>Text / Markdown:</strong> % of characters covered (overlapping codings counted once).</li>
-                      <li style={{ marginBottom: 4 }}><strong>Audio / Video:</strong> % of duration covered by the union of time-range codings.</li>
-                      <li style={{ marginBottom: 4 }}><strong>PDF (text codings):</strong> % of extracted-text characters covered.</li>
-                      <li style={{ marginBottom: 4 }}><strong>PDF (region codings):</strong> % of region selections coded with this code.</li>
-                      <li style={{ marginBottom: 4 }}><strong>PDF (mixed):</strong> weighted average of the two above, by the count of each kind of selection in the source.</li>
-                      <li><strong>Image:</strong> % of region selections coded with this code.</li>
+                      <li style={{ marginBottom: 4 }}><strong>{t("Text / Markdown:")}</strong> {t("% of characters covered (overlapping codings counted once).")}</li>
+                      <li style={{ marginBottom: 4 }}><strong>{t("Audio / Video:")}</strong> {t("% of duration covered by the union of time-range codings.")}</li>
+                      <li style={{ marginBottom: 4 }}><strong>{t("PDF (text codings):")}</strong> {t("% of extracted-text characters covered.")}</li>
+                      <li style={{ marginBottom: 4 }}><strong>{t("PDF (region codings):")}</strong> {t("% of region selections coded with this code.")}</li>
+                      <li style={{ marginBottom: 4 }}><strong>{t("PDF (mixed):")}</strong> {t("weighted average of the two above, by the count of each kind of selection in the source.")}</li>
+                      <li><strong>{t("Image:")}</strong> {t("% of region selections coded with this code.")}</li>
                     </ul>
                   </div>
                 </>
@@ -540,7 +541,7 @@ export function CodeFrequencies({ data: propData, savedConfig, inTab }: Props) {
 
           {codeGuids.length === 0 ? (
             <div style={{ padding: '40px 20px', textAlign: 'center', color: 'var(--text-muted)', fontSize: 'var(--font-size-sm)', position: 'relative', zIndex: 1 }}>
-              Drag codes from the Code Browser to build the grid
+              {t("Drag codes from the Code Browser to build the grid")}
             </div>
           ) : (
             <div style={{ overflowX: 'auto' }}>
@@ -571,7 +572,7 @@ export function CodeFrequencies({ data: propData, savedConfig, inTab }: Props) {
                     </tr>
                   )}
                   <tr>
-                    <th style={{ padding: 4, borderBottom: '1px solid var(--border-color)', textAlign: 'left', minWidth: 100, verticalAlign: 'bottom' }}>Code</th>
+                    <th style={{ padding: 4, borderBottom: '1px solid var(--border-color)', textAlign: 'left', minWidth: 100, verticalAlign: 'bottom' }}>{t("Code")}</th>
                     {columns.map((col, j) => (
                       <th
                         key={col.id}
@@ -617,7 +618,7 @@ export function CodeFrequencies({ data: propData, savedConfig, inTab }: Props) {
                               }
                             }}
                           >
-                            {val.toFixed(1)}%
+                            {formatNumber(val, { minimumFractionDigits: 1, maximumFractionDigits: 1 })}%
                           </td>
                         )
                       })}
@@ -642,9 +643,9 @@ export function CodeFrequencies({ data: propData, savedConfig, inTab }: Props) {
         {codeGuids.length > 0 && columns.length > 0 && (
           <div className="analysis-section">
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 10 }}>
-              <span style={{ fontSize: 'var(--font-size-lg)', fontWeight: 600, color: 'var(--text-secondary)' }}>Chart</span>
+              <span style={{ fontSize: 'var(--font-size-lg)', fontWeight: 600, color: 'var(--text-secondary)' }}>{t("Chart")}</span>
               <button className="secondary" style={{ fontSize: 10, padding: '3px 8px' }} onClick={handleExportChart}>
-                Export SVG
+                {t("Export SVG")}
               </button>
             </div>
 
@@ -710,7 +711,7 @@ export function CodeFrequencies({ data: propData, savedConfig, inTab }: Props) {
                               }
                             }}
                           >
-                            <title>{`${codeMap.get(codeGuid)?.name}: ${val.toFixed(1)}% in ${col.label}`}</title>
+                            <title>{t("{{name}}: {{x1}}% in {{label}}", { name: codeMap.get(codeGuid)?.name, x1: formatNumber(val, { minimumFractionDigits: 1, maximumFractionDigits: 1 }), label: col.label })}</title>
                           </rect>
                         )
                       })}

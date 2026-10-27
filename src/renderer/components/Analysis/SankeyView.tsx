@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { truncate } from './analysis-helpers'
 import { layoutSankey, sankeyLinkPath, type SankeyLinkLayout, type SankeyNodeLayout } from './sankey-layout'
+import { t } from '../../i18n'
 
 export interface SankeyItem {
   id: string
@@ -132,7 +133,7 @@ export function SankeyView({ left, right, values, leftTitle, rightTitle, exclude
     <div ref={wrapRef} style={{ position: 'relative', width: '100%' }}>
       {layout.links.length === 0 ? (
         <div style={{ padding: '40px 20px', textAlign: 'center', color: 'var(--text-muted)', fontSize: 'var(--font-size-sm)' }}>
-          Nothing to show — every cell in the grid is 0
+          {t("Nothing to show — every cell in the grid is 0")}
         </div>
       ) : (
       <svg width={width} height={height + TITLE_HEIGHT} style={{ display: 'block', overflow: 'visible' }}>
@@ -164,7 +165,7 @@ export function SankeyView({ left, right, values, leftTitle, rightTitle, exclude
       )}
       {hiddenCount > 0 && (
         <div style={{ marginTop: 6, fontSize: 10, color: 'var(--text-muted)' }}>
-          {hiddenCount} item{hiddenCount !== 1 ? 's' : ''} with no results not shown
+          {hiddenCount} {t("item")}{hiddenCount !== 1 ? 's' : ''} {t("with no results not shown")}
         </div>
       )}
       {tip && (

@@ -41,6 +41,7 @@ import { useClampedMenuPosition } from '../../utils/use-clamped-menu-position'
 import { renderPdfRegionThumbnail } from '../../utils/pdf-thumbnail'
 import { renderImageRegionThumbnail } from '../../utils/image-thumbnail'
 import { useDocumentStore } from '../../stores/document-store'
+import { t } from '../../i18n'
 
 /** Group results by sourceGuid, preserving order of first appearance. */
 export function groupByDocument(
@@ -239,7 +240,7 @@ export function ResultItem({
   if (pdfPageOffsets && pdfPageOffsets.length > 0) {
     const first = pdfPageAt(pdfPageOffsets, result.startPosition)
     const last = pdfPageAt(pdfPageOffsets, Math.max(result.startPosition, result.endPosition - 1))
-    positionLabel = first === last ? `Page ${first}` : `Pages ${first}–${last}`
+    positionLabel = first === last ? t("Page {{first}}", { first: first }) : t("Pages {{first}}–{{last}}", { first: first, last: last })
   }
 
   return (
@@ -333,7 +334,7 @@ export function ResultItem({
             maxW={260}
             maxH={180}
           />
-          <span style={{ fontSize: 10, color: 'var(--text-muted)' }}>Page {pdfRegion.page}</span>
+          <span style={{ fontSize: 10, color: 'var(--text-muted)' }}>{t("Page")}{' '}{pdfRegion.page}</span>
         </div>
       ) : (
         <>
@@ -414,7 +415,7 @@ export function ResultItem({
               opacity: 0.7
             }}
           >
-            {isExpanded ? 'Show less' : 'Show more'}
+            {isExpanded ? t("Show less") : t("Show more")}
           </div>
         </>
       )}
@@ -491,9 +492,9 @@ export function QueryResultsBody({
     <>
       {!isActive && (
         <div className="empty-state" style={{ padding: 20, textAlign: 'center', color: 'var(--text-muted)', fontSize: 'var(--font-size-sm)' }}>
-          No active query.
+          {t("No active query.")}
           <br />
-          Use the Query tool to create a new query.
+          {t("Use the Query tool to create a new query.")}
         </div>
       )}
       {isActive && missingDocuments && missingDocuments.length > 0 && (
@@ -508,12 +509,12 @@ export function QueryResultsBody({
             color: 'var(--text-secondary)'
           }}
         >
-          This query references {missingDocuments.length} document{missingDocuments.length !== 1 ? 's' : ''} no longer in the project.
+          {t("This query references")}{' '}{missingDocuments.length} {t("document")}{missingDocuments.length !== 1 ? 's' : ''} {t("no longer in the project.")}
         </div>
       )}
       {isActive && results.length === 0 && (
         <div className="empty-state" style={{ padding: 20, textAlign: 'center', color: 'var(--text-muted)', fontSize: 'var(--font-size-sm)' }}>
-          No matches found.
+          {t("No matches found.")}
         </div>
       )}
       {groups.map((group) => {
@@ -555,12 +556,12 @@ export function QueryResultsBody({
                 onClick={onOpenSource
                   ? (e) => { e.stopPropagation(); onOpenSource(group.sourceGuid) }
                   : undefined}
-                title={onOpenSource ? 'Open document' : undefined}
+                title={onOpenSource ? t("Open document") : undefined}
               >
                 {group.sourceName}
               </span>
               <span style={{ fontSize: 10, color: 'var(--text-muted)', flexShrink: 0 }}>
-                {group.results.length} match{group.results.length !== 1 ? 'es' : ''}
+                {group.results.length} {t("match")}{group.results.length !== 1 ? 'es' : ''}
               </span>
             </div>
 
@@ -602,7 +603,7 @@ export function QueryResultsBody({
               setContextMenu(null)
             }}
           >
-            Copy Result
+            {t("Copy Result")}
           </div>
         </div>
       )}

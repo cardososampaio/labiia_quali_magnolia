@@ -13,6 +13,7 @@ import { useDocumentStore } from '../../stores/document-store'
 import { renderPdfRegionThumbnail } from '../../utils/pdf-thumbnail'
 import { renderImageRegionThumbnail } from '../../utils/image-thumbnail'
 import { sourceTypeFromFilename } from '../../utils/format-registry'
+import { t } from '../../i18n'
 
 interface Props {
   /** Source document GUID — used to look up the PDF / image file path
@@ -85,7 +86,7 @@ export function PdfRegionThumbnail({ sourceGuid, filePath: filePathProp, page, x
   useEffect(() => {
     if (!nearViewport) return
     if (!filePath && !pdfBase64) {
-      setError(isImage ? 'Image file not available' : 'PDF file not available')
+      setError(isImage ? t("Image file not available") : t("PDF file not available"))
       return
     }
     let cancelled = false
@@ -142,7 +143,7 @@ export function PdfRegionThumbnail({ sourceGuid, filePath: filePathProp, page, x
   if (!dataUrl) {
     return (
       <div ref={placeholderRef} style={containerStyle}>
-        <div style={{ fontSize: 10, color: 'var(--text-muted)' }}>Rendering…</div>
+        <div style={{ fontSize: 10, color: 'var(--text-muted)' }}>{t("Rendering…")}</div>
       </div>
     )
   }
@@ -150,7 +151,7 @@ export function PdfRegionThumbnail({ sourceGuid, filePath: filePathProp, page, x
     <div style={containerStyle}>
       <img
         src={dataUrl}
-        alt={`Page ${page} region`}
+        alt={t("Page {{page}} region", { page: page })}
         style={{ width: '100%', height: '100%', objectFit: 'contain', display: 'block' }}
         draggable={false}
       />

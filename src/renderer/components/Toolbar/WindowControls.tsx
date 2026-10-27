@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react'
+import { t } from '../../i18n'
 
 /**
  * Minimise / maximise / close buttons for the frameless main window on
@@ -38,14 +39,14 @@ export function WindowControls(): JSX.Element | null {
         .win-controls svg { width: 10px; height: 10px; display: block; }
       `}</style>
 
-      <button onClick={() => window.api.minimizeWindow()} aria-label="Minimise" title="Minimise">
+      <button onClick={() => window.api.minimizeWindow()} aria-label={t("Minimise")} title={t("Minimise")}>
         <svg viewBox="0 0 10 10"><path d="M0 5 H10" stroke="currentColor" strokeWidth="1" /></svg>
       </button>
 
       <button
         onClick={() => window.api.toggleMaximizeWindow()}
-        aria-label={maximized ? 'Restore' : 'Maximise'}
-        title={maximized ? 'Restore' : 'Maximise'}
+        aria-label={maximized ? t("Restore") : t("Maximise")}
+        title={maximized ? t("Restore") : t("Maximise")}
       >
         {maximized ? (
           <svg viewBox="0 0 10 10" fill="none" stroke="currentColor" strokeWidth="1">
@@ -59,7 +60,7 @@ export function WindowControls(): JSX.Element | null {
         )}
       </button>
 
-      <button className="win-close" onClick={() => window.api.closeWindow()} aria-label="Close" title="Close">
+      <button className="win-close" onClick={() => window.api.closeWindow()} aria-label={t("Close")} title={t("Close")}>
         <svg viewBox="0 0 10 10" stroke="currentColor" strokeWidth="1">
           <path d="M0 0 L10 10 M10 0 L0 10" />
         </svg>

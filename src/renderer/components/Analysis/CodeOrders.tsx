@@ -31,6 +31,7 @@ import { renameSavedAnalysis } from '../../utils/rename-saved-analysis'
 import { useToolDirtyState } from '../../hooks/use-tool-dirty-state'
 import { useRegisterToolSave } from '../../hooks/use-register-tool-save'
 import { useThemeSvgColors, SVG_FONT_FAMILY } from '../../utils/use-theme-svg-colors'
+import { t } from '../../i18n'
 
 interface Props {
   data: AnalysisInitData
@@ -465,16 +466,16 @@ export function CodeOrders({ data: propData, savedConfig, inTab }: Props) {
       <div style={{ padding: '14px 20px 6px', flexShrink: 0, display: 'flex', alignItems: 'center', gap: 8 }}>
         <h2 style={{ margin: 0, fontSize: 18, fontWeight: 600, display: 'flex', alignItems: 'center', gap: 8, color: 'var(--text-secondary)' }}>
           <Icon icon={faBarsStaggered} className="analysis-header-icon" style={{ fontSize: 16 }} />
-          Code Orders{isExisting ? ':' : ''}
+          {t("Code Orders")}{isExisting ? ':' : ''}
           {isExisting && <EditableTitleSuffix name={analysisName} onRename={handleRename} />}
         </h2>
         <div style={{ flex: 1 }} />
         <button className="secondary" style={{ fontSize: 11, padding: '4px 14px' }} onClick={() => inTab ? inTab.onClose() : window.close()}>
-          Close
+          {t("Close")}
         </button>
         {isExisting && dirty && (
           <button className="secondary" style={{ fontSize: 11, padding: '4px 14px' }} onClick={handleDiscard}>
-            Discard Changes
+            {t("Discard Changes")}
           </button>
         )}
         {isExisting ? (
@@ -483,11 +484,11 @@ export function CodeOrders({ data: propData, savedConfig, inTab }: Props) {
             disabled={!dirty}
             onClick={() => { handleSave(analysisName) }}
           >
-            {dirty ? 'Update Analysis' : 'Saved'}
+            {dirty ? t("Update Analysis") : t("Saved")}
           </button>
         ) : (
           <button style={{ fontSize: 11, padding: '4px 14px' }} onClick={() => setShowSaveDialog(true)}>
-            Save Analysis
+            {t("Save Analysis")}
           </button>
         )}
         {/* Clearance for the floating MemoFab. */}
@@ -497,24 +498,24 @@ export function CodeOrders({ data: propData, savedConfig, inTab }: Props) {
       {showSaveDialog && (
         <div className="modal-overlay" onClick={() => setShowSaveDialog(false)}>
           <div className="modal" onClick={(e) => e.stopPropagation()}>
-            <h2>Save Analysis</h2>
+            <h2>{t("Save Analysis")}</h2>
             <input
               autoFocus
               type="text"
               defaultValue={analysisName}
-              placeholder="Analysis name"
+              placeholder={t("Analysis name")}
               style={{ width: '100%' }}
               onKeyDown={(e) => {
-                if (e.key === 'Enter') handleSave((e.target as HTMLInputElement).value.trim() || 'Untitled')
+                if (e.key === 'Enter') handleSave((e.target as HTMLInputElement).value.trim() || t("Untitled"))
                 if (e.key === 'Escape') setShowSaveDialog(false)
               }}
             />
             <div className="modal-actions">
-              <button className="secondary" onClick={() => setShowSaveDialog(false)}>Cancel</button>
+              <button className="secondary" onClick={() => setShowSaveDialog(false)}>{t("Cancel")}</button>
               <button onClick={(e) => {
                 const input = (e.target as HTMLElement).parentElement!.parentElement!.querySelector('input') as HTMLInputElement
-                handleSave(input.value.trim() || 'Untitled')
-              }}>Save</button>
+                handleSave(input.value.trim() || t("Untitled"))
+              }}>{t("Save")}</button>
             </div>
           </div>
         </div>
@@ -525,7 +526,7 @@ export function CodeOrders({ data: propData, savedConfig, inTab }: Props) {
         <div className="analysis-section" style={{ marginBottom: 14 }}>
           <div onClick={() => setDocSectionOpen(!docSectionOpen)} style={{ display: 'flex', alignItems: 'center', gap: 8, cursor: 'pointer', userSelect: 'none' }}>
             <Icon icon={docSectionOpen ? faChevronDown : faChevronRight} style={{ fontSize: 12, color: 'var(--text-muted)' }} />
-            <span style={{ fontSize: 'var(--font-size-lg)', fontWeight: 600, color: 'var(--text-secondary)' }}>Select Documents</span>
+            <span style={{ fontSize: 'var(--font-size-lg)', fontWeight: 600, color: 'var(--text-secondary)' }}>{t("Select Documents")}</span>
           </div>
           {docSectionOpen && (
             <div style={{ marginTop: 10, minHeight: 160 }}>
@@ -549,9 +550,9 @@ export function CodeOrders({ data: propData, savedConfig, inTab }: Props) {
           onDrop={handleTagDrop}
         >
           <div style={{ display: 'flex', alignItems: 'baseline', justifyContent: 'space-between', gap: 12, marginBottom: groupBy.length > 0 ? 8 : 0, position: 'relative', zIndex: 1 }}>
-            <span style={{ fontSize: 'var(--font-size-lg)', fontWeight: 600, color: 'var(--text-secondary)' }}>Group by</span>
+            <span style={{ fontSize: 'var(--font-size-lg)', fontWeight: 600, color: 'var(--text-secondary)' }}>{t("Group by")}</span>
             <span style={{ fontSize: 11, color: 'var(--text-muted)' }}>
-              Drag tags, categories, or folders here
+              {t("Drag tags, categories, or folders here")}
             </span>
           </div>
           <div style={{ position: 'relative', zIndex: 1 }}>
@@ -592,9 +593,9 @@ export function CodeOrders({ data: propData, savedConfig, inTab }: Props) {
           onDrop={handleDrop}
         >
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 10, position: 'relative', zIndex: 1 }}>
-            <span style={{ fontSize: 'var(--font-size-lg)', fontWeight: 600, color: 'var(--text-secondary)' }}>Code Orders</span>
+            <span style={{ fontSize: 'var(--font-size-lg)', fontWeight: 600, color: 'var(--text-secondary)' }}>{t("Code Orders")}</span>
             <button className="secondary" style={{ fontSize: 10, padding: '3px 8px' }} onClick={handleExportSvg} disabled={codeGuids.length === 0 || rows.length === 0}>
-              Export SVG
+              {t("Export SVG")}
             </button>
           </div>
 
@@ -607,7 +608,7 @@ export function CodeOrders({ data: propData, savedConfig, inTab }: Props) {
                   <span key={guid} style={{ display: 'inline-flex', alignItems: 'center', gap: 4, fontSize: 11, background: 'var(--bg-tertiary)', padding: '2px 8px', borderRadius: 'var(--radius-sm)' }}>
                     <span style={{ display: 'inline-block', width: 8, height: 8, borderRadius: '50%', background: info?.color || '#888' }} />
                     {info?.name || guid}
-                    <span onClick={() => setCodeGuids((p) => p.filter((g) => g !== guid))} style={{ fontSize: 9, color: 'var(--text-muted)', cursor: 'pointer' }}>&times;</span>
+                    <span onClick={() => setCodeGuids((p) => p.filter((g) => g !== guid))} style={{ fontSize: 9, color: 'var(--text-muted)', cursor: 'pointer' }}>{t("×")}</span>
                   </span>
                 )
               })}
@@ -617,8 +618,8 @@ export function CodeOrders({ data: propData, savedConfig, inTab }: Props) {
           {codeGuids.length === 0 || rows.length === 0 ? (
             <div style={{ padding: '40px 20px', textAlign: 'center', color: 'var(--text-muted)', fontSize: 'var(--font-size-sm)', position: 'relative', zIndex: 1 }}>
               {codeGuids.length === 0
-                ? 'Drag codes from the Code Browser to build the visualisation'
-                : 'Select documents using the Document Selector above'}
+                ? t("Drag codes from the Code Browser to build the visualisation")
+                : t("Select documents using the Document Selector above")}
             </div>
           ) : (
             <div style={{ overflowX: 'auto' }}>

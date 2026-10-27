@@ -8,6 +8,7 @@ import { useToolSaveRegistry } from '../../stores/tool-save-registry'
 import { TOOL_REGISTRY } from '../../utils/tool-registry'
 import { sourceTypeFromFilename } from '../../utils/format-registry'
 import { useIconTint, useIconColourActive, iconTintKindForSourceType } from '../../utils/icon-tint'
+import { t } from '../../i18n'
 
 interface TabBarProps {
   openTabs: string[]
@@ -82,15 +83,15 @@ export function TabBar({ openTabs, activeTab, sources, onSelectTab, onCloseTab, 
     if (isMapTab(tabId)) {
       const guid = mapGuidFromTabId(tabId)
       const map = guid ? maps[guid] : undefined
-      return map?.name?.trim() || 'Untitled map'
+      return map?.name?.trim() || t("Untitled map")
     }
     if (isAnalysisTab(tabId) || isQueryBuilderTab(tabId)) {
       const inst = analysisTabs[tabId]
-      return inst?.title?.trim() || (isQueryBuilderTab(tabId) ? 'Query Builder' : 'Analysis')
+      return inst?.title?.trim() || (isQueryBuilderTab(tabId) ? t("Query Builder") : t("Analysis"))
     }
-    if (isPreferencesTab(tabId)) return 'Preferences'
-    if (isMergeTab(tabId)) return 'Merge Projects'
-    return sourceMap.get(tabId)?.name || 'Document'
+    if (isPreferencesTab(tabId)) return t("Preferences")
+    if (isMergeTab(tabId)) return t("Merge Projects")
+    return sourceMap.get(tabId)?.name || t("Document")
   }
 
   // Per-tab leading icon. Tool tabs reuse the glyph their toolbar
@@ -255,12 +256,12 @@ export function TabBar({ openTabs, activeTab, sources, onSelectTab, onCloseTab, 
                 onChange={(e) => setEditName(e.target.value)}
                 onClick={(e) => e.stopPropagation()}
                 onBlur={() => {
-                  if (mapGuid) setMapName(mapGuid, editName.trim() || 'Untitled map')
+                  if (mapGuid) setMapName(mapGuid, editName.trim() || t("Untitled map"))
                   setEditingMapGuid(null)
                 }}
                 onKeyDown={(e) => {
                   if (e.key === 'Enter') {
-                    if (mapGuid) setMapName(mapGuid, editName.trim() || 'Untitled map')
+                    if (mapGuid) setMapName(mapGuid, editName.trim() || t("Untitled map"))
                     setEditingMapGuid(null)
                   } else if (e.key === 'Escape') {
                     setEditingMapGuid(null)
@@ -278,10 +279,10 @@ export function TabBar({ openTabs, activeTab, sources, onSelectTab, onCloseTab, 
                 {dirty && (
                   <span
                     className="tab-dirty-marker"
-                    title="Unsaved changes"
-                    aria-label="Unsaved changes"
+                    title={t("Unsaved changes")}
+                    aria-label={t("Unsaved changes")}
                   >
-                    •&nbsp;
+                    {t("• ")}
                   </span>
                 )}
                 {name}
@@ -290,7 +291,7 @@ export function TabBar({ openTabs, activeTab, sources, onSelectTab, onCloseTab, 
             <span
               className="tab-close"
               onClick={(e) => { e.stopPropagation(); requestClose(guid) }}
-              title="Close tab"
+              title={t("Close tab")}
             >
               <Icon icon={faXmark} />
             </span>
@@ -300,19 +301,19 @@ export function TabBar({ openTabs, activeTab, sources, onSelectTab, onCloseTab, 
       {pendingCloseTabId && (
         <div className="modal-overlay" onClick={handleDialogCancel}>
           <div className="modal" onClick={(e) => e.stopPropagation()} style={{ minWidth: 360 }}>
-            <h2>Unsaved changes</h2>
+            <h2>{t("Unsaved changes")}</h2>
             <p style={{ margin: '8px 0 16px', color: 'var(--text-secondary)' }}>
-              "{labelFor(pendingCloseTabId)}" has unsaved changes. What would you like to do?
+              "{labelFor(pendingCloseTabId)}{t("\" has unsaved changes. What would you like to do?")}
             </p>
             <div className="modal-actions">
               <button className="secondary" onClick={handleDialogCancel}>
-                Cancel
+                {t("Cancel")}
               </button>
               <button className="secondary" onClick={handleDialogDiscard}>
-                Discard
+                {t("Discard")}
               </button>
               <button onClick={handleDialogSave}>
-                Save
+                {t("Save")}
               </button>
             </div>
           </div>

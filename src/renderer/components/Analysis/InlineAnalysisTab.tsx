@@ -36,6 +36,7 @@ import { Reports } from './Reports'
 import { QueryBuilderWindow } from '../QueryBuilder/QueryBuilderWindow'
 import { MemoFab } from '../Memos/MemoFab'
 import type { AnalysisToolType } from '../../models/types'
+import { t } from '../../i18n'
 
 interface Props {
   tabId: string
@@ -201,6 +202,6 @@ function dispatch(
     case 'reports':
       return <Reports data={data} savedConfig={savedConfig} inTab={inTab} />
     default:
-      return <div style={{ padding: 20, color: 'var(--text-muted)' }}>Unknown tool: {toolType}</div>
+      return <div style={{ padding: 20, color: 'var(--text-muted)' }}>{t("Unknown tool:")}{' '}{toolType}</div>
   }
 }

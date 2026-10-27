@@ -16,6 +16,7 @@ import { useQueryStore } from '../../stores/query-store'
 import { Icon, faMagnifyingGlass } from '../Icon'
 import { toolColors } from '../../utils/tool-registry'
 import type { Query } from '../../models/types'
+import { t } from '../../i18n'
 
 interface Props {
   open: boolean
@@ -62,10 +63,10 @@ export function FindDialog({ open, sourceGuid, sourceName, onClose }: Props) {
       <div className="modal" onClick={(e) => e.stopPropagation()} style={{ minWidth: 360 }}>
         <h2 style={{ margin: '0 0 4px', display: 'flex', alignItems: 'center', gap: 8, color: 'var(--text-secondary)' }}>
           <Icon icon={faMagnifyingGlass} className="analysis-header-icon" style={{ fontSize: 16 }} />
-          Find
+          {t("Find")}
         </h2>
         <div style={{ fontSize: 11, color: 'var(--text-muted)', marginBottom: 12 }}>
-          in {sourceName}
+          {t("in")}{' '}{sourceName}
         </div>
         <div style={{ marginBottom: 12 }}>
           <input
@@ -77,7 +78,7 @@ export function FindDialog({ open, sourceGuid, sourceName, onClose }: Props) {
               if (e.key === 'Enter') { e.preventDefault(); runFind() }
               else if (e.key === 'Escape') { e.preventDefault(); onClose() }
             }}
-            placeholder="word or phrase..."
+            placeholder={t("word or phrase...")}
             style={{ width: '100%' }}
           />
         </div>
@@ -88,7 +89,7 @@ export function FindDialog({ open, sourceGuid, sourceName, onClose }: Props) {
               checked={caseSensitive}
               onChange={(e) => setCaseSensitive(e.target.checked)}
             />
-            Case sensitive
+            {t("Case sensitive")}
           </label>
           <label style={{ display: 'flex', alignItems: 'center', gap: 6, cursor: 'pointer', userSelect: 'none' }}>
             <input
@@ -96,12 +97,12 @@ export function FindDialog({ open, sourceGuid, sourceName, onClose }: Props) {
               checked={wholeWord}
               onChange={(e) => setWholeWord(e.target.checked)}
             />
-            Whole word
+            {t("Whole word")}
           </label>
         </div>
         <div className="modal-actions">
-          <button className="secondary" onClick={onClose}>Cancel</button>
-          <button disabled={!searchText.trim()} onClick={runFind}>Find</button>
+          <button className="secondary" onClick={onClose}>{t("Cancel")}</button>
+          <button disabled={!searchText.trim()} onClick={runFind}>{t("Find")}</button>
         </div>
       </div>
     </div>

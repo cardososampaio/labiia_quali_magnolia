@@ -11,6 +11,7 @@
 import { useDocumentStore } from '../../stores/document-store'
 import { escHtml } from '../../utils/pdf-export'
 import type { SurveyFormatData } from '../../models/types'
+import { t } from '../../i18n'
 
 export function surveyCellCitation(
   sourceGuid: string,
@@ -23,7 +24,7 @@ export function surveyCellCitation(
   const qIdx = survey.questions.findIndex((qq) => qq.id === cell.questionId)
   const respLabel =
     (rIdx >= 0 ? survey.respondents[rIdx]?.displayName : '') ||
-    (rIdx >= 0 ? `Respondent ${rIdx + 1}` : 'Respondent')
+    (rIdx >= 0 ? t("Respondent {{x0}}", { x0: rIdx + 1 }) : t("Respondent"))
 
   let cite = ` · ${escHtml(respLabel)}`
   if (qIdx >= 0) {

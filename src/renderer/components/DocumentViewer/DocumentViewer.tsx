@@ -61,6 +61,7 @@ function renderToolTab(tabId: string): React.ReactNode {
 }
 import { InlineRelationshipMap } from '../Analysis/RelationshipMap/InlineRelationshipMap'
 import { MemoFab } from '../Memos/MemoFab'
+import { t, tn } from '../../i18n'
 
 class ViewerErrorBoundary extends Component<{ children: ReactNode }, { error: Error | null }> {
   state = { error: null as Error | null }
@@ -70,7 +71,7 @@ class ViewerErrorBoundary extends Component<{ children: ReactNode }, { error: Er
     if (this.state.error) {
       return (
         <div style={{ padding: 20, color: 'var(--danger)', fontSize: 'var(--font-size-sm)' }}>
-          <strong>Error loading document:</strong> {this.state.error.message}
+          <strong>{t("Error loading document:")}</strong> {this.state.error.message}
         </div>
       )
     }
@@ -444,7 +445,7 @@ export function DocumentViewer() {
         />
       ) : (
         <div className="panel-header">
-          <span style={{ flex: 1 }}>Viewer</span>
+          <span style={{ flex: 1 }}>{t("Viewer")}</span>
         </div>
       )}
       {/* Persistent tool-tab mounts — only the active one is visible.
@@ -511,10 +512,10 @@ export function DocumentViewer() {
         <div className="viewer-toolbar">
           <span className="viewer-meta">
             {(() => {
-              const t = effectiveSourceType
-              const label = t === 'note' ? 'Note' : t === 'markdown' ? 'Markdown' : t === 'audio' ? 'Audio transcript' : t === 'video' ? 'Video transcript' : 'Plain text'
+              const kind = effectiveSourceType
+              const label = kind === 'note' ? t('Note') : kind === 'markdown' ? 'Markdown' : kind === 'audio' ? t('Audio transcript') : kind === 'video' ? t('Video transcript') : t('Plain text')
               const wc = (content.match(/\S+/g) || []).length
-              return `${label} · ${wc.toLocaleString()} words`
+              return `${label} · ${tn(wc, '{{count}} word', '{{count}} words')}`
             })()}
           </span>
           <span className="viewer-spacer" />
@@ -622,7 +623,7 @@ export function DocumentViewer() {
             editable={!lockedBy}
             onTextEdit={(next) => applyTranscriptEdit(source.guid, next)}
             onSelectionCleared={() => setPendingSelection(null)}
-            placeholder="Write your observation…"
+            placeholder={t("Write your observation…")}
             autoFocus={content === ''}
           />
         )}
@@ -660,7 +661,7 @@ export function DocumentViewer() {
             }}
           >
             <span style={{ color: 'var(--accent)', fontWeight: 600, fontSize: 14 }}>
-              Drop code to apply to selection
+              {t("Drop code to apply to selection")}
             </span>
           </div>
         )}
@@ -678,7 +679,7 @@ export function DocumentViewer() {
             }}
           >
             <span style={{ color: 'var(--text-muted)', fontSize: 13 }}>
-              Select text first, then drag a code onto it
+              {t("Select text first, then drag a code onto it")}
             </span>
           </div>
         )}
@@ -702,7 +703,7 @@ export function DocumentViewer() {
               useNewCodeTriggerStore.getState().request()
             }}
           >
-            New Code
+            {t("New Code")}
           </div>
           <div className="context-menu-separator" />
           {/* If there's a pending text selection, show hotkeyed codes for quick apply */}
@@ -717,7 +718,7 @@ export function DocumentViewer() {
                   userSelect: 'none'
                 }}
               >
-                Apply Code
+                {t("Apply Code")}
               </div>
               <div
                 style={{
@@ -729,7 +730,7 @@ export function DocumentViewer() {
                   userSelect: 'none'
                 }}
               >
-                To apply any code, select content and drag the code from the Code Browser to the selection.
+                {t("To apply any code, select content and drag the code from the Code Browser to the selection.")}
               </div>
               {hotkeyCodes.map(({ code }) => (
                 <div
@@ -756,7 +757,7 @@ export function DocumentViewer() {
                   className="context-menu-item"
                   style={{ color: 'var(--text-muted)', pointerEvents: 'none' }}
                 >
-                  No hotkeys assigned — right-click a code to assign one
+                  {t("No hotkeys assigned — right-click a code to assign one")}
                 </div>
               )}
             </>
@@ -780,7 +781,7 @@ export function DocumentViewer() {
                   userSelect: 'none'
                 }}
               >
-                Remove Code
+                {t("Remove Code")}
               </div>
               {contextMenu.context.existingCodings.map((ec) => {
                 const code = findCode(ec.codeGuid)
@@ -801,7 +802,7 @@ export function DocumentViewer() {
                       className="color-pip"
                       style={{ background: code?.color || '#888' }}
                     />
-                    {code?.name ?? 'Unknown'}
+                    {code?.name ?? t("Unknown")}
                   </div>
                 )
               })}
@@ -822,7 +823,7 @@ export function DocumentViewer() {
                   useQuoteStore.getState().addQuote(source.guid, source.name, ps.startCp, ps.endCp, ps.selectedText)
                 }}
               >
-                Add as Quote
+                {t("Add as Quote")}
               </div>
             </>
           )}
@@ -845,7 +846,7 @@ export function DocumentViewer() {
                   )
                 }}
               >
-                Add Selection Memo
+                {t("Add Selection Memo")}
               </div>
             </>
           )}
@@ -863,7 +864,7 @@ export function DocumentViewer() {
                   userSelect: 'none'
                 }}
               >
-                Delete Memo
+                {t("Delete Memo")}
               </div>
               {contextMenu.context.overlappingMemos.map((m) => (
                 <div

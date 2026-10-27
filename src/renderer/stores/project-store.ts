@@ -3,6 +3,7 @@ import type { User, SavedAnalysis, CheckoutMarker } from '../models/types'
 import { generateGuid } from '../utils/guid'
 import { makeHmrSafe } from './hmr-preserve'
 import { usePreferencesStore } from './preferences-store'
+import { t } from '../i18n'
 
 /** Strip directory and .qdpx extension from a file path. */
 function deriveNameFromPath(filePath: string): string {
@@ -71,10 +72,10 @@ interface ProjectState {
 const defaultUserGuid = generateGuid()
 
 export const useProjectStore = create<ProjectState>((set, get) => ({
-  name: 'Untitled Project',
-  origin: `Magnolia ${__APP_VERSION__}`,
+  name: t("Untitled Project"),
+  origin: `labiia_quali ${__APP_VERSION__}`,
   description: undefined,
-  users: [{ guid: defaultUserGuid, name: 'User' }],
+  users: [{ guid: defaultUserGuid, name: t("User") }],
   creatingUserGUID: defaultUserGuid,
   creationDateTime: new Date().toISOString(),
   filePath: null,
@@ -86,10 +87,10 @@ export const useProjectStore = create<ProjectState>((set, get) => ({
   createNewProject: () => {
     const userGuid = generateGuid()
     set({
-      name: 'Untitled Project',
-      origin: `Magnolia ${__APP_VERSION__}`,
+      name: t("Untitled Project"),
+      origin: `labiia_quali ${__APP_VERSION__}`,
       description: undefined,
-      users: [{ guid: userGuid, name: 'User' }],
+      users: [{ guid: userGuid, name: t("User") }],
       creatingUserGUID: userGuid,
       creationDateTime: new Date().toISOString(),
       modifyingUserGUID: undefined,
@@ -104,7 +105,7 @@ export const useProjectStore = create<ProjectState>((set, get) => ({
 
   loadProject: (data) =>
     set({
-      name: data.name && data.name.trim() ? data.name : (data.filePath ? deriveNameFromPath(data.filePath) : 'Untitled Project'),
+      name: data.name && data.name.trim() ? data.name : (data.filePath ? deriveNameFromPath(data.filePath) : t("Untitled Project")),
       origin: data.origin,
       description: data.description,
       users: data.users,
@@ -191,5 +192,5 @@ export function useCheckoutLockedBy(): string | null {
 
 /** Standard tooltip/title text for a control disabled by useCheckoutLockedBy. */
 export function checkoutLockedTitle(lockedBy: string): string {
-  return `${lockedBy} is working on this file — take over or create a copy to edit`
+  return t('{{lockedBy}} is working on this file — take over or create a copy to edit', { lockedBy })
 }

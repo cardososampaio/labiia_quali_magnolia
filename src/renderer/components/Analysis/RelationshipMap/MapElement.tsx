@@ -28,6 +28,7 @@ import {
 } from '../../Icon'
 import { useRef, useEffect } from 'react'
 import type { IconComponent } from '../../Icon'
+import { t } from '../../../i18n'
 
 const KIND_LABELS: Record<MapElementKind, string> = {
   document: 'DOC',
@@ -273,7 +274,7 @@ export function MapElement({ element, selected, onHeaderMouseDown, onBodyMouseDo
   // Left 3px colored bar; top row (title/source) is the move handle, the
   // snippet area draws a connection wire.
   const title = isMemo
-    ? element.label || 'Untitled memo'
+    ? element.label || t("Untitled memo")
     : element.label /* source name for quote/result */
 
   return (

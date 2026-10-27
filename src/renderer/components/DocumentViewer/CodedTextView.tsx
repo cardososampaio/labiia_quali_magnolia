@@ -14,6 +14,7 @@ import { useMemoStore } from '../../stores/memo-store'
 import { blendColors, multiColorUnderline } from '../../utils/code-highlight'
 import { computeTextEdit } from '../../utils/text-edit-offsets'
 import { continueListEdit, toggleMarkEdit } from '../../utils/notes'
+import { t } from '../../i18n'
 
 interface Props {
   text: string
@@ -452,7 +453,7 @@ export function CodedTextView({
           const memo = contentMemos?.find(
             (m) => m.startPosition === mr.startCp && m.endPosition === mr.endCp
           )
-          return memo ? { guid: memo.guid, title: memo.title || 'Untitled Memo', startCp: mr.startCp, endCp: mr.endCp } : null
+          return memo ? { guid: memo.guid, title: memo.title || t("Untitled Memo"), startCp: mr.startCp, endCp: mr.endCp } : null
         })
         .filter((x): x is { guid: string; title: string; startCp: number; endCp: number } => x !== null)
 
@@ -896,7 +897,7 @@ export function CodedTextView({
       const codeTitles = hasHighlight
         ? span.activeCodes.map((ac) => codeMap.get(ac.codeGuid)?.name).filter(Boolean).join(', ')
         : ''
-      const titleParts = [codeTitles, hasMemo ? `Memo: ${memoTitles}` : ''].filter(Boolean)
+      const titleParts = [codeTitles, hasMemo ? t("Memo: {{memoTitles}}", { memoTitles: memoTitles }) : ''].filter(Boolean)
 
       atoms.push({
         cpStart: segStart,
@@ -1681,7 +1682,7 @@ export function CodedTextView({
               existingCodings: [],
               overlappingMemos: memos.map((m) => ({
                 guid: m.guid,
-                title: m.title || 'Untitled Memo',
+                title: m.title || t("Untitled Memo"),
                 startCp: m.startPosition ?? 0,
                 endCp: m.endPosition ?? m.startPosition ?? 0
               }))
@@ -1694,7 +1695,7 @@ export function CodedTextView({
             const items = qs.map((q) => ({
               guid: q.guid,
               type: 'content' as const,
-              title: 'Quote',
+              title: t("Quote"),
               content: '',
               createdDateTime: '',
               startPosition: q.startCp,
@@ -1753,7 +1754,7 @@ export function CodedTextView({
                   active={isActive}
                   invisible={!ts}
                   onClick={ts && onTimestampClick ? () => onTimestampClick(ts.seconds) : undefined}
-                  title={ts ? `Jump to ${ts.text}` : undefined}
+                  title={ts ? t("Jump to {{text}}", { text: ts.text }) : undefined}
                 />
               )
             })() : (
@@ -2034,7 +2035,7 @@ export function CodedTextView({
                   icon={memoPopup.isQuote ? QUOTE_ICON : (m.startPosition === m.endPosition ? MEMO_POINT_ICON : MEMO_RANGED_ICON)}
                   style={{ marginRight: 6, fontSize: 10, color: memoPopup.isQuote ? '#d94a4a' : undefined }}
                 />
-                <span style={{ flex: 1 }}>{m.title || (memoPopup.isQuote ? 'Quote' : 'Untitled Memo')}</span>
+                <span style={{ flex: 1 }}>{m.title || (memoPopup.isQuote ? t("Quote") : t("Untitled Memo"))}</span>
               </div>
             ))}
             {/* Delete options for quotes (right-click only) */}
@@ -2058,7 +2059,7 @@ export function CodedTextView({
                       setHoveredRange(null)
                     }}
                   >
-                    Delete "{(m.title || 'Quote').slice(0, 20)}"
+                    {t("Delete \"")}{(m.title || t("Quote")).slice(0, 20)}"
                   </div>
                 ))}
               </>

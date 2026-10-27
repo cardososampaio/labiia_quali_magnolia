@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { t } from '../i18n'
 
 /**
  * One-time, mandatory "enter your name" gate shown the very first time the
@@ -41,15 +42,15 @@ export function NameGateOverlay({ onSubmit }: { onSubmit: (name: string) => void
           boxShadow: '0 10px 40px rgba(0,0,0,0.3)'
         }}
       >
-        <h2 style={{ margin: '0 0 8px', fontSize: 16, fontWeight: 600 }}>Welcome to Magnolia</h2>
+        <h2 style={{ margin: '0 0 8px', fontSize: 16, fontWeight: 600 }}>{t("Welcome to labiia_quali")}</h2>
         <p style={{ margin: '0 0 16px', color: 'var(--text-secondary)', fontSize: 'var(--font-size-sm)', lineHeight: 1.5 }}>
-          Before you get started, what's your name? It's shown to teammates when you check out or make changes to a shared project, and saved into the project file itself whenever you're the last person to edit it.
+          {t("Before you get started, what's your name? It's shown to teammates when you check out or make changes to a shared project, and saved into the project file itself whenever you're the last person to edit it.")}
         </p>
         <input
           type="text"
           autoFocus
           value={draft}
-          placeholder="Your name"
+          placeholder={t("Your name")}
           onChange={(e) => setDraft(e.target.value)}
           onKeyDown={(e) => {
             if (e.key === 'Enter') submit()
@@ -67,7 +68,7 @@ export function NameGateOverlay({ onSubmit }: { onSubmit: (name: string) => void
           }}
         />
         <div className="modal-actions">
-          <button onClick={submit} disabled={!trimmed}>Continue</button>
+          <button onClick={submit} disabled={!trimmed}>{t("Continue")}</button>
         </div>
       </div>
     </div>

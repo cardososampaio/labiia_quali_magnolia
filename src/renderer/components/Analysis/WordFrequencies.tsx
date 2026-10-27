@@ -9,7 +9,7 @@ import {
   emptyDocumentFilter,
   type DocumentFilterState
 } from '../DocumentSelector/DocumentSelector'
-import { toCsv, resolveFilteredSources, STOP_WORDS, applySurveyCellScope } from './analysis-helpers'
+import { toCsv, resolveFilteredSources, DEFAULT_STOP_WORDS, tokenizeWords, applySurveyCellScope } from './analysis-helpers'
 import { generateGuid } from '../../utils/guid'
 import {
   type GroupByEntry,
@@ -35,6 +35,7 @@ import { useThemeSvgColors, SVG_FONT_FAMILY } from '../../utils/use-theme-svg-co
 import { useToolDirtyState } from '../../hooks/use-tool-dirty-state'
 import { useRegisterToolSave } from '../../hooks/use-register-tool-save'
 import { SegmentedControl } from './SegmentedControl'
+import { t } from '../../i18n'
 
 interface Props {
   data: AnalysisInitData
@@ -156,7 +157,7 @@ export function WordFrequencies({ data: propData, savedConfig, inTab }: Props) {
   }, [propData, live, docFilter, questionScope])
   const [tagDropOver, setTagDropOver] = useState(false)
   const [includeWords, setIncludeWords] = useState(savedConfig?.includeWords ?? '')
-  const [excludeWords, setExcludeWords] = useState(savedConfig?.excludeWords ?? Array.from(STOP_WORDS).join(', '))
+  const [excludeWords, setExcludeWords] = useState(savedConfig?.excludeWords ?? Array.from(DEFAULT_STOP_WORDS).join(', '))
   const [vizMode, setVizMode] = useState<VizMode>('bar')
   const [wordCount, setWordCount] = useState(savedConfig?.wordCount ?? 30)
   const chartRef = useRef<SVGSVGElement>(null)
@@ -174,7 +175,7 @@ export function WordFrequencies({ data: propData, savedConfig, inTab }: Props) {
   const initialBaseline = useMemo(() => ({
     docFilter: savedConfig?.docFilter ?? emptyDocumentFilter(),
     includeWords: savedConfig?.includeWords ?? '',
-    excludeWords: savedConfig?.excludeWords ?? Array.from(STOP_WORDS).join(', '),
+    excludeWords: savedConfig?.excludeWords ?? Array.from(DEFAULT_STOP_WORDS).join(', '),
     wordCount: savedConfig?.wordCount ?? 30,
     groupBy: savedConfig?.groupBy ?? migrateLegacyGroupBy(savedConfig?.groupByTags),
     questionScope: savedConfig?.questionScope ?? []
@@ -264,7 +265,7 @@ export function WordFrequencies({ data: propData, savedConfig, inTab }: Props) {
   // Respondents grouping (columns renamed → chart series here).
   const { series, seriesGroups } = useMemo(() => {
     if (groupBy.length === 0) {
-      const all: AnalysisColumn[] = [{ id: '__all', label: 'All', sourceGuids: filteredSourceGuids }]
+      const all: AnalysisColumn[] = [{ id: '__all', label: t("All"), sourceGuids: filteredSourceGuids }]
       return { series: all, seriesGroups: [] as { id: string; label: string | null; span: number }[] }
     }
     const built = buildSurveyAwareColumns(groupBy, data, filteredSourceGuids, sourceMap, { includeSubtotals: true })
@@ -291,9 +292,7 @@ export function WordFrequencies({ data: propData, savedConfig, inTab }: Props) {
         }
       }
       if (!text) continue
-      const words = text.toLowerCase().match(/\b[a-zA-Z\u00C0-\u024F']+\b/g) || []
-      for (const w of words) {
-        if (w.length < 2) continue
+      for (const w of tokenizeWords(text)) {
         if (excludeSet.has(w)) continue
         if (includeSet && !includeSet.has(w)) continue
         freq.set(w, (freq.get(w) || 0) + 1)
@@ -335,7 +334,7 @@ export function WordFrequencies({ data: propData, savedConfig, inTab }: Props) {
   }, [displayWords, seriesFreqs])
 
   const handleExportCsv = useCallback(() => {
-    const rows: string[][] = [['Word', 'Frequency']]
+    const rows: string[][] = [[t("Word"), t("Frequency")]]
     for (const [word, count] of wordFreqs) {
       rows.push([word, String(count)])
     }
@@ -467,16 +466,16 @@ export function WordFrequencies({ data: propData, savedConfig, inTab }: Props) {
       <div style={{ padding: '14px 20px 6px', flexShrink: 0, display: 'flex', alignItems: 'center', gap: 8 }}>
         <h2 style={{ margin: 0, fontSize: 18, fontWeight: 600, display: 'flex', alignItems: 'center', gap: 8, color: 'var(--text-secondary)' }}>
           <Icon icon={faFont} className="analysis-header-icon" style={{ fontSize: 16 }} />
-          Word Frequencies{isExisting ? ':' : ''}
+          {t("Word Frequencies")}{isExisting ? ':' : ''}
           {isExisting && <EditableTitleSuffix name={analysisName} onRename={handleRename} />}
         </h2>
         <div style={{ flex: 1 }} />
         <button className="secondary" style={{ fontSize: 11, padding: '4px 14px' }} onClick={() => inTab ? inTab.onClose() : window.close()}>
-          Close
+          {t("Close")}
         </button>
         {isExisting && dirty && (
           <button className="secondary" style={{ fontSize: 11, padding: '4px 14px' }} onClick={handleDiscard}>
-            Discard Changes
+            {t("Discard Changes")}
           </button>
         )}
         {isExisting ? (
@@ -485,11 +484,11 @@ export function WordFrequencies({ data: propData, savedConfig, inTab }: Props) {
             disabled={!dirty}
             onClick={() => { handleSave(analysisName) }}
           >
-            {dirty ? 'Update Analysis' : 'Saved'}
+            {dirty ? t("Update Analysis") : t("Saved")}
           </button>
         ) : (
           <button style={{ fontSize: 11, padding: '4px 14px' }} onClick={() => setShowSaveDialog(true)}>
-            Save Analysis
+            {t("Save Analysis")}
           </button>
         )}
         {/* Clearance for the floating MemoFab. */}
@@ -499,24 +498,24 @@ export function WordFrequencies({ data: propData, savedConfig, inTab }: Props) {
       {showSaveDialog && (
         <div className="modal-overlay" onClick={() => setShowSaveDialog(false)}>
           <div className="modal" onClick={(e) => e.stopPropagation()}>
-            <h2>Save Analysis</h2>
+            <h2>{t("Save Analysis")}</h2>
             <input
               autoFocus
               type="text"
               defaultValue={analysisName}
-              placeholder="Analysis name"
+              placeholder={t("Analysis name")}
               style={{ width: '100%' }}
               onKeyDown={(e) => {
-                if (e.key === 'Enter') handleSave((e.target as HTMLInputElement).value.trim() || 'Untitled')
+                if (e.key === 'Enter') handleSave((e.target as HTMLInputElement).value.trim() || t("Untitled"))
                 if (e.key === 'Escape') setShowSaveDialog(false)
               }}
             />
             <div className="modal-actions">
-              <button className="secondary" onClick={() => setShowSaveDialog(false)}>Cancel</button>
+              <button className="secondary" onClick={() => setShowSaveDialog(false)}>{t("Cancel")}</button>
               <button onClick={(e) => {
                 const input = (e.target as HTMLElement).parentElement!.parentElement!.querySelector('input') as HTMLInputElement
-                handleSave(input.value.trim() || 'Untitled')
-              }}>Save</button>
+                handleSave(input.value.trim() || t("Untitled"))
+              }}>{t("Save")}</button>
             </div>
           </div>
         </div>
@@ -527,7 +526,7 @@ export function WordFrequencies({ data: propData, savedConfig, inTab }: Props) {
         <div className="analysis-section" style={{ marginBottom: 14 }}>
           <div onClick={() => setDocSectionOpen(!docSectionOpen)} style={{ display: 'flex', alignItems: 'center', gap: 8, cursor: 'pointer', userSelect: 'none' }}>
             <Icon icon={docSectionOpen ? faChevronDown : faChevronRight} style={{ fontSize: 12, color: 'var(--text-muted)' }} />
-            <span style={{ fontSize: 'var(--font-size-lg)', fontWeight: 600, color: 'var(--text-secondary)' }}>Select Documents</span>
+            <span style={{ fontSize: 'var(--font-size-lg)', fontWeight: 600, color: 'var(--text-secondary)' }}>{t("Select Documents")}</span>
           </div>
           {docSectionOpen && (
             <div style={{ marginTop: 10, minHeight: 160 }}>
@@ -551,9 +550,9 @@ export function WordFrequencies({ data: propData, savedConfig, inTab }: Props) {
           onDrop={handleTagDrop}
         >
           <div style={{ display: 'flex', alignItems: 'baseline', justifyContent: 'space-between', gap: 12, marginBottom: groupBy.length > 0 ? 8 : 0, position: 'relative', zIndex: 1 }}>
-            <span style={{ fontSize: 'var(--font-size-lg)', fontWeight: 600, color: 'var(--text-secondary)' }}>Group by</span>
+            <span style={{ fontSize: 'var(--font-size-lg)', fontWeight: 600, color: 'var(--text-secondary)' }}>{t("Group by")}</span>
             <span style={{ fontSize: 11, color: 'var(--text-muted)' }}>
-              Drag tags, categories, or folders here
+              {t("Drag tags, categories, or folders here")}
             </span>
           </div>
           <div style={{ position: 'relative', zIndex: 1 }}>
@@ -583,18 +582,18 @@ export function WordFrequencies({ data: propData, savedConfig, inTab }: Props) {
         {/* Include/Exclude words */}
         <div style={{ display: 'flex', gap: 14, marginBottom: 14 }}>
           <div className="analysis-section" style={{ flex: 1 }}>
-            <div style={{ fontSize: 12, fontWeight: 600, marginBottom: 6, color: 'var(--text-secondary)' }}>Include words</div>
-            <div style={{ fontSize: 10, color: 'var(--text-muted)', marginBottom: 6 }}>Leave empty to include all words (except excluded)</div>
+            <div style={{ fontSize: 12, fontWeight: 600, marginBottom: 6, color: 'var(--text-secondary)' }}>{t("Include words")}</div>
+            <div style={{ fontSize: 10, color: 'var(--text-muted)', marginBottom: 6 }}>{t("Leave empty to include all words (except excluded)")}</div>
             <textarea
               value={includeWords}
               onChange={(e) => setIncludeWords(e.target.value)}
-              placeholder="word1, word2, ..."
+              placeholder={t("word1, word2, ...")}
               style={{ width: '100%', height: 60, resize: 'vertical' }}
             />
           </div>
           <div className="analysis-section" style={{ flex: 1 }}>
-            <div style={{ fontSize: 12, fontWeight: 600, marginBottom: 6, color: 'var(--text-secondary)' }}>Exclude words</div>
-            <div style={{ fontSize: 10, color: 'var(--text-muted)', marginBottom: 6 }}>Common English stop words are excluded by default</div>
+            <div style={{ fontSize: 12, fontWeight: 600, marginBottom: 6, color: 'var(--text-secondary)' }}>{t("Exclude words")}</div>
+            <div style={{ fontSize: 10, color: 'var(--text-muted)', marginBottom: 6 }}>{t('Common Portuguese and English stop words are excluded by default')}</div>
             <textarea
               value={excludeWords}
               onChange={(e) => setExcludeWords(e.target.value)}
@@ -608,20 +607,20 @@ export function WordFrequencies({ data: propData, savedConfig, inTab }: Props) {
           {/* Table — fixed width so viz panel stays constant between bar/cloud */}
           <div className="analysis-section" style={{ width: 260, flexShrink: 0 }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 10 }}>
-              <span style={{ fontSize: 12, fontWeight: 600, color: 'var(--text-secondary)' }}>Word Table ({wordFreqs.length} words)</span>
-              <button className="secondary" style={{ fontSize: 10, padding: '3px 8px' }} onClick={handleExportCsv}>Export CSV</button>
+              <span style={{ fontSize: 12, fontWeight: 600, color: 'var(--text-secondary)' }}>{t("Word Table (")}{wordFreqs.length} {t("words)")}</span>
+              <button className="secondary" style={{ fontSize: 10, padding: '3px 8px' }} onClick={handleExportCsv}>{t("Export CSV")}</button>
             </div>
             <div style={{ maxHeight: 350, overflowY: 'auto' }}>
               <table style={{ borderCollapse: 'collapse', fontSize: 11, width: '100%' }}>
                 <thead>
                   <tr>
-                    <th style={{ padding: '3px 6px', borderBottom: '1px solid var(--border-color)', textAlign: 'left' }}>Word</th>
-                    <th style={{ padding: '3px 6px', borderBottom: '1px solid var(--border-color)', textAlign: 'right' }}>Count</th>
+                    <th style={{ padding: '3px 6px', borderBottom: '1px solid var(--border-color)', textAlign: 'left' }}>{t("Word")}</th>
+                    <th style={{ padding: '3px 6px', borderBottom: '1px solid var(--border-color)', textAlign: 'right' }}>{t("Count")}</th>
                   </tr>
                 </thead>
                 <tbody>
                   {wordFreqs.slice(0, 200).map(([word, count]) => (
-                    <tr key={word} onClick={() => handleWordClick(word)} style={{ cursor: 'pointer' }} title={`Search for "${word}"`}>
+                    <tr key={word} onClick={() => handleWordClick(word)} style={{ cursor: 'pointer' }} title={t("Search for \"{{word}}\"", { word: word })}>
                       <td style={{ padding: '2px 6px', borderBottom: '1px solid var(--border-color)' }}>{word}</td>
                       <td style={{ padding: '2px 6px', borderBottom: '1px solid var(--border-color)', textAlign: 'right' }}>{count}</td>
                     </tr>
@@ -635,21 +634,21 @@ export function WordFrequencies({ data: propData, savedConfig, inTab }: Props) {
           <div className="analysis-section" style={{ flex: 1 }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 10, gap: 6 }}>
               <SegmentedControl
-                label="View"
+                label={t("View")}
                 value={vizMode}
                 onChange={setVizMode}
                 options={[
-                  { value: 'bar', label: 'Bar Chart' },
-                  { value: 'cloud', label: 'Word Cloud' }
+                  { value: 'bar', label: t("Bar Chart") },
+                  { value: 'cloud', label: t("Word Cloud") }
                 ]}
               />
               <div style={{ display: 'flex', gap: 6, alignItems: 'center' }}>
-                <label style={{ fontSize: 10, color: 'var(--text-muted)' }}>Show:
+                <label style={{ fontSize: 10, color: 'var(--text-muted)' }}>{t("Show:")}
                   <input type="number" min={5} max={200} value={wordCount} onChange={(e) => setWordCount(Number(e.target.value))}
                     style={{ width: 50, marginLeft: 4 }}
                   />
                 </label>
-                <button className="secondary" style={{ fontSize: 10, padding: '3px 8px' }} onClick={handleExportChart}>Export SVG</button>
+                <button className="secondary" style={{ fontSize: 10, padding: '3px 8px' }} onClick={handleExportChart}>{t("Export SVG")}</button>
               </div>
             </div>
 
@@ -699,7 +698,7 @@ export function WordFrequencies({ data: propData, savedConfig, inTab }: Props) {
 
             {displayWords.length === 0 ? (
               <div style={{ padding: 30, textAlign: 'center', color: 'var(--text-muted)', fontSize: 'var(--font-size-sm)' }}>
-                No words to display
+                {t("No words to display")}
               </div>
             ) : vizMode === 'bar' ? (
               (() => {
@@ -877,7 +876,7 @@ export function WordFrequencies({ data: propData, savedConfig, inTab }: Props) {
                     style={{ cursor: 'pointer' }}
                     onClick={() => handleWordClick(word)}
                   >
-                    <title>{`${word}: ${count} — click to search`}</title>
+                    <title>{t("{{word}}: {{count}} — click to search", { word: word, count: count })}</title>
                     {word}
                   </text>
                 ))}

@@ -16,7 +16,8 @@ import {
   countCodeInSource,
   codeFrequencyInSource,
   countCoOccurrences,
-  binarizeGrid
+  binarizeGrid,
+  tokenizeWords
 } from './analysis-helpers'
 import { buildSurveyAwareColumns, type AnalysisColumn } from './survey-grouping'
 import { buildDisplayRows, fullLabel, summaryKey } from './framework-matrix-model'
@@ -29,6 +30,7 @@ import { TOOL_REGISTRY } from '../../utils/tool-registry'
 import { useProjectStore } from '../../stores/project-store'
 import type { AnalysisInitData, QueryResult } from '../../models/types'
 import type { AnalysisItemOptions, ReportItem } from './report-export'
+import { t, formatNumber } from '../../i18n'
 
 /** CSS for the report's regenerated analysis tables, appended to the
  *  export document's styles. */
@@ -85,7 +87,7 @@ export const REPORT_TABLE_CSS = `
 
 function pctOf(value: number, total: number): string {
   if (!total) return ''
-  return ((value / total) * 100).toFixed(1) + '%'
+  return formatNumber((value / total) * 100, { minimumFractionDigits: 1, maximumFractionDigits: 1 }) + '%'
 }
 
 function trunc(s: string, n: number): string {
@@ -276,9 +278,9 @@ function codesInDocumentsHtml(config: any, options: AnalysisItemOptions): string
     })
   )
   if (options.binary) grid = binarizeGrid(grid)
-  const names = codeGuids.map((cg) => codeMap.get(cg)?.name ?? 'Code')
+  const names = codeGuids.map((cg) => codeMap.get(cg)?.name ?? t("Code"))
   const depths = codeRowDepths(codeGuids, codeMap)
-  return renderGridTableHtml('Code', names, columns, headerGroups, grid, { binary: !!options.binary, visual: !!options.visual, totalsOnly: !!options.totalsOnly }, depths)
+  return renderGridTableHtml(t("Code"), names, columns, headerGroups, grid, { binary: !!options.binary, visual: !!options.visual, totalsOnly: !!options.totalsOnly }, depths)
 }
 
 // ── Results in Documents ───────────────────────────────────────────
@@ -331,8 +333,8 @@ function resultsInDocumentsHtml(config: any, options: AnalysisItemOptions): stri
     })
   })
   if (options.binary) grid = binarizeGrid(grid)
-  const names = queryGuids.map((g) => queryMap.get(g)?.name ?? 'Query')
-  return renderGridTableHtml('Query', names, columns, headerGroups, grid, { binary: !!options.binary, visual: !!options.visual, totalsOnly: !!options.totalsOnly })
+  const names = queryGuids.map((g) => queryMap.get(g)?.name ?? t("Query"))
+  return renderGridTableHtml(t("Query"), names, columns, headerGroups, grid, { binary: !!options.binary, visual: !!options.visual, totalsOnly: !!options.totalsOnly })
 }
 
 // ── Code Frequencies (percentage grid, no totals/subtotals) ─────────
@@ -361,7 +363,7 @@ function codeFrequenciesHtml(config: any, options: AnalysisItemOptions): string 
       const cells = columns
         .map((_, j) => {
           const v = grid[i][j]
-          return `<td class="${v === 0 ? 'zero' : ''}">${v.toFixed(1)}%</td>`
+          return `<td class="${v === 0 ? 'zero' : ''}">${formatNumber(v, { minimumFractionDigits: 1, maximumFractionDigits: 1 })}%</td>`
         })
         .join('')
       return `<tr><td class="rowhead">${codeIndent(depths[i])}${escHtml(codeMap.get(cg)?.name ?? 'Code')}</td>${cells}</tr>`
@@ -439,7 +441,7 @@ function orderedCodeChips(
       for (const coding of sel.codings) {
         if (!codeGuids.includes(coding.codeGuid)) continue
         const info = codeMap.get(coding.codeGuid)
-        local.push({ start: sel.startPosition, name: info?.name || 'Code', color: info?.color || '#888' })
+        local.push({ start: sel.startPosition, name: info?.name || t("Code"), color: info?.color || '#888' })
       }
     }
     local.sort((a, b) => a.start - b.start)
@@ -494,9 +496,7 @@ function countWordsIn(d: AnalysisInitData, sourceGuids: string[], excludeSet: Se
       }
     }
     if (!text) continue
-    const words = text.toLowerCase().match(/\b[a-zA-ZÀ-ɏ']+\b/g) || []
-    for (const w of words) {
-      if (w.length < 2) continue
+    for (const w of tokenizeWords(text)) {
       if (excludeSet.has(w)) continue
       if (includeSet && !includeSet.has(w)) continue
       freq.set(w, (freq.get(w) || 0) + 1)
@@ -632,7 +632,7 @@ function wordFrequenciesHtml(config: any, options: AnalysisItemOptions): string 
   const groupBy = config?.groupBy ?? []
   const series: AnalysisColumn[] =
     groupBy.length === 0
-      ? [{ id: '__all', label: 'All', sourceGuids: filtered }]
+      ? [{ id: '__all', label: t("All"), sourceGuids: filtered }]
       : buildSurveyAwareColumns(groupBy, data, filtered, sourceMap, { includeSubtotals: true }).columns
   const seriesFreqs = series.map((s) =>
     countWordsIn(s.respondentRef ? applySurveyCellScope(data, { respondentScope: [s.respondentRef] }) : data, s.sourceGuids, excludeSet, includeSet)
@@ -709,7 +709,7 @@ export function renderAnalysisItemHtml(
   prefix = ''
 ): string {
   const sa = useProjectStore.getState().savedAnalyses?.find((a) => a.guid === item.refGuid)
-  const toolLabel = TOOL_REGISTRY[item.toolType]?.label ?? 'Analysis'
+  const toolLabel = TOOL_REGISTRY[item.toolType]?.label ?? t("Analysis")
   if (!sa) {
     return `<div class="report-block" id="${anchor}"><div class="report-item-head">${prefix}${escHtml(toolLabel)}</div><div class="empty">(deleted analysis)</div></div>`
   }

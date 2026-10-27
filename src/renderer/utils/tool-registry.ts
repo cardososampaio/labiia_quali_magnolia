@@ -15,6 +15,7 @@ import {
   faNotebookTabs
 } from '../components/Icon'
 import type { IconComponent } from '../components/Icon'
+import { t } from '../i18n'
 
 export interface ToolDef {
   icon: IconComponent
@@ -39,16 +40,16 @@ export interface ToolDef {
  * the full name reads better.
  */
 export const TOOL_REGISTRY: Record<string, ToolDef> = {
-  queryBuilder:            { icon: faMagnifyingGlass,  label: 'Query Builder',        color: '#D06828', description: 'Build a code / text query' },                              // burnt orange
-  'codes-in-documents':    { icon: faFileCodeCorner,   label: 'Codes in Documents',   color: '#C0A010', description: 'See which documents contain which codes' },                // golden
-  'framework-matrix':      { icon: faFrame,            label: 'Framework Matrix',     color: '#C8407A', description: 'Summarise each code in each document' },                   // rose
-  'results-in-documents':  { icon: faFileSearchCorner, label: 'Results in Documents', color: '#78B020', description: 'See which documents contain which query results' },        // yellow-green
-  'code-cooccurrences':    { icon: faSquaresIntersect, label: 'Code Co-Occurrences',  color: '#20A848', description: 'See which codes overlap with each other' },                // green
-  'code-frequencies':      { icon: faChartColumn,      label: 'Code Frequencies',     color: '#10A0A0', description: 'See how much of each document is covered by each code' }, // teal
-  'code-orders':           { icon: faBarsStaggered,    label: 'Code Orders',          color: '#2080D8', description: 'See the order in which codes appear in each document' },  // blue
-  'word-frequencies':      { icon: faFont,             label: 'Word Frequencies',     color: '#6848E0', description: 'See which words often appear' },                           // indigo
-  'relationship-map':      { icon: faCircleNodes,      label: 'Relationships',        color: '#A830D0', description: 'Map relationships between different things' },             // violet
-  'reports':               { icon: faNotebookTabs,     label: 'Reports',              color: '#607080', description: 'Compile results into an exportable PDF report' },          // slate
+  queryBuilder:            { icon: faMagnifyingGlass,  label: t("Query Builder"),        color: '#D06828', description: t("Build a code / text query") },                              // burnt orange
+  'codes-in-documents':    { icon: faFileCodeCorner,   label: t("Codes in Documents"),   color: '#C0A010', description: t("See which documents contain which codes") },                // golden
+  'framework-matrix':      { icon: faFrame,            label: t("Framework Matrix"),     color: '#C8407A', description: t("Summarise each code in each document") },                   // rose
+  'results-in-documents':  { icon: faFileSearchCorner, label: t("Results in Documents"), color: '#78B020', description: t("See which documents contain which query results") },        // yellow-green
+  'code-cooccurrences':    { icon: faSquaresIntersect, label: t("Code Co-Occurrences"),  color: '#20A848', description: t("See which codes overlap with each other") },                // green
+  'code-frequencies':      { icon: faChartColumn,      label: t("Code Frequencies"),     color: '#10A0A0', description: t("See how much of each document is covered by each code") }, // teal
+  'code-orders':           { icon: faBarsStaggered,    label: t("Code Orders"),          color: '#2080D8', description: t("See the order in which codes appear in each document") },  // blue
+  'word-frequencies':      { icon: faFont,             label: t("Word Frequencies"),     color: '#6848E0', description: t("See which words often appear") },                           // indigo
+  'relationship-map':      { icon: faCircleNodes,      label: t("Relationships"),        color: '#A830D0', description: t("Map relationships between different things") },             // violet
+  'reports':               { icon: faNotebookTabs,     label: t("Reports"),              color: '#607080', description: t("Compile results into an exportable PDF report") },          // slate
 }
 
 /** Backward-compatible color map (used by many components) */

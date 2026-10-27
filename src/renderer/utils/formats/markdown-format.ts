@@ -3,6 +3,7 @@
  */
 import type { FormatDef, LineAnnotation } from '../format-registry'
 import { parseMarkdownDocument } from '../markdown-parse'
+import { t } from '../../i18n'
 
 const STYLE_MAP: Record<string, React.CSSProperties> = {
   bold: { fontWeight: 700 },
@@ -35,7 +36,7 @@ function toLineAnnotations(raw: ReturnType<typeof parseMarkdownDocument>): LineA
 
 export const markdownFormat: FormatDef = {
   sourceType: 'markdown',
-  label: 'Markdown Files',
+  label: t("Markdown Files"),
   extensions: ['md', 'markdown'],
 
   parseDocument: (text) => toLineAnnotations(parseMarkdownDocument(text))
@@ -48,7 +49,7 @@ export const markdownFormat: FormatDef = {
 export const noteFormat: FormatDef = {
   ...markdownFormat,
   sourceType: 'note',
-  label: 'Notes',
+  label: t("Notes"),
   extensions: [],
   parseDocument: (text) => toLineAnnotations(parseMarkdownDocument(text, { setextHeadings: false, showListMarkers: true }))
 }

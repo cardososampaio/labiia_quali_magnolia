@@ -12,6 +12,7 @@ import type {
 import { codepointSlice, getContext } from './unicode'
 import { buildCellText } from './survey/cell-text'
 import { resolveTagCellScope, tagMembershipFromTags, type TagCellScope } from './survey-cell-scope'
+import { t } from '../i18n'
 
 /** Resolve the text a selection actually points into.
  *
@@ -617,7 +618,7 @@ function flattenOr(cond: CodeCondition): CodeCondition[] {
 export function validateCondition(cond: CodeCondition): string | null {
   if (cond.type === 'and' || cond.type === 'xor') {
     if (cond.conditions.every((c) => isAllTextCondition(c))) {
-      return 'Text-only inputs can only be combined with the OR operator. AND, EITHER/OR, and BUT NOT are not valid for multiple text inputs.'
+      return t("Text-only inputs can only be combined with the OR operator. AND, EITHER/OR, and BUT NOT are not valid for multiple text inputs.")
     }
     for (const c of cond.conditions) {
       const err = validateCondition(c)

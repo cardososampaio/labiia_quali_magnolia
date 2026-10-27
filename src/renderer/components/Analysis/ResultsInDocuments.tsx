@@ -26,6 +26,7 @@ import { EditableTitleSuffix } from '../EditableTitleSuffix'
 import { renameSavedAnalysis } from '../../utils/rename-saved-analysis'
 import { useToolDirtyState } from '../../hooks/use-tool-dirty-state'
 import { useRegisterToolSave } from '../../hooks/use-register-tool-save'
+import { t } from '../../i18n'
 
 /** Each "Group by" entry is one of:
  *   - a single tag → one row in the grid;
@@ -397,7 +398,7 @@ export function ResultsInDocuments({ data: propData, savedConfig, inTab }: Props
   // columns are left out — they would double-count their children.
   const colourPresets = useCodeColourPresets()
   const sankeyLeft = useMemo(
-    () => queryGuids.map((g, i) => ({ id: g, label: queryMap.get(g)?.name || 'Query', color: colourPresets[i % colourPresets.length] })),
+    () => queryGuids.map((g, i) => ({ id: g, label: queryMap.get(g)?.name || t("Query"), color: colourPresets[i % colourPresets.length] })),
     [queryGuids, queryMap, colourPresets]
   )
   const sankeyRight = useMemo(() => columns.map((c) => ({ id: c.id, label: c.label })), [columns])
@@ -413,8 +414,8 @@ export function ResultsInDocuments({ data: propData, savedConfig, inTab }: Props
     // spreadsheet can pivot/group on it).
     const queryNames = queryGuids.map((g) => queryMap.get(g)?.name || '')
     const headerRow: string[] = []
-    if (hasGroupedHeader) headerRow.push('Category')
-    headerRow.push('Item', ...queryNames, 'Total', '% of Total')
+    if (hasGroupedHeader) headerRow.push(t("Category"))
+    headerRow.push(t("Item"), ...queryNames, t("Total"), t("% of Total"))
     const rows: string[][] = [headerRow]
     for (let j = 0; j < columns.length; j++) {
       const col = columns[j]
@@ -428,7 +429,7 @@ export function ResultsInDocuments({ data: propData, savedConfig, inTab }: Props
     }
     const totalRow: string[] = []
     if (hasGroupedHeader) totalRow.push('')
-    totalRow.push(`Total (${resultDocLabel})`, ...showRowTotals.map(String), String(showGrandTotal), pctOfTotal(showGrandTotal, showGrandTotal))
+    totalRow.push(t("Total ({{resultDocLabel}})", { resultDocLabel: resultDocLabel }), ...showRowTotals.map(String), String(showGrandTotal), pctOfTotal(showGrandTotal, showGrandTotal))
     rows.push(totalRow)
     window.api.exportCsv(toCsv(rows), 'results-in-documents.csv')
   }, [columns, rowLayout, queryGuids, showGrid, queryMap, showRowTotals, showColTotals, showGrandTotal, hasGroupedHeader, resultDocLabel])
@@ -482,16 +483,16 @@ export function ResultsInDocuments({ data: propData, savedConfig, inTab }: Props
       <div style={{ padding: '14px 20px 6px', flexShrink: 0, display: 'flex', alignItems: 'center', gap: 8 }}>
         <h2 style={{ margin: 0, fontSize: 18, fontWeight: 600, display: 'flex', alignItems: 'center', gap: 8, color: 'var(--text-secondary)' }}>
           <Icon icon={faFileSearchCorner} className="analysis-header-icon" style={{ fontSize: 16 }} />
-          Results in Documents{isExisting ? ':' : ''}
+          {t("Results in Documents")}{isExisting ? ':' : ''}
           {isExisting && <EditableTitleSuffix name={analysisName} onRename={handleRename} />}
         </h2>
         <div style={{ flex: 1 }} />
         <button className="secondary" style={{ fontSize: 11, padding: '4px 14px' }} onClick={() => inTab ? inTab.onClose() : window.close()}>
-          Close
+          {t("Close")}
         </button>
         {isExisting && dirty && (
           <button className="secondary" style={{ fontSize: 11, padding: '4px 14px' }} onClick={handleDiscard}>
-            Discard Changes
+            {t("Discard Changes")}
           </button>
         )}
         {isExisting ? (
@@ -500,11 +501,11 @@ export function ResultsInDocuments({ data: propData, savedConfig, inTab }: Props
             disabled={!dirty}
             onClick={() => { handleSave(analysisName) }}
           >
-            {dirty ? 'Update Analysis' : 'Saved'}
+            {dirty ? t("Update Analysis") : t("Saved")}
           </button>
         ) : (
           <button style={{ fontSize: 11, padding: '4px 14px' }} onClick={() => setShowSaveDialog(true)}>
-            Save Analysis
+            {t("Save Analysis")}
           </button>
         )}
         {/* Clearance for the floating MemoFab. */}
@@ -514,24 +515,24 @@ export function ResultsInDocuments({ data: propData, savedConfig, inTab }: Props
       {showSaveDialog && (
         <div className="modal-overlay" onClick={() => setShowSaveDialog(false)}>
           <div className="modal" onClick={(e) => e.stopPropagation()}>
-            <h2>Save Analysis</h2>
+            <h2>{t("Save Analysis")}</h2>
             <input
               autoFocus
               type="text"
               defaultValue={analysisName}
-              placeholder="Analysis name"
+              placeholder={t("Analysis name")}
               style={{ width: '100%' }}
               onKeyDown={(e) => {
-                if (e.key === 'Enter') handleSave((e.target as HTMLInputElement).value.trim() || 'Untitled')
+                if (e.key === 'Enter') handleSave((e.target as HTMLInputElement).value.trim() || t("Untitled"))
                 if (e.key === 'Escape') setShowSaveDialog(false)
               }}
             />
             <div className="modal-actions">
-              <button className="secondary" onClick={() => setShowSaveDialog(false)}>Cancel</button>
+              <button className="secondary" onClick={() => setShowSaveDialog(false)}>{t("Cancel")}</button>
               <button onClick={(e) => {
                 const input = (e.target as HTMLElement).parentElement!.parentElement!.querySelector('input') as HTMLInputElement
-                handleSave(input.value.trim() || 'Untitled')
-              }}>Save</button>
+                handleSave(input.value.trim() || t("Untitled"))
+              }}>{t("Save")}</button>
             </div>
           </div>
         </div>
@@ -558,9 +559,9 @@ export function ResultsInDocuments({ data: propData, savedConfig, inTab }: Props
           onDrop={handleTagDrop}
         >
           <div style={{ display: 'flex', alignItems: 'baseline', justifyContent: 'space-between', gap: 12, marginBottom: groupBy.length > 0 ? 8 : 0, position: 'relative', zIndex: 1 }}>
-            <span style={{ fontSize: 'var(--font-size-lg)', fontWeight: 600, color: 'var(--text-secondary)' }}>Group by</span>
+            <span style={{ fontSize: 'var(--font-size-lg)', fontWeight: 600, color: 'var(--text-secondary)' }}>{t("Group by")}</span>
             <span style={{ fontSize: 11, color: 'var(--text-muted)' }}>
-              Drag tags, categories, or folders here
+              {t("Drag tags, categories, or folders here")}
             </span>
           </div>
           {tagDropOver && (
@@ -600,7 +601,7 @@ export function ResultsInDocuments({ data: propData, savedConfig, inTab }: Props
               color: 'var(--text-secondary)'
             }}
           >
-            {missingDocCount} document{missingDocCount !== 1 ? 's' : ''} referenced by {missingDocCount !== 1 ? 'these queries are' : 'a query is'} no longer in the project.
+            {missingDocCount} {t("document")}{missingDocCount !== 1 ? 's' : ''} {t("referenced by")}{' '}{missingDocCount !== 1 ? t("these queries are") : t("a query is")} {t("no longer in the project.")}
           </div>
         )}
 
@@ -614,37 +615,37 @@ export function ResultsInDocuments({ data: propData, savedConfig, inTab }: Props
         >
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 10, position: 'relative', zIndex: 1 }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: 8, flexWrap: 'wrap' }}>
-              <span style={{ fontSize: 'var(--font-size-lg)', fontWeight: 600, color: 'var(--text-secondary)', marginRight: 4 }}>Results</span>
+              <span style={{ fontSize: 'var(--font-size-lg)', fontWeight: 600, color: 'var(--text-secondary)', marginRight: 4 }}>{t("Results")}</span>
               <SegmentedControl
-                label="View"
+                label={t("View")}
                 value={view}
                 onChange={setView}
                 options={[
-                  { value: 'table', label: 'Table', title: 'Show the grid as numbers.' },
-                  { value: 'visual', label: 'Visual', title: 'Show each cell as a box sized and shaded by its value.' },
-                  { value: 'sankey', label: 'Sankey', title: 'Show the grid as a Sankey diagram of query results flowing into documents.' }
+                  { value: 'table', label: t("Table"), title: t("Show the grid as numbers.") },
+                  { value: 'visual', label: t("Visual"), title: t("Show each cell as a box sized and shaded by its value.") },
+                  { value: 'sankey', label: t("Sankey"), title: t("Show the grid as a Sankey diagram of query results flowing into documents.") }
                 ]}
               />
               <SegmentedControl
-                label="Values"
+                label={t("Values")}
                 value={binaryMode ? 'binary' : 'counts'}
                 onChange={(v) => setBinaryMode(v === 'binary')}
                 options={[
-                  { value: 'counts', label: 'Counts', title: 'Show how many coded segments each cell holds.' },
-                  { value: 'binary', label: 'Binary', title: 'Show each cell as 1 (query matched) or 0 (no match); totals count the cells.' }
+                  { value: 'counts', label: t("Counts"), title: t("Show how many coded segments each cell holds.") },
+                  { value: 'binary', label: t("Binary"), title: t("Show each cell as 1 (query matched) or 0 (no match); totals count the cells.") }
                 ]}
               />
             </div>
             <div style={{ display: 'flex', gap: 6 }}>
               <button className="secondary" style={{ fontSize: 10, padding: '3px 8px' }} onClick={handleExportCsv} disabled={queryGuids.length === 0}>
-                Export CSV
+                {t("Export CSV")}
               </button>
             </div>
           </div>
 
           {queryGuids.length === 0 ? (
             <div style={{ padding: '40px 20px', textAlign: 'center', color: 'var(--text-muted)', fontSize: 'var(--font-size-sm)', position: 'relative', zIndex: 1 }}>
-              Drag saved queries from the Queries panel to build the grid
+              {t("Drag saved queries from the Queries panel to build the grid")}
             </div>
           ) : sankeyMode ? (
             <div style={{ overflowX: 'auto' }}>
@@ -652,8 +653,8 @@ export function ResultsInDocuments({ data: propData, savedConfig, inTab }: Props
                 left={sankeyLeft}
                 right={sankeyRight}
                 values={showGrid}
-                leftTitle="Queries"
-                rightTitle="Documents"
+                leftTitle={t("Queries")}
+                rightTitle={t("Documents")}
                 excludeRight={sankeyExclude}
                 onLinkClick={handleCellClick}
                 onLeftClick={handleRowTotalClick}
@@ -691,7 +692,7 @@ export function ResultsInDocuments({ data: propData, savedConfig, inTab }: Props
                             collide with the rotated label at the bottom. */}
                         <span
                           onClick={() => setQueryGuids((p) => p.filter((g) => g !== qGuid))}
-                          title="Remove query"
+                          title={t("Remove query")}
                           style={{
                             position: 'absolute', top: 2, right: 2,
                             fontSize: 9, color: 'var(--text-muted)',
@@ -710,15 +711,15 @@ export function ResultsInDocuments({ data: propData, savedConfig, inTab }: Props
                           whiteSpace: 'nowrap', fontSize: 10,
                           overflow: 'hidden', textOverflow: 'ellipsis', maxWidth: 130
                         }}>
-                          {truncate(queryMap.get(qGuid)?.name || 'Query', 24)}
+                          {truncate(queryMap.get(qGuid)?.name || t("Query"), 24)}
                         </div>
                       </th>
                     ))}
                     <th style={{ width: 50, minWidth: 50, maxWidth: 50, borderBottom: '1px solid var(--border-color)', verticalAlign: 'bottom', height: 80, padding: 0, position: 'relative' }}>
-                      <div style={{ position: 'absolute', bottom: 6, left: '50%', transformOrigin: 'bottom left', transform: 'rotate(-20deg)', whiteSpace: 'nowrap', fontSize: 10, fontWeight: 700 }}>Total</div>
+                      <div style={{ position: 'absolute', bottom: 6, left: '50%', transformOrigin: 'bottom left', transform: 'rotate(-20deg)', whiteSpace: 'nowrap', fontSize: 10, fontWeight: 700 }}>{t("Total")}</div>
                     </th>
-                    <th title="Row total as % of grand total" style={{ width: 50, minWidth: 50, maxWidth: 50, background: 'color-mix(in srgb, var(--text-secondary) 6%, transparent)', borderBottom: '1px solid var(--border-color)', verticalAlign: 'bottom', height: 80, padding: 0, position: 'relative' }}>
-                      <div style={{ position: 'absolute', bottom: 6, left: '50%', transformOrigin: 'bottom left', transform: 'rotate(-20deg)', whiteSpace: 'nowrap', fontSize: 10, fontWeight: 700, fontStyle: 'italic', color: 'var(--text-secondary)' }}>% of Total</div>
+                    <th title={t("Row total as % of grand total")} style={{ width: 50, minWidth: 50, maxWidth: 50, background: 'color-mix(in srgb, var(--text-secondary) 6%, transparent)', borderBottom: '1px solid var(--border-color)', verticalAlign: 'bottom', height: 80, padding: 0, position: 'relative' }}>
+                      <div style={{ position: 'absolute', bottom: 6, left: '50%', transformOrigin: 'bottom left', transform: 'rotate(-20deg)', whiteSpace: 'nowrap', fontSize: 10, fontWeight: 700, fontStyle: 'italic', color: 'var(--text-secondary)' }}>{t("% of Total")}</div>
                     </th>
                   </tr>
                 </thead>
@@ -883,7 +884,7 @@ export function ResultsInDocuments({ data: propData, savedConfig, inTab }: Props
                       colSpan={hasGroupedHeader ? 2 : 1}
                       style={{ padding: '4px 6px', borderTop: '2px solid var(--border-color)', fontWeight: 700 }}
                     >
-                      Total
+                      {t("Total")}
                       <span style={{ marginLeft: 6, fontWeight: 400, fontSize: 11, color: 'var(--text-secondary)' }}>
                         ({resultDocLabel})
                       </span>

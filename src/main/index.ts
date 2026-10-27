@@ -11,6 +11,7 @@ import { createEmptyProjectFile } from './qdpx/writer'
 import { initAutoUpdater, checkForUpdatesManually, getUpdateBadgeState } from './auto-updater'
 import { openBundledLicenceFile } from './licence-files'
 import { showOpenDialog, showSaveDialog } from './dialogs'
+import { normalizeLanguage, setLanguage, t, type Language } from '../renderer/i18n'
 
 // Register custom protocol scheme BEFORE app.ready (required by Electron)
 protocol.registerSchemesAsPrivileged([
@@ -160,7 +161,7 @@ function clearFlushWatchdog(): void {
 function rebuildMenu(): void {
   if (!mainWindow || mainWindow.isDestroyed()) return
   const entries: WindowListEntry[] = []
-  const titleOf = (win: BrowserWindow) => win.getTitle().replace(' — Magnolia', '') || 'Magnolia'
+  const titleOf = (win: BrowserWindow) => win.getTitle().replace(' — labiia_quali', '') || 'labiia_quali'
   entries.push({ label: titleOf(mainWindow), window: mainWindow })
   if (codebookWindow && !codebookWindow.isDestroyed()) {
     entries.push({ label: titleOf(codebookWindow), window: codebookWindow })
@@ -430,7 +431,7 @@ function openCodebookWindow(initData: any): void {
     height: 700,
     minWidth: 450,
     minHeight: 400,
-    title: 'Codes',
+    title: t("Codes"),
     show: false,
     icon,
     webPreferences: {
@@ -497,7 +498,7 @@ function openLogbookWindow(initData: any): void {
     height: 700,
     minWidth: 450,
     minHeight: 400,
-    title: 'Logbook',
+    title: t("Logbook"),
     show: false,
     icon,
     webPreferences: {
@@ -567,6 +568,13 @@ function savePreferencesToDisk(prefs: any): void {
   } catch { /* ignore */ }
 }
 
+// The interface language is read once at startup and stays fixed for the
+// session (see src/renderer/i18n). Renderer windows ask for it synchronously
+// so their very first paint is already in the right language.
+const interfaceLanguage: Language = normalizeLanguage(loadPreferencesFromDisk()?.language)
+setLanguage(interfaceLanguage)
+ipcMain.on('i18n:get-language', (event) => { event.returnValue = interfaceLanguage })
+
 ipcMain.handle('load-preferences', () => loadPreferencesFromDisk())
 ipcMain.handle('save-preferences', (_event, prefs: any) => { savePreferencesToDisk(prefs) })
 
@@ -612,7 +620,7 @@ function openMemoEditWindow(initData: any): void {
     height: 500,
     minWidth: 400,
     minHeight: 350,
-    title: 'Memos',
+    title: t("Memos"),
     show: false,
     icon,
     webPreferences: {
@@ -697,7 +705,7 @@ function openQueryResultsWindow(initData: any): void {
     height: 600,
     minWidth: 500,
     minHeight: 300,
-    title: 'Queries',
+    title: t("Queries"),
     show: false,
     icon,
     webPreferences: {
@@ -826,7 +834,7 @@ ipcMain.on('welcome-action', async (event, action: string) => {
     // project is named and where it lives on disk. Mirrors the Open flow:
     // cancelling the dialog leaves them on the welcome screen.
     const result = await showSaveDialog(event.sender, {
-      title: 'Create New Project',
+      title: t("Create New Project"),
       defaultPath: 'Untitled.qdpx',
       filters: [{ name: 'QDPX Projects', extensions: ['qdpx'] }]
     })
@@ -836,7 +844,7 @@ ipcMain.on('welcome-action', async (event, action: string) => {
     try {
       projectName = await createEmptyProjectFile(filePath)
     } catch (err) {
-      dialog.showErrorBox('Failed to create project', String(err))
+      dialog.showErrorBox(t("Failed to create project"), String(err))
       return
     }
     saveRecentProject(projectName, filePath)
@@ -854,7 +862,7 @@ ipcMain.on('welcome-action', async (event, action: string) => {
   if (action === 'open-project') {
     // Show file dialog BEFORE creating the main window
     const result = await showOpenDialog(event.sender, {
-      title: 'Open QDPX Project',
+      title: t("Open QDPX Project"),
       filters: [{ name: 'QDPX Projects', extensions: ['qdpx'] }],
       properties: ['openFile']
     })
@@ -871,7 +879,7 @@ ipcMain.on('welcome-action', async (event, action: string) => {
         mainWindow?.webContents.send('open-recent-project', filePath)
       })
     } catch (err) {
-      dialog.showErrorBox('Failed to open project', String(err))
+      dialog.showErrorBox(t("Failed to open project"), String(err))
     }
     return
   }
@@ -896,8 +904,8 @@ ipcMain.on('welcome-action', async (event, action: string) => {
         welcomeWindow.webContents.send('recent-projects-changed')
       }
       dialog.showErrorBox(
-        'Project not found',
-        `"${filePath}" no longer exists. It has been removed from Recent Projects.`
+        t("Project not found"),
+        t("\"{{filePath}}\" no longer exists. It has been removed from Recent Projects.", { filePath: filePath })
       )
       return
     }
@@ -964,20 +972,21 @@ nativeAutoUpdater.on('before-quit-for-update', () => {
 
 app.whenReady().then(() => {
   // Customise the native About panel (Cmd-? on macOS, Help → About on
-  // Linux). applicationName is forced to "Magnolia" so dev builds don't
+  // Linux). applicationName is forced to "labiia_quali" so dev builds don't
   // show the lowercase npm name; credits list the libraries we want to
   // thank explicitly. License-compliance for every dependency lives in
   // the bundled THIRD-PARTY-LICENSES.txt file.
   app.setAboutPanelOptions({
-    applicationName: 'Magnolia',
+    applicationName: 'labiia_quali',
     applicationVersion: app.getVersion(),
-    copyright: '© 2026 Cale Davis',
+    copyright: t('Based on Magnolia, © 2026 Cale Davis'),
     credits: [
-      'Free and open-source qualitative data analysis.',
+      t('Free and open-source qualitative data analysis.'),
       '',
+      t('labiia_quali is based on Magnolia by Cale Davis:'),
       'https://github.com/caledavis/Magnolia',
       '',
-      'Built with Electron, React, TipTap, and PDF.js. Icons by Lucide.'
+      t('Built with Electron, React, TipTap, and PDF.js. Icons by Lucide.')
     ].join('\n')
   })
 
@@ -1005,11 +1014,11 @@ app.whenReady().then(() => {
         click: () => wc.replaceMisspelling(s)
       }))
       if (template.length === 0) {
-        template.push({ label: 'No suggestions', enabled: false })
+        template.push({ label: t("No suggestions"), enabled: false })
       }
       template.push({ type: 'separator' })
       template.push({
-        label: 'Add to Dictionary',
+        label: t("Add to Dictionary"),
         click: () => wc.session.addWordToSpellCheckerDictionary(params.misspelledWord)
       })
       Menu.buildFromTemplate(template).popup({ window: BrowserWindow.fromWebContents(wc) || undefined })

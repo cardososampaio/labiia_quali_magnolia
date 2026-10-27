@@ -2,6 +2,7 @@ import { useState, useEffect, useRef, useCallback, useMemo } from 'react'
 import type { SavedQuery, Query } from '../../models/types'
 import { Icon, faMagnifyingGlass, faXmark, MEMO_ICON } from '../Icon'
 import { useClampedMenuPosition } from '../../utils/use-clamped-menu-position'
+import { t } from '../../i18n'
 
 interface Props {
   /** The list to render. Caller is responsible for sourcing this from
@@ -147,8 +148,8 @@ export function SavedQueries({
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             onKeyDown={(e) => { if (e.key === 'Escape') closeSearch() }}
-            placeholder="Filter saved queries..."
-            aria-label="Filter saved queries"
+            placeholder={t("Filter saved queries...")}
+            aria-label={t("Filter saved queries")}
             autoFocus
             style={{
               flex: 1,
@@ -166,14 +167,14 @@ export function SavedQueries({
             }}
           />
         ) : (
-          <span style={{ flex: 1 }}>Saved Queries</span>
+          <span style={{ flex: 1 }}>{t("Saved Queries")}</span>
         )}
         {savedQueries.length > 0 && (
           <button
             className="panel-header-search"
             onClick={() => (searchOpen ? closeSearch() : setSearchOpen(true))}
-            title={searchOpen ? 'Close search' : 'Filter saved queries'}
-            aria-label={searchOpen ? 'Close search' : 'Filter saved queries'}
+            title={searchOpen ? t("Close search") : t("Filter saved queries")}
+            aria-label={searchOpen ? t("Close search") : t("Filter saved queries")}
           >
             <Icon icon={searchOpen ? faXmark : faMagnifyingGlass} />
           </button>
@@ -190,9 +191,9 @@ export function SavedQueries({
             fontSize: 'var(--font-size-sm)'
           }}
         >
-          No saved queries.
+          {t("No saved queries.")}
           <br />
-          Run a query then click Save Query.
+          {t("Run a query then click Save Query.")}
         </div>
       )}
       {savedQueries.length > 0 && filteredQueries.length === 0 && (
@@ -205,7 +206,7 @@ export function SavedQueries({
             fontSize: 'var(--font-size-sm)'
           }}
         >
-          No saved queries match "{trimmedSearch}".
+          {t("No saved queries match \"")}{trimmedSearch}".
         </div>
       )}
       {filteredQueries.map((sq) => {
@@ -296,7 +297,7 @@ export function SavedQueries({
                   <Icon
                     icon={MEMO_ICON}
                     style={{ fontSize: 11, color: 'var(--memo-icon-color)', flexShrink: 0, cursor: 'pointer' }}
-                    title="Open memo"
+                    title={t("Open memo")}
                     onClick={(e) => {
                       ;(e as any).stopPropagation()
                       onOpenQueryMemo?.(sq.guid)
@@ -323,7 +324,7 @@ export function SavedQueries({
               setContextMenu(null)
             }}
           >
-            Run Query
+            {t("Run Query")}
           </div>
           <div
             className="context-menu-item"
@@ -332,7 +333,7 @@ export function SavedQueries({
               setContextMenu(null)
             }}
           >
-            Edit Query
+            {t("Edit Query")}
           </div>
           <div
             className="context-menu-item"
@@ -345,7 +346,7 @@ export function SavedQueries({
               setContextMenu(null)
             }}
           >
-            Rename
+            {t("Rename")}
           </div>
           {(onOpenQueryMemo || onCreateQueryMemo) && (
             <>
@@ -358,7 +359,7 @@ export function SavedQueries({
                     setContextMenu(null)
                   }}
                 >
-                  View Memo
+                  {t("View Memo")}
                 </div>
               ) : (
                 <div
@@ -368,7 +369,7 @@ export function SavedQueries({
                     setContextMenu(null)
                   }}
                 >
-                  Add Memo
+                  {t("Add Memo")}
                 </div>
               )}
             </>
@@ -382,7 +383,7 @@ export function SavedQueries({
               setContextMenu(null)
             }}
           >
-            Delete
+            {t("Delete")}
           </div>
         </div>
       )}

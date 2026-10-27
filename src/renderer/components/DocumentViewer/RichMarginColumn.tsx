@@ -16,6 +16,7 @@ import { layoutIcons, buildIconItems, ICON_COL_W, LINE_GROUP_TOLERANCE, type Ico
 import { MemoQuoteIcons } from './MemoQuoteIcons'
 import { useMemoStore } from '../../stores/memo-store'
 import { measureLabelWidth } from '../../utils/measure-text'
+import { t } from '../../i18n'
 
 interface CpRange { startCp: number; endCp: number }
 
@@ -460,7 +461,7 @@ export function RichMarginColumn({ contentRef, containerRef, selections, codes, 
           onContextMenu?.(e, {
             overlappingMemos: memos.map((m) => ({
               guid: m.guid,
-              title: m.title || 'Untitled Memo',
+              title: m.title || t("Untitled Memo"),
               startCp: m.startPosition ?? 0,
               endCp: m.endPosition ?? m.startPosition ?? 0
             }))

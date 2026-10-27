@@ -472,3 +472,52 @@ export const STOP_WORDS = new Set([
   'where', 'while', 'here', 'through', 'during', 'before', 'between',
   'under', 'again', 'further', 'once', 'why', 'how', 'too', 'still'
 ])
+
+/** Common Brazilian Portuguese stop words: articles, prepositions and their
+ *  contractions, pronouns, conjunctions, the conjugations of ser / estar /
+ *  ter / haver, and fillers frequent in interview transcripts (né, tá, aí).
+ *  Common unaccented spellings (nao, voce, tambem) are included because
+ *  transcripts and survey answers are often typed without accents. */
+export const STOP_WORDS_PT = new Set([
+  'de', 'a', 'o', 'que', 'e', 'é', 'do', 'da', 'em', 'um', 'para', 'com', 'não', 'uma',
+  'os', 'no', 'se', 'na', 'por', 'mais', 'as', 'dos', 'como', 'mas', 'ao', 'ele', 'das',
+  'à', 'seu', 'sua', 'ou', 'quando', 'muito', 'nos', 'já', 'eu', 'também', 'só', 'pelo',
+  'pela', 'até', 'isso', 'ela', 'entre', 'depois', 'sem', 'mesmo', 'aos', 'seus', 'quem',
+  'nas', 'me', 'esse', 'eles', 'você', 'essa', 'num', 'nem', 'suas', 'meu', 'às', 'minha',
+  'numa', 'pelos', 'elas', 'qual', 'nós', 'lhe', 'deles', 'essas', 'esses', 'pelas', 'este',
+  'dele', 'tu', 'te', 'vocês', 'vos', 'lhes', 'meus', 'minhas', 'teu', 'tua', 'teus', 'tuas',
+  'nosso', 'nossa', 'nossos', 'nossas', 'dela', 'delas', 'esta', 'estes', 'estas', 'aquele',
+  'aquela', 'aqueles', 'aquelas', 'isto', 'aquilo', 'daquele', 'daquela', 'neste', 'nesta',
+  'nesse', 'nessa', 'naquele', 'naquela', 'deste', 'desta', 'desse', 'dessa', 'disso', 'disto',
+  'nisso', 'nisto', 'pra', 'pro', 'pras', 'pros', 'sobre', 'onde', 'porque', 'pois',
+  'então', 'assim', 'ainda', 'cada', 'outro', 'outra', 'outros', 'outras', 'todo', 'toda',
+  'todos', 'todas', 'lá', 'aqui', 'aí', 'né', 'tá', 'tô', 'ser', 'ter', 'estar', 'haver',
+  'sou', 'és', 'somos', 'são', 'era', 'éramos', 'eram', 'fui', 'foi', 'fomos', 'foram', 'fora',
+  'fôramos', 'seja', 'sejamos', 'sejam', 'fosse', 'fôssemos', 'fossem', 'for', 'formos',
+  'forem', 'serei', 'será', 'seremos', 'serão', 'seria', 'seríamos', 'seriam', 'estou', 'está',
+  'estamos', 'estão', 'estive', 'esteve', 'estivemos', 'estiveram', 'estava', 'estávamos',
+  'estavam', 'estivera', 'estivéramos', 'esteja', 'estejamos', 'estejam', 'estivesse',
+  'estivéssemos', 'estivessem', 'estiver', 'estivermos', 'estiverem', 'hei', 'há', 'havemos',
+  'hão', 'houve', 'houvemos', 'houveram', 'houvera', 'houvéramos', 'haja', 'hajamos', 'hajam',
+  'houvesse', 'houvéssemos', 'houvessem', 'houver', 'houvermos', 'houverem', 'houverei',
+  'houverá', 'houveremos', 'houverão', 'houveria', 'houveríamos', 'houveriam', 'havia',
+  'tenho', 'tem', 'temos', 'têm', 'tinha', 'tínhamos', 'tinham', 'tive', 'teve', 'tivemos',
+  'tiveram', 'tivera', 'tivéramos', 'tenha', 'tenhamos', 'tenham', 'tivesse', 'tivéssemos',
+  'tivessem', 'tiver', 'tivermos', 'tiverem', 'terei', 'terá', 'teremos', 'terão', 'teria',
+  'teríamos', 'teriam', 'vai', 'vou', 'vão', 'nao', 'voce', 'voces', 'tambem', 'entao', 'ate',
+  'ja', 'la', 'ai', 'ne', 'ta', 'sao'
+])
+
+/** Stop words excluded by default in word counts: Portuguese and English,
+ *  since Brazilian projects often mix Portuguese material with English
+ *  literature. Users can edit the list in the Word Frequencies tool. */
+export const DEFAULT_STOP_WORDS = new Set([...STOP_WORDS_PT, ...STOP_WORDS])
+
+/** Words of a text for frequency counting, lower-cased. A word is any run of
+ *  letters in any script, so accented words ("não", "coração", "café") are
+ *  counted whole; apostrophes and hyphens inside a word keep it together
+ *  ("d'água", "pré-escola", "don't"). Single letters are dropped. */
+export function tokenizeWords(text: string): string[] {
+  const words = text.toLowerCase().match(/[\p{L}\p{M}]+(?:['’-][\p{L}\p{M}]+)*/gu) || []
+  return words.filter((w) => w.length >= 2)
+}

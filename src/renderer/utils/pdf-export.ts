@@ -18,18 +18,13 @@
  * everywhere in one edit.
  */
 
-// Raw SVG content of the full-product MagnoliaQDA wordmark — the
-// same asset the WelcomeScreen paints above the recent-projects list
-// (the in-app toolbar uses the shorter magnolia.svg variant; PDFs
-// and the welcome screen both carry the longer, product-name form so
-// exported documents are clearly attributed to MagnoliaQDA). Imported
-// as raw text so we can inline it as a base64 data URI; the hidden
-// print window the main process spins up to render PDFs doesn't
-// share the renderer's file-serving context, so it can't resolve a
-// relative URL.
-import magnoliaSvg from '../assets/magnoliaqda.svg?raw'
+// The labiia_quali icon, inlined as a data URI: the hidden print window
+// the main process spins up to render PDFs doesn't share the renderer's
+// file-serving context, so it can't resolve a relative URL. Exported PDFs
+// carry it with the product name so they are attributed to labiia_quali.
+import labiiaIconDataUri from '../assets/labiia-icon.png?inline'
 
-const MAGNOLIA_LOGO_DATA_URI = `data:image/svg+xml;base64,${btoa(magnoliaSvg)}`
+const MAGNOLIA_LOGO_DATA_URI = labiiaIconDataUri
 
 /** HTML fragment Chromium repeats at the top of every printed page.
  *  Lives in the page's top margin (the main-process export-pdf IPC
@@ -44,7 +39,8 @@ const MAGNOLIA_LOGO_DATA_URI = `data:image/svg+xml;base64,${btoa(magnoliaSvg)}`
  *  unobtrusive on every page. */
 export const MAGNOLIA_PDF_HEADER_TEMPLATE =
   `<div style="width:100%; padding:28px 48px 0 28px; box-sizing:border-box; display:flex; justify-content:flex-end; align-items:center;">` +
-  `<img src="${MAGNOLIA_LOGO_DATA_URI}" style="height:24px; opacity:0.7;" />` +
+  `<img src="${MAGNOLIA_LOGO_DATA_URI}" style="height:22px; opacity:0.8;" />` +
+  `<span style="margin-left:6px; font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif; font-size:12px; font-weight:600; color:#888;">labiia_quali</span>` +
   `</div>`
 
 /** HTML fragment Chromium repeats at the bottom of every printed

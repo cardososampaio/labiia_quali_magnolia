@@ -4,10 +4,11 @@
  * transcript), so parseDocument returns null.
  */
 import type { FormatDef } from '../format-registry'
+import { t } from '../../i18n'
 
 export const videoFormat: FormatDef = {
   sourceType: 'video',
-  label: 'Video Files',
+  label: t("Video Files"),
   extensions: ['mp4', 'mov', 'avi'],
   parseDocument: () => null
 }

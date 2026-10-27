@@ -11,14 +11,15 @@ import {
   type DNodeKind,
   type DocCategory
 } from '../../utils/document-graph'
+import { t } from '../../i18n'
 
 const CATEGORY_LABELS: Record<DocCategory, string> = {
-  video: 'Video',
-  audio: 'Audio',
-  document: 'Document',
-  image: 'Image',
-  survey: 'Survey',
-  note: 'Notes'
+  video: t("Video"),
+  audio: t("Audio"),
+  document: t("Document"),
+  image: t("Image"),
+  survey: t("Survey"),
+  note: t("Notes")
 }
 
 /* ═══════════════════════════════════════════════════
@@ -127,19 +128,19 @@ const KIND_COLOR: Record<DNodeKind, string> = {
 }
 
 const KIND_LABEL: Record<DNodeKind, string> = {
-  docs: 'Documents',
-  tag: 'Tag',
-  type: 'Type',
-  folder: 'Folder',
-  allDocs: 'All docs',
-  setOp: 'Logical',
-  result: 'Result'
+  docs: t("Documents"),
+  tag: t("Tag"),
+  type: t("Type"),
+  folder: t("Folder"),
+  allDocs: t("All docs"),
+  setOp: t("Logical"),
+  result: t("Result")
 }
 
 const SET_OP_LABEL: Record<SetOp, string> = {
-  union: 'Union',
-  intersect: 'Intersect',
-  subtract: 'Subtract'
+  union: t("Union"),
+  intersect: t("Intersect"),
+  subtract: t("Subtract")
 }
 
 const SET_OP_COLOR: Record<SetOp, string> = {
@@ -149,19 +150,19 @@ const SET_OP_COLOR: Record<SetOp, string> = {
 }
 
 const SET_OP_TOOLTIP: Record<SetOp, string> = {
-  union: 'UNION \u2014 documents from either input (Input 1 + Input 2)',
-  intersect: 'INTERSECT \u2014 only documents in both inputs (Input 1 \u2229 Input 2)',
-  subtract: 'SUBTRACT \u2014 documents in Input 1 but not in Input 2 (Input 1 \u2212 Input 2)'
+  union: t("UNION — documents from either input (Input 1 + Input 2)"),
+  intersect: t("INTERSECT — only documents in both inputs (Input 1 ∩ Input 2)"),
+  subtract: t("SUBTRACT — documents in Input 1 but not in Input 2 (Input 1 − Input 2)")
 }
 
 const KIND_TOOLTIP: Record<DNodeKind, string> = {
-  docs: 'A specific set of documents dragged from the Document Browser',
-  tag: 'All documents assigned to a particular tag',
-  type: 'All documents matching a file type extension',
-  folder: 'All documents inside a folder (sub-folders included)',
-  allDocs: 'Every document in the project',
-  setOp: 'Combine document sets with union, intersect, or subtract',
-  result: 'The final document selection \u2014 connect an input or operation here'
+  docs: t("A specific set of documents dragged from the Document Browser"),
+  tag: t("All documents assigned to a particular tag"),
+  type: t("All documents matching a file type extension"),
+  folder: t("All documents inside a folder (sub-folders included)"),
+  allDocs: t("Every document in the project"),
+  setOp: t("Combine document sets with union, intersect, or subtract"),
+  result: t("The final document selection — connect an input or operation here")
 }
 
 /* ═══════════════════════════════════════════════════
@@ -239,7 +240,7 @@ function graphFromFilter(
         y: 30 + nextRow * ROW_GAP,
         tagCategoryGuid: tag?.categoryGuid,
         tagGuid,
-        tagName: tag?.value || tag?.name || 'Tag'
+        tagName: tag?.value || tag?.name || t("Tag")
       }
       nodes.push(tagNode)
       sourceNodes.push(tagNode)
@@ -275,7 +276,7 @@ function graphFromFilter(
         y: 30 + nextRow * ROW_GAP,
         tagCategoryGuid: tag?.categoryGuid,
         tagGuid,
-        tagName: tag?.value || tag?.name || 'Tag'
+        tagName: tag?.value || tag?.name || t("Tag")
       }
       nodes.push(tagNode)
       excludeTagNodes.push(tagNode)
@@ -1029,7 +1030,7 @@ export function DocumentSelector({
               y: my - 20 + i * 60,
               tagCategoryGuid: tag?.categoryGuid,
               tagGuid: guid,
-              tagName: tag?.value || tag?.name || 'Tag',
+              tagName: tag?.value || tag?.name || t("Tag"),
               betweenMode: autoMode
             }
           ])
@@ -1131,8 +1132,8 @@ export function DocumentSelector({
     const sgs = new Set<string>([...respIds.keys(), ...questIds.keys()])
     for (const sg of sgs) {
       const labels = surveyEntityLabels[sg] || { respondents: {}, questions: {} }
-      const rNames = [...(respIds.get(sg) || [])].map((id) => labels.respondents[id] || 'Respondent')
-      const qNames = [...(questIds.get(sg) || [])].map((id) => labels.questions[id] || 'Question')
+      const rNames = [...(respIds.get(sg) || [])].map((id) => labels.respondents[id] || t("Respondent"))
+      const qNames = [...(questIds.get(sg) || [])].map((id) => labels.questions[id] || t("Question"))
       result.set(sg, { respondents: sortNames(rNames), questions: sortNames(qNames) })
     }
     return result
@@ -1146,7 +1147,7 @@ export function DocumentSelector({
           shared PaletteGroup + PaletteButton + PaletteDivider helpers
           so the look matches the Content Query palette exactly. */}
       <div style={{ display: 'flex', gap: 14, marginBottom: 8, alignItems: 'flex-start', flexWrap: 'wrap' }}>
-        <PaletteGroup label="Input">
+        <PaletteGroup label={t("Input")}>
           <PaletteButton
             kind="docs"
             label={KIND_LABEL.docs}
@@ -1191,7 +1192,7 @@ export function DocumentSelector({
 
         <PaletteDivider />
 
-        <PaletteGroup label="Logical">
+        <PaletteGroup label={t("Logical")}>
           <PaletteButton
             kind="setOp"
             label={KIND_LABEL.setOp}
@@ -1286,15 +1287,15 @@ export function DocumentSelector({
             const src = nodes.find((n) => n.id === conn.from)
             if (!src) return null
             if (src.kind === 'docs') return `${src.docGuids?.length || 0} doc(s)`
-            if (src.kind === 'tag') return src.tagName || 'Tag'
-            if (src.kind === 'type') return src.typeExt ? CATEGORY_LABELS[src.typeExt as DocCategory] : 'Type'
+            if (src.kind === 'tag') return src.tagName || t("Tag")
+            if (src.kind === 'type') return src.typeExt ? CATEGORY_LABELS[src.typeExt as DocCategory] : t("Type")
             if (src.kind === 'folder') {
               const fname = folders.find((f) => f.guid === src.folderGuid)?.name
-              return fname || 'Folder'
+              return fname || t("Folder")
             }
-            if (src.kind === 'allDocs') return 'All Docs'
-            if (src.kind === 'setOp') return 'Set input'
-            return 'Input'
+            if (src.kind === 'allDocs') return t("All Docs")
+            if (src.kind === 'setOp') return t("Set input")
+            return t("Input")
           }
 
           return (
@@ -1352,7 +1353,7 @@ export function DocumentSelector({
                       display: 'flex', alignItems: 'center', justifyContent: 'space-between'
                     }}>
                       <span style={{ overflow: 'hidden', textOverflow: 'ellipsis' }}>
-                        {sourceMap.get(guid) || '(deleted document)'}
+                        {sourceMap.get(guid) || t("(deleted document)")}
                       </span>
                       <span
                         onMouseDown={(e) => e.stopPropagation()}
@@ -1372,7 +1373,7 @@ export function DocumentSelector({
                   ))}
                   {(node.docGuids?.length || 0) > MAX_VISIBLE_DOCS && (
                     <div style={{ fontSize: 8, color: 'var(--text-muted)', padding: '0 6px', height: 14, lineHeight: '14px' }}>
-                      +{(node.docGuids?.length || 0) - MAX_VISIBLE_DOCS} more
+                      +{(node.docGuids?.length || 0) - MAX_VISIBLE_DOCS} {t("more")}
                     </div>
                   )}
                   <div
@@ -1411,7 +1412,7 @@ export function DocumentSelector({
                       borderTop: '1px dashed var(--border-color)', margin: '0 4px'
                     }}
                   >
-                    {(node.docGuids?.length || 0) === 0 ? 'Drop docs here' : '+ Drop more'}
+                    {(node.docGuids?.length || 0) === 0 ? t("Drop docs here") : t("+ Drop more")}
                   </div>
                 </div>
               )}
@@ -1499,22 +1500,22 @@ export function DocumentSelector({
                       style={selectStyle}
                     >
                       {categories.length > 0 && (
-                        <option value="" disabled>Select category...</option>
+                        <option value="" disabled>{t("Select category...")}</option>
                       )}
                       {categories.map((c) => (
                         <option key={c.guid} value={c.guid}>{c.name}</option>
                       ))}
                       {uncatTags.length > 0 && (
-                        <option value="__uncat__">Uncategorised</option>
+                        <option value="__uncat__">{t("Uncategorised")}</option>
                       )}
                     </select>
 
                     {/* 2. Mode: Is / Between / Not Between (only for date/number categories) */}
                     {showModePicker && (
                       <div style={{ display: 'flex', gap: 2, marginTop: 3 }}>
-                        {modeBtn('is', 'Is', '#6366f1')}
-                        {modeBtn('between', 'Between', '#6366f1')}
-                        {modeBtn('not-between', 'Not Between', '#f43f5e')}
+                        {modeBtn('is', t("Is"), '#6366f1')}
+                        {modeBtn('between', t("Between"), '#6366f1')}
+                        {modeBtn('not-between', t("Not Between"), '#f43f5e')}
                       </div>
                     )}
 
@@ -1528,7 +1529,7 @@ export function DocumentSelector({
                           nd.id === node.id ? {
                             ...nd,
                             tagGuid: val || undefined,
-                            tagName: tag?.value || tag?.name || 'Tag',
+                            tagName: tag?.value || tag?.name || t("Tag"),
                             // Sync the effective category onto the node state
                             tagCategoryGuid: nd.tagCategoryGuid || effectiveCatGuid
                           } : nd
@@ -1538,7 +1539,7 @@ export function DocumentSelector({
                       onClick={(e) => e.stopPropagation()}
                       style={{ ...selectStyle, marginTop: 3 }}
                     >
-                      <option value="">Select value...</option>
+                      <option value="">{t("Select value...")}</option>
                       {valueTags.map((t) => (
                         <option key={t.guid} value={t.guid}>{t.value || t.name}</option>
                       ))}
@@ -1547,7 +1548,7 @@ export function DocumentSelector({
                     {/* 4. "and" + Value 2 (only for between / not-between) */}
                     {(mode === 'between' || mode === 'not-between') && (
                       <>
-                      <div style={{ textAlign: 'center', fontSize: 8, color: 'var(--text-muted)', fontStyle: 'italic', marginTop: 2, lineHeight: '12px' }}>and</div>
+                      <div style={{ textAlign: 'center', fontSize: 8, color: 'var(--text-muted)', fontStyle: 'italic', marginTop: 2, lineHeight: '12px' }}>{t("and")}</div>
                       <select
                         value={node.tagGuid2 || ''}
                         onChange={(e) => {
@@ -1559,7 +1560,7 @@ export function DocumentSelector({
                         onClick={(e) => e.stopPropagation()}
                         style={{ ...selectStyle, marginTop: 2 }}
                       >
-                        <option value="">Select value 2...</option>
+                        <option value="">{t("Select value 2...")}</option>
                         {catTags.filter((t) => t.guid !== node.tagGuid).map((t) => (
                           <option key={t.guid} value={t.guid}>{t.value || t.name}</option>
                         ))}
@@ -1588,13 +1589,13 @@ export function DocumentSelector({
                       background: 'var(--bg-primary)', color: 'var(--text-primary)', outline: 'none'
                     }}
                   >
-                    <option value="">Select type...</option>
-                    <option value="video">Video</option>
-                    <option value="audio">Audio</option>
-                    <option value="document">Document</option>
-                    <option value="image">Image</option>
-                    <option value="survey">Survey</option>
-                    <option value="note">Notes</option>
+                    <option value="">{t("Select type...")}</option>
+                    <option value="video">{t("Video")}</option>
+                    <option value="audio">{t("Audio")}</option>
+                    <option value="document">{t("Document")}</option>
+                    <option value="image">{t("Image")}</option>
+                    <option value="survey">{t("Survey")}</option>
+                    <option value="note">{t("Notes")}</option>
                   </select>
                 </div>
               )}
@@ -1616,7 +1617,7 @@ export function DocumentSelector({
                       background: 'var(--bg-primary)', color: 'var(--text-primary)', outline: 'none'
                     }}
                   >
-                    <option value="">Select folder...</option>
+                    <option value="">{t("Select folder...")}</option>
                     {folderOptions.map((f) => (
                       <option key={f.guid} value={f.guid}>{f.label}</option>
                     ))}
@@ -1643,7 +1644,7 @@ export function DocumentSelector({
                         pointerEvents: 'none'
                       }}
                     >
-                      {name || `Input ${i + 1}`}
+                      {name || t("Input {{x0}}", { x0: i + 1 })}
                     </div>
                   )
                   if (i < ops.length) {
@@ -1653,7 +1654,7 @@ export function DocumentSelector({
                       <div key={`op-${i}`} style={{ height: LABEL_H, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 2 }}>
                         <select
                           value={op || ''}
-                          title={op ? SET_OP_TOOLTIP[op] : 'Select an operator'}
+                          title={op ? SET_OP_TOOLTIP[op] : t("Select an operator")}
                           onChange={(e) => {
                             const val = e.target.value as SetOp | ''
                             setNodes((p) => p.map((nd) => {
@@ -1675,10 +1676,10 @@ export function DocumentSelector({
                             textAlign: 'center', letterSpacing: 0.5, fontStyle: 'italic', outline: 'none'
                           }}
                         >
-                          <option value="" disabled>Operator...</option>
-                          <option value="union">Union (1 + 2)</option>
-                          <option value="intersect">Intersect (1 ∩ 2)</option>
-                          <option value="subtract">Subtract (1 − 2)</option>
+                          <option value="" disabled>{t("Operator...")}</option>
+                          <option value="union">{t("Union (1 + 2)")}</option>
+                          <option value="intersect">{t("Intersect (1 ∩ 2)")}</option>
+                          <option value="subtract">{t("Subtract (1 − 2)")}</option>
                         </select>
                         {ops.length > 1 && (
                           <span
@@ -1723,7 +1724,7 @@ export function DocumentSelector({
                       color: 'var(--accent-primary)', cursor: 'pointer', opacity: 0.7
                     }}
                   >
-                    + Add input...
+                    {t("+ Add input...")}
                   </div>
                 )
                 return <div>{items}</div>
@@ -1818,7 +1819,7 @@ export function DocumentSelector({
             opacity: 0.85
           }}
         >
-          Re-centre
+          {t("Re-centre")}
         </button>
       </div>
 
@@ -1840,12 +1841,12 @@ export function DocumentSelector({
           background: 'var(--bg-secondary)',
           borderRadius: 'var(--radius-md) var(--radius-md) 0 0'
         }}>
-          Selected Documents
+          {t("Selected Documents")}
         </div>
         <div style={{ flex: 1, overflowY: 'auto', padding: 4 }}>
           {resolvedGuids.length === 0 ? (
             <div className="empty-state" style={{ padding: '8px 6px', fontSize: 10, color: 'var(--text-muted)', fontStyle: 'italic' }}>
-              No documents selected. Connect nodes to Result.
+              {t("No documents selected. Connect nodes to Result.")}
             </div>
           ) : (
             <>
@@ -1864,13 +1865,13 @@ export function DocumentSelector({
                         textOverflow: 'ellipsis'
                       }}
                     >
-                      {sourceMap.get(guid) || '(deleted document)'}
+                      {sourceMap.get(guid) || t("(deleted document)")}
                     </div>
                     {narrowed && (
                       <div style={{ padding: '1px 6px 0 16px', fontSize: 9, color: 'var(--text-muted)', lineHeight: 1.5, whiteSpace: 'normal' }}>
                         {scope!.respondents.length > 0 && (
                           <div>
-                            <div style={{ fontWeight: 600 }}>Respondents ({scope!.respondents.length}):</div>
+                            <div style={{ fontWeight: 600 }}>{t("Respondents (")}{scope!.respondents.length}):</div>
                             {scopeListItems(scope!.respondents).map((label, i) => (
                               <div key={i} style={{ paddingLeft: 10, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>• {label}</div>
                             ))}
@@ -1878,7 +1879,7 @@ export function DocumentSelector({
                         )}
                         {scope!.questions.length > 0 && (
                           <div style={{ marginTop: scope!.respondents.length > 0 ? 2 : 0 }}>
-                            <div style={{ fontWeight: 600 }}>Questions ({scope!.questions.length}):</div>
+                            <div style={{ fontWeight: 600 }}>{t("Questions (")}{scope!.questions.length}):</div>
                             {scopeListItems(scope!.questions).map((label, i) => (
                               <div key={i} style={{ paddingLeft: 10, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>• {label}</div>
                             ))}
@@ -1890,7 +1891,7 @@ export function DocumentSelector({
                 )
               })}
               <div style={{ padding: '4px 6px', fontSize: 9, color: 'var(--text-muted)', borderTop: '1px solid var(--border-color)', marginTop: 4 }}>
-                {resolvedGuids.length} document{resolvedGuids.length !== 1 ? 's' : ''}
+                {resolvedGuids.length} {t("document")}{resolvedGuids.length !== 1 ? 's' : ''}
               </div>
             </>
           )}
@@ -1901,8 +1902,8 @@ export function DocumentSelector({
       {/* ── Status bar ── */}
       <div style={{ marginTop: 6, fontSize: 10, color: 'var(--text-muted)' }}>
         {selNodes.size > 1
-          ? `${selNodes.size} selected — ${modKey('C')} copy · ${modKey('V')} paste · Delete to remove`
-          : 'Drag documents & tags onto canvas · Connect nodes to Result'}
+          ? t("{{size}} selected — {{x1}} copy · {{x2}} paste · Delete to remove", { size: selNodes.size, x1: modKey('C'), x2: modKey('V') })
+          : t("Drag documents & tags onto canvas · Connect nodes to Result")}
       </div>
     </div>
   )

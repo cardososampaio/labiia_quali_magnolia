@@ -17,6 +17,7 @@ import { EditableTitleSuffix } from '../EditableTitleSuffix'
 import { renameSavedAnalysis } from '../../utils/rename-saved-analysis'
 import { useToolDirtyState } from '../../hooks/use-tool-dirty-state'
 import { useRegisterToolSave } from '../../hooks/use-register-tool-save'
+import { t } from '../../i18n'
 
 interface Props {
   data: AnalysisInitData
@@ -246,13 +247,13 @@ export function CodeCoOccurrences({ data: propData, savedConfig, inTab }: Props)
   )
 
   const handleExportCsv = useCallback(() => {
-    const colNames = colCodeGuids.map((g) => codeMap.get(g)?.name || 'Code')
-    const rowNames = rowCodeGuids.map((g) => codeMap.get(g)?.name || 'Code')
-    const rows: string[][] = [['', ...colNames, 'Total', '% of Total']]
+    const colNames = colCodeGuids.map((g) => codeMap.get(g)?.name || t("Code"))
+    const rowNames = rowCodeGuids.map((g) => codeMap.get(g)?.name || t("Code"))
+    const rows: string[][] = [['', ...colNames, t("Total"), t("% of Total")]]
     for (let i = 0; i < rowCodeGuids.length; i++) {
       rows.push([rowNames[i], ...showMatrix[i].map(String), String(showRowTotals[i]), pctOfTotal(showRowTotals[i], showGrandTotal)])
     }
-    rows.push(['Total', ...showColTotals.map(String), String(showGrandTotal), pctOfTotal(showGrandTotal, showGrandTotal)])
+    rows.push([t("Total"), ...showColTotals.map(String), String(showGrandTotal), pctOfTotal(showGrandTotal, showGrandTotal)])
     window.api.exportCsv(toCsv(rows), 'code-cooccurrences.csv')
   }, [rowCodeGuids, colCodeGuids, showMatrix, codeMap, showRowTotals, showColTotals, showGrandTotal])
 
@@ -292,16 +293,16 @@ export function CodeCoOccurrences({ data: propData, savedConfig, inTab }: Props)
       <div style={{ padding: '14px 20px 6px', flexShrink: 0, display: 'flex', alignItems: 'center', gap: 8 }}>
         <h2 style={{ margin: 0, fontSize: 18, fontWeight: 600, display: 'flex', alignItems: 'center', gap: 8, color: 'var(--text-secondary)' }}>
           <Icon icon={faSquaresIntersect} className="analysis-header-icon" style={{ fontSize: 16 }} />
-          Code Co-Occurrences{isExisting ? ':' : ''}
+          {t("Code Co-Occurrences")}{isExisting ? ':' : ''}
           {isExisting && <EditableTitleSuffix name={analysisName} onRename={handleRename} />}
         </h2>
         <div style={{ flex: 1 }} />
         <button className="secondary" style={{ fontSize: 11, padding: '4px 14px' }} onClick={() => inTab ? inTab.onClose() : window.close()}>
-          Close
+          {t("Close")}
         </button>
         {isExisting && dirty && (
           <button className="secondary" style={{ fontSize: 11, padding: '4px 14px' }} onClick={handleDiscard}>
-            Discard Changes
+            {t("Discard Changes")}
           </button>
         )}
         {isExisting ? (
@@ -310,11 +311,11 @@ export function CodeCoOccurrences({ data: propData, savedConfig, inTab }: Props)
             disabled={!dirty}
             onClick={() => { handleSave(analysisName) }}
           >
-            {dirty ? 'Update Analysis' : 'Saved'}
+            {dirty ? t("Update Analysis") : t("Saved")}
           </button>
         ) : (
           <button style={{ fontSize: 11, padding: '4px 14px' }} onClick={() => setShowSaveDialog(true)}>
-            Save Analysis
+            {t("Save Analysis")}
           </button>
         )}
         {/* Clearance for the floating MemoFab. */}
@@ -324,24 +325,24 @@ export function CodeCoOccurrences({ data: propData, savedConfig, inTab }: Props)
       {showSaveDialog && (
         <div className="modal-overlay" onClick={() => setShowSaveDialog(false)}>
           <div className="modal" onClick={(e) => e.stopPropagation()}>
-            <h2>Save Analysis</h2>
+            <h2>{t("Save Analysis")}</h2>
             <input
               autoFocus
               type="text"
               defaultValue={analysisName}
-              placeholder="Analysis name"
+              placeholder={t("Analysis name")}
               style={{ width: '100%' }}
               onKeyDown={(e) => {
-                if (e.key === 'Enter') handleSave((e.target as HTMLInputElement).value.trim() || 'Untitled')
+                if (e.key === 'Enter') handleSave((e.target as HTMLInputElement).value.trim() || t("Untitled"))
                 if (e.key === 'Escape') setShowSaveDialog(false)
               }}
             />
             <div className="modal-actions">
-              <button className="secondary" onClick={() => setShowSaveDialog(false)}>Cancel</button>
+              <button className="secondary" onClick={() => setShowSaveDialog(false)}>{t("Cancel")}</button>
               <button onClick={(e) => {
                 const input = (e.target as HTMLElement).parentElement!.parentElement!.querySelector('input') as HTMLInputElement
-                handleSave(input.value.trim() || 'Untitled')
-              }}>Save</button>
+                handleSave(input.value.trim() || t("Untitled"))
+              }}>{t("Save")}</button>
             </div>
           </div>
         </div>
@@ -355,9 +356,9 @@ export function CodeCoOccurrences({ data: propData, savedConfig, inTab }: Props)
             style={{ display: 'flex', alignItems: 'center', gap: 8, cursor: 'pointer', userSelect: 'none' }}
           >
             <Icon icon={docSectionOpen ? faChevronDown : faChevronRight} style={{ fontSize: 12, color: 'var(--text-muted)' }} />
-            <span style={{ fontSize: 'var(--font-size-lg)', fontWeight: 600, color: 'var(--text-secondary)' }}>Select Documents</span>
+            <span style={{ fontSize: 'var(--font-size-lg)', fontWeight: 600, color: 'var(--text-secondary)' }}>{t("Select Documents")}</span>
             <span style={{ fontSize: 11, color: 'var(--text-muted)', marginLeft: 'auto' }}>
-              {filteredSourceGuids.length} document{filteredSourceGuids.length !== 1 ? 's' : ''}
+              {filteredSourceGuids.length} {t("document")}{filteredSourceGuids.length !== 1 ? 's' : ''}
             </span>
           </div>
           {docSectionOpen && (
@@ -392,30 +393,30 @@ export function CodeCoOccurrences({ data: propData, savedConfig, inTab }: Props)
         >
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 10 }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: 8, flexWrap: 'wrap' }}>
-              <span style={{ fontSize: 'var(--font-size-lg)', fontWeight: 600, color: 'var(--text-secondary)', marginRight: 4 }}>Co-Occurrence Grid</span>
+              <span style={{ fontSize: 'var(--font-size-lg)', fontWeight: 600, color: 'var(--text-secondary)', marginRight: 4 }}>{t("Co-Occurrence Grid")}</span>
               <SegmentedControl
-                label="View"
+                label={t("View")}
                 value={view}
                 onChange={setView}
                 options={[
-                  { value: 'table', label: 'Table', title: 'Show the grid as numbers.' },
-                  { value: 'visual', label: 'Visual', title: 'Show each cell as a box sized and shaded by its value.' },
-                  { value: 'sankey', label: 'Sankey', title: 'Show the grid as a Sankey diagram linking row codes to the column codes they co-occur with.' }
+                  { value: 'table', label: t("Table"), title: t("Show the grid as numbers.") },
+                  { value: 'visual', label: t("Visual"), title: t("Show each cell as a box sized and shaded by its value.") },
+                  { value: 'sankey', label: t("Sankey"), title: t("Show the grid as a Sankey diagram linking row codes to the column codes they co-occur with.") }
                 ]}
               />
               <SegmentedControl
-                label="Values"
+                label={t("Values")}
                 value={binaryMode ? 'binary' : 'counts'}
                 onChange={(v) => setBinaryMode(v === 'binary')}
                 options={[
-                  { value: 'counts', label: 'Counts', title: 'Show how many coded segments each cell holds.' },
-                  { value: 'binary', label: 'Binary', title: "Show each cell as 1 (codes co-occur) or 0 (they don't); totals count the cells." }
+                  { value: 'counts', label: t("Counts"), title: t("Show how many coded segments each cell holds.") },
+                  { value: 'binary', label: t("Binary"), title: t("Show each cell as 1 (codes co-occur) or 0 (they don't); totals count the cells.") }
                 ]}
               />
             </div>
             <div style={{ display: 'flex', gap: 6 }}>
               <button className="secondary" style={{ fontSize: 10, padding: '3px 8px' }} onClick={handleExportCsv} disabled={!hasAnyCodes}>
-                Export CSV
+                {t("Export CSV")}
               </button>
             </div>
           </div>
@@ -423,12 +424,12 @@ export function CodeCoOccurrences({ data: propData, savedConfig, inTab }: Props)
           {/* Row and Column drop zones */}
           <div style={{ display: 'flex', gap: 10, marginBottom: 10 }}>
             <CodeDropZone
-              label={rowCodeGuids.length === 0 ? 'Drop codes here for rows' : `Rows: ${rowCodeGuids.length} code${rowCodeGuids.length !== 1 ? 's' : ''} \u2014 drop more`}
+              label={rowCodeGuids.length === 0 ? t("Drop codes here for rows") : t("Rows: {{length}} code{{x1}} — drop more", { length: rowCodeGuids.length, x1: rowCodeGuids.length !== 1 ? 's' : '' })}
               existingGuids={rowCodeGuids}
               onDrop={(guids) => setRowCodeGuids((prev) => [...prev, ...guids])}
             />
             <CodeDropZone
-              label={colCodeGuids.length === 0 ? 'Drop codes here for columns' : `Columns: ${colCodeGuids.length} code${colCodeGuids.length !== 1 ? 's' : ''} \u2014 drop more`}
+              label={colCodeGuids.length === 0 ? t("Drop codes here for columns") : t("Columns: {{length}} code{{x1}} — drop more", { length: colCodeGuids.length, x1: colCodeGuids.length !== 1 ? 's' : '' })}
               existingGuids={colCodeGuids}
               onDrop={(guids) => setColCodeGuids((prev) => [...prev, ...guids])}
             />
@@ -436,7 +437,7 @@ export function CodeCoOccurrences({ data: propData, savedConfig, inTab }: Props)
 
           {!hasAnyCodes ? (
             <div style={{ padding: 30, textAlign: 'center', color: 'var(--text-muted)', fontSize: 'var(--font-size-sm)', border: '2px dashed var(--border-color)', borderRadius: 'var(--radius-md)' }}>
-              Drag codes from the Code Browser into the row or column drop zones above, or drop anywhere here to add to both
+              {t("Drag codes from the Code Browser into the row or column drop zones above, or drop anywhere here to add to both")}
             </div>
           ) : sankeyMode ? (
             <div style={{ overflowX: 'auto' }}>
@@ -444,8 +445,8 @@ export function CodeCoOccurrences({ data: propData, savedConfig, inTab }: Props)
                 left={sankeyLeft}
                 right={sankeyRight}
                 values={showMatrix}
-                leftTitle="Row codes"
-                rightTitle="Column codes"
+                leftTitle={t("Row codes")}
+                rightTitle={t("Column codes")}
                 onLinkClick={handleDoubleClick}
                 onLeftClick={handleRowTotalClick}
                 onRightClick={handleColTotalClick}
@@ -467,10 +468,10 @@ export function CodeCoOccurrences({ data: propData, savedConfig, inTab }: Props)
                       </th>
                     ))}
                     <th style={{ width: 50, minWidth: 50, maxWidth: 50, borderBottom: '1px solid var(--border-color)', verticalAlign: 'bottom', height: 80, padding: 0, position: 'relative' }}>
-                      <div style={{ position: 'absolute', bottom: 6, left: '50%', transformOrigin: 'bottom left', transform: 'rotate(-20deg)', whiteSpace: 'nowrap', fontSize: 10, fontWeight: 700 }}>Total</div>
+                      <div style={{ position: 'absolute', bottom: 6, left: '50%', transformOrigin: 'bottom left', transform: 'rotate(-20deg)', whiteSpace: 'nowrap', fontSize: 10, fontWeight: 700 }}>{t("Total")}</div>
                     </th>
-                    <th title="Row total as % of grand total" style={{ width: 50, minWidth: 50, maxWidth: 50, background: 'color-mix(in srgb, var(--text-secondary) 6%, transparent)', borderBottom: '1px solid var(--border-color)', verticalAlign: 'bottom', height: 80, padding: 0, position: 'relative' }}>
-                      <div style={{ position: 'absolute', bottom: 6, left: '50%', transformOrigin: 'bottom left', transform: 'rotate(-20deg)', whiteSpace: 'nowrap', fontSize: 10, fontWeight: 700, fontStyle: 'italic', color: 'var(--text-secondary)' }}>% of Total</div>
+                    <th title={t("Row total as % of grand total")} style={{ width: 50, minWidth: 50, maxWidth: 50, background: 'color-mix(in srgb, var(--text-secondary) 6%, transparent)', borderBottom: '1px solid var(--border-color)', verticalAlign: 'bottom', height: 80, padding: 0, position: 'relative' }}>
+                      <div style={{ position: 'absolute', bottom: 6, left: '50%', transformOrigin: 'bottom left', transform: 'rotate(-20deg)', whiteSpace: 'nowrap', fontSize: 10, fontWeight: 700, fontStyle: 'italic', color: 'var(--text-secondary)' }}>{t("% of Total")}</div>
                     </th>
                   </tr>
                 </thead>
@@ -551,7 +552,7 @@ export function CodeCoOccurrences({ data: propData, savedConfig, inTab }: Props)
                   })}
                   {/* Total row */}
                   <tr>
-                    <td style={{ padding: '4px 6px', borderTop: '2px solid var(--border-color)', fontWeight: 700 }}>Total</td>
+                    <td style={{ padding: '4px 6px', borderTop: '2px solid var(--border-color)', fontWeight: 700 }}>{t("Total")}</td>
                     {showColTotals.map((ct, j) => (
                       <td key={colCodeGuids[j]} onClick={() => handleColTotalClick(j)} style={{
                         width: 50, minWidth: 50, maxWidth: 50, height: 32,

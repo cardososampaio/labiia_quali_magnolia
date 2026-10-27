@@ -9,7 +9,8 @@ import { isToolTab } from '../utils/tab-ids'
 import { computeTextEdit, adjustRange } from '../utils/text-edit-offsets'
 import { promotedArchiveHandle, mediaPathField } from '../utils/binary-handles'
 import { makeHmrSafe } from './hmr-preserve'
-import { noteName, noteData } from '../utils/notes'
+import { noteName, noteData } from '../utils/notes'
+import { useRecentCodesStore } from './recent-codes-store'
 
 // Re-export so callers that already imported from this store don't break.
 export type { DocumentFolder }
@@ -451,6 +452,7 @@ export const useDocumentStore = create<DocumentState>((set, get) => ({
   },
 
   addCodingToSelection: (sourceGuid, selectionGuid, codeGuid) => {
+    useRecentCodesStore.getState().noteUsed(codeGuid)
     const codingGuid = generateGuid()
     const now = new Date().toISOString()
     const userGuid = useProjectStore.getState().creatingUserGUID

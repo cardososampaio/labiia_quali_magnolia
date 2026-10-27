@@ -4,6 +4,7 @@
  */
 import { create } from 'zustand'
 import { COLOURFUL_INTERFACE_ENABLED, colourfulInterfaceFromSaved } from '../utils/colourful-interface'
+import { DEFAULT_LANGUAGE, normalizeLanguage, type Language } from '../i18n'
 
 export interface FootPedalMappings {
   playPause: string       // e.g. "F5", "Ctrl+Space"
@@ -41,6 +42,8 @@ export interface Preferences {
   /** Dark toolbar plus colour-coded icons (see the
    *  [data-colourful] rules in global.css). */
   colourfulInterface: boolean
+  /** Interface language. Applied on the next launch (see src/renderer/i18n). */
+  language: Language
 }
 
 const DEFAULT_PREFERENCES: Preferences = {
@@ -57,7 +60,8 @@ const DEFAULT_PREFERENCES: Preferences = {
   interfaceScale: 1,
   userName: '',
   toolbarStyle: 'icons',
-  colourfulInterface: COLOURFUL_INTERFACE_ENABLED
+  colourfulInterface: COLOURFUL_INTERFACE_ENABLED,
+  language: DEFAULT_LANGUAGE
 }
 
 interface PreferencesState extends Preferences {
@@ -71,6 +75,7 @@ interface PreferencesState extends Preferences {
   setUserName: (userName: string) => void
   setToolbarStyle: (toolbarStyle: ToolbarStyle) => void
   setColourfulInterface: (colourfulInterface: boolean) => void
+  setLanguage: (language: Language) => void
 }
 
 export const usePreferencesStore = create<PreferencesState>((set, get) => ({
@@ -90,6 +95,7 @@ export const usePreferencesStore = create<PreferencesState>((set, get) => ({
           userName: typeof prefs.userName === 'string' ? prefs.userName : DEFAULT_PREFERENCES.userName,
           toolbarStyle: prefs.toolbarStyle === 'icons-and-text' ? 'icons-and-text' : DEFAULT_PREFERENCES.toolbarStyle,
           colourfulInterface: colourfulInterfaceFromSaved(prefs.colourfulInterface),
+          language: normalizeLanguage(prefs.language),
           loaded: true
         })
       } else {
@@ -101,9 +107,9 @@ export const usePreferencesStore = create<PreferencesState>((set, get) => ({
   },
 
   save: async () => {
-    const { footPedalMappings, defaultPlaybackSpeed, theme, paperSize, interfaceScale, userName, toolbarStyle, colourfulInterface } = get()
+    const { footPedalMappings, defaultPlaybackSpeed, theme, paperSize, interfaceScale, userName, toolbarStyle, colourfulInterface, language } = get()
     try {
-      await window.api.savePreferences({ footPedalMappings, defaultPlaybackSpeed, theme, paperSize, interfaceScale, userName, toolbarStyle, colourfulInterface })
+      await window.api.savePreferences({ footPedalMappings, defaultPlaybackSpeed, theme, paperSize, interfaceScale, userName, toolbarStyle, colourfulInterface, language })
     } catch { /* ignore */ }
   },
 
@@ -132,6 +138,11 @@ export const usePreferencesStore = create<PreferencesState>((set, get) => ({
 
   setUserName: (userName) => {
     set({ userName })
+    setTimeout(() => get().save(), 0)
+  },
+
+  setLanguage: (language) => {
+    set({ language })
     setTimeout(() => get().save(), 0)
   },
 
@@ -171,6 +182,7 @@ if (typeof window !== 'undefined' && window.api?.onPreferencesUpdate) {
       userName: typeof prefs.userName === 'string' ? prefs.userName : DEFAULT_PREFERENCES.userName,
       toolbarStyle: prefs.toolbarStyle === 'icons-and-text' ? 'icons-and-text' : DEFAULT_PREFERENCES.toolbarStyle,
       colourfulInterface: colourfulInterfaceFromSaved(prefs.colourfulInterface),
+      language: normalizeLanguage(prefs.language),
       loaded: true
     })
   })

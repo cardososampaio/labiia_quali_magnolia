@@ -11,6 +11,7 @@
 import { useRef, useEffect, useState, useCallback } from 'react'
 import type { PlainTextSelection, Code, Memo } from '../../models/types'
 import { Icon, MEMO_POINT_ICON } from '../Icon'
+import { t } from '../../i18n'
 
 // SVG wave underline pattern for memos (matching CodedTextView)
 const MEMO_WAVE = `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='2.25'%3E%3Cpath d='M0 2.25 L3 0 L6 2.25 L9 0 L12 2.25' fill='none' stroke='%234a90d9' stroke-width='1'/%3E%3C/svg%3E")`
@@ -774,7 +775,7 @@ export function PdfPageRenderer({
         return (
           <div
             key={`pt-memo-${m.guid}`}
-            title={m.title || 'Memo'}
+            title={m.title || t("Memo")}
             onMouseDown={(e) => {
               if (e.button !== 0) return
               e.stopPropagation()

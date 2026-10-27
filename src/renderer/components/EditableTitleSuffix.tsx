@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { t } from '../i18n'
 
 interface Props {
   /** The current name to render after the colon. */
@@ -77,7 +78,7 @@ export function EditableTitleSuffix({ name, onRename, autoEdit, placeholder }: P
   return (
     <span
       onClick={startEdit}
-      title="Click to rename"
+      title={t("Click to rename")}
       style={{
         fontSize: 'inherit',
         fontWeight: 300,

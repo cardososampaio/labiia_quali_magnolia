@@ -4,6 +4,7 @@ import { MarkdownEditor } from '../MarkdownEditor'
 import type { LogbookEntry, LogbookInitData } from '../../models/types'
 import { generateGuid } from '../../utils/guid'
 import { exportPdfWithHeader, buildPdfDocument, escHtml } from '../../utils/pdf-export'
+import { t } from '../../i18n'
 
 function formatDate(iso: string): string {
   const d = new Date(iso)
@@ -46,12 +47,12 @@ function EntryRow({
         textOverflow: 'ellipsis',
         whiteSpace: 'nowrap'
       }}>
-        {entry.title || 'Untitled Entry'}
+        {entry.title || t("Untitled Entry")}
       </div>
       <div style={{ fontSize: 10, color: 'var(--text-muted)', marginTop: 2 }}>
         {formatDate(entry.createdDateTime)}
         {entry.modifiedDateTime && (
-          <span> · edited {formatDate(entry.modifiedDateTime)}</span>
+          <span> {t("· edited")}{' '}{formatDate(entry.modifiedDateTime)}</span>
         )}
       </div>
     </div>
@@ -73,7 +74,7 @@ function EditEntryDialog({
   return (
     <div className="modal-overlay" onClick={onClose} style={{ position: 'fixed' }}>
       <div className="modal" onClick={(e) => e.stopPropagation()} style={{ minWidth: 480 }}>
-        <h2 style={{ margin: '0 0 12px' }}>{entry ? 'Edit Entry' : 'New Entry'}</h2>
+        <h2 style={{ margin: '0 0 12px' }}>{entry ? t("Edit Entry") : t("New Entry")}</h2>
 
         <div style={{ marginBottom: 10 }}>
           <input
@@ -83,7 +84,7 @@ function EditEntryDialog({
             onKeyDown={(e) => {
               if (e.key === 'Enter' && title.trim()) onSave(title.trim(), content)
             }}
-            placeholder="Entry title..."
+            placeholder={t("Entry title...")}
             autoFocus
             style={{ width: '100%' }}
           />
@@ -91,7 +92,7 @@ function EditEntryDialog({
 
         <div style={{ marginBottom: 12 }}>
           <label style={{ fontSize: 'var(--font-size-sm)', color: 'var(--text-secondary)', display: 'block', marginBottom: 4 }}>
-            Content
+            {t("Content")}
           </label>
           <MarkdownEditor
             value={content}
@@ -100,13 +101,13 @@ function EditEntryDialog({
         </div>
 
         <div className="modal-actions">
-          <button className="secondary" onClick={onClose}>Cancel</button>
+          <button className="secondary" onClick={onClose}>{t("Cancel")}</button>
           <button
             onClick={() => {
               if (title.trim()) onSave(title.trim(), content)
             }}
           >
-            Save
+            {t("Save")}
           </button>
         </div>
       </div>
@@ -118,19 +119,19 @@ function EntryDetailPane({ entry }: { entry: LogbookEntry | null }) {
   if (!entry) {
     return (
       <div style={{ padding: 20, textAlign: 'center', color: 'var(--text-muted)', fontSize: 'var(--font-size-sm)' }}>
-        Select an entry to see its details.
+        {t("Select an entry to see its details.")}
       </div>
     )
   }
   return (
     <div style={{ padding: 12 }}>
       <div style={{ fontWeight: 600, fontSize: 'var(--font-size-lg)', marginBottom: 4 }}>
-        {entry.title || 'Untitled Entry'}
+        {entry.title || t("Untitled Entry")}
       </div>
       <div style={{ fontSize: 10, color: 'var(--text-muted)', marginBottom: 10 }}>
-        Created {formatDate(entry.createdDateTime)}
+        {t("Created")}{' '}{formatDate(entry.createdDateTime)}
         {entry.modifiedDateTime && (
-          <span> · edited {formatDate(entry.modifiedDateTime)}</span>
+          <span> {t("· edited")}{' '}{formatDate(entry.modifiedDateTime)}</span>
         )}
       </div>
       {entry.content ? (
@@ -140,7 +141,7 @@ function EntryDetailPane({ entry }: { entry: LogbookEntry | null }) {
         />
       ) : (
         <div style={{ fontSize: 'var(--font-size-sm)', color: 'var(--text-muted)', fontStyle: 'italic' }}>
-          No content
+          {t("No content")}
         </div>
       )}
     </div>
@@ -229,13 +230,13 @@ export function LogbookWindow() {
 `
 
     const html = buildPdfDocument({
-      title: 'Logbook',
-      subtitle: `${entries.length} entr${entries.length !== 1 ? 'ies' : 'y'} &mdash; exported ${escHtml(now)}`,
+      title: t("Logbook"),
+      subtitle: t("{{length}} entr{{x1}} &mdash; exported {{x2}}", { length: entries.length, x1: entries.length !== 1 ? 'ies' : 'y', x2: escHtml(now) }),
       body,
       extraCss
     })
 
-    await exportPdfWithHeader(html, 'Logbook')
+    await exportPdfWithHeader(html, t("Logbook"))
   }, [entries])
 
   const selectedEntry = selectedGuid ? entries.find((e) => e.guid === selectedGuid) ?? null : null
@@ -254,23 +255,23 @@ export function LogbookWindow() {
         WebkitAppRegion: 'drag' as any
       }}>
         <span style={{ fontWeight: 600, fontSize: 'var(--font-size-base)', flex: 1 }}>
-          Logbook
+          {t("Logbook")}
           <span style={{ fontWeight: 400, fontSize: 11, color: 'var(--text-muted)', marginLeft: 8 }}>
-            {entries.length} entr{entries.length !== 1 ? 'ies' : 'y'}
+            {entries.length} {t("entr")}{entries.length !== 1 ? 'ies' : 'y'}
           </span>
         </span>
         <button
           style={{ fontSize: 11, padding: '3px 8px', WebkitAppRegion: 'no-drag' as any }}
           onClick={handleNewEntry}
         >
-          + Entry
+          {t("+ Entry")}
         </button>
         <button
           className="secondary"
           style={{ fontSize: 11, padding: '3px 8px', WebkitAppRegion: 'no-drag' as any }}
           onClick={handleExportPdf}
         >
-          Export PDF
+          {t("Export PDF")}
         </button>
       </div>
 
@@ -280,12 +281,12 @@ export function LogbookWindow() {
         <div style={{ width: '40%', borderRight: '1px solid var(--border-color)', overflowY: 'auto' }}>
           {entries.length === 0 ? (
             <div style={{ padding: 20, textAlign: 'center', color: 'var(--text-muted)', fontSize: 'var(--font-size-sm)' }}>
-              No entries yet. Click "+ Entry" to create one.
+              {t("No entries yet. Click \"+ Entry\" to create one.")}
             </div>
           ) : (
             <>
               <div style={{ fontSize: 10, color: 'var(--text-muted)', padding: '4px 10px', borderBottom: '1px solid var(--border-color)' }}>
-                Click to preview · Double-click to edit · Right-click for options
+                {t("Click to preview · Double-click to edit · Right-click for options")}
               </div>
               {entries.map((entry) => (
                 <div
@@ -336,7 +337,7 @@ export function LogbookWindow() {
               setEntryContextMenu(null)
               if (entry) setEditingEntry(entry)
             }}>
-              Edit Entry
+              {t("Edit Entry")}
             </div>
             <div className="context-menu-separator" />
             <div
@@ -347,7 +348,7 @@ export function LogbookWindow() {
                 setEntryContextMenu(null)
               }}
             >
-              Delete Entry
+              {t("Delete Entry")}
             </div>
           </div>
         </>
@@ -357,17 +358,17 @@ export function LogbookWindow() {
       {deleteConfirm && (
         <div className="modal-overlay" onClick={() => setDeleteConfirm(null)} style={{ position: 'fixed' }}>
           <div className="modal" onClick={(e) => e.stopPropagation()}>
-            <h2 style={{ margin: '0 0 12px' }}>Delete Entry</h2>
+            <h2 style={{ margin: '0 0 12px' }}>{t("Delete Entry")}</h2>
             <p style={{ margin: '0 0 16px', fontSize: 'var(--font-size-sm)' }}>
-              Are you sure you want to delete this logbook entry? This cannot be undone.
+              {t("Are you sure you want to delete this logbook entry? This cannot be undone.")}
             </p>
             <div className="modal-actions">
-              <button className="secondary" onClick={() => setDeleteConfirm(null)}>Cancel</button>
+              <button className="secondary" onClick={() => setDeleteConfirm(null)}>{t("Cancel")}</button>
               <button
                 style={{ background: 'var(--danger)' }}
                 onClick={() => handleDeleteEntry(deleteConfirm)}
               >
-                Delete
+                {t("Delete")}
               </button>
             </div>
           </div>

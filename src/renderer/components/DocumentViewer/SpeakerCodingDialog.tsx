@@ -2,6 +2,7 @@ import { useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react'
 import { Icon, faPlay, faPause } from '../Icon'
 import type { DetectedSpeaker } from '../../utils/transcript-speakers'
 import { useCodeColourPresets } from '../../utils/code-colours'
+import { t } from '../../i18n'
 
 /** Seconds of audio the play button previews. */
 const CLIP_SECONDS = 5
@@ -233,7 +234,7 @@ export function SpeakerCodingDialog({ open, speakers, source, onApply, onClose }
         <div style={{ padding: '16px 20px 8px' }}>
           <h2 style={{ margin: 0, fontSize: 16 }}>{title}</h2>
           <p style={{ margin: '6px 0 0', fontSize: 12, color: 'var(--text-muted)' }}>
-            Optionally code each speaker's lines.
+            {t("Optionally code each speaker's lines.")}
           </p>
         </div>
 
@@ -244,13 +245,13 @@ export function SpeakerCodingDialog({ open, speakers, source, onApply, onClose }
               <div key={sp.id} style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '8px 0', borderBottom: '1px solid var(--border-color)' }}>
                 <div style={{ minWidth: 96 }}>
                   <div style={{ fontWeight: 600, fontSize: 13 }}>{sp.id}</div>
-                  <div style={{ fontSize: 10, color: 'var(--text-muted)' }}>{sp.segmentCount} segment{sp.segmentCount === 1 ? '' : 's'}</div>
+                  <div style={{ fontSize: 10, color: 'var(--text-muted)' }}>{sp.segmentCount} {t("segment")}{sp.segmentCount === 1 ? '' : 's'}</div>
                 </div>
 
                 <button
                   onClick={() => playPreview(sp)}
                   disabled={!mediaUrl}
-                  title={mediaUrl ? (playingId === sp.id ? 'Pause' : 'Play a sample of this speaker') : 'No media attached to preview'}
+                  title={mediaUrl ? (playingId === sp.id ? t("Pause") : t("Play a sample of this speaker")) : t("No media attached to preview")}
                   style={{ width: 30, height: 30, borderRadius: '50%', border: '1px solid var(--border-color)', background: 'var(--bg-secondary)', color: 'var(--text-primary)', cursor: mediaUrl ? 'pointer' : 'not-allowed', flexShrink: 0, opacity: mediaUrl ? 1 : 0.5, display: 'flex', alignItems: 'center', justifyContent: 'center' }}
                 >
                   <Icon icon={playingId === sp.id ? faPause : faPlay} />
@@ -261,9 +262,9 @@ export function SpeakerCodingDialog({ open, speakers, source, onApply, onClose }
                     <div style={{ display: 'inline-flex', alignItems: 'center', gap: 6, padding: '4px 8px', borderRadius: 12, background: 'var(--bg-secondary)', border: '1px solid var(--border-color)', maxWidth: '100%' }}>
                       <span style={{ width: 9, height: 9, borderRadius: '50%', background: (asn.kind === 'existing' ? asn.color : asn.color) || '#888', flexShrink: 0 }} />
                       <span style={{ fontSize: 12, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
-                        {asn.name}{asn.kind === 'new' ? ' (new)' : ''}
+                        {asn.name}{asn.kind === 'new' ? t(" (new)") : ''}
                       </span>
-                      <button onClick={() => clearAssignment(sp.id)} title="Remove" style={{ border: 'none', background: 'transparent', color: 'var(--text-muted)', cursor: 'pointer', fontSize: 14, lineHeight: 1 }}>×</button>
+                      <button onClick={() => clearAssignment(sp.id)} title={t("Remove")} style={{ border: 'none', background: 'transparent', color: 'var(--text-muted)', cursor: 'pointer', fontSize: 14, lineHeight: 1 }}>×</button>
                     </div>
                   ) : editingNew === sp.id ? (
                     <div style={{ display: 'flex', gap: 6, alignItems: 'center' }}>
@@ -272,10 +273,10 @@ export function SpeakerCodingDialog({ open, speakers, source, onApply, onClose }
                         value={newName}
                         onChange={(e) => setNewName(e.target.value)}
                         onKeyDown={(e) => { if (e.key === 'Enter') confirmNewCode(sp.id, i); if (e.key === 'Escape') setEditingNew(null) }}
-                        placeholder="New code name"
+                        placeholder={t("New code name")}
                         style={{ flex: 1, fontSize: 12, padding: '4px 6px', border: '1px solid var(--border-color)', borderRadius: 4, background: 'var(--bg-secondary)', color: 'var(--text-primary)' }}
                       />
-                      <button onClick={() => confirmNewCode(sp.id, i)} style={{ fontSize: 11, padding: '4px 8px', border: '1px solid var(--border-color)', borderRadius: 4, background: 'var(--bg-secondary)', color: 'var(--text-primary)', cursor: 'pointer' }}>Create</button>
+                      <button onClick={() => confirmNewCode(sp.id, i)} style={{ fontSize: 11, padding: '4px 8px', border: '1px solid var(--border-color)', borderRadius: 4, background: 'var(--bg-secondary)', color: 'var(--text-primary)', cursor: 'pointer' }}>{t("Create")}</button>
                     </div>
                   ) : (
                     <div
@@ -284,8 +285,8 @@ export function SpeakerCodingDialog({ open, speakers, source, onApply, onClose }
                       onDrop={(e) => handleDrop(sp.id, e)}
                       style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 8, padding: '6px 8px', borderRadius: 6, border: `1px dashed ${dragOver === sp.id ? 'var(--accent-color, #5080e0)' : 'var(--border-color)'}`, background: dragOver === sp.id ? 'var(--bg-secondary)' : 'transparent' }}
                     >
-                      <span style={{ fontSize: 11, color: 'var(--text-muted)' }}>Drag a code here</span>
-                      <button onClick={() => startNewCode(sp.id)} style={{ fontSize: 11, padding: '2px 8px', border: '1px solid var(--border-color)', borderRadius: 4, background: 'var(--bg-secondary)', color: 'var(--text-primary)', cursor: 'pointer', flexShrink: 0 }}>+ New code</button>
+                      <span style={{ fontSize: 11, color: 'var(--text-muted)' }}>{t("Drag a code here")}</span>
+                      <button onClick={() => startNewCode(sp.id)} style={{ fontSize: 11, padding: '2px 8px', border: '1px solid var(--border-color)', borderRadius: 4, background: 'var(--bg-secondary)', color: 'var(--text-primary)', cursor: 'pointer', flexShrink: 0 }}>{t("+ New code")}</button>
                     </div>
                   )}
                 </div>
@@ -295,13 +296,13 @@ export function SpeakerCodingDialog({ open, speakers, source, onApply, onClose }
         </div>
 
         <div style={{ display: 'flex', justifyContent: 'flex-end', gap: 8, padding: '12px 20px', borderTop: '1px solid var(--border-color)' }}>
-          <button onClick={onClose} style={{ fontSize: 12, padding: '6px 14px', border: '1px solid var(--border-color)', borderRadius: 6, background: 'var(--bg-secondary)', color: 'var(--text-primary)', cursor: 'pointer' }}>Skip</button>
+          <button onClick={onClose} style={{ fontSize: 12, padding: '6px 14px', border: '1px solid var(--border-color)', borderRadius: 6, background: 'var(--bg-secondary)', color: 'var(--text-primary)', cursor: 'pointer' }}>{t("Skip")}</button>
           <button
             onClick={handleApply}
             disabled={assignedCount === 0}
             style={{ fontSize: 12, padding: '6px 14px', border: '1px solid var(--border-color)', borderRadius: 6, background: assignedCount === 0 ? 'var(--bg-secondary)' : 'var(--accent-color, #5080e0)', color: assignedCount === 0 ? 'var(--text-muted)' : '#fff', cursor: assignedCount === 0 ? 'not-allowed' : 'pointer' }}
           >
-            Code {assignedCount > 0 ? `${assignedCount} speaker${assignedCount === 1 ? '' : 's'}` : 'speakers'}
+            {t("Code")}{' '}{assignedCount > 0 ? `${assignedCount} speaker${assignedCount === 1 ? '' : 's'}` : 'speakers'}
           </button>
         </div>
 

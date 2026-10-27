@@ -1,4 +1,5 @@
 import { Markdown } from '../Markdown'
+import { t } from '../../i18n'
 
 export interface UpdateAvailableInfo {
   version: string
@@ -55,15 +56,15 @@ export function UpdateDialog({
         onClick={(e) => e.stopPropagation()}
       >
         <h2 style={{ margin: '0 0 4px', fontSize: 16, fontWeight: 600 }}>
-          A new version of Magnolia is available
+          {t("A new version of labiia_quali is available")}
         </h2>
         <p style={{ margin: '0 0 14px', color: 'var(--text-secondary)', fontSize: 'var(--font-size-sm)' }}>
-          Magnolia {info.version} is now available—you have {info.currentVersion}. Would you like to install it
-          {released ? ` (released ${released})` : ''}?
+          {t("labiia_quali")}{' '}{info.version} {t("is now available—you have")}{' '}{info.currentVersion}{t(". Would you like to install it")}
+          {released ? t(" (released {{released}})", { released: released }) : ''}?
         </p>
 
         <div style={{ fontSize: 12, fontWeight: 600, color: 'var(--text-secondary)', marginBottom: 6 }}>
-          Release notes
+          {t("Release notes")}
         </div>
         <div
           style={{
@@ -81,19 +82,19 @@ export function UpdateDialog({
             <Markdown text={info.releaseNotes} />
           ) : (
             <p style={{ color: 'var(--text-muted)', fontStyle: 'italic', margin: 0 }}>
-              No release notes were provided for this version.
+              {t("No release notes were provided for this version.")}
             </p>
           )}
         </div>
 
         <div className="modal-actions" style={{ marginTop: 16 }}>
           <button className="secondary" onClick={skip} style={{ marginRight: 'auto' }}>
-            Skip This Version
+            {t("Skip This Version")}
           </button>
           <button className="secondary" onClick={later}>
-            Remind Me Later
+            {t("Remind Me Later")}
           </button>
-          <button onClick={install}>Install Now</button>
+          <button onClick={install}>{t("Install Now")}</button>
         </div>
       </div>
     </div>

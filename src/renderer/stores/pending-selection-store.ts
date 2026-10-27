@@ -24,6 +24,15 @@ export interface PendingTextSelection {
   startCp: number
   endCp: number
   selectedText: string
+  /** Video transcripts only: the selected lines' span on the video
+   *  timeline. Codes applied to the selection attach to this time range,
+   *  matching what dropping a code onto the transcript does. */
+  timeRange?: {
+    startTime: number
+    endTime: number
+    startLine: number
+    endLine: number
+  }
 }
 
 export interface PendingRegionSelection {

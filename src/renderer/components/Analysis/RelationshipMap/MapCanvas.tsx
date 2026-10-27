@@ -6,6 +6,7 @@ import { MapElement } from './MapElement'
 import { MapConnectionComponent } from './MapConnection'
 import { FreeTextNode } from './FreeTextNode'
 import { Icon, MEMO_RANGED_ICON } from '../../Icon'
+import { t } from '../../../i18n'
 
 interface Props {
   elements: MapElementType[]
@@ -574,25 +575,25 @@ export function MapCanvas({
         <div className="zoom-strip">
           <button
             onClick={() => onZoomChange(Math.max(0.25, zoom * 0.9))}
-            title="Zoom out"
+            title={t("Zoom out")}
           >
             −
           </button>
-          <button onClick={() => onZoomChange(1)} title="Reset to 100%">
+          <button onClick={() => onZoomChange(1)} title={t("Reset to 100%")}>
             100%
           </button>
           <button
             onClick={() => onZoomChange(Math.min(3, zoom * 1.1))}
-            title="Zoom in"
+            title={t("Zoom in")}
           >
             +
           </button>
-          <button onClick={handleRecentre} title="Re-centre map on content">
-            Re-centre
+          <button onClick={handleRecentre} title={t("Re-centre map on content")}>
+            {t("Re-centre")}
           </button>
         </div>
         <span className="viewer-spacer" />
-        <span className="viewer-meta">Map</span>
+        <span className="viewer-meta">{t("Map")}</span>
       </div>
     <div
       ref={containerRef}
@@ -714,7 +715,7 @@ export function MapCanvas({
             return (
               <div
                 key={`memo-badge-${el.id}`}
-                title="Open attached memo"
+                title={t("Open attached memo")}
                 onMouseDown={(e) => e.stopPropagation()}
                 onClick={(e) => {
                   e.stopPropagation()
@@ -817,7 +818,7 @@ export function MapCanvas({
               setContextMenu(null)
             }}
           >
-            Add Memo
+            {t("Add Memo")}
           </div>
         </div>
       )}

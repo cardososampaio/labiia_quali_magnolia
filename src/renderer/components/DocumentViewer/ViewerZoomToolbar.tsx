@@ -1,3 +1,4 @@
+import { t } from '../../i18n'
 /**
  * ViewerZoomToolbar — small floating zoom-control buttons shared by the
  * PDF and image viewers. Mirrors the "100%" button styling in the
@@ -39,7 +40,7 @@ export function ViewerZoomToolbar({ zoom, onZoomChange, onFit, epsilon = 0.001 }
       {showReset && (
         <button
           onClick={() => onZoomChange(1)}
-          title="Reset zoom to 100%"
+          title={t("Reset zoom to 100%")}
           style={buttonStyle}
         >
           100%
@@ -48,10 +49,10 @@ export function ViewerZoomToolbar({ zoom, onZoomChange, onFit, epsilon = 0.001 }
       {onFit && (
         <button
           onClick={onFit}
-          title="Fit to window"
+          title={t("Fit to window")}
           style={buttonStyle}
         >
-          To Fit
+          {t("To Fit")}
         </button>
       )}
     </div>

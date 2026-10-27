@@ -33,6 +33,7 @@ import {
   LANE_GAP,
   TRACK_TOP_PADDING
 } from './video-time-utils'
+import { t } from '../../i18n'
 
 interface Props {
   sourceGuid: string
@@ -447,7 +448,7 @@ export function CodeTrack({
                 e.stopPropagation()
                 setCtxMenu({ x: e.clientX, y: e.clientY, selGuid: sel.guid })
               }}
-              title={`${code?.name ?? 'Code'} — ${formatTimeDecimal(sel.timeRange!.startTime)} to ${formatTimeDecimal(sel.timeRange!.endTime)}`}
+              title={t("{{x0}} — {{x1}} to {{x2}}", { x0: code?.name ?? 'Code', x1: formatTimeDecimal(sel.timeRange!.startTime), x2: formatTimeDecimal(sel.timeRange!.endTime) })}
             >
               <span
                 data-handle="start"
@@ -552,7 +553,7 @@ export function CodeTrack({
             style={{ left: ctxMenu.x, top: ctxMenu.y, position: 'fixed', zIndex: 1000 }}
             onClick={(e) => e.stopPropagation()}
           >
-            <div style={{ padding: '4px 14px', fontSize: 11, color: 'var(--text-muted)', fontWeight: 600 }}>Remove Code</div>
+            <div style={{ padding: '4px 14px', fontSize: 11, color: 'var(--text-muted)', fontWeight: 600 }}>{t("Remove Code")}</div>
             {sel.codings.map((c) => {
               const code = findCode(codes, c.codeGuid)
               return (
@@ -567,7 +568,7 @@ export function CodeTrack({
                   }}
                 >
                   <span className="color-pip" style={{ background: code?.color || '#888' }} />
-                  {code?.name ?? 'Unknown'}
+                  {code?.name ?? t("Unknown")}
                 </div>
               )
             })}
@@ -579,7 +580,7 @@ export function CodeTrack({
                 setCtxMenu(null)
               }}
             >
-              Remove Selection
+              {t("Remove Selection")}
             </div>
           </div>
         )

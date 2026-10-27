@@ -222,6 +222,7 @@ const api: ElectronAPI = {
   remindUpdateLater: () => ipcRenderer.send('update:remind-later'),
   // Manual update check + version, surfaced in the Preferences pane.
   getAppVersion: () => ipcRenderer.invoke('get-app-version'),
+  getLanguage: () => ipcRenderer.sendSync('i18n:get-language'),
   checkForUpdates: () => ipcRenderer.send('update:check-manual'),
   onUpdateStatus: (callback) => {
     const handler = (_e: unknown, status: unknown) => callback(status as never)

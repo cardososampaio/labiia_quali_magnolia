@@ -24,6 +24,7 @@ import type { Code, Memo, MemoEditInitData, PlainTextSelection } from '../../mod
 import { useNewCodeTriggerStore } from '../../stores/new-code-trigger-store'
 import { exportPdfWithHeader, buildPdfDocument, escHtml } from '../../utils/pdf-export'
 import { modKey } from '../../utils/platform'
+import { t } from '../../i18n'
 
 interface Props {
   sourceGuid: string
@@ -102,7 +103,7 @@ function buildTranscriptHtml(
 
   return buildPdfDocument({
     title,
-    subtitle: `${lineCount} line${lineCount !== 1 ? 's' : ''} &mdash; exported ${escHtml(now)}`,
+    subtitle: t("{{lineCount}} line{{x1}} &mdash; exported {{x2}}", { lineCount: lineCount, x1: lineCount !== 1 ? 's' : '', x2: escHtml(now) }),
     body,
     extraCss
   })
@@ -362,15 +363,15 @@ export function TranscriptEditor({
             flexShrink: 0
           }}
           onClick={toggleMode}
-          title={isTranscribing ? 'Switch to Coding Mode' : 'Switch to Transcription Mode'}
+          title={isTranscribing ? t("Switch to Coding Mode") : t("Switch to Transcription Mode")}
         >
           <Icon icon={faPenLine} />
         </button>
         <span style={{ fontSize: 12, fontWeight: 700, color: 'var(--text-primary)' }}>
-          {isTranscribing ? 'Transcribing Mode' : 'Coding Mode'}
+          {isTranscribing ? t("Transcribing Mode") : t("Coding Mode")}
         </span>
         <span style={{ fontSize: 10, color: 'var(--text-muted)', flex: 1 }}>
-          {isTranscribing ? 'Type to transcribe. Coding is locked.' : 'Select text to apply codes, memos, and quotes.'}
+          {isTranscribing ? t("Type to transcribe. Coding is locked.") : t("Select text to apply codes, memos, and quotes.")}
         </span>
         <button
           style={{
@@ -401,7 +402,7 @@ export function TranscriptEditor({
               // language settings, …) as a document memo so it isn't lost when
               // the markup is stripped out.
               if (parsed.notes.length > 0) {
-                addMemo('document', 'Imported transcript notes', {
+                addMemo('document', t("Imported transcript notes"), {
                   content: parsed.notes.join('\n\n'),
                   sourceGuids: [sourceGuid]
                 })
@@ -416,9 +417,9 @@ export function TranscriptEditor({
               updateSourceContent(sourceGuid, detectAndConvertTimestamps(result.content))
             }
           }}
-          title="Import a transcript file (.txt, .md, .srt, .vtt, .html)"
+          title={t("Import a transcript file (.txt, .md, .srt, .vtt, .html)")}
         >
-          Import
+          {t("Import")}
         </button>
         <div style={{ position: 'relative', flexShrink: 0 }}>
           <button
@@ -433,9 +434,9 @@ export function TranscriptEditor({
               cursor: 'pointer'
             }}
             onClick={(e) => setExportMenu(exportMenu ? null : { x: e.currentTarget.getBoundingClientRect().right, y: e.currentTarget.getBoundingClientRect().bottom })}
-            title="Export Transcript"
+            title={t("Export Transcript")}
           >
-            Export
+            {t("Export")}
           </button>
           {exportMenu && (
             <>
@@ -447,20 +448,20 @@ export function TranscriptEditor({
                   const url = URL.createObjectURL(blob)
                   const a = document.createElement('a'); a.href = url; a.download = sourceName.replace(/\.[^.]+$/, '') + '-transcript.txt'; a.click()
                   URL.revokeObjectURL(url)
-                }}>Export as TXT</div>
+                }}>{t("Export as TXT")}</div>
                 <div className="context-menu-item" onClick={() => {
                   setExportMenu(null)
                   const blob = new Blob([content], { type: 'text/markdown' })
                   const url = URL.createObjectURL(blob)
                   const a = document.createElement('a'); a.href = url; a.download = sourceName.replace(/\.[^.]+$/, '') + '-transcript.md'; a.click()
                   URL.revokeObjectURL(url)
-                }}>Export as Markdown</div>
+                }}>{t("Export as Markdown")}</div>
                 <div className="context-menu-item" onClick={async () => {
                   setExportMenu(null)
                   const html = buildTranscriptHtml(sourceName, content, lineTimes)
                   const baseName = sourceName.replace(/\.[^.]+$/, '')
                   await exportPdfWithHeader(html, `${baseName} - Transcript`)
-                }}>Export as PDF</div>
+                }}>{t("Export as PDF")}</div>
               </div>
             </>
           )}
@@ -552,7 +553,7 @@ export function TranscriptEditor({
             />
           ) : (
             <div style={{ padding: 20, textAlign: 'center', color: 'var(--text-muted)', fontSize: 'var(--font-size-sm)' }}>
-              No transcript yet. Switch to Transcribing mode to begin.
+              {t("No transcript yet. Switch to Transcribing mode to begin.")}
             </div>
           )}
 
@@ -563,7 +564,7 @@ export function TranscriptEditor({
               display: 'flex', alignItems: 'center', justifyContent: 'center',
               background: 'rgba(124, 111, 240, 0.08)', pointerEvents: 'none', zIndex: 10
             }}>
-              <span style={{ color: 'var(--accent)', fontWeight: 600, fontSize: 14 }}>Drop code to apply to selection</span>
+              <span style={{ color: 'var(--accent)', fontWeight: 600, fontSize: 14 }}>{t("Drop code to apply to selection")}</span>
             </div>
           )}
           {isDragOver && !pendingSelection && (
@@ -572,7 +573,7 @@ export function TranscriptEditor({
               display: 'flex', alignItems: 'center', justifyContent: 'center',
               background: 'rgba(224, 80, 80, 0.08)', pointerEvents: 'none', zIndex: 10
             }}>
-              <span style={{ color: 'var(--text-muted)', fontSize: 13 }}>Select text first, then drag a code onto it</span>
+              <span style={{ color: 'var(--text-muted)', fontSize: 13 }}>{t("Select text first, then drag a code onto it")}</span>
             </div>
           )}
         </div>
@@ -585,14 +586,14 @@ export function TranscriptEditor({
             useNewCodeTriggerStore.getState().request()
             setContextMenu(null)
           }}>
-            New Code
+            {t("New Code")}
           </div>
           <div className="context-menu-separator" />
           {contextMenu.context.pendingSelection && (
             <>
-              <div style={{ padding: '4px 14px', fontSize: 11, color: 'var(--text-muted)', fontWeight: 600, userSelect: 'none' }}>Apply Code</div>
+              <div style={{ padding: '4px 14px', fontSize: 11, color: 'var(--text-muted)', fontWeight: 600, userSelect: 'none' }}>{t("Apply Code")}</div>
               <div style={{ padding: '0 14px 6px', fontSize: 11, color: 'var(--text-muted)', lineHeight: 1.4, maxWidth: 220, userSelect: 'none' }}>
-                To apply any code, select content and drag the code from the Code Browser to the selection.
+                {t("To apply any code, select content and drag the code from the Code Browser to the selection.")}
               </div>
               {hotkeyCodes.map(({ code }) => (
                 <div key={code.guid} className="context-menu-item" onClick={() => handleApplyCode(code.guid)}>
@@ -602,14 +603,14 @@ export function TranscriptEditor({
                 </div>
               ))}
               {hotkeyCodes.length === 0 && (
-                <div className="context-menu-item" style={{ color: 'var(--menu-fg-muted)', pointerEvents: 'none' }}>No hotkeys assigned</div>
+                <div className="context-menu-item" style={{ color: 'var(--menu-fg-muted)', pointerEvents: 'none' }}>{t("No hotkeys assigned")}</div>
               )}
             </>
           )}
           {contextMenu.context.pendingSelection && contextMenu.context.existingCodings.length > 0 && <div className="context-menu-separator" />}
           {contextMenu.context.existingCodings.length > 0 && (
             <>
-              <div style={{ padding: '4px 14px', fontSize: 11, color: 'var(--text-muted)', fontWeight: 600, userSelect: 'none' }}>Remove Code</div>
+              <div style={{ padding: '4px 14px', fontSize: 11, color: 'var(--text-muted)', fontWeight: 600, userSelect: 'none' }}>{t("Remove Code")}</div>
               {contextMenu.context.existingCodings.map((ec) => {
                 const code = findCode(ec.codeGuid)
                 return (
@@ -619,7 +620,7 @@ export function TranscriptEditor({
                     onMouseLeave={() => setMenuHighlight(null)}
                   >
                     <span className="color-pip" style={{ background: code?.color || '#888' }} />
-                    {code?.name ?? 'Unknown'}
+                    {code?.name ?? t("Unknown")}
                   </div>
                 )
               })}
@@ -632,7 +633,7 @@ export function TranscriptEditor({
                 const ps = contextMenu.context.pendingSelection!
                 useQuoteStore.getState().addQuote(sourceGuid, useDocumentStore.getState().sources.find((s) => s.guid === sourceGuid)?.name || '', ps.startCp, ps.endCp, ps.selectedText)
                 setContextMenu(null)
-              }}>Add as Quote</div>
+              }}>{t("Add as Quote")}</div>
             </>
           )}
           {/* Memos in transcript contexts must attach to a range — no
@@ -643,17 +644,17 @@ export function TranscriptEditor({
               <div className="context-menu-separator" />
               <div className="context-menu-item" onClick={() => {
                 handleCreateMemo(contextMenu.context.pendingSelection!.startCp, contextMenu.context.pendingSelection!.endCp)
-              }}>Add Selection Memo</div>
+              }}>{t("Add Selection Memo")}</div>
             </>
           )}
           {contextMenu.context.overlappingMemos && contextMenu.context.overlappingMemos.length > 0 && (
             <>
               <div className="context-menu-separator" />
-              <div style={{ padding: '4px 14px', fontSize: 11, color: 'var(--text-muted)', fontWeight: 600, userSelect: 'none' }}>Delete Memo</div>
+              <div style={{ padding: '4px 14px', fontSize: 11, color: 'var(--text-muted)', fontWeight: 600, userSelect: 'none' }}>{t("Delete Memo")}</div>
               {contextMenu.context.overlappingMemos.map((m) => (
                 <div key={m.guid} className="context-menu-item" style={{ color: 'var(--menu-fg-danger)' }}
                   onClick={() => { removeMemo(m.guid); setContextMenu(null); setMenuHighlight(null) }}>
-                  {m.title || 'Untitled Memo'}
+                  {m.title || t("Untitled Memo")}
                 </div>
               ))}
             </>
@@ -806,8 +807,7 @@ function TranscriptionArea({
         userSelect: 'none',
         flexShrink: 0
       }}>
-        Type as the {mediaKind} plays — each new line is silently tagged with the playhead time.
-        Press Enter to start a new line. Codes attach to time ranges on the track above.
+        {t("Type as the")}{' '}{mediaKind} {t("plays — each new line is silently tagged with the playhead time. Press Enter to start a new line. Codes attach to time ranges on the track above.")}
       </div>
       <textarea
         ref={textareaRef}
@@ -815,7 +815,7 @@ function TranscriptionArea({
         onBeforeInput={handleBeforeInput}
         onKeyDown={handleKeyDownSnapshot}
         onChange={handleChange}
-        placeholder="Begin transcribing…"
+        placeholder={t("Begin transcribing…")}
         spellCheck={true}
         style={{
           flex: 1,

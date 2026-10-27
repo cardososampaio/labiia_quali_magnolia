@@ -14,6 +14,7 @@ import { buildCellText } from '../../utils/survey/cell-text'
 import { RESPONDENTS_GROUP_MIME } from '../Analysis/group-by'
 import { useProjectStore, useCheckoutLockedBy, checkoutLockedTitle } from '../../stores/project-store'
 import { isNotebook, noteData, sortNotes } from '../../utils/notes'
+import { t } from '../../i18n'
 
 // Prefer the source's declared type (set on import for audio/video/image/
 // pdf). Only fall back to sniffing the filename for sources whose type is
@@ -291,8 +292,8 @@ function FolderItem({
         {notebook && (
           <button
             className="folder-row-add"
-            title="New note"
-            aria-label={`New note in ${folder.name}`}
+            title={t("New note")}
+            aria-label={t("New note in {{name}}", { name: folder.name })}
             onClick={(e) => {
               e.stopPropagation()
               setExpanded(true)
@@ -462,7 +463,7 @@ function DocItem({
             items: guids.map((g) => ({
               kind: 'document',
               entityGuid: g,
-              label: nameByGuid.get(g) ?? 'Document',
+              label: nameByGuid.get(g) ?? t("Document"),
               sourceType: sourceTypeByGuid.get(g)
             }))
           }))
@@ -917,7 +918,7 @@ function SurveyItem({
               items: guids.map((g) => ({
                 kind: 'document',
                 entityGuid: g,
-                label: nameByGuid.get(g) ?? 'Document',
+                label: nameByGuid.get(g) ?? t("Document"),
                 sourceType: sourceTypeByGuid.get(g)
               }))
             }))
@@ -984,13 +985,13 @@ function SurveyItem({
               e.dataTransfer.setData('text/plain', 'Respondents')
             }}
             onClick={() => setRespondentsOpen(!respondentsOpen)}
-            title="Drag onto an analysis tool's Group by box to group results by respondent"
+            title={t("Drag onto an analysis tool's Group by box to group results by respondent")}
           >
             <span style={{ width: 12, display: 'inline-flex', justifyContent: 'center', flexShrink: 0 }}>
               <Icon icon={respondentsOpen ? faChevronDown : faChevronRight} style={{ fontSize: 9, color: 'var(--text-muted)' }} />
             </span>
             <span style={{ flex: 1, color: 'var(--text-secondary)', fontWeight: 500 }}>
-              Respondents
+              {t("Respondents")}
             </span>
             <span style={{ fontSize: 10, color: 'var(--text-muted)' }}>
               {survey.respondents.length}
@@ -1040,7 +1041,7 @@ function SurveyItem({
                   }}
                   onContextMenu={(e) => onContextMenuSurveyChild(e, source.guid, 'respondent', r.id, r.displayName)}
                   {...tagDropHandlers('respondent', r.id)}
-                  title={r.rawRespondentId ? `RespondentID: ${r.rawRespondentId}` : undefined}
+                  title={r.rawRespondentId ? t("RespondentID: {{rawRespondentId}}", { rawRespondentId: r.rawRespondentId }) : undefined}
                 >
                   {/* Chevron — clicking it expands/collapses the cells
                       list. Stop propagation so the click doesn't fall
@@ -1133,7 +1134,7 @@ function SurveyItem({
               <Icon icon={questionsOpen ? faChevronDown : faChevronRight} style={{ fontSize: 9, color: 'var(--text-muted)' }} />
             </span>
             <span style={{ flex: 1, color: 'var(--text-secondary)', fontWeight: 500 }}>
-              Questions
+              {t("Questions")}
             </span>
             <span style={{ fontSize: 10, color: 'var(--text-muted)' }}>
               {survey.questions.length}
@@ -1230,7 +1231,7 @@ function TagItem({
         } else {
           e.dataTransfer.setData('application/json', JSON.stringify({
             kind: 'multi',
-            items: guids.map((g) => ({ kind: 'tag', entityGuid: g, label: nameByGuid.get(g) ?? 'Tag' }))
+            items: guids.map((g) => ({ kind: 'tag', entityGuid: g, label: nameByGuid.get(g) ?? t("Tag") }))
           }))
         }
         e.dataTransfer.effectAllowed = 'copy'
@@ -1449,7 +1450,7 @@ function ApplyDocumentTagsDialog({
                 style={{ fontSize: 11, color: 'var(--text-muted)', fontWeight: 600, marginBottom: 4, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 4, userSelect: 'none' }}
               >
                 <Icon icon={collapsedSections.has('__general') ? faChevronRight : faChevronDown} style={{ fontSize: 8 }} />
-                General
+                {t("General")}
               </div>
               {!collapsedSections.has('__general') && uncategorised.map((tag) => renderTagCheckbox(tag, tag.name))}
             </div>
@@ -1477,7 +1478,7 @@ function ApplyDocumentTagsDialog({
                     <div style={{ display: 'flex', gap: 4, marginTop: 4 }}>
                       <input
                         type="text"
-                        placeholder={`Add ${cat.name} value...`}
+                        placeholder={t("Add {{name}} value...", { name: cat.name })}
                         style={{ flex: 1, fontSize: 11 }}
                         onKeyDown={(e) => {
                           if (e.key === 'Enter') {
@@ -1500,7 +1501,7 @@ function ApplyDocumentTagsDialog({
                     <div style={{ display: 'flex', gap: 4, marginTop: 4 }}>
                       <input
                         type="text"
-                        placeholder="dd/mm/yyyy, mm/yyyy, yyyy, etc."
+                        placeholder={t("dd/mm/yyyy, mm/yyyy, yyyy, etc.")}
                         style={{ flex: 1, fontSize: 11 }}
                         onKeyDown={(e) => {
                           if (e.key === 'Enter') {
@@ -1523,7 +1524,7 @@ function ApplyDocumentTagsDialog({
                     <div style={{ display: 'flex', gap: 4, marginTop: 4 }}>
                       <input
                         type="number"
-                        placeholder={`Add ${cat.name} value...`}
+                        placeholder={t("Add {{name}} value...", { name: cat.name })}
                         style={{ flex: 1, fontSize: 11 }}
                         onKeyDown={(e) => {
                           if (e.key === 'Enter') {
@@ -1575,16 +1576,16 @@ function ApplyDocumentTagsDialog({
 
           {tags.length === 0 && categories.length === 0 && (
             <div className="empty-state" style={{ color: 'var(--text-muted)', fontSize: 12 }}>
-              No tags yet. Use Documents &gt; Manage Document Tags to create categories and tags.
+              {t("No tags yet. Use Documents > Manage Document Tags to create categories and tags.")}
             </div>
           )}
         </div>
 
         <div className="modal-actions" style={{ justifyContent: 'space-between' }}>
           <button className="secondary" onClick={onOpenManage}>
-            Manage Document Tags...
+            {t("Manage Document Tags...")}
           </button>
-          <button onClick={onClose}>Done</button>
+          <button onClick={onClose}>{t("Done")}</button>
         </div>
       </div>
     </div>
@@ -1715,7 +1716,7 @@ function ManageDocumentTagsDialog({
   const deleteX = (onClick: () => void) => (
     <span
       role="button"
-      title="Delete"
+      title={t("Delete")}
       onClick={(e) => { e.stopPropagation(); onClick() }}
       style={{
         cursor: 'pointer',
@@ -1767,7 +1768,7 @@ function ManageDocumentTagsDialog({
           </span>
         )}
         <span style={{ fontSize: 10, color: 'var(--text-muted)', flexShrink: 0 }}>
-          {tag.memberSourceGuids.length} doc{tag.memberSourceGuids.length !== 1 ? 's' : ''}
+          {tag.memberSourceGuids.length} {t("doc")}{tag.memberSourceGuids.length !== 1 ? 's' : ''}
         </span>
         {deleteX(() => deleteTag(tag.guid))}
       </div>
@@ -1780,7 +1781,7 @@ function ManageDocumentTagsDialog({
     const isDate = cat.type === 'date'
     const isNumeric = cat.type === 'numeric'
     const placeholder = isDate
-      ? 'Add value (dd/mm/yyyy, yyyy, etc.)...'
+      ? t("Add value (dd/mm/yyyy, yyyy, etc.)...")
       : isNumeric
         ? `Add ${cat.name} value...`
         : `Add ${cat.name} value...`
@@ -1812,7 +1813,7 @@ function ManageDocumentTagsDialog({
             setAddValueText((p) => ({ ...p, [cat.guid]: '' }))
           }}
         >
-          Add
+          {t("Add")}
         </button>
       </div>
     )
@@ -1823,7 +1824,7 @@ function ManageDocumentTagsDialog({
   return (
     <div className="modal-overlay" onClick={onClose}>
       <div className="modal" onClick={(e) => e.stopPropagation()} style={{ width: 520, maxWidth: '90vw' }}>
-        <h2>Manage Document Tags</h2>
+        <h2>{t("Manage Document Tags")}</h2>
 
         <div style={{ maxHeight: '60vh', overflowY: 'auto', marginBottom: 10 }}>
           {/* ── Category sections ── */}
@@ -1869,7 +1870,7 @@ function ManageDocumentTagsDialog({
                   )}
                   {typeLabel(cat.type)}
                   <span style={{ fontSize: 10, color: 'var(--text-muted)' }}>
-                    {catTags.length} value{catTags.length !== 1 ? 's' : ''}
+                    {catTags.length} {t("value")}{catTags.length !== 1 ? 's' : ''}
                   </span>
                   {cat.type === 'list' && (
                     <button
@@ -1881,7 +1882,7 @@ function ManageDocumentTagsDialog({
                         setEditListOpts((cat.listOptions || []).join('\n'))
                       }}
                     >
-                      Edit Options
+                      {t("Edit Options")}
                     </button>
                   )}
                   {deleteX(() => deleteCategory(cat.guid))}
@@ -1892,7 +1893,7 @@ function ManageDocumentTagsDialog({
                   <div style={{ marginBottom: 4 }}>
                     {catTags.length === 0 && (
                       <div style={{ ...tagRowStyle, color: 'var(--text-muted)', fontStyle: 'italic', fontSize: 11 }}>
-                        No values yet — add one below.
+                        {t("No values yet — add one below.")}
                       </div>
                     )}
                     {catTags.map(renderTagRow)}
@@ -1912,18 +1913,18 @@ function ManageDocumentTagsDialog({
                   style={{ fontSize: 9, color: 'var(--text-muted)', width: 10, textAlign: 'center' }}
                 />
                 <span style={{ flex: 1, fontSize: 'var(--font-size-sm)', fontWeight: 600 }}>
-                  General
+                  {t("General")}
                 </span>
                 {typeLabel('uncategorised')}
                 <span style={{ fontSize: 10, color: 'var(--text-muted)' }}>
-                  {uncategorised.length} tag{uncategorised.length !== 1 ? 's' : ''}
+                  {uncategorised.length} {t("tag")}{uncategorised.length !== 1 ? 's' : ''}
                 </span>
               </div>
               {expanded.has('__general') && (
                 <div style={{ marginBottom: 4 }}>
                   {uncategorised.length === 0 && (
                     <div className="empty-state" style={{ ...tagRowStyle, color: 'var(--text-muted)', fontStyle: 'italic', fontSize: 11 }}>
-                      No tags yet — add one below.
+                      {t("No tags yet — add one below.")}
                     </div>
                   )}
                   {uncategorised.map(renderTagRow)}
@@ -1932,7 +1933,7 @@ function ManageDocumentTagsDialog({
                       type="text"
                       value={newTagName}
                       onChange={(e) => setNewTagName(e.target.value)}
-                      placeholder="Add tag..."
+                      placeholder={t("Add tag...")}
                       style={{ flex: 1, fontSize: 11 }}
                       onKeyDown={(e) => {
                         if (e.key === 'Enter' && newTagName.trim()) {
@@ -1950,7 +1951,7 @@ function ManageDocumentTagsDialog({
                         }
                       }}
                     >
-                      Add
+                      {t("Add")}
                     </button>
                   </div>
                 </div>
@@ -1961,7 +1962,7 @@ function ManageDocumentTagsDialog({
           {/* ── Empty state ── */}
           {categories.length === 0 && uncategorised.length === 0 && (
             <div className="empty-state" style={{ color: 'var(--text-muted)', fontSize: 12, padding: '12px 8px', textAlign: 'center' }}>
-              No tags or categories yet. Create a category below to get started.
+              {t("No tags or categories yet. Create a category below to get started.")}
             </div>
           )}
         </div>
@@ -1969,14 +1970,14 @@ function ManageDocumentTagsDialog({
         {/* ── Add Category ── */}
         <div style={{ borderTop: '1px solid var(--border-color)', paddingTop: 10 }}>
           <div style={{ fontSize: 11, color: 'var(--text-muted)', fontWeight: 600, marginBottom: 6 }}>
-            Add Category
+            {t("Add Category")}
           </div>
           <div style={{ display: 'flex', gap: 6, marginBottom: 6 }}>
             <input
               type="text"
               value={newCatName}
               onChange={(e) => setNewCatName(e.target.value)}
-              placeholder="Category name (e.g. Country)..."
+              placeholder={t("Category name (e.g. Country)...")}
               style={{ flex: 1 }}
               onKeyDown={(e) => {
                 if (e.key === 'Enter' && newCatName.trim()) {
@@ -1996,10 +1997,10 @@ function ManageDocumentTagsDialog({
               onChange={(e) => setNewCatType(e.target.value as TagCategoryType)}
               style={{ width: 90 }}
             >
-              <option value="text">Text</option>
-              <option value="date">Date</option>
-              <option value="numeric">Numeric</option>
-              <option value="list">List</option>
+              <option value="text">{t("Text")}</option>
+              <option value="date">{t("Date")}</option>
+              <option value="numeric">{t("Numeric")}</option>
+              <option value="list">{t("List")}</option>
             </select>
             <button
               onClick={() => {
@@ -2015,7 +2016,7 @@ function ManageDocumentTagsDialog({
                 }
               }}
             >
-              Add
+              {t("Add")}
             </button>
           </div>
           {newCatType === 'list' && (
@@ -2023,14 +2024,14 @@ function ManageDocumentTagsDialog({
               type="text"
               value={newListOpts}
               onChange={(e) => setNewListOpts(e.target.value)}
-              placeholder="Options (comma-separated, e.g. Australia, Netherlands)"
+              placeholder={t("Options (comma-separated, e.g. Australia, Netherlands)")}
               style={{ width: '100%', fontSize: 11, marginBottom: 4 }}
             />
           )}
         </div>
 
         <div className="modal-actions">
-          <button onClick={onClose}>Done</button>
+          <button onClick={onClose}>{t("Done")}</button>
         </div>
 
         {/* ── Edit list options sub-dialog ── */}
@@ -2041,9 +2042,9 @@ function ManageDocumentTagsDialog({
             style={{ position: 'fixed' }}
           >
             <div className="modal" onClick={(e) => e.stopPropagation()} style={{ minWidth: 350 }}>
-              <h2>Edit List Options</h2>
+              <h2>{t("Edit List Options")}</h2>
               <div style={{ fontSize: 12, color: 'var(--text-muted)', marginBottom: 8 }}>
-                One option per line:
+                {t("One option per line:")}
               </div>
               <textarea
                 value={editListOpts}
@@ -2063,7 +2064,7 @@ function ManageDocumentTagsDialog({
               />
               <div className="modal-actions">
                 <button className="secondary" onClick={() => setEditingListCat(null)}>
-                  Cancel
+                  {t("Cancel")}
                 </button>
                 <button
                   onClick={() => {
@@ -2072,7 +2073,7 @@ function ManageDocumentTagsDialog({
                     setEditingListCat(null)
                   }}
                 >
-                  Save
+                  {t("Save")}
                 </button>
               </div>
             </div>
@@ -2568,7 +2569,7 @@ export function DocumentBrowser({ onImport, onSurveyImport, showManageDocTags, o
           const suggestedName = f.name.replace(/\.(csv|xlsx)$/i, '')
           onSurveyImport(f.content, suggestedName, folderGuid)
         } else {
-          errors.push(`${f.name}: survey import is unavailable in this view.`)
+          errors.push(t("{{name}}: survey import is unavailable in this view.", { name: f.name }))
         }
         continue
       }
@@ -2580,7 +2581,7 @@ export function DocumentBrowser({ onImport, onSurveyImport, showManageDocTags, o
       }
     }
     if (errors.length > 0) {
-      window.alert(`Could not import ${errors.length} file${errors.length > 1 ? 's' : ''}:\n\n${errors.join('\n')}`)
+      window.alert(t("Could not import {{length}} file{{x1}}:\n\n{{x2}}", { length: errors.length, x1: errors.length > 1 ? 's' : '', x2: errors.join('\n') }))
     }
   }, [addSource, onSurveyImport])
 
@@ -2597,8 +2598,8 @@ export function DocumentBrowser({ onImport, onSurveyImport, showManageDocTags, o
             value={docSearchQuery}
             onChange={(e) => setDocSearchQuery(e.target.value)}
             onKeyDown={(e) => { if (e.key === 'Escape') closeDocSearch() }}
-            placeholder="Filter documents..."
-            aria-label="Filter documents"
+            placeholder={t("Filter documents...")}
+            aria-label={t("Filter documents")}
             autoFocus
             style={{
               flex: 1,
@@ -2616,14 +2617,14 @@ export function DocumentBrowser({ onImport, onSurveyImport, showManageDocTags, o
             }}
           />
         ) : (
-          <span style={{ flex: 1 }}>Documents</span>
+          <span style={{ flex: 1 }}>{t("Documents")}</span>
         )}
         {(sources.length > 0 || folders.length > 0) && (
           <button
             className="panel-header-search"
             onClick={() => (docSearchOpen ? closeDocSearch() : setDocSearchOpen(true))}
-            title={docSearchOpen ? 'Close search' : 'Filter documents'}
-            aria-label={docSearchOpen ? 'Close search' : 'Filter documents'}
+            title={docSearchOpen ? t("Close search") : t("Filter documents")}
+            aria-label={docSearchOpen ? t("Close search") : t("Filter documents")}
           >
             <Icon icon={docSearchOpen ? faXmark : faMagnifyingGlass} />
           </button>
@@ -2636,10 +2637,10 @@ export function DocumentBrowser({ onImport, onSurveyImport, showManageDocTags, o
             setNewFolderKind('folder')
             setNewFolderParentGuid(null)
             setEditingFolder('__new__')
-            setEditFolderName('New Folder')
+            setEditFolderName(t("New Folder"))
           }}
-          title={lockedBy ? checkoutLockedTitle(lockedBy) : 'Create new folder'}
-          aria-label="Create new folder"
+          title={lockedBy ? checkoutLockedTitle(lockedBy) : t("Create new folder")}
+          aria-label={t("Create new folder")}
           style={lockedBy ? { opacity: 0.4 } : undefined}
         >
           <Icon icon={faFolderPlus} />
@@ -2652,16 +2653,16 @@ export function DocumentBrowser({ onImport, onSurveyImport, showManageDocTags, o
             setNewFolderKind('notebook')
             setNewFolderParentGuid(null)
             setEditingFolder('__new__')
-            setEditFolderName('New Notebook')
+            setEditFolderName(t("New Notebook"))
           }}
-          title={lockedBy ? checkoutLockedTitle(lockedBy) : 'Create notebook'}
-          aria-label="Create notebook"
+          title={lockedBy ? checkoutLockedTitle(lockedBy) : t("Create notebook")}
+          aria-label={t("Create notebook")}
           style={lockedBy ? { opacity: 0.4 } : undefined}
         >
           <Icon icon={faNotebookPen} />
         </button>
-        {onPopOut && <button className="panel-header-popout" onClick={onPopOut} title={isPoppedOut ? "Pop back in" : "Pop out"} aria-label={isPoppedOut ? "Pop pane back into main window" : "Pop pane out into its own window"}><Icon icon={isPoppedOut ? faDownLeftAndUpRightToCenter : faUpRightFromSquare} /></button>}
-        {onClose && <button className="panel-header-close" onClick={onClose} title="Close panel" aria-label="Close panel"><Icon icon={faXmark} /></button>}
+        {onPopOut && <button className="panel-header-popout" onClick={onPopOut} title={isPoppedOut ? t("Pop back in") : t("Pop out")} aria-label={isPoppedOut ? t("Pop pane back into main window") : t("Pop pane out into its own window")}><Icon icon={isPoppedOut ? faDownLeftAndUpRightToCenter : faUpRightFromSquare} /></button>}
+        {onClose && <button className="panel-header-close" onClick={onClose} title={t("Close panel")} aria-label={t("Close panel")}><Icon icon={faXmark} /></button>}
       </div>
       <DocumentsTagsSplit collapsed={tagsCollapsed}>
         <DocumentsTagsSection collapsed={tagsCollapsed} which="documents">
@@ -2737,9 +2738,9 @@ export function DocumentBrowser({ onImport, onSurveyImport, showManageDocTags, o
               fontSize: 'var(--font-size-sm)'
             }}
           >
-            No documents yet.
+            {t("No documents yet.")}
             <br />
-            Click Import or use File &gt; Import.
+            {t("Click Import or use File > Import.")}
           </div>
         )}
         {(sources.length > 0 || folders.length > 0) && trimmedDocSearch && visibleSources.length === 0 && visibleFolders.length === 0 && (
@@ -2752,7 +2753,7 @@ export function DocumentBrowser({ onImport, onSurveyImport, showManageDocTags, o
               fontSize: 'var(--font-size-sm)'
             }}
           >
-            No documents match "{docSearchQuery.trim()}".
+            {t("No documents match \"")}{docSearchQuery.trim()}".
           </div>
         )}
         {rootFolders.map((folder) => (
@@ -2857,8 +2858,8 @@ export function DocumentBrowser({ onImport, onSurveyImport, showManageDocTags, o
                   value={tagSearchQuery}
                   onChange={(e) => setTagSearchQuery(e.target.value)}
                   onKeyDown={(e) => { if (e.key === 'Escape') closeTagSearch() }}
-                  placeholder="Filter tags..."
-                  aria-label="Filter tags"
+                  placeholder={t("Filter tags...")}
+                  aria-label={t("Filter tags")}
                   autoFocus
                   style={{
                     flex: 1,
@@ -2878,11 +2879,11 @@ export function DocumentBrowser({ onImport, onSurveyImport, showManageDocTags, o
               ) : (
                 <span
                   onClick={toggleTagsCollapsed}
-                  title={tagsCollapsed ? 'Show tags' : 'Hide tags'}
+                  title={tagsCollapsed ? t("Show tags") : t("Hide tags")}
                   style={{ flex: 1, display: 'flex', alignItems: 'center', gap: 4, cursor: 'pointer', userSelect: 'none' }}
                 >
                   <Icon icon={tagsCollapsed ? faChevronRight : faChevronDown} style={{ fontSize: 9, opacity: 0.6 }} />
-                  Tags
+                  {t("Tags")}
                 </span>
               )}
               {(tags.length > 0 || categories.length > 0) && (
@@ -2894,8 +2895,8 @@ export function DocumentBrowser({ onImport, onSurveyImport, showManageDocTags, o
                     if (tagsCollapsed) toggleTagsCollapsed()
                     setTagSearchOpen(true)
                   }}
-                  title={tagSearchOpen ? 'Close search' : 'Filter tags'}
-                  aria-label={tagSearchOpen ? 'Close search' : 'Filter tags'}
+                  title={tagSearchOpen ? t("Close search") : t("Filter tags")}
+                  aria-label={tagSearchOpen ? t("Close search") : t("Filter tags")}
                 >
                   <Icon icon={tagSearchOpen ? faXmark : faMagnifyingGlass} />
                 </button>
@@ -2903,8 +2904,8 @@ export function DocumentBrowser({ onImport, onSurveyImport, showManageDocTags, o
               <button
                 className="panel-header-add"
                 onClick={() => setShowManageLocal(true)}
-                title="Manage tags"
-                aria-label="Manage tags"
+                title={t("Manage tags")}
+                aria-label={t("Manage tags")}
               >
                 <Icon icon={faPlus} />
               </button>
@@ -2920,7 +2921,7 @@ export function DocumentBrowser({ onImport, onSurveyImport, showManageDocTags, o
                     fontSize: 'var(--font-size-sm)'
                   }}
                 >
-                  No tags yet.
+                  {t("No tags yet.")}
                 </div>
               )}
               {(tags.length > 0 || categories.length > 0) && trimmedTagSearch && flatTagGuids.length === 0 && (
@@ -2933,7 +2934,7 @@ export function DocumentBrowser({ onImport, onSurveyImport, showManageDocTags, o
                     fontSize: 'var(--font-size-sm)'
                   }}
                 >
-                  No tags match "{tagSearchQuery.trim()}".
+                  {t("No tags match \"")}{tagSearchQuery.trim()}".
                 </div>
               )}
               {(() => {
@@ -3007,29 +3008,29 @@ export function DocumentBrowser({ onImport, onSurveyImport, showManageDocTags, o
               className="context-menu-item"
               onClick={() => handleTagSelectDocs(tagContextMenu.tagGuid)}
             >
-              Select Documents with This Tag
+              {t("Select Documents with This Tag")}
             </div>
             {selectedTagGuids.size > 1 && (
               <div
                 className="context-menu-item"
                 onClick={handleSelectAllActiveTags}
               >
-                Select Documents for All Active Tags ({selectedTagGuids.size})
+                {t("Select Documents for All Active Tags (")}{selectedTagGuids.size})
               </div>
             )}
             {isDateOrNumber && catTags.length > 0 && (
               <>
                 <div className="context-menu-separator" />
                 <div style={{ padding: '6px 12px', fontSize: 11, color: 'var(--text-muted)', fontWeight: 600 }}>
-                  Range Filter ({ctxCat!.type === 'date' ? 'dates' : 'values'})
+                  {t("Range Filter (")}{ctxCat!.type === 'date' ? 'dates' : 'values'})
                 </div>
                 <div style={{ padding: '4px 12px' }}>
                   <div style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 11, marginBottom: 4 }}>
-                    <span style={{ color: 'var(--text-secondary)', minWidth: 40 }}>From:</span>
+                    <span style={{ color: 'var(--text-secondary)', minWidth: 40 }}>{t("From:")}</span>
                     <span style={{ fontWeight: 600 }}>{ctxTag!.value}</span>
                   </div>
                   <div style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 11, marginBottom: 6 }}>
-                    <span style={{ color: 'var(--text-secondary)', minWidth: 40 }}>To:</span>
+                    <span style={{ color: 'var(--text-secondary)', minWidth: 40 }}>{t("To:")}</span>
                     <select
                       style={{
                         flex: 1,
@@ -3048,7 +3049,7 @@ export function DocumentBrowser({ onImport, onSurveyImport, showManageDocTags, o
                         mode: betweenFilter?.mode || 'between'
                       })}
                     >
-                      <option value="">Select...</option>
+                      <option value="">{t("Select...")}</option>
                       {catTags.map((t) => (
                         <option key={t.guid} value={t.value!}>{t.value}</option>
                       ))}
@@ -3060,14 +3061,14 @@ export function DocumentBrowser({ onImport, onSurveyImport, showManageDocTags, o
                         style={{ fontSize: 10, padding: '2px 8px', flex: 1 }}
                         onClick={() => handleBetweenFilter(tagContextMenu.tagGuid, betweenFilter.value2, 'between')}
                       >
-                        Between
+                        {t("Between")}
                       </button>
                       <button
                         className="secondary"
                         style={{ fontSize: 10, padding: '2px 8px', flex: 1 }}
                         onClick={() => handleBetweenFilter(tagContextMenu.tagGuid, betweenFilter.value2, 'not-between')}
                       >
-                        Not Between
+                        {t("Not Between")}
                       </button>
                     </div>
                   )}
@@ -3088,7 +3089,7 @@ export function DocumentBrowser({ onImport, onSurveyImport, showManageDocTags, o
                 setTagContextMenu(null)
               }}
             >
-              Delete Tag
+              {t("Delete Tag")}
             </div>
           </div>
         )
@@ -3115,8 +3116,8 @@ export function DocumentBrowser({ onImport, onSurveyImport, showManageDocTags, o
                 </span>
                 <button
                   className="tag-chip-menu-remove"
-                  title={lockedBy ? checkoutLockedTitle(lockedBy) : 'Remove from this document'}
-                  aria-label={`Remove ${tag.value || tag.name} from this document`}
+                  title={lockedBy ? checkoutLockedTitle(lockedBy) : t("Remove from this document")}
+                  aria-label={t("Remove {{x0}} from this document", { x0: tag.value || tag.name })}
                   onClick={() => {
                     if (lockedBy) { setTagChipMenu(null); promptCheckoutLocked(); return }
                     removeTagFromDocument(tag.guid, tagChipMenu.sourceGuid)
@@ -3138,7 +3139,7 @@ export function DocumentBrowser({ onImport, onSurveyImport, showManageDocTags, o
               setShowTagDialog({ kind: 'document', sourceGuid })
             }}
           >
-            Edit Tags...
+            {t("Edit Tags...")}
           </div>
         </div>
       )}
@@ -3158,7 +3159,7 @@ export function DocumentBrowser({ onImport, onSurveyImport, showManageDocTags, o
               closeContextMenu()
             }}
           >
-            View
+            {t("View")}
           </div>
           <div
             className="context-menu-item"
@@ -3169,7 +3170,7 @@ export function DocumentBrowser({ onImport, onSurveyImport, showManageDocTags, o
               setEditingDocGuid(contextMenu.sourceGuid!)
             }}
           >
-            Rename
+            {t("Rename")}
           </div>
           <div
             className="context-menu-item"
@@ -3180,7 +3181,7 @@ export function DocumentBrowser({ onImport, onSurveyImport, showManageDocTags, o
               setShowTagDialog({ kind: 'document', sourceGuid: contextMenu.sourceGuid! })
             }}
           >
-            Edit Tags...
+            {t("Edit Tags...")}
           </div>
           {(() => {
             // Notes move between notebooks; everything else between folders.
@@ -3199,7 +3200,7 @@ export function DocumentBrowser({ onImport, onSurveyImport, showManageDocTags, o
                   userSelect: 'none'
                 }}
               >
-                {menuIsNote ? 'Move to Notebook' : 'Move to Folder'}
+                {menuIsNote ? t("Move to Notebook") : t("Move to Folder")}
               </div>
               {!menuIsNote && sourceFolder[contextMenu.sourceGuid!] && (
                 <div
@@ -3211,7 +3212,7 @@ export function DocumentBrowser({ onImport, onSurveyImport, showManageDocTags, o
                     moveSourceToFolder(contextMenu.sourceGuid!, null)
                   }}
                 >
-                  (Root)
+                  {t("(Root)")}
                 </div>
               )}
               {targets.map((f) => (
@@ -3251,8 +3252,8 @@ export function DocumentBrowser({ onImport, onSurveyImport, showManageDocTags, o
                 }}
               >
                 {guidsToRemove.length > 1
-                  ? `Remove ${guidsToRemove.length} Documents`
-                  : sources.find((s) => s.guid === guidsToRemove[0])?.sourceType === 'note' ? 'Delete Note' : 'Remove Document'}
+                  ? t("Remove {{length}} Documents", { length: guidsToRemove.length })
+                  : sources.find((s) => s.guid === guidsToRemove[0])?.sourceType === 'note' ? t("Delete Note") : t("Remove Document")}
               </div>
             )
           })()}
@@ -3275,7 +3276,7 @@ export function DocumentBrowser({ onImport, onSurveyImport, showManageDocTags, o
               closeContextMenu()
             }}
           >
-            Edit Tags...
+            {t("Edit Tags...")}
           </div>
         </div>
       )}
@@ -3300,7 +3301,7 @@ export function DocumentBrowser({ onImport, onSurveyImport, showManageDocTags, o
                 handleNewNote(contextMenu.folderGuid!)
               }}
             >
-              New Note
+              {t("New Note")}
             </div>
           )}
           <div
@@ -3316,7 +3317,7 @@ export function DocumentBrowser({ onImport, onSurveyImport, showManageDocTags, o
               }
             }}
           >
-            Rename
+            {t("Rename")}
           </div>
           {!menuNotebook && (
             <>
@@ -3330,10 +3331,10 @@ export function DocumentBrowser({ onImport, onSurveyImport, showManageDocTags, o
                   setNewFolderKind('folder')
                   setNewFolderParentGuid(contextMenu.folderGuid!)
                   setEditingFolder('__new__')
-                  setEditFolderName('New Folder')
+                  setEditFolderName(t("New Folder"))
                 }}
               >
-                New Subfolder
+                {t("New Subfolder")}
               </div>
               <div
                 className="context-menu-item"
@@ -3345,10 +3346,10 @@ export function DocumentBrowser({ onImport, onSurveyImport, showManageDocTags, o
                   setNewFolderKind('notebook')
                   setNewFolderParentGuid(contextMenu.folderGuid!)
                   setEditingFolder('__new__')
-                  setEditFolderName('New Notebook')
+                  setEditFolderName(t("New Notebook"))
                 }}
               >
-                New Notebook
+                {t("New Notebook")}
               </div>
             </>
           )}
@@ -3362,7 +3363,7 @@ export function DocumentBrowser({ onImport, onSurveyImport, showManageDocTags, o
                 moveFolderToFolder(contextMenu.folderGuid!, null)
               }}
             >
-              Move to Root
+              {t("Move to Root")}
             </div>
           )}
           <div className="context-menu-separator" />
@@ -3375,12 +3376,12 @@ export function DocumentBrowser({ onImport, onSurveyImport, showManageDocTags, o
               if (lockedBy) { promptCheckoutLocked(); return }
               if (menuNotebook) {
                 const count = sources.filter((s) => sourceFolder[s.guid] === contextMenu.folderGuid).length
-                if (count > 0 && !window.confirm(`Delete "${menuFolder!.name}" and its ${count} note${count > 1 ? 's' : ''}? Their codes, quotes and memos will be deleted too.`)) return
+                if (count > 0 && !window.confirm(t("Delete \"{{name}}\" and its {{count}} note{{x2}}? Their codes, quotes and memos will be deleted too.", { name: menuFolder!.name, count: count, x2: count > 1 ? 's' : '' }))) return
               }
               removeFolder(contextMenu.folderGuid!)
             }}
           >
-            {menuNotebook ? 'Delete Notebook' : 'Delete Folder'}
+            {menuNotebook ? t("Delete Notebook") : t("Delete Folder")}
           </div>
         </div>
         )
@@ -3394,8 +3395,8 @@ export function DocumentBrowser({ onImport, onSurveyImport, showManageDocTags, o
         >
           <div className="modal" onClick={(e) => e.stopPropagation()}>
             <h2>{isNewFolder
-              ? (newFolderKind === 'notebook' ? 'New Notebook' : 'New Folder')
-              : (isNotebook(folders.find((f) => f.guid === editingFolder)) ? 'Rename Notebook' : 'Rename Folder')}</h2>
+              ? (newFolderKind === 'notebook' ? t("New Notebook") : t("New Folder"))
+              : (isNotebook(folders.find((f) => f.guid === editingFolder)) ? t("Rename Notebook") : t("Rename Folder"))}</h2>
             <div style={{ marginBottom: 12 }}>
               <input
                 type="text"
@@ -3422,7 +3423,7 @@ export function DocumentBrowser({ onImport, onSurveyImport, showManageDocTags, o
             </div>
             <div className="modal-actions">
               <button className="secondary" onClick={() => { setEditingFolder(null); setIsNewFolder(false) }}>
-                Cancel
+                {t("Cancel")}
               </button>
               <button
                 onClick={() => {
@@ -3437,7 +3438,7 @@ export function DocumentBrowser({ onImport, onSurveyImport, showManageDocTags, o
                   }
                 }}
               >
-                {isNewFolder ? 'Okay' : 'Rename'}
+                {isNewFolder ? t("Okay") : t("Rename")}
               </button>
             </div>
           </div>
@@ -3448,7 +3449,7 @@ export function DocumentBrowser({ onImport, onSurveyImport, showManageDocTags, o
           respondent/question, binding the matching tag-store actions. */}
       {showTagDialog && (
         <ApplyDocumentTagsDialog
-          title="Edit Tags"
+          title={t("Edit Tags")}
           tags={tags}
           categories={categories}
           isAssigned={(tag) => {

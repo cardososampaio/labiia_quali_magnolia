@@ -33,6 +33,7 @@ import {
   SURVEY_SUMMARY_CSS
 } from '../SurveyViewer/SurveyViewer'
 import type { AnalysisToolType, Quote, SurveyFormatData } from '../../models/types'
+import { t } from '../../i18n'
 
 /** Per-tool display options chosen for an analysis item, mirroring the
  *  toggles the analysis tool itself exposes. Applied when the table is
@@ -86,44 +87,44 @@ export function reportAnchorId(item: ReportItem): string {
 export function resolveItemLabel(item: ReportItem): string {
   switch (item.kind) {
     case 'section':
-      return item.title || 'Section'
+      return item.title || t("Section")
     case 'text': {
       const firstLine = item.content.split('\n').find((l) => l.trim().length > 0) ?? ''
       const stripped = firstLine.replace(/[#*_>`~-]/g, '').trim()
-      return stripped ? stripped.slice(0, 60) : 'Text'
+      return stripped ? stripped.slice(0, 60) : t("Text")
     }
     case 'query': {
       const q = useQueryStore.getState().savedQueries.find((s) => s.guid === item.refGuid)
-      return q?.name ?? '(deleted query)'
+      return q?.name ?? t("(deleted query)")
     }
     case 'analysis': {
       const a = useProjectStore.getState().savedAnalyses?.find((s) => s.guid === item.refGuid)
-      return a?.name ?? '(deleted analysis)'
+      return a?.name ?? t("(deleted analysis)")
     }
     case 'quote': {
       const qt = useQuoteStore.getState().quotes.find((s) => s.guid === item.refGuid)
-      return qt ? `Quote — ${qt.sourceName}` : '(deleted quote)'
+      return qt ? t("Quote — {{sourceName}}", { sourceName: qt.sourceName }) : t("(deleted quote)")
     }
     case 'memo': {
       const m = useMemoStore.getState().findMemo(item.refGuid)
-      return m?.title ?? '(deleted memo)'
+      return m?.title ?? t("(deleted memo)")
     }
     case 'document': {
       const src = useDocumentStore.getState().sources.find((s) => s.guid === item.refGuid)
-      return src?.name ?? '(deleted document)'
+      return src?.name ?? t("(deleted document)")
     }
     case 'survey-question': {
       const q = findSurveyQuestion(item.surveyGuid, item.questionId)
-      return q?.text ?? '(deleted question)'
+      return q?.text ?? t("(deleted question)")
     }
     case 'survey-respondent': {
       const r = findSurveyRespondent(item.surveyGuid, item.respondentId)
-      return r?.displayName ?? '(deleted respondent)'
+      return r?.displayName ?? t("(deleted respondent)")
     }
     case 'survey-cell': {
       const r = findSurveyRespondent(item.surveyGuid, item.respondentId)
       const q = findSurveyQuestion(item.surveyGuid, item.questionId)
-      if (!r || !q) return '(deleted answer)'
+      if (!r || !q) return t("(deleted answer)")
       return `${r.displayName} — ${q.text}`
     }
   }
@@ -169,25 +170,25 @@ export function resolveItemSnippet(item: ReportItem): string | null {
 export function reportItemTypeLabel(item: ReportItem): string {
   switch (item.kind) {
     case 'section':
-      return item.level === 2 ? 'Subsection' : 'Section'
+      return item.level === 2 ? t("Subsection") : t("Section")
     case 'text':
-      return 'Text'
+      return t("Text")
     case 'query':
-      return 'Query'
+      return t("Query")
     case 'quote':
-      return 'Quote'
+      return t("Quote")
     case 'memo':
-      return 'Memo'
+      return t("Memo")
     case 'document':
-      return 'Document'
+      return t("Document")
     case 'survey-question':
-      return 'Survey Question'
+      return t("Survey Question")
     case 'survey-respondent':
-      return 'Respondent'
+      return t("Respondent")
     case 'survey-cell':
-      return 'Answer'
+      return t("Answer")
     case 'analysis':
-      return TOOL_REGISTRY[item.toolType]?.label ?? 'Analysis'
+      return TOOL_REGISTRY[item.toolType]?.label ?? t("Analysis")
   }
 }
 
@@ -587,7 +588,7 @@ export function buildReportHtml(
   exportedAt: string,
   assets: Map<string, DocAsset> = new Map()
 ): string {
-  const reportTitle = title.trim() || 'Report'
+  const reportTitle = title.trim() || t("Report")
   const subtitle = `${items.length} item${items.length === 1 ? '' : 's'} — exported ${exportedAt}`
   return buildPdfDocument({
     title: reportTitle,
@@ -610,8 +611,8 @@ export async function exportReportPdf(
   const assets = await resolveDocAssets(items)
   const exportedAt = new Date().toLocaleString()
   const html = buildReportHtml(title, items, exportedAt, assets)
-  const safeName = (title.trim() || 'Report').replace(/[^\w\d -]/g, '').slice(0, 80) || 'Report'
-  return exportPdfWithHeader(html, safeName, 'Export Report as PDF')
+  const safeName = (title.trim() || 'Report').replace(/[^\w\d -]/g, '').slice(0, 80) || t("Report")
+  return exportPdfWithHeader(html, safeName, t("Export Report as PDF"))
 }
 
 // ── Media resolution ───────────────────────────────────────────────
