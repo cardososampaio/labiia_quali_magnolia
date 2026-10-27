@@ -326,14 +326,19 @@ function App() {
   const [saveQueryName, setSaveQueryName] = useState('')
   const [pulsedQueryGuid, setPulsedQueryGuid] = useState<string | null>(null)
   const [queryResultsPoppedOut, setQueryResultsPoppedOut] = useState(false)
-  const [queryResultsClosed, setQueryResultsClosed] = useState(false)
+  // The Query Results pane starts hidden, like the other secondary panes;
+  // running Find or opening it from the Panels menu brings it back.
+  const [queryResultsClosed, setQueryResultsClosed] = useState(true)
   const queryResultsHidden = queryResultsPoppedOut || queryResultsClosed
+  // The window opens uncluttered: documents, codes and the viewer. Tags,
+  // memos, quotes and analyses are switched on from the Panels menu.
   const [panelVisibility, setPanelVisibility] = useState({
     documents: true,
+    tags: false,
     codes: true,
-    memos: true,
-    quotes: true,
-    analyses: true,
+    memos: false,
+    quotes: false,
+    analyses: false,
   })
   type PanelId = keyof typeof panelVisibility
   const closePanel = useCallback((id: PanelId) => {
@@ -383,6 +388,13 @@ function App() {
   const codeStore = useCodeStore()
   const tagStore = useTagStore()
   const queryStore = useQueryStore()
+  // The Query Results pane starts hidden, so running a query (from the
+  // Query Builder, a saved query or Find) brings it back into view;
+  // otherwise the results would land in a pane the user can't see.
+  const activeQuery = queryStore.currentQuery
+  useEffect(() => {
+    if (activeQuery) setQueryResultsClosed(false)
+  }, [activeQuery])
   // The Reports tool only accepts Saved Queries / Analyses / Quotes /
   // Memos — not documents or codes. Dim and disable those two panels while
   // it's the active tab so the unavailable drag sources can't be used.
@@ -1614,6 +1626,7 @@ function App() {
           openAnalysis('relationship-map')
           break
         case 'toggle-panel-documents': togglePanel('documents'); break
+        case 'toggle-panel-tags': togglePanel('tags'); break
         case 'toggle-panel-codes': togglePanel('codes'); break
         case 'toggle-panel-queries': setQueryResultsClosed((prev) => !prev); break
         case 'toggle-panel-memos': togglePanel('memos'); break
@@ -2709,6 +2722,7 @@ function App() {
           <StudioPopover
             panels={[
               { id: 'documents', label: t("Documents"), visible: panelVisibility.documents },
+              { id: 'tags', label: t("Tags"), visible: panelVisibility.tags },
               { id: 'codes', label: t("Codes"), visible: panelVisibility.codes },
               { id: 'queries', label: t("Queries"), visible: !queryResultsClosed },
               { id: 'memos', label: t("Memos"), visible: panelVisibility.memos },
@@ -2845,6 +2859,7 @@ function App() {
                             onCloseManageDocTags={() => setShowManageDocTags(false)}
 
                             onClose={() => closePanel('documents')}
+                            showTags={panelVisibility.tags}
                           />
                         </div>
                       </Panel>

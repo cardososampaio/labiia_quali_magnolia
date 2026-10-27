@@ -5,12 +5,13 @@
  * transcript lines, survey answers) shows a small "apply code" bubble next to
  * the pointer. Clicking it opens the coding bar at the bottom of the window:
  *
- *   [position] [search code] [Code in…] [Last] [New in vivo] [recent codes…]
+ *   [position] [search code] [Code in…] [Last] [New] [New in vivo] [recent codes…]
  *
- * "Code in…" opens the code picker with every code in the project. The bar
- * stays open after applying, so several codes can go onto the same passage,
- * and closes with ×, Esc, or when the selection goes away. Dragging codes
- * onto a selection and the Ctrl+number hotkeys keep working as before.
+ * "Code in…" opens the code picker with every code in the project and "New"
+ * opens the New Code dialog. The bar closes once a code is applied, and also
+ * with ×, Esc, or when the selection goes away; selecting again brings the
+ * bubble back for the next code. Dragging codes onto a selection and the
+ * Ctrl+number hotkeys keep working as before.
  *
  * Codes are applied through applyCodeToSelection, the same path the New Code
  * dialog uses, so they land exactly as a drop would. When another person has
@@ -96,11 +97,9 @@ export function QuickCoding() {
   const [mode, setMode] = useState<'hidden' | 'bubble' | 'bar'>('hidden')
   const [anchor, setAnchor] = useState<{ x: number; y: number } | null>(null)
   const [pickerOpen, setPickerOpen] = useState(false)
-  const [flash, setFlash] = useState<string | null>(null)
   const lastPointer = useRef<{ x: number; y: number; at: number } | null>(null)
   const lastKey = useRef<string | null>(null)
   const dismissedKey = useRef<string | null>(null)
-  const flashTimer = useRef<ReturnType<typeof setTimeout> | null>(null)
   const modeRef = useRef(mode)
   modeRef.current = mode
 
@@ -153,17 +152,24 @@ export function QuickCoding() {
     return () => window.removeEventListener('keydown', onKey)
   }, [mode, pickerOpen, close])
 
-  useEffect(() => () => { if (flashTimer.current) clearTimeout(flashTimer.current) }, [])
-
   const apply = useCallback((code: Code) => {
     const ps = usePendingSelectionStore.getState().selection
     if (!ps) return
     if (lockedBy) { useProjectStore.getState().promptCheckoutConflict(); return }
     applyCodeToSelection(ps, code.guid)
-    setFlash(t('Coded with “{{name}}”', { name: code.name }))
-    if (flashTimer.current) clearTimeout(flashTimer.current)
-    flashTimer.current = setTimeout(() => setFlash(null), 2200)
+    // Done with this passage: the code now shows in the margin, and the
+    // bubble stays away until the user selects something else.
+    dismissedKey.current = selectionKey(ps)
+    setMode('hidden')
+    setPickerOpen(false)
   }, [lockedBy])
+
+  /** Opens the New Code dialog; App applies the created code to the
+   *  pending selection, as it does for the Code Browser's + button. */
+  const openNewCodeDialog = useCallback(() => {
+    close()
+    useNewCodeTriggerStore.getState().request()
+  }, [close])
 
   /** Creates a code (optionally under a parent) and applies it. A code with
    *  the same name at the same level is reused instead of duplicated. */
@@ -205,8 +211,8 @@ export function QuickCoding() {
       recent={recent}
       pickerOpen={pickerOpen}
       setPickerOpen={setPickerOpen}
-      flash={flash}
       onApply={apply}
+      onNewCode={openNewCodeDialog}
       onCreate={createAndApply}
       onClose={close}
     />,
@@ -220,13 +226,13 @@ interface CodingBarProps {
   recent: Code[]
   pickerOpen: boolean
   setPickerOpen: (open: boolean) => void
-  flash: string | null
   onApply: (code: Code) => void
+  onNewCode: () => void
   onCreate: (name: string, parentGuid?: string) => void
   onClose: () => void
 }
 
-function CodingBar({ selection, flat, recent, pickerOpen, setPickerOpen, flash, onApply, onCreate, onClose }: CodingBarProps) {
+function CodingBar({ selection, flat, recent, pickerOpen, setPickerOpen, onApply, onNewCode, onCreate, onClose }: CodingBarProps) {
   const [query, setQuery] = useState('')
   const [active, setActive] = useState(0)
   const rootRef = useRef<HTMLDivElement>(null)
@@ -314,7 +320,7 @@ function CodingBar({ selection, flat, recent, pickerOpen, setPickerOpen, flash, 
             recent={recent}
             onApply={onApply}
             onCreate={onCreate}
-            onClose={() => setPickerOpen(false)}
+            onNewCode={onNewCode}
           />
         )}
       </div>
@@ -326,6 +332,10 @@ function CodingBar({ selection, flat, recent, pickerOpen, setPickerOpen, flash, 
         onClick={() => recent[0] && onApply(recent[0])}
       >
         {t('Last')}
+      </button>
+
+      <button className="qc-btn" title={t('Create a new code and apply it to the selection')} onClick={onNewCode}>
+        {t('New')}
       </button>
 
       {inVivoName && (
@@ -346,8 +356,6 @@ function CodingBar({ selection, flat, recent, pickerOpen, setPickerOpen, flash, 
         </button>
       ))}
 
-      <span className="qc-flash" aria-live="polite">{flash}</span>
-
       <button className="qc-close" aria-label={t('Close coding bar')} title={t('Close coding bar')} onClick={onClose}>×</button>
     </div>
   )
@@ -359,12 +367,12 @@ interface CodePickerProps {
   recent: Code[]
   onApply: (code: Code) => void
   onCreate: (name: string, parentGuid?: string) => void
-  onClose: () => void
+  onNewCode: () => void
 }
 
 /** Every code in the project, with search, the recently used ones on top,
  *  rename (pencil) and new subcode (+) on each row. */
-function CodePicker({ selectionText, flat, recent, onApply, onCreate, onClose }: CodePickerProps) {
+function CodePicker({ selectionText, flat, recent, onApply, onCreate, onNewCode }: CodePickerProps) {
   const [query, setQuery] = useState('')
   const [renaming, setRenaming] = useState<string | null>(null)
   const [addingUnder, setAddingUnder] = useState<string | null>(null)
@@ -453,13 +461,7 @@ function CodePicker({ selectionText, flat, recent, onApply, onCreate, onClose }:
           <div className="qc-empty">{flat.length === 0 ? t('No codes yet.') : t('No code matches this search.')}</div>
         )}
       </div>
-      <button
-        className="qc-new"
-        onClick={() => {
-          onClose()
-          useNewCodeTriggerStore.getState().request()
-        }}
-      >
+      <button className="qc-new" onClick={onNewCode}>
         {t('+ Create new code')}
       </button>
     </div>

@@ -36,6 +36,9 @@ function iconForSource(source: { name: string; sourceType?: string }) {
 }
 
 interface Props {
+  /** Whether the Tags section shows under the documents. Off, the
+   *  documents fill the pane (the Tags option of the Panels menu). */
+  showTags?: boolean
   onImport: () => void
   /** Called when the user drags a CSV onto the document browser. The
    *  caller is responsible for parsing the CSV, queuing the survey-
@@ -2084,7 +2087,7 @@ function ManageDocumentTagsDialog({
   )
 }
 
-export function DocumentBrowser({ onImport, onSurveyImport, showManageDocTags, onCloseManageDocTags, onClose, onPopOut, isPoppedOut }: Props) {
+export function DocumentBrowser({ onImport, onSurveyImport, showManageDocTags, onCloseManageDocTags, onClose, onPopOut, isPoppedOut, showTags = true }: Props) {
   // Enforced checkout lock: reading/browsing documents stays live no
   // matter who holds the lock. The mutating controls below (new folder,
   // drop-to-import, rename/delete/move via context menu) stay clickable —
@@ -2664,8 +2667,8 @@ export function DocumentBrowser({ onImport, onSurveyImport, showManageDocTags, o
         {onPopOut && <button className="panel-header-popout" onClick={onPopOut} title={isPoppedOut ? t("Pop back in") : t("Pop out")} aria-label={isPoppedOut ? t("Pop pane back into main window") : t("Pop pane out into its own window")}><Icon icon={isPoppedOut ? faDownLeftAndUpRightToCenter : faUpRightFromSquare} /></button>}
         {onClose && <button className="panel-header-close" onClick={onClose} title={t("Close panel")} aria-label={t("Close panel")}><Icon icon={faXmark} /></button>}
       </div>
-      <DocumentsTagsSplit collapsed={tagsCollapsed}>
-        <DocumentsTagsSection collapsed={tagsCollapsed} which="documents">
+      <DocumentsTagsSplit collapsed={tagsCollapsed || !showTags}>
+        <DocumentsTagsSection collapsed={tagsCollapsed || !showTags} which="documents">
       <div
         className="panel-content"
         style={{ height: '100%' }}
@@ -2827,6 +2830,7 @@ export function DocumentBrowser({ onImport, onSurveyImport, showManageDocTags, o
         )}
       </div>
         </DocumentsTagsSection>
+        {showTags && (<>
         {/* Internal divider between the Documents tree and the Tags
             tree. Mirrors the queries-sidebar-divider pattern: a
             visible 1 px line that survives in every theme, including
@@ -2990,6 +2994,7 @@ export function DocumentBrowser({ onImport, onSurveyImport, showManageDocTags, o
             </div>
           </div>
         </DocumentsTagsSection>
+        </>)}
       </DocumentsTagsSplit>
 
       {/* Tag context menu */}

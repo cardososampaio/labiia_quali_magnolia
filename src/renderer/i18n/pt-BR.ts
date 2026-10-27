@@ -655,7 +655,6 @@ export const ptBR: Record<string, string> = {
   "This query references": "Esta consulta faz referência a",
   "No matches found.": "Nenhum resultado encontrado.",
   "Open document": "Abrir documento",
-  "match": "resultado",
   "Copy Result": "Copiar resultado",
   "{{length}} match{{x1}} in {{x2}} document{{x3}} &mdash; exported {{x4}}": "{{length}} resultado(s) em {{x2}} documento{{x3}} &mdash; exportado em {{x4}}",
   "Loading query results...": "Carregando resultados da consulta...",
@@ -969,7 +968,6 @@ export const ptBR: Record<string, string> = {
   "The final query output": "O resultado final da consulta",
   "Page {{first}}": "Página {{first}}",
   "Pages {{first}}–{{last}}": "Páginas {{first}}–{{last}}",
-  "Coded with “{{name}}”": "Codificado com “{{name}}”",
   "apply code": "aplicar código",
   "Coding bar": "Barra de codificação",
   "Position of the selection": "Posição da seleção",
@@ -1007,4 +1005,7 @@ export const ptBR: Record<string, string> = {
   "{{lockedBy}} is working on this file — take over or create a copy to edit": "{{lockedBy}} está trabalhando neste arquivo — assuma o controle ou crie uma cópia para editar",
   "Qualitative data analysis": "Análise de dados qualitativos",
   "Welcome — labiia_quali": "Boas-vindas — labiia_quali",
+  "Create a new code and apply it to the selection": "Criar um novo código e aplicá-lo à seleção",
+  "{{count}} match": "{{count}} resultado",
+  "{{count}} matches": "{{count}} resultados",
 }

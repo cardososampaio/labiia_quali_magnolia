@@ -193,6 +193,12 @@ export function buildMenu(mainWindow: BrowserWindow, openWindows?: WindowListEnt
           click: () => sendAction('toggle-panel-documents')
         },
         {
+          label: t("Tags"),
+          type: 'checkbox',
+          checked: panelVisibility?.tags === true,
+          click: () => sendAction('toggle-panel-tags')
+        },
+        {
           label: t("Codes"),
           type: 'checkbox',
           checked: panelVisibility?.codes !== false,
@@ -201,25 +207,25 @@ export function buildMenu(mainWindow: BrowserWindow, openWindows?: WindowListEnt
         {
           label: t("Queries"),
           type: 'checkbox',
-          checked: panelVisibility?.queries !== false,
+          checked: panelVisibility?.queries === true,
           click: () => sendAction('toggle-panel-queries')
         },
         {
           label: t("Memos"),
           type: 'checkbox',
-          checked: panelVisibility?.memos !== false,
+          checked: panelVisibility?.memos === true,
           click: () => sendAction('toggle-panel-memos')
         },
         {
           label: t("Quotes"),
           type: 'checkbox',
-          checked: panelVisibility?.quotes !== false,
+          checked: panelVisibility?.quotes === true,
           click: () => sendAction('toggle-panel-quotes')
         },
         {
           label: t("Analyses"),
           type: 'checkbox',
-          checked: panelVisibility?.analyses !== false,
+          checked: panelVisibility?.analyses === true,
           click: () => sendAction('toggle-panel-analyses')
         },
         { type: 'separator' },

@@ -41,7 +41,7 @@ import { useClampedMenuPosition } from '../../utils/use-clamped-menu-position'
 import { renderPdfRegionThumbnail } from '../../utils/pdf-thumbnail'
 import { renderImageRegionThumbnail } from '../../utils/image-thumbnail'
 import { useDocumentStore } from '../../stores/document-store'
-import { t } from '../../i18n'
+import { t, tn } from '../../i18n'
 
 /** Group results by sourceGuid, preserving order of first appearance. */
 export function groupByDocument(
@@ -561,7 +561,7 @@ export function QueryResultsBody({
                 {group.sourceName}
               </span>
               <span style={{ fontSize: 10, color: 'var(--text-muted)', flexShrink: 0 }}>
-                {group.results.length} {t("match")}{group.results.length !== 1 ? 'es' : ''}
+                {tn(group.results.length, '{{count}} match', '{{count}} matches')}
               </span>
             </div>
 
