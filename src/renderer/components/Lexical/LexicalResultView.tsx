@@ -6,6 +6,8 @@
 import { useMemo, useState } from 'react'
 import type { LexicalFile, LexicalRunProgress, LexicalCorpusStats } from '../../models/lexical-api'
 import { t, tn, formatNumber, formatDate } from '../../i18n'
+import { FigureView } from './FigureView'
+import type { LexicalFigure } from '../../models/lexical-figures'
 
 export interface StoredLexicalResult {
   files: LexicalFile[]
@@ -91,13 +93,19 @@ function CsvPreview({ file, limit = 30 }: { file: LexicalFile; limit?: number })
 
 function columnLabel(h: string): string {
   if (h === 'word') return t('Word')
-  if (h === 'freq') return t('Frequency')
+  if (h === 'freq' || h === 'frequency') return t('Frequency')
+  const m = h.match(/^word_(\d)$/)
+  if (m) return t('Word {{n}}', { n: m[1] })
   return h
 }
 
 export function LexicalResultView({ result, stale, title }: { result: StoredLexicalResult; stale: boolean; title: string }) {
   const [actualSize, setActualSize] = useState(false)
   const images = result.files.filter((f) => f.role === 'image' && f.data)
+  const figures = useMemo(() => result.files.flatMap((f) => {
+    if (f.role !== 'figure' || !f.data) return []
+    try { return [{ name: f.name.replace(/\.json$/, ''), figure: JSON.parse(decodeText(f.data)) as LexicalFigure }] } catch { return [] }
+  }), [result.files])
   const tables = result.files.filter((f) => f.role === 'table' && f.data)
   const save = (f: LexicalFile): void => { void window.api.lexical.saveFile({ name: f.name, mime: f.mime, data: f.data! }) }
 
@@ -124,10 +132,12 @@ export function LexicalResultView({ result, stale, title }: { result: StoredLexi
         </div>
       ))}
 
+      {figures.map((f) => <FigureView key={f.name} figure={f.figure} baseName={f.name} />)}
+
       {tables.map((f) => (
         <div key={f.name} className="lex-table-block">
           <div className="lex-figure-tools">
-            <span className="lex-advanced-title">{f.title ?? t('Word frequencies')}</span>
+            <span className="lex-advanced-title">{tableTitle(f)}</span>
             <div style={{ flex: 1 }} />
             <button className="secondary lex-small-btn" onClick={() => save(f)}>{t('Export CSV')}</button>
           </div>
@@ -138,11 +148,18 @@ export function LexicalResultView({ result, stale, title }: { result: StoredLexi
   )
 }
 
+function tableTitle(f: LexicalFile): string {
+  if (f.title === 'Bigrams') return t('Bigrams')
+  if (f.title === 'Trigrams') return t('Trigrams')
+  return t('Word frequencies')
+}
+
 /** Plain-language message for a failed run. */
 export function runErrorText(error: string, detail?: string, missing?: string[]): string {
   switch (error) {
     case 'no-text': return t('The chosen documents have no text to analyse.')
     case 'no-words': return t('No word reaches the minimum frequency. Lower the minimum frequency and run again.')
+    case 'no-ngrams': return t('No sequence of words reaches the minimum frequency. Lower the minimum frequency and run again.')
     case 'r-not-found': return t('R was not found on this computer. The tests marked "R" need R 4.0 or newer.')
     case 'r-packages-missing': return t('These R packages are missing: {{list}}. Install them above and run again.', { list: (missing ?? []).join(', ') })
     case 'r-timeout': return t('R took longer than the time limit and was stopped. Try fewer documents or words.')

@@ -85,3 +85,8 @@
 .lex-table th, .lex-table td { padding: 3px 10px; border-bottom: 1px solid var(--border-color); text-align: left; }
 .lex-table th { position: sticky; top: 0; background: var(--bg-panel); font-weight: 600; color: var(--text-secondary); }
 .lex-table td.num { text-align: right; font-variant-numeric: tabular-nums; }
+
+/* Figures drawn by the window (matplotlib-style charts). */
+/* Networks are wide: fit the width and let the page scroll, so labels stay legible. */
+.lex-figure-svg { display: block; margin: 0 auto; width: 100%; height: auto; }
+.lex-figure-frame.actual .lex-figure-svg { width: auto; max-height: none; }

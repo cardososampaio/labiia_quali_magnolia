@@ -1228,4 +1228,7 @@ export const ptBR: Record<string, string> = {
   "The test could not finish: {{error}}": "O teste não pôde ser concluído: {{error}}",
   "The test could not finish.": "O teste não pôde ser concluído.",
   "Starting the test…": "Iniciando o teste…",
+  "Drawing…": "Desenhando…",
+  "Word {{n}}": "Palavra {{n}}",
+  "No sequence of words reaches the minimum frequency. Lower the minimum frequency and run again.": "Nenhuma sequência de palavras atinge a frequência mínima. Diminua a frequência mínima e execute de novo.",
 }

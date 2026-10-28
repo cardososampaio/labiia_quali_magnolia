@@ -1,0 +1,91 @@
+import { describe, it, expect } from 'vitest'
+import { join } from 'path'
+import { RandomState } from '../../src/main/lexical/plot/random'
+import { ggplotHue } from '../../src/main/lexical/plot/colors'
+import { springLayout, componentLayout, connectedComponents } from '../../src/main/lexical/plot/spring-layout'
+import { Lexicon } from '../../src/main/lexical/corpus/lexicon'
+import { prepareCorpus } from '../../src/main/lexical/corpus/prepare'
+import { contentTokensByUnit, countNgrams, ngramNetwork } from '../../src/main/lexical/analyses/ngrams'
+
+// Bigram and trigram networks must count like labiia_lex (content words in
+// reading order, per text) and be laid out with the same algorithm and
+// random numbers as its networkx layout, so the same seed gives its picture.
+
+describe('numpy-compatible random numbers', () => {
+  it('matches np.random.RandomState(42).rand()', () => {
+    // Values printed by numpy 2.4: RandomState(42).rand(2, 2).
+    const r = new RandomState(42)
+    expect([r.random(), r.random(), r.random(), r.random()]).toEqual([
+      0.3745401188473625, 0.9507143064099162, 0.7319939418114051, 0.5986584841970366
+    ])
+  })
+})
+
+describe('colours', () => {
+  it('gives labiia_lex ggplot_hue colours', () => {
+    expect(ggplotHue(1)).toEqual(['#FF0076'])
+    expect(ggplotHue(3)).toEqual(['#FF0076', '#00B800', '#00B5FF'])
+  })
+})
+
+describe('layout', () => {
+  it('is deterministic and scaled to the requested size', () => {
+    const nodes = ['a', 'b', 'c', 'd']
+    const adj = (i: number, j: number) => (Math.abs(i - j) === 1 ? 1 : 0)
+    const p1 = springLayout(nodes, adj, { k: 1.65, iterations: 300, scale: 3.2, seed: 42 })
+    const p2 = springLayout(nodes, adj, { k: 1.65, iterations: 300, scale: 3.2, seed: 42 })
+    expect([...p1.values()]).toEqual([...p2.values()])
+    const maxAbs = Math.max(...[...p1.values()].flat().map(Math.abs))
+    expect(maxAbs).toBeCloseTo(3.2, 10)
+  })
+
+  it('places separate groups apart, the largest first', () => {
+    const edges = [
+      { source: 'x', target: 'y', weight: 2 },
+      { source: 'a', target: 'b', weight: 3 },
+      { source: 'b', target: 'c', weight: 1 }
+    ]
+    const nodes = ['x', 'y', 'a', 'b', 'c']
+    expect(connectedComponents(nodes, edges).map((g) => g.sort())).toEqual([['x', 'y'], ['a', 'b', 'c']])
+    const pos = componentLayout(nodes, edges)
+    // The three-word group starts at x = 0; the pair is placed after it on the same row.
+    expect(Math.min(pos.get('a')![0], pos.get('b')![0], pos.get('c')![0])).toBeCloseTo(0, 10)
+    expect(Math.min(pos.get('x')![0], pos.get('y')![0])).toBeGreaterThan(Math.max(pos.get('a')![0], pos.get('b')![0], pos.get('c')![0]))
+  })
+})
+
+describe('n-grams', () => {
+  const lex = new Lexicon('pt', join(__dirname, '..', '..', 'resources', 'lexical'))
+  const corpus = prepareCorpus([
+    { id: '1', name: 'A', text: 'A democracia digital avança. A democracia digital exige participação social. Né, a gente acha.' },
+    { id: '2', name: 'B', text: 'Participação social e democracia digital.' }
+  ], lex, { language: 'pt', uceSize: 40 })
+
+  it('keeps content words in reading order, per text', () => {
+    const tokens = contentTokensByUnit(corpus, lex)
+    expect(tokens[0]).toEqual(['democracia', 'digital', 'avança', 'democracia', 'digital', 'exige', 'participação', 'social', 'acha'])
+    expect(tokens[1]).toEqual(['participação', 'social', 'democracia', 'digital'])
+  })
+
+  it('counts pairs within each text only, most frequent first', () => {
+    const rows = countNgrams(contentTokensByUnit(corpus, lex), 2)
+    expect(rows[0]).toEqual({ words: ['democracia', 'digital'], frequency: 3 })
+    expect(rows[1]).toEqual({ words: ['participação', 'social'], frequency: 2 })
+    // "social democracia" (end of text 1 → start of text 2) must not exist.
+    expect(rows.find((r) => r.words.join(' ') === 'social participação')).toBeUndefined()
+  })
+
+  it('builds the network of frequent pairs and refuses when none reaches the minimum', () => {
+    const net = ngramNetwork(corpus, lex, { n: 2, minFreq: 2, topEdges: 120, title: 't' })!
+    expect(net.kept.map((r) => r.words.join(' '))).toEqual(['democracia digital', 'participação social'])
+    expect(net.figure.nodes.map((n) => n.label)).toEqual(['democracia', 'digital', 'participação', 'social'])
+    expect(net.figure.nodes.every((n) => n.font !== null)).toBe(true)
+    expect(ngramNetwork(corpus, lex, { n: 3, minFreq: 5, topEdges: 120, title: 't' })).toBeNull()
+  })
+
+  it('adds a trigram as two edges, summing weights', () => {
+    const net = ngramNetwork(corpus, lex, { n: 3, minFreq: 1, topEdges: 120, title: 't' })!
+    expect(net.kept[0]).toEqual({ words: ['democracia', 'digital', 'avança'], frequency: 1 })
+    expect(net.allBigrams[0].frequency).toBe(3)
+  })
+})

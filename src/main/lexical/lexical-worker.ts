@@ -8,10 +8,12 @@ import { parentPort } from 'worker_threads'
 import { Lexicon, type CorpusLanguage } from './corpus/lexicon'
 import { prepareCorpus, wordFrequencies, type PreparedCorpus, type PrepareOptions, type TextUnitInput } from './corpus/prepare'
 import { readCachedCorpus, writeCachedCorpus, hasCachedCorpus } from './corpus/cache'
+import { ngramNetwork } from './analyses/ngrams'
 
 export type WorkerRequest =
   | { id: number; type: 'prepare'; key: string; units: TextUnitInput[]; options: PrepareOptions; resourcesDir: string; cacheDir: string }
   | { id: number; type: 'word-frequencies'; key: string; resourcesDir: string; useLemmas: boolean; activeOnly: boolean }
+  | { id: number; type: 'ngram-network'; key: string; resourcesDir: string; n: 2 | 3; minFreq: number; topEdges: number; title: string }
 
 export type WorkerMessage =
   | { id: number; type: 'progress'; done: number; total: number }
@@ -74,6 +76,10 @@ function handle(msg: WorkerRequest, post: (m: WorkerMessage) => void): unknown {
     const c = corpusFor(msg.key)
     const lex = lexiconFor(c.language, msg.resourcesDir)
     return wordFrequencies(c, { useLemmas: msg.useLemmas, activeOnly: msg.activeOnly, isDisplayTerm: (w) => lex.isDisplayTerm(w) })
+  }
+  if (msg.type === 'ngram-network') {
+    const c = corpusFor(msg.key)
+    return ngramNetwork(c, lexiconFor(c.language, msg.resourcesDir), { n: msg.n, minFreq: msg.minFreq, topEdges: msg.topEdges, title: msg.title })
   }
   throw new Error(`unknown request ${(msg as { type: string }).type}`)
 }

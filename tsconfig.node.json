@@ -17,6 +17,7 @@
     "src/preload/**/*",
     "src/renderer/models/types.ts",
     "src/renderer/models/lexical-api.ts",
+    "src/renderer/models/lexical-figures.ts",
     "src/renderer/i18n/**/*",
     "electron.vite.config.ts"
   ]

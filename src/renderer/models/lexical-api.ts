@@ -97,7 +97,8 @@ export interface LexicalFile {
   data?: string
   /** Where the file is stored inside the project file. */
   path?: string
-  role: 'image' | 'table' | 'data'
+  /** figure: a LexicalFigure as JSON, drawn by the window. */
+  role: 'image' | 'figure' | 'table' | 'data'
   title?: string
 }
 
