@@ -32,9 +32,9 @@ export function buildChdDendrogram(f: ChdDendrogramFigure, k: FigureKit) {
   for (const c of f.classes) {
     const cx = px(c.x)
     const ls = 11 * pt
-    const lm = measure(`classe ${c.id}`, ls, true)
+    const lm = measure(c.name, ls, true)
     const lb = py(0.6) + (lp(ls).ascent - lp(ls).descent) / 2
-    P.push(`<text x="${fmt(cx)}" y="${fmt(lb)}" font-family="${font}" font-weight="700" font-size="${fmt(ls)}" fill="${c.color}" text-anchor="middle">classe ${c.id}</text>`)
+    P.push(`<text x="${fmt(cx)}" y="${fmt(lb)}" font-family="${font}" font-weight="700" font-size="${fmt(ls)}" fill="${c.color}" text-anchor="middle">${esc(c.name)}</text>`)
     grow(cx - lm.width / 2, lb - lm.ascent, cx + lm.width / 2, lb + lm.descent)
 
     // FancyBboxPatch(round, pad 0.008, rounding 0.006) in data units.

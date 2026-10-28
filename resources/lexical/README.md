@@ -12,7 +12,7 @@ porque o R precisa lê-los diretamente.
 | `lexicons/oplexicon.csv` | Léxico de polaridade do português (OpLexicon), usado no Sentimento | OpLexicon, de Souza, Vieira e colaboradores (PUCRS), na cópia distribuída com o labiia_lex |
 | `yake/` | Palavras vazias do YAKE (pt, en, es) | Biblioteca yake 0.7.3 (LGPL-3.0) |
 | `R/` | Scripts R dos testes | Adaptados do labiia_lex e do IRaMuTeQ |
-| `R/iramuteq/` | `CHD.R`, `chdtxt.R`, `anacor.R`, `Rgraph.R`, `chdfunct.R`: a classificação hierárquica descendente (método Reinert) e seus gráficos, sem alterações na lógica | IRaMuTeQ, de Pierre Ratinaud (GPL), nas versões usadas pelo labiia_lex |
+| `R/iramuteq/` | `CHD.R`, `chdtxt.R`, `anacor.R`, `Rgraph.R`, `chdfunct.R`: a classificação hierárquica descendente (método Reinert) e seus gráficos. Uma correção em `chdtxt.R` (`getfille`): o 0 que marca classe sem filhas não é mais lido como classe, o que fazia a classificação dupla parar com erro | IRaMuTeQ, de Pierre Ratinaud (GPL), nas versões usadas pelo labiia_lex |
 
 Os dicionários e as listas do Snowball entram na preparação do corpus. Ao
 atualizar um deles, aumente `PREPARATION_VERSION` em

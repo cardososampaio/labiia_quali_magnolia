@@ -111,11 +111,6 @@ export const LEXICAL_TESTS: LexicalTestDef[] = [
       { key: 'tailleuc2', label: t('Segment size 2 (double)'), kind: 'int', default: 14, min: 4, max: 100 },
       { key: 'min_uce', label: t('Minimum segments per class (0 = automatic)'), kind: 'int', default: 0, min: 0, max: 10000 },
       { key: 'max_actives', label: t('Maximum active forms'), kind: 'int', default: 20000, min: 100, max: 100000, step: 100 },
-      {
-        key: 'dendro_type', label: t('Dendrogram'), kind: 'select', default: 'profile', options: [
-          opt('profile', t('Profiles')), opt('cloud', t('Word clouds')), opt('pie', t('Pie')), opt('barplot', t('Bars'))
-        ]
-      },
       { key: 'bw', label: t('Black and white'), kind: 'bool', default: false },
       { key: 'robustness_check', label: t('Robustness check'), kind: 'bool', default: false, help: t('Repeats the classification with other settings and measures the agreement (adjusted Rand index)') },
       { key: 'lab', label: t('Class names'), kind: 'text', default: '', placeholder: t('Separated by commas') }

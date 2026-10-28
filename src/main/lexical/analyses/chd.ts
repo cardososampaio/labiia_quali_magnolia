@@ -16,8 +16,37 @@ export interface ChdMatrixOptions {
   minFreq: number
   maxActives: number
   useLemmas: boolean
-  /** '1' = rows are text segments, '2' = rows are texts. */
-  rows: 'segments' | 'texts'
+  /**
+   * 'segments' (simple on text segments), 'texts' (simple on texts) or
+   * 'double' (IRaMuTeQ's double classification on two sizes of context unit).
+   * In every mode the classes come out per row of rows.csv: segments, or
+   * texts for 'texts'.
+   */
+  rows: 'segments' | 'texts' | 'double'
+  /** Double classification: active words per context unit of each table (IRaMuTeQ 12 and 14). */
+  tailleuc1?: number
+  tailleuc2?: number
+}
+
+/**
+ * IRaMuTeQ's make_uc: consecutive segments of a text are joined into context
+ * units until a unit holds more than `limit` active words (distinct words per
+ * segment); a new text always starts a new unit.
+ */
+export function contextUnits(sizes: number[], unitOf: ArrayLike<number>, limit: number): number[][] {
+  const groups: number[][] = []
+  let last = 0
+  let lastUnit = -1
+  sizes.forEach((count, s) => {
+    if (unitOf[s] !== lastUnit) {
+      groups.push([s]); last = count; lastUnit = unitOf[s]
+    } else if (last <= limit) {
+      groups[groups.length - 1].push(s); last += count
+    } else {
+      groups.push([s]); last = count
+    }
+  })
+  return groups
 }
 
 export interface ChdMatrixInfo {
@@ -47,12 +76,30 @@ export function writeChdMatrix(c: PreparedCorpus, lex: Lexicon, o: ChdMatrixOpti
       freq[k]++
     }
   }
-  const lines: string[] = []
-  for (let r = 0; r < nRows; r++) for (const k of [...present[r]].sort((a, b) => a - b)) lines.push(`${r + 1} ${k + 1} 1`)
-  writeFileSync(join(dir, 'TableUc1.csv'),
-    `%%MatrixMarket matrix coordinate integer general\n${nRows} ${vocab.length} ${lines.length}\n${lines.join('\n')}\n`, 'utf-8')
-  const idLabel = o.rows === 'texts' ? 'uci' : 'uce'
-  writeFileSync(join(dir, 'listuce1.csv'), `${idLabel};uc\n` + Array.from({ length: nRows }, (_v, i) => `${i};${i}`).join('\n') + '\n', 'utf-8')
+  // Binary table of groups of rows (one group per row outside the double classification).
+  let nonZero = 0
+  const writeTable = (n: 1 | 2, groups: number[][]): void => {
+    const lines: string[] = []
+    groups.forEach((g, r) => {
+      const union = new Set<number>()
+      for (const row of g) for (const k of present[row]) union.add(k)
+      for (const k of [...union].sort((x, y) => x - y)) lines.push(`${r + 1} ${k + 1} 1`)
+    })
+    if (n === 1) nonZero = lines.length
+    writeFileSync(join(dir, `TableUc${n}.csv`),
+      `%%MatrixMarket matrix coordinate integer general\n${groups.length} ${vocab.length} ${lines.length}\n${lines.join('\n')}\n`, 'utf-8')
+    const idLabel = o.rows === 'texts' ? 'uci' : 'uce'
+    const list: string[] = []
+    groups.forEach((g, uc) => { for (const row of g) list[row] = `${row};${uc}` })
+    writeFileSync(join(dir, `listuce${n}.csv`), `${idLabel};uc\n` + list.join('\n') + '\n', 'utf-8')
+  }
+  if (o.rows === 'double') {
+    const sizes = present.map((p) => p.size)
+    writeTable(1, contextUnits(sizes, c.uceUnit, Math.max(1, o.tailleuc1 ?? 12)))
+    writeTable(2, contextUnits(sizes, c.uceUnit, Math.max(1, o.tailleuc2 ?? 14)))
+  } else {
+    writeTable(1, present.map((_p, i) => [i]))
+  }
   // Row descriptions (document and text) for the classified-segments table.
   const cell = (v: string): string => `"${v.replace(/"/g, '""')}"`
   const rowLines = o.rows === 'texts'
@@ -60,7 +107,7 @@ export function writeChdMatrix(c: PreparedCorpus, lex: Lexicon, o: ChdMatrixOpti
     : c.uceText.map((t, i) => `${i};${cell(c.units[c.uceUnit[i]].name)};${cell(t)}`)
   writeFileSync(join(dir, 'rows.csv'), 'row;document;text\n' + rowLines.join('\n') + '\n', 'utf-8')
   writeFileSync(join(dir, 'formes.csv'), 'word;freq\n' + vocab.map((w, i) => `${w};${freq[i]}`).join('\n') + '\n', 'utf-8')
-  return { rows: nRows, terms: vocab.length, nonZero: lines.length }
+  return { rows: nRows, terms: vocab.length, nonZero }
 }
 
 /** Document variable as labiia_lex names it (*doc_ + the name without accents or spaces). */

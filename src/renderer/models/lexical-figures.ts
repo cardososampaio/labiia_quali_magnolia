@@ -172,7 +172,7 @@ export interface ChdDendrogramFigure {
   figH: number
   dpi: number
   /** Leaves left to right, x = 1..n. */
-  classes: { id: number; x: number; color: string; percent: number; words: string[] }[]
+  classes: { id: number; name: string; x: number; color: string; percent: number; words: string[] }[]
   /** Tree segments in data units (x: class positions, y: 0..1). */
   lines: [number, number, number, number][]
   rectW: number

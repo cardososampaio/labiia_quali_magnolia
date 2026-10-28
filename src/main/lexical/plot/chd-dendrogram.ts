@@ -41,7 +41,8 @@ export function chdDendrogram(
   newick: string,
   sizes: number[],
   wordsOf: (cls: number) => string[],
-  maxTerms = 18
+  maxTerms = 18,
+  opts: { names?: string[]; bw?: boolean } = {}
 ): ChdDendrogramFigure {
   const n = sizes.length
   const ids = Array.from({ length: n }, (_v, k) => k + 1).filter((k) => sizes[k - 1] > 0)
@@ -74,8 +75,9 @@ export function chdDendrogram(
     dpi: 160,
     classes: order.map((k) => ({
       id: k,
+      name: opts.names?.[k - 1] ?? `classe ${k}`,
       x: x.get(k)!,
-      color: CHD_CLASS_PALETTE[(k - 1) % CHD_CLASS_PALETTE.length],
+      color: opts.bw ? '#4D4D4D' : CHD_CLASS_PALETTE[(k - 1) % CHD_CLASS_PALETTE.length],
       percent: (100 * sizes[k - 1]) / total,
       words: wordsOf(k).slice(0, limit)
     })),

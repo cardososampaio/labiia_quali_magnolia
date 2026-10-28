@@ -3,14 +3,15 @@
  * the app builds the segment x active word table, IRaMuTeQ's own R scripts
  * divide it into classes and draw the dendrogram.
  */
-import { existsSync, readFileSync } from 'fs'
+import { existsSync, mkdirSync, readFileSync } from 'fs'
 import { join } from 'path'
 import { runRScript } from '../r-runner'
 import type { TestContext } from '../engine'
 import type { LexicalFile, LexicalRunResult } from '../../../renderer/models/lexical-api'
-import type { ChdMatrixInfo } from '../analyses/chd'
+import { CHD_MIN_FREQ, type ChdMatrixInfo } from '../analyses/chd'
 import { chdDendrogram, CHD_CLASS_PALETTE } from '../plot/chd-dendrogram'
 import { Lexicon } from '../corpus/lexicon'
+import { adjustedRandIndex, robustnessSpecs, specLabel } from '../analyses/chd-robustness'
 
 const b64 = (text: string): string => Buffer.from(text, 'utf-8').toString('base64')
 const quote = (v: string): string => `"${v.replace(/"/g, '""')}"`
@@ -76,36 +77,36 @@ function splitCsv(line: string): string[] {
 export async function runChd(ctx: TestContext): Promise<Omit<LexicalRunResult, 'ok' | 'corpus'>> {
   const p = ctx.params
   const mode = String(p.classif_mode ?? '1')
-  if (mode === '0') return { error: 'chd-double-soon' }
+  const rowsMode = mode === '2' ? ('texts' as const) : mode === '0' ? ('double' as const) : ('segments' as const)
+  const sizes12 = { tailleuc1: Math.max(4, Number(p.tailleuc1) || 12), tailleuc2: Math.max(4, Number(p.tailleuc2) || 14) }
   const nClasses = Math.max(2, Math.min(20, Math.round(Number(p.n_classes) || 5)))
   // Phase 1 explores more classes than asked (IRaMuTeQ's 10); the terminal classes come from pruning.
-  const nbt = Math.max(10, 2 * nClasses) - 1
-  const info = await ctx.worker<ChdMatrixInfo | null>({
-    type: 'chd-matrix',
-    key: ctx.key,
-    resourcesDir: ctx.resourcesDir,
-    dir: ctx.runDir,
-    options: {
-      minFreq: Number(p.min_freq) || 3,
-      maxActives: Number(p.max_actives) || 20000,
-      useLemmas: p.use_lemmas !== false,
-      rows: mode === '2' ? 'texts' : 'segments'
-    }
-  })
-  if (!info || info.rows < 3) return { error: 'chd-too-small' }
+  const baseFreq = Math.max(CHD_MIN_FREQ, Number(p.min_freq) || 3)
+  const classify = async (dir: string, classesAsked: number, minFreq: number) => {
+    const info = await ctx.worker<ChdMatrixInfo | null>({
+      type: 'chd-matrix',
+      key: ctx.key,
+      resourcesDir: ctx.resourcesDir,
+      dir,
+      options: { minFreq, maxActives: Number(p.max_actives) || 20000, useLemmas: p.use_lemmas !== false, rows: rowsMode, ...sizes12 }
+    })
+    if (!info || info.rows < 3) return { error: 'chd-too-small' as const }
+    const run = await runRScript(ctx.r!, ctx.runId, {
+      script: join(ctx.resourcesDir, 'R', 'chd.R'),
+      args: [dir, join(ctx.resourcesDir, 'R', 'iramuteq'), String(Math.max(10, 2 * classesAsked) - 1), String(Math.max(0, Math.round(Number(p.min_uce) || 0))), '1400', '1000', mode === '0' ? '0' : '1'],
+      cwd: dir,
+      timeoutMs: 900_000,
+      expectedOutputs: [join(dir, 'n1.csv'), join(dir, 'dendrogramme.png')]
+    })
+    if (!run.ok) return { error: run.timedOut ? 'r-timeout' as const : run.cancelled ? 'cancelled' as const : 'r-failed' as const, detail: (run.stderr || run.stdout).slice(-4000) }
+    return { info, classes: readClasses(readFileSync(join(dir, 'n1.csv'), 'utf-8')) }
+  }
 
   ctx.progress({ stage: 'render' })
   const out = (name: string): string => join(ctx.runDir, name)
-  const run = await runRScript(ctx.r!, ctx.runId, {
-    script: join(ctx.resourcesDir, 'R', 'chd.R'),
-    args: [ctx.runDir, join(ctx.resourcesDir, 'R', 'iramuteq'), String(nbt), String(Math.max(0, Math.round(Number(p.min_uce) || 0))), '1400', '1000'],
-    cwd: ctx.runDir,
-    timeoutMs: 900_000,
-    expectedOutputs: [out('n1.csv'), out('dendrogramme.png')]
-  })
-  if (!run.ok) return { error: run.timedOut ? 'r-timeout' : run.cancelled ? 'cancelled' : 'r-failed', detail: (run.stderr || run.stdout).slice(-4000) }
-
-  const classes = readClasses(readFileSync(out('n1.csv'), 'utf-8'))
+  const main = await classify(ctx.runDir, nClasses, baseFreq)
+  if ('error' in main) return main
+  const { info, classes } = main
   const nClass = Math.max(0, ...classes)
   if (nClass < 2) return { error: 'chd-no-classes' }
   const sizes = Array.from({ length: nClass }, (_v, k) => classes.filter((c) => c === k + 1).length)
@@ -124,7 +125,8 @@ export async function runChd(ctx: TestContext): Promise<Omit<LexicalRunResult, '
     minFreq: Number(p.min_freq) || 3,
     maxActives: Number(p.max_actives) || 20000,
     useLemmas: p.use_lemmas !== false,
-    rows: mode === '2' ? ('texts' as const) : ('segments' as const)
+    rows: rowsMode,
+    ...sizes12
   }
   await ctx.worker({ type: 'chd-profile-tables', key: ctx.key, resourcesDir: ctx.resourcesDir, dir: ctx.runDir, options, classes })
   const prof = await runRScript(ctx.r!, ctx.runId, {
@@ -149,7 +151,41 @@ export async function runChd(ctx: TestContext): Promise<Omit<LexicalRunResult, '
   const wordsOf = (cls: number): string[] => profiles
     .filter((r) => r.cls === cls && r.chi2 > 0 && activeWords.has(r.word) && !lex.isStopwordLike(r.word))
     .map((r) => r.word)
-  const dendro = chdDendrogram(readFileSync(out('tree.nwk'), 'utf-8'), sizes, wordsOf)
+  const names = String(p.lab ?? '').split(',').map((s) => s.trim()).filter(Boolean)
+  const dendro = chdDendrogram(readFileSync(out('tree.nwk'), 'utf-8'), sizes, wordsOf, 18, {
+    // As labiia_lex: the names apply only when there is one per class.
+    names: names.length === nClass ? names : undefined,
+    bw: p.bw === true
+  })
+
+  // Robustness: the same classification with other settings, compared by the adjusted Rand index.
+  const robustnessFiles: LexicalFile[] = []
+  if (p.robustness_check === true) {
+    const specs = robustnessSpecs(nClasses, baseFreq)
+    const runs: { label: string; classes: number[] | null; error?: string }[] = [{ label: specLabel(specs[0]), classes }]
+    for (const spec of specs.slice(1)) {
+      if (ctx.isCancelled()) return { error: 'cancelled' }
+      const dir = join(ctx.runDir, `robustez_k${spec.classes}_mf${spec.minFreq}`)
+      mkdirSync(dir, { recursive: true })
+      const r = await classify(dir, spec.classes, spec.minFreq)
+      runs.push('error' in r ? { label: specLabel(spec), classes: null, error: r.error } : { label: specLabel(spec), classes: r.classes })
+    }
+    const rowsOut = runs.map((r, i) => {
+      if (!r.classes) return [r.label, '', '', '', r.error ?? '']
+      const got = Math.max(0, ...r.classes)
+      const pct = (100 * r.classes.filter((c) => c > 0).length) / Math.max(1, r.classes.length)
+      const ari = i === 0 ? 1 : adjustedRandIndex(classes, r.classes)
+      return [r.label, String(got), pct.toFixed(1), ari.toFixed(3), '']
+    })
+    robustnessFiles.push({
+      name: 'chd_robustness.csv', mime: 'text/csv', role: 'table', title: 'ChdRobustness',
+      data: b64('setting;classes_obtained;percent_classified;ari_vs_main;error\n' + rowsOut.map((r) => r.map(quote).join(';')).join('\n') + '\n')
+    })
+    const ok = runs.filter((r) => r.classes)
+    const matrix = 'setting;' + ok.map((r) => quote(r.label)).join(';') + '\n' +
+      ok.map((a) => [quote(a.label), ...ok.map((b) => adjustedRandIndex(a.classes!, b.classes!).toFixed(4))].join(';')).join('\n') + '\n'
+    robustnessFiles.push({ name: 'chd_robustness_ari.csv', mime: 'text/csv', role: 'data', data: b64(matrix) })
+  }
 
   // Typical segments: the sum of the positive chi2 of the class's words the segment contains (by lemma).
   const chi = readChiTable(readFileSync(out('chistable.csv'), 'utf-8'))
@@ -193,6 +229,7 @@ export async function runChd(ctx: TestContext): Promise<Omit<LexicalRunResult, '
     { name: 'chd_profiles.csv', mime: 'text/csv', role: 'table', title: 'ChdProfiles', data: b64(profileCsv(profiles)) },
     { name: 'chd_antiprofiles.csv', mime: 'text/csv', role: 'table', title: 'ChdAntiprofiles', data: b64(profileCsv(antiprofiles)) },
     { name: 'chd_typical_segments.csv', mime: 'text/csv', role: 'table', title: 'ChdTypical', data: b64(typicalCsv) },
+    ...robustnessFiles,
     { name: 'colored_corpus.html', mime: 'text/html', role: 'data', data: b64(colored) },
     { name: 'chistable.csv', mime: 'text/csv', role: 'data', data: raw('chistable.csv') },
     ...['afc_facteur.csv', 'afc_row.csv', 'afc_col.csv', 'Contout.csv', 'ContSupOut.csv', 'ContEtOut.csv']

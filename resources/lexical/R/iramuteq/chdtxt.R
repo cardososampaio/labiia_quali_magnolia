@@ -65,7 +65,10 @@ getfille <- function(nlf, classe, pf) {
     } else {
 		for (cl in nlf[[classe]]) {
 			pf <- c(pf, cl)
-			if (cl <= length(nlf)) {
+			# labiia_quali: 0 marks a class without daughters (addallfille); without
+			# this test a terminal class stopped the double classification with
+			# "attempt to select less than one element".
+			if (cl > 0 && cl <= length(nlf)) {
 				pf <- getfille(nlf, cl, pf)
 			}
 		}
