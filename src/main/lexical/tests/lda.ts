@@ -12,6 +12,7 @@ import type { LdaInput } from '../analyses/lda'
 import { readLdaOutputs } from '../analyses/lda'
 import { ldaDistribution, ldaHeatmap, ldaTopTerms } from '../plot/lda-figures'
 import { intertopicFigure } from '../plot/intertopic'
+import { ldaTimeline } from '../plot/timeline'
 
 const b64 = (text: string): string => Buffer.from(text, 'utf-8').toString('base64')
 
@@ -72,6 +73,12 @@ export async function runLda(ctx: TestContext): Promise<Omit<LexicalRunResult, '
   ]
   if (model.k >= 2) {
     files.splice(3, 0, { name: 'lda_intertopic_map.json', mime: 'application/json', role: 'figure', data: b64(JSON.stringify(intertopicFigure(model, input.vocabulary, input.docLengths))) })
+  }
+  // Only when documents have dates (a tag of a date category).
+  const timeline = ldaTimeline(model.gamma, input.dates)
+  if (timeline) {
+    files.push({ name: 'lda_topic_timeline.json', mime: 'application/json', role: 'figure', data: b64(JSON.stringify(timeline.figure)) })
+    files.push({ name: 'lda_topic_timeline.csv', mime: 'text/csv', role: 'data', data: b64(['data;documentos;' + model.labels.map((_l, i) => `T${i + 1}`).join(';'), ...timeline.rows.map((r) => r.join(';'))].join('\n') + '\n') })
   }
   for (const name of ['lda_terms_beta.csv', 'lda_documents_gamma.csv', 'lda_tuning.csv', 'lda_summary.json']) {
     if (existsSync(out(name))) files.push({ name, mime: name.endsWith('.json') ? 'application/json' : 'text/csv', role: 'data', data: readFileSync(out(name)).toString('base64') })

@@ -178,4 +178,25 @@ export interface ChdDendrogramFigure {
   rectW: number
 }
 
-export type LexicalFigure = NetworkFigure | TreeFigure | BarFigure | PanelBarsFigure | RadialFigure | VBarFigure | IntertopicFigure | HeatmapFigure | StrategicFigure | ChdDendrogramFigure
+/** Values over dates (labiia_lex's sentiment and LDA timelines): lines with markers, a legend, slanted date labels. */
+export interface TimelineFigure {
+  kind: 'timeline'
+  title: string
+  xlabel?: string
+  ylabel: string
+  figW: number
+  figH: number
+  dpi: number
+  /** Subplot box as fractions of the figure (left, right, bottom, top). */
+  box: [number, number, number, number]
+  /** Date positions in days since 1970-01-01, with their labels. */
+  dates: { x: number; label: string }[]
+  series: { label: string; color: string; values: number[] }[]
+  lineWidth: number
+  markerSize: number
+  ylim?: [number, number]
+  rotation: number
+  legendFontSize: number
+}
+
+export type LexicalFigure = NetworkFigure | TreeFigure | BarFigure | PanelBarsFigure | RadialFigure | VBarFigure | IntertopicFigure | HeatmapFigure | StrategicFigure | ChdDendrogramFigure | TimelineFigure

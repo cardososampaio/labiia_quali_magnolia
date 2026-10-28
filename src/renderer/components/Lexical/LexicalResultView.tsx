@@ -212,6 +212,7 @@ function tableTitle(f: LexicalFile): string {
   if (f.title === 'ChdAntiprofiles') return t('Antiprofiles')
   if (f.title === 'ChdTypical') return t('Typical segments')
   if (f.title === 'ChdRobustness') return t('Robustness')
+  if (f.title === 'ChdVariables') return t('Variables per class')
   if (f.title === 'ThemeDocuments') return t('Documents per theme')
   if (f.title === 'ThemeSegments') return t('Representative segments')
   return t('Word frequencies')

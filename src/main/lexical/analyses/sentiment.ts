@@ -35,6 +35,8 @@ const TOKEN = /^[a-zA-ZÀ-ÿ]{3,}$/
 
 export interface SentimentResult {
   counts: Record<Polarity, number>
+  /** The same counts for each document (for the timeline). */
+  perUnit: Record<Polarity, number>[]
   words: { word: string; polarity: Polarity; frequency: number }[]
   matched: number
 }
@@ -42,17 +44,21 @@ export interface SentimentResult {
 export function sentiment(c: PreparedCorpus, lexicon: Map<string, Polarity>, topWords: number): SentimentResult {
   const counts: Record<Polarity, number> = { Positivo: 0, Negativa: 0, Neutro: 0 }
   const perWord = new Map<string, { word: string; polarity: Polarity; frequency: number }>()
+  const perUnit = c.units.map(() => ({ Positivo: 0, Negativa: 0, Neutro: 0 }))
+  let seg = 0
   for (let t = 0; t < c.tokens.length; t++) {
+    while (t >= c.uceStart[seg + 1]) seg++
     const w = c.forms[c.tokens[t]]
     if (!TOKEN.test(w)) continue
     const p = lexicon.get(w)
     if (!p) continue
     counts[p]++
+    perUnit[c.uceUnit[seg]][p]++
     const key = `${w}\u0000${p}`
     const e = perWord.get(key)
     if (e) e.frequency++
     else perWord.set(key, { word: w, polarity: p, frequency: 1 })
   }
   const words = [...perWord.values()].sort((a, b) => b.frequency - a.frequency).slice(0, Math.max(10, Math.round(topWords)))
-  return { counts, words, matched: counts.Positivo + counts.Negativa + counts.Neutro }
+  return { counts, perUnit, words, matched: counts.Positivo + counts.Negativa + counts.Neutro }
 }

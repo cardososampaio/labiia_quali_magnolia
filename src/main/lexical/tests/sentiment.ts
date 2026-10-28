@@ -17,7 +17,14 @@ export async function runSentiment(ctx: TestContext): Promise<Omit<LexicalRunRes
     files: [
       { name: 'sentiment_distribution.json', mime: 'application/json', role: 'figure', data: b64(JSON.stringify(res.figure)) },
       { name: 'sentiment_distribution.csv', mime: 'text/csv', role: 'table', title: 'Distribution', data: b64(csv(dist)) },
-      { name: 'sentiment_words.csv', mime: 'text/csv', role: 'table', title: 'SentimentWords', data: b64(csv([['palavra', 'sentimento', 'frequencia'], ...res.result.words.map((w) => [w.word, w.polarity, w.frequency])])) }
+      { name: 'sentiment_words.csv', mime: 'text/csv', role: 'table', title: 'SentimentWords', data: b64(csv([['palavra', 'sentimento', 'frequencia'], ...res.result.words.map((w) => [w.word, w.polarity, w.frequency])])) },
+      // Only when documents have dates (a tag of a date category).
+      ...(res.timeline
+        ? [
+            { name: 'sentiment_timeline.json', mime: 'application/json', role: 'figure' as const, data: b64(JSON.stringify(res.timeline.figure)) },
+            { name: 'sentiment_timeline.csv', mime: 'text/csv', role: 'data' as const, data: b64(csv([['data', 'sentimento', 'quantidade', 'porcentagem'], ...res.timeline.rows.map(([d, s, q, p]) => [d, s, q, p.toFixed(6)])])) }
+          ]
+        : [])
     ],
     summary: { matched: total }
   }

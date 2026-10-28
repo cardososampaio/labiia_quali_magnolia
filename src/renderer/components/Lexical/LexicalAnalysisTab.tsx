@@ -104,7 +104,8 @@ export function LexicalAnalysisTab({ test, data: propData, savedConfig, inTab }:
   const wordEstimate = useMemo(() => units.reduce((n, u) => n + countWords(u.text), 0), [units])
 
   // What a result depends on: which documents, the language and the settings.
-  const runSignature = useMemo(() => JSON.stringify({ docs: units.map((u) => u.id), language, params }), [units, language, params])
+  // Variables and dates change CHD profiles and timelines: a change marks the result as outdated.
+  const runSignature = useMemo(() => JSON.stringify({ docs: units.map((u) => [u.id, u.variables, u.date]), language, params }), [units, language, params])
 
   const rStatus = useLexicalRStore((s) => s.status)
   const rPackages = useLexicalRStore((s) => s.packages)
@@ -127,7 +128,7 @@ export function LexicalAnalysisTab({ test, data: propData, savedConfig, inTab }:
         testId: test.id,
         language,
         params,
-        units: units.map((u) => ({ id: u.id, name: u.name, text: u.text }))
+        units: units.map((u) => ({ id: u.id, name: u.name, text: u.text, variables: u.variables, date: u.date }))
       })
       if (runIdRef.current !== runId) return
       if (res.ok && res.files) {

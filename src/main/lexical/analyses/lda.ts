@@ -16,6 +16,8 @@ export interface LdaInput {
   vocabulary: string[]
   /** Tokens per document and per term (for the intertopic map). */
   docLengths: number[]
+  /** Date of each document (from a date tag), for the timeline. */
+  dates: (string | undefined)[]
   termFrequencies: number[]
 }
 
@@ -61,7 +63,7 @@ export function ldaInput(c: PreparedCorpus, lex: Lexicon, o: { minFreq: number; 
   const lines = [['Doc_ID', 'Label', ...vocabulary].join(';')]
   counts.forEach((row, d) => lines.push([String(d), docs[d], ...Array.from(row, String)].join(';')))
   const termFrequencies = vocabulary.map((_t, k) => counts.reduce((n, row) => n + row[k], 0))
-  return { csv: lines.join('\n') + '\n', docs, vocabulary, docLengths: counts.map((row) => row.reduce((a, b) => a + b, 0)), termFrequencies }
+  return { csv: lines.join('\n') + '\n', docs, vocabulary, docLengths: counts.map((row) => row.reduce((a, b) => a + b, 0)), termFrequencies, dates: c.units.map((u) => u.date) }
 }
 
 export interface LdaModel {

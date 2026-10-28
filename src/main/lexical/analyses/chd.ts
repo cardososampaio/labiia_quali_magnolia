@@ -170,9 +170,13 @@ export function writeChdProfileTables(
   const write = (name: string, body: string): void => writeFileSync(join(dir, name), body ? body + '\n' : '', 'utf-8')
   write('Contout.csv', table(actives, actRows))
   write('ContSupOut.csv', table(order(supFreq).filter((t) => !activeSet.has(t)), supRows))
-  // Document variables: rows of each document per class.
+  // Document variables (*doc_name, plus the tags and folder of each document): rows per class.
   const docRows = new Map<string, Set<number>>()
-  for (let r = 0; r < nRows; r++) add(docRows, docVariable(c.units[o.rows === 'texts' ? r : c.uceUnit[r]].name), r)
+  for (let r = 0; r < nRows; r++) {
+    const unit = c.units[o.rows === 'texts' ? r : c.uceUnit[r]]
+    add(docRows, docVariable(unit.name), r)
+    for (const v of unit.variables ?? []) add(docRows, v, r)
+  }
   write('ContEtOut.csv', [...docRows.keys()].sort().map((v) => `${v};${perClass(docRows.get(v)!).join(';')}`).join('\n'))
   write('rowterms.csv', rowTerms.map((s, r) => `${r};${[...s].join(' ')}`).join('\n'))
   return { classes: nClass }

@@ -117,3 +117,32 @@ describe('CHD double classification and robustness', () => {
     expect(robustnessSpecs(5, 3).map((s) => [s.classes, s.minFreq])).toEqual([[5, 3], [6, 3], [8, 3], [5, 5], [6, 5], [8, 5]])
   })
 })
+
+describe('variables and timelines', () => {
+  it('adds the documents tag variables to the CHD variable table', async () => {
+    const { writeChdProfileTables } = await import('../../src/main/lexical/analyses/chd')
+    const text = 'A escola pública precisa de professores. O hospital precisa de médicos. '.repeat(6)
+    const c = prepareCorpus([
+      { id: 'a', name: 'Doc A', text, variables: ['*genero_feminino'] },
+      { id: 'b', name: 'Doc B', text, variables: ['*genero_masculino'] }
+    ], pt, { language: 'pt', uceSize: 40 })
+    const dir = mkdtempSync(join(tmpdir(), 'chdvar-'))
+    writeChdProfileTables(c, pt, { minFreq: 3, maxActives: 20000, useLemmas: true, rows: 'segments' }, dir, c.uceText.map(() => 1))
+    const et = readFileSync(join(dir, 'ContEtOut.csv'), 'utf-8')
+    const perDoc = c.uceUnit.filter((u) => u === 0).length
+    expect(et.split('\n')).toContain(`*genero_feminino;${perDoc}`)
+    expect(et).toMatch(/^\*genero_masculino;/m)
+  })
+
+  it('averages topics and shares sentiment per date, leaving undated documents out', async () => {
+    const { ldaTimeline, sentimentTimeline, dateLabel } = await import('../../src/main/lexical/plot/timeline')
+    const lda = ldaTimeline([[0.8, 0.2], [0.4, 0.6], [0.5, 0.5]], ['2024-02', '2024-02', undefined])!
+    expect(lda.figure.dates.map((d) => d.label)).toEqual(['02/2024'])
+    expect(lda.figure.series[0].values[0]).toBeCloseTo(0.6)
+    const s = sentimentTimeline([{ Positivo: 3, Negativa: 1, Neutro: 0 }, { Positivo: 0, Negativa: 2, Neutro: 2 }], ['2024', '2023'])!
+    expect(s.figure.dates.map((d) => d.label)).toEqual(['2023', '2024'])
+    expect(s.figure.series[0].values).toEqual([0, 75])
+    expect(sentimentTimeline([{ Positivo: 1, Negativa: 0, Neutro: 0 }], [undefined])).toBeNull()
+    expect(dateLabel('2024-03-15')).toBe('15/03/2024')
+  })
+})

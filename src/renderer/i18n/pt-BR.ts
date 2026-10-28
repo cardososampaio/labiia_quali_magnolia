@@ -1266,4 +1266,5 @@ export const ptBR: Record<string, string> = {
   "Classes obtained": "Classes obtidas",
   "% classified": "% classificado",
   "Agreement with the main result (ARI)": "Concordância com o resultado principal (ARI)",
+  "Variables per class": "Variáveis por classe",
 }

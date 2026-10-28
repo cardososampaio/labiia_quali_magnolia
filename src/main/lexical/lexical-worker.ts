@@ -16,6 +16,7 @@ import type { BarFigure, PanelBarsFigure, RadialFigure, VBarFigure } from '../..
 import { sentiment, loadOpLexicon, type SentimentResult } from './analyses/sentiment'
 import { similitudeMatrix, matrixCsv } from './analyses/similitude'
 import { ldaInput } from './analyses/lda'
+import { sentimentTimeline } from './plot/timeline'
 import { thematicMap, type ThematicOptions } from './analyses/thematic-map'
 import { writeChdMatrix, writeChdProfileTables, type ChdMatrixOptions } from './analyses/chd'
 import { keywordAssociations, type Collocate } from './analyses/keyword-associations'
@@ -28,7 +29,7 @@ export interface CorpusText { text: string }
 
 export type SimilitudeRun = { matrixCsv: string; freqCsv: string; terms: number; segments: number } | null
 
-export interface SentimentRun { result: SentimentResult; figure: VBarFigure }
+export interface SentimentRun { result: SentimentResult; figure: VBarFigure; timeline: ReturnType<typeof sentimentTimeline> }
 
 export type AssociationsRun =
   | { focalTerms: string[]; missing: string[]; collocates: Map<string, Collocate[]>; segments: number; examples: [string, string, string][]; bars: PanelBarsFigure; radial: RadialFigure }
@@ -173,7 +174,7 @@ function handle(msg: WorkerRequest, post: (m: WorkerMessage) => void): unknown {
       edgeColor: '#FFFFFF',
       edgeWidth: 1.2
     }
-    return { result, figure } satisfies SentimentRun
+    return { result, figure, timeline: sentimentTimeline(result.perUnit, c.units.map((u) => u.date)) } satisfies SentimentRun
   }
   if (msg.type === 'yake') {
     const c = corpusFor(msg.key)

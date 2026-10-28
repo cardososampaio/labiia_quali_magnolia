@@ -228,6 +228,10 @@ export async function runChd(ctx: TestContext): Promise<Omit<LexicalRunResult, '
     { name: 'chd_classes.csv', mime: 'text/csv', role: 'table', title: 'ChdClasses', data: b64(classesCsv) },
     { name: 'chd_profiles.csv', mime: 'text/csv', role: 'table', title: 'ChdProfiles', data: b64(profileCsv(profiles)) },
     { name: 'chd_antiprofiles.csv', mime: 'text/csv', role: 'table', title: 'ChdAntiprofiles', data: b64(profileCsv(antiprofiles)) },
+    // Variables (documents, tags, folders) over-represented in each class.
+    ...(profiles.some((r) => kind(r.word) === 'variable')
+      ? [{ name: 'chd_variables.csv', mime: 'text/csv', role: 'table' as const, title: 'ChdVariables', data: b64(profileCsv(profiles.filter((r) => kind(r.word) === 'variable'))) }]
+      : []),
     { name: 'chd_typical_segments.csv', mime: 'text/csv', role: 'table', title: 'ChdTypical', data: b64(typicalCsv) },
     ...robustnessFiles,
     { name: 'colored_corpus.html', mime: 'text/html', role: 'data', data: b64(colored) },

@@ -15,12 +15,15 @@
 import { Lexicon, gramIsActive, type CorpusLanguage } from './lexicon'
 
 /** Bump when a change here would give different results for the same text. */
-export const PREPARATION_VERSION = 1
+// 2: units carry variables and a date.
+export const PREPARATION_VERSION = 2
 
 export interface TextUnitInput {
   id: string
   name: string
   text: string
+  variables?: string[]
+  date?: string
 }
 
 export interface PrepareOptions {
@@ -41,7 +44,7 @@ export interface PreparedCorpus {
   version: number
   language: CorpusLanguage
   uceSize: number
-  units: { id: string; name: string }[]
+  units: { id: string; name: string; variables: string[]; date?: string }[]
   /** Unit index of each segment. */
   uceUnit: Uint32Array
   /** Cleaned segment text (lower case, punctuation removed), as IRaMuTeQ stores it. */
@@ -279,7 +282,7 @@ export function prepareCorpus(
     version: PREPARATION_VERSION,
     language: options.language,
     uceSize,
-    units: units.map((x) => ({ id: x.id, name: x.name })),
+    units: units.map((x) => ({ id: x.id, name: x.name, variables: x.variables ?? [], ...(x.date ? { date: x.date } : {}) })),
     uceUnit: Uint32Array.from(uceUnit),
     uceText,
     uceStart: Uint32Array.from(uceStart),

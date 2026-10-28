@@ -24,7 +24,7 @@ export function corpusKey(units: TextUnitInput[], options: PrepareOptions): stri
   if (options.segmentCount === 'content') h.update('segments:content\u0000')
   for (const u of units) {
     // Lengths before each field keep "ab"+"c" and "a"+"bc" apart.
-    for (const field of [u.id, u.name, u.text]) {
+    for (const field of [u.id, u.name, u.text, (u.variables ?? []).join(' '), u.date ?? '']) {
       h.update(`${field.length}:`)
       h.update(field)
     }

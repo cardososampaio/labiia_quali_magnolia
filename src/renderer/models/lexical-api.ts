@@ -69,6 +69,10 @@ export interface LexicalUnit {
   id: string
   name: string
   text: string
+  /** IRaMuTeQ-style variables (*variable_value) from the document's tags and folder. */
+  variables?: string[]
+  /** "YYYY", "YYYY-MM" or "YYYY-MM-DD", from a date tag. */
+  date?: string
 }
 
 export interface LexicalRunRequest {
