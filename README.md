@@ -25,6 +25,58 @@ recursos herdados, está em [README.magnolia.md](README.magnolia.md).
   versões do Magnolia por cima do labiia_quali. Ele volta a ser ligado quando
   o labiia_quali tiver um canal de lançamentos próprio.
 
+## Análises léxicas
+
+O ícone **Análises léxicas** da barra reúne doze testes vindos do
+[labiia_lex](https://github.com/cardososampaio/labiia_lex): Nuvem de palavras,
+CHD (método Reinert), Análise de similitude, Emoções, Associações de
+palavras-chave, Tópicos LDA, Mapa temático, YAKE, Sentimento, Word Tree,
+Bigramas e Trigramas. Cada teste abre numa aba com o seletor de documentos, o
+idioma do corpus (português, inglês ou espanhol) e os parâmetros do labiia_lex,
+com os mesmos padrões. Os resultados (imagens, tabelas e resumo) podem ser
+exportados em PNG, SVG e CSV e ficam guardados dentro do arquivo do projeto.
+
+**Como funciona**
+
+- **Preparação do corpus** (TypeScript, num processo de fundo): cada
+  documento é um texto, cortado em segmentos de cerca de 40 palavras como no
+  IRaMuTeQ, e as palavras são lematizadas com os dicionários do IRaMuTeQ. As
+  stopwords não são apagadas: ficam marcadas como suplementares e não entram
+  nos cálculos, para que os trechos mostrados continuem legíveis. Na CHD, os
+  segmentos são cortados como no labiia_lex (só as palavras fora da lista de
+  stopwords contam para os 40). O corpus preparado vai para um cache em disco:
+  a segunda execução com os mesmos documentos começa direto.
+- **Motores R**: Nuvem, Similitude, Emoções, LDA e CHD usam os mesmos scripts
+  R do labiia_lex e do IRaMuTeQ. O R (4.0 ou mais recente) precisa estar
+  instalado; os pacotes que faltam são instalados, com confirmação, numa pasta
+  própria do labiia_quali (`%LOCALAPPDATA%\labiia_quali\R\library`).
+- **Demais cálculos e gráficos** são feitos em TypeScript, reproduzindo os
+  algoritmos e o desenho (matplotlib) do labiia_lex.
+
+**Diferenças em relação ao labiia_lex**, escolhidas para corrigir erros:
+
+- Quebras de linha escritas como "\n" no texto não viram palavras falsas
+  ("neu", "nolha").
+- Os documentos aparecem com o nome, não como "Doc_0", "Doc_1".
+- YAKE conta as ocorrências reais de cada expressão.
+- O dendrograma com palavras da CHD usa a árvore que a CHD construiu.
+- Os segmentos típicos da CHD são encontrados pelos lemas.
+- A classificação dupla da CHD segue o método do IRaMuTeQ.
+- Similitude, CHD e as AFCs usam semente fixa: o mesmo corpus dá sempre a
+  mesma figura.
+
+**Desempenho medido** com um corpus de cerca de 1 milhão de palavras:
+preparação em 1,5 a 3 segundos, leitura do cache em menos de 0,1 segundo e a
+maioria dos testes em menos de 2 segundos (YAKE em 5 a 12 segundos, conforme a
+carga do computador; os testes em R dependem do R). Pico de memória de cerca
+de 350 MB.
+
+**Ainda não disponível**: rodar os testes sobre trechos codificados (origem
+"Códigos"; a base já está pronta) e usar etiquetas ou datas dos documentos
+como variáveis (perfis por variável na CHD, linhas do tempo no Sentimento e no
+LDA). Os créditos dos dicionários, léxicos e scripts incluídos estão em
+[resources/lexical/README.md](resources/lexical/README.md).
+
 ## Como rodar em desenvolvimento
 
 Requer [Node.js](https://nodejs.org/) 20 ou mais recente.
@@ -50,4 +102,7 @@ O Magnolia é distribuído sob a [EUPL-1.2](LICENSE). Por ser uma obra derivada,
 o labiia_quali deve ser distribuído sob a EUPL-1.2 ou uma das licenças
 compatíveis listadas no anexo da EUPL, com o código-fonte disponível e
 mantendo os avisos de autoria e licença do Magnolia. A escolha final da
-licença de lançamento ainda está em aberto.
+licença de lançamento ainda está em aberto. Os recursos das análises léxicas
+incluem obras com licenças próprias (scripts e dicionários do IRaMuTeQ sob
+GPL, YAKE sob LGPL-3.0, OpLexicon), listadas em
+[resources/lexical/README.md](resources/lexical/README.md).

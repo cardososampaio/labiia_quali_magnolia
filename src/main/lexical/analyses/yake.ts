@@ -113,47 +113,56 @@ export function extractKeywords(sentences: string[][], stopwords: Set<string>, o
     i1.set(left.id, (i1.get(left.id) ?? 0) + 1)
     inn.set(right.id, i1)
   }
-  const addCandidate = (parts: [string, string, Term][]): void => {
-    const kw = parts.map((p) => p[1]).join(' ')
-    const unique = kw.toLowerCase()
-    const tag = parts.map((p) => p[0]).join('')
+  // Candidate phrases are keyed by their lower-case text; parts are built once, when new.
+  const addCandidate = (kw: string, unique: string, tag: string, terms: () => Term[]): void => {
     let c = candidates.get(unique)
     if (!c) {
-      const ts = parts.map((p) => p[2])
+      const ts = terms()
       c = { kw, unique, terms: ts, tags: new Set([tag]), tf: 0, h: 1, startOrEndStopword: ts[0].stopword || ts[ts.length - 1].stopword }
       candidates.set(unique, c)
     } else c.tags.add(tag)
     c.tf++
   }
 
+  const wordInfo = new Map<string, { tag: string; lower: string; term: Term } | null>()
   let posText = 0
   for (const sentence of sentences) {
     if (sentence.length === 0) continue
     const sid = sentenceCount++
-    let block: [string, string, Term][] = []
+    let block: { tag: string; word: string; lower: string; term: Term }[] = []
     sentence.forEach((word) => {
-      if ([...word].every((c) => PUNCT.has(c))) {
+      // A word's tag and term never change: computed once per distinct word (large corpora).
+      let info = wordInfo.get(word)
+      if (!info) {
+        info = [...word].every((c) => PUNCT.has(c)) ? null : { tag: tagOf(word), lower: word.toLowerCase(), term: getTerm(word) }
+        wordInfo.set(word, info)
+      }
+      if (!info) {
         block = []
         return
       }
-      const tag = tagOf(word)
-      const term = getTerm(word)
+      const { tag, lower, term } = info
       term.occurs.set(sid, (term.occurs.get(sid) ?? 0) + 1)
       term.tf++
       posText++
       if (tag !== 'u' && tag !== 'd') {
         for (let w = Math.max(0, block.length - o.windowSize); w < block.length; w++) {
-          if (block[w][0] !== 'u' && block[w][0] !== 'd') addCooccur(block[w][2], term)
+          if (block[w].tag !== 'u' && block[w].tag !== 'd') addCooccur(block[w].term, term)
         }
       }
       // Candidates: the word alone, then the n-grams ending at it.
-      const cand: [string, string, Term][] = [[tag, word, term]]
-      addCandidate(cand)
-      for (let w = block.length - 1; w >= Math.max(0, block.length - (o.n - 1)); w--) {
-        cand.push(block[w])
-        addCandidate([...cand].reverse())
+      let kw = word, unique = lower, tags = tag
+      addCandidate(kw, unique, tags, () => [term])
+      const first = Math.max(0, block.length - (o.n - 1))
+      for (let w = block.length - 1; w >= first; w--) {
+        const b = block[w]
+        kw = b.word + ' ' + kw
+        unique = b.lower + ' ' + unique
+        tags = b.tag + tags
+        const from = w
+        addCandidate(kw, unique, tags, () => [...block.slice(from).map((x) => x.term), term])
       }
-      block.push([tag, word, term])
+      block.push({ tag, word, lower, term })
     })
   }
   if (sentenceCount === 0) return []
@@ -283,13 +292,48 @@ export interface Keyphrase {
   docCount: number
 }
 
-/** Occurrences of a phrase as whole words, without overlap. */
-function countPhrase(words: string[], phrase: string[]): number {
+/** Occurrences of a phrase as whole words, without overlap (reference for countPhraseIndexed). */
+export function countPhrase(words: string[], phrase: string[]): number {
   let n = 0
   for (let i = 0; i + phrase.length <= words.length;) {
     if (phrase.every((p, j) => words[i + j] === p)) { n++; i += phrase.length } else i++
   }
   return n
+}
+
+/**
+ * Where each word occurs (segment, position), so a phrase is only checked
+ * where its first word is: on large corpora scanning every segment for each
+ * of the ~150 candidate phrases dominated the run time.
+ */
+export function wordPositions(segments: string[][]): Map<string, number[]> {
+  const index = new Map<string, number[]>()
+  segments.forEach((seg, s) => seg.forEach((w, i) => {
+    let list = index.get(w)
+    if (!list) index.set(w, (list = []))
+    list.push(s, i)
+  }))
+  return index
+}
+
+/** Same counts as countPhrase over every segment: total occurrences and segments containing the phrase. */
+export function countPhraseIndexed(segments: string[][], index: Map<string, number[]>, phrase: string[]): { freq: number; docs: number } {
+  const list = index.get(phrase[0])
+  let freq = 0, docs = 0
+  if (!list) return { freq, docs }
+  let seg = -1, nextFree = 0, inSeg = 0
+  for (let k = 0; k < list.length; k += 2) {
+    const s = list[k], i = list[k + 1]
+    if (s !== seg) { if (inSeg > 0) docs++; seg = s; nextFree = 0; inSeg = 0 }
+    if (i < nextFree) continue
+    const words = segments[s]
+    if (i + phrase.length > words.length) continue
+    let match = true
+    for (let j = 1; j < phrase.length; j++) if (words[i + j] !== phrase[j]) { match = false; break }
+    if (match) { freq++; inSeg++; nextFree = i + phrase.length }
+  }
+  if (inSeg > 0) docs++
+  return { freq, docs }
 }
 
 export function yakeKeyphrases(
@@ -305,6 +349,7 @@ export function yakeKeyphrases(
 
   const out: Keyphrase[] = []
   const seen = new Set<string>()
+  const positions = wordPositions(segments)
   for (const [phrase, score] of raw) {
     const norm = phrase.toLowerCase().trim()
     if (seen.has(norm)) continue
@@ -312,13 +357,7 @@ export function yakeKeyphrases(
     if (isNoiseKeyphrase(norm, lex)) continue
     const words = norm.split(' ')
     if (words.length < o.minTokens || words.length > 3) continue
-    let freq = 0
-    let docs = 0
-    for (const seg of segments) {
-      const k = countPhrase(seg, words)
-      freq += k
-      if (k > 0) docs++
-    }
+    const { freq, docs } = countPhraseIndexed(segments, positions, words)
     if (freq < o.minFreq) continue
     const rank = score <= 0 ? Math.abs(score) : score
     out.push({ phrase, rawScore: score, relevance: Math.round((1 / Math.max(rank, 1e-6)) * 1e4) / 1e4, frequency: freq, docCount: docs })
