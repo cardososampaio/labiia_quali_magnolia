@@ -74,12 +74,12 @@ export function keywordAssociations(
   o: { focalTerms: string; topN: number; minJoint: number; minFreq: number; useLemmas: boolean; examplesPerPair?: number }
 ): AssociationsResult | { error: 'too-small' } | { error: 'focal-not-found'; requested: string[] } {
   const minFreq = Math.max(1, Math.round(o.minFreq))
-  // Vocabulary: active terms with enough occurrences that are not stopword-like (TextProcessor.build_dtm).
+  // Vocabulary: active terms with enough occurrences that are not stopword-like nor English (TextProcessor.build_dtm).
   const vocab = new Set<string>()
   if (o.useLemmas) {
-    for (let i = 0; i < c.lemmas.length; i++) if (c.lemmaAct[i] === 1 && c.lemmaFreq[i] >= minFreq && !lex.isStopwordLike(c.lemmas[i])) vocab.add(c.lemmas[i])
+    for (let i = 0; i < c.lemmas.length; i++) if (c.lemmaAct[i] === 1 && c.lemmaFreq[i] >= minFreq && !lex.isStopwordLike(c.lemmas[i]) && !lex.isEnglishOnly(c.lemmas[i])) vocab.add(c.lemmas[i])
   } else {
-    for (let i = 0; i < c.forms.length; i++) if (c.formAct[i] === 1 && c.formFreq[i] >= minFreq && !lex.isStopwordLike(c.forms[i])) vocab.add(c.forms[i])
+    for (let i = 0; i < c.forms.length; i++) if (c.formAct[i] === 1 && c.formFreq[i] >= minFreq && !lex.isStopwordLike(c.forms[i]) && !lex.isEnglishOnly(c.forms[i], c.lemmas[c.formLemma[i]])) vocab.add(c.forms[i])
   }
   const segments: Set<string>[] = []
   for (let s = 0; s < c.uceText.length; s++) {

@@ -6,10 +6,9 @@
  * placed by centrality (links to other themes) and density (internal
  * cohesion) in the strategic diagram.
  *
- * Differences from labiia_lex: segments keep every word (labiia_lex deletes
- * stopwords before cutting segments, so its segments are longer and fewer),
- * and documents keep their names. Variables per category are not produced
- * yet (documents have no variables in the app).
+ * Difference from labiia_lex: documents keep their names, and a heading line
+ * ("****") inside a document does not make it two documents. Variables per
+ * category are not produced yet.
  */
 import type { PreparedCorpus } from '../corpus/prepare'
 import type { Lexicon } from '../corpus/lexicon'
@@ -213,7 +212,7 @@ function textRank(sets: Set<string>[]): number[] {
 }
 
 export function thematicMap(c: PreparedCorpus, lex: Lexicon, o: ThematicOptions): ThematicOutcome {
-  const vocab = activeVocabulary(c, lex, { minFreq: o.minFreq, maxFeatures: Math.max(20, o.maxFeatures), useLemmas: o.useLemmas, floor: 20 })
+  const vocab = activeVocabulary(c, lex, { minFreq: o.minFreq, maxFeatures: Math.max(20, o.maxFeatures), useLemmas: o.useLemmas, floor: 20, dropEnglish: true })
   if (vocab.length < 2) return { error: 'thematic-too-small' }
   const V = vocab.length
   const index = new Map(vocab.map((t, i) => [t, i]))

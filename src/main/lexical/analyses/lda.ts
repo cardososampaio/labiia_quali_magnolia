@@ -23,10 +23,12 @@ export interface LdaInput {
 
 /**
  * labiia_lex's vocabulary (SemanticTextBundle): active lemmas (or forms) with
- * at least `minFreq` occurrences that are not stopword-like, the `maxFeatures`
- * most frequent (ties alphabetical), in alphabetical order.
+ * at least `minFreq` occurrences that are not stopword-like, at most
+ * `maxFeatures` of the most frequent (cut as IRaMuTeQ does), in
+ * alphabetical order. `dropEnglish`
+ * leaves out English words, as its vocabulary for every test but the CHD.
  */
-export function activeVocabulary(c: PreparedCorpus, lex: Lexicon, o: { minFreq: number; maxFeatures: number; useLemmas: boolean; floor?: number }): string[] {
+export function activeVocabulary(c: PreparedCorpus, lex: Lexicon, o: { minFreq: number; maxFeatures: number; useLemmas: boolean; floor?: number; dropEnglish?: boolean }): string[] {
   const minFreq = Math.max(1, Math.round(o.minFreq))
   const cand: { term: string; freq: number }[] = []
   const seen = new Set<string>()
@@ -35,17 +37,30 @@ export function activeVocabulary(c: PreparedCorpus, lex: Lexicon, o: { minFreq: 
   const acts = o.useLemmas ? c.lemmaAct : c.formAct
   for (let i = 0; i < terms.length; i++) {
     const t = terms[i]
-    if (acts[i] === 1 && freqs[i] >= minFreq && !seen.has(t) && !lex.isStopwordLike(t)) {
+    if (acts[i] === 1 && freqs[i] >= minFreq && !seen.has(t) && !lex.isStopwordLike(t) && !(o.dropEnglish && lex.isEnglishOnly(t, o.useLemmas ? t : c.lemmas[c.formLemma[i]]))) {
       seen.add(t)
       cand.push({ term: t, freq: freqs[i] })
     }
   }
-  cand.sort((a, b) => b.freq - a.freq || (a.term < b.term ? -1 : 1))
-  return cand.slice(0, Math.max(o.floor ?? 10, Math.round(o.maxFeatures))).map((x) => x.term).sort()
+  const limit = Math.max(o.floor ?? 10, Math.round(o.maxFeatures))
+  if (cand.length <= limit) return cand.map((x) => x.term).sort()
+  // labiia_lex cuts as IRaMuTeQ's make_actives_nb: by frequency, and when the
+  // word at the limit ties with others, the whole tied group is left out
+  // (along with the next frequency up, if any word has it); with no tie it
+  // keeps limit - 1 words.
+  cand.sort((a, b) => b.freq - a.freq || (a.term < b.term ? 1 : -1))
+  const effs = cand.map((x) => x.freq)
+  const at = effs[limit - 1]
+  let stop = limit - 1
+  if (effs.filter((f) => f === at).length > 1) {
+    const up = effs.indexOf(at + 1)
+    stop = up >= 0 ? up : effs.indexOf(at)
+  }
+  return cand.slice(0, stop).map((x) => x.term).sort()
 }
 
 export function ldaInput(c: PreparedCorpus, lex: Lexicon, o: { minFreq: number; maxFeatures: number; useLemmas: boolean }): LdaInput | null {
-  const vocabulary = activeVocabulary(c, lex, o)
+  const vocabulary = activeVocabulary(c, lex, { ...o, dropEnglish: true })
   if (vocabulary.length < 2 || c.units.length < 2) return null
   const index = new Map(vocabulary.map((t, i) => [t, i]))
   const counts = c.units.map(() => new Uint32Array(vocabulary.length))

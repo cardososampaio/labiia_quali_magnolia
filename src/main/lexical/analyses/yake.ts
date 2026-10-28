@@ -16,7 +16,7 @@
  */
 import { readFileSync } from 'fs'
 import { join } from 'path'
-import type { PreparedCorpus } from '../corpus/prepare'
+import { keptWords, type PreparedCorpus } from '../corpus/prepare'
 import type { Lexicon, CorpusLanguage } from '../corpus/lexicon'
 
 const PUNCT = new Set('!"#$%&\'()*+,-./:;<=>?@[\\]^_`{|}~')
@@ -342,7 +342,8 @@ export function yakeKeyphrases(
   resourcesDir: string,
   o: { minTokens: number; maxTokens: number; minFreq: number; topN: number; dedupThreshold: number; windowSize: number }
 ): Keyphrase[] {
-  const segments = c.uceText.map((s) => s.split(' ').filter(Boolean))
+  // The text labiia_lex hands YAKE: its segments, without the stopwords it deleted.
+  const segments = c.uceText.map((_s, i) => keptWords(c, i))
   const n = Math.min(3, Math.max(1, Math.round(o.maxTokens)))
   const topN = Math.max(1, Math.round(o.topN))
   const raw = extractKeywords(segments, yakeStopwords(c.language, resourcesDir), { n, windowSize: Math.max(1, Math.round(o.windowSize)), dedupLim: o.dedupThreshold, top: topN * 3 })

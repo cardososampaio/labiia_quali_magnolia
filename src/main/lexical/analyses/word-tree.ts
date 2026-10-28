@@ -34,15 +34,15 @@ const parse = (k: NodeKey): { side: string; path: string[] } => {
 
 /** Segment tokens restricted to the analysis vocabulary (labiia_lex builds it with TextProcessor.build_dtm). */
 function tokenizedSegments(c: PreparedCorpus, lex: Lexicon, o: WordTreeOptions): string[][] {
-  // Vocabulary: active terms with at least minFreq occurrences that are not stopword-like.
+  // Vocabulary: active terms with at least minFreq occurrences that are not stopword-like nor English.
   const vocab = new Set<string>()
   if (o.useLemmas) {
     for (let i = 0; i < c.lemmas.length; i++) {
-      if (c.lemmaAct[i] === 1 && c.lemmaFreq[i] >= o.minFreq && !lex.isStopwordLike(c.lemmas[i])) vocab.add(c.lemmas[i])
+      if (c.lemmaAct[i] === 1 && c.lemmaFreq[i] >= o.minFreq && !lex.isStopwordLike(c.lemmas[i]) && !lex.isEnglishOnly(c.lemmas[i])) vocab.add(c.lemmas[i])
     }
   } else {
     for (let i = 0; i < c.forms.length; i++) {
-      if (c.formAct[i] === 1 && c.formFreq[i] >= o.minFreq && !lex.isStopwordLike(c.forms[i])) vocab.add(c.forms[i])
+      if (c.formAct[i] === 1 && c.formFreq[i] >= o.minFreq && !lex.isStopwordLike(c.forms[i]) && !lex.isEnglishOnly(c.forms[i], c.lemmas[c.formLemma[i]])) vocab.add(c.forms[i])
     }
   }
   if (vocab.size === 0) return []

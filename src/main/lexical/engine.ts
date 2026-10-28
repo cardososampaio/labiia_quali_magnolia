@@ -125,9 +125,10 @@ export async function runLexicalTest(req: LexicalRunRequest, send: (p: LexicalRu
   if (!test) return { ok: false, error: 'not-available' }
   let units: TextUnitInput[] = req.units.filter((u) => u.text.trim())
   if (units.length === 0) return { ok: false, error: 'no-text' }
-  // The CHD reallocates segments one by one in order, so the order of the texts changes its
-  // classes: they are read by document name, as labiia_lex reads a folder, not in import order.
-  if (req.testId === 'chd') units = sortByDocumentName(units)
+  // Texts are read by document name, as labiia_lex reads a folder, not in import order: the
+  // CHD reallocates segments one by one in order, and LDA, the thematic map's communities and
+  // YAKE's positions also depend on the order, so the same corpus gives the same results.
+  units = sortByDocumentName(units)
 
   let r: RInstallation | null = null
   if (test.rPackages.length > 0) {
@@ -141,8 +142,9 @@ export async function runLexicalTest(req: LexicalRunRequest, send: (p: LexicalRu
 
   const resourcesDir = lexicalResourcesDir()
   const cacheDir = lexicalCacheDir()
-  // The CHD cuts segments like labiia_lex (counting content words only); the other tests like IRaMuTeQ.
-  const options: PrepareOptions = { language: req.language, uceSize: 40, ...(req.testId === 'chd' ? { segmentCount: 'content' as const } : {}) }
+  // Every test reads the segments labiia_lex cuts (counting only the words it keeps), so one
+  // preparation serves them all and each gives labiia_lex's result on the same corpus.
+  const options: PrepareOptions = { language: req.language, uceSize: 40, segmentCount: 'content' }
   const key = corpusKey(units, options)
   const progress = (p: Omit<LexicalRunProgress, 'runId'>): void => send({ runId: req.runId, ...p })
 

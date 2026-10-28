@@ -60,9 +60,18 @@ export class Lexicon {
   readonly displayStopwords = new Set<string>()
   /** Short words that are shown even though they are under three letters ("ia", "sus"). */
   readonly displayAllow = new Set<string>()
+  /**
+   * labiia_lex's stopwords from the Portuguese IRaMuTeQ dictionary (forms and
+   * lemmas of supplementary classes, without accents too), which its extra
+   * analyses (bigrams, trigrams) leave out whatever the corpus language.
+   */
+  readonly lexiconStopwords = new Set<string>()
+
+  private readonly resourcesDir: string
 
   constructor(language: CorpusLanguage, resourcesDir: string) {
     this.language = language
+    this.resourcesDir = resourcesDir
     const dictDir = join(resourcesDir, 'dictionaries')
     const text = readFileSync(join(dictDir, DICTIONARY_FILE[language]), 'utf-8')
     for (const raw of text.split(/\r?\n/)) {
@@ -115,6 +124,7 @@ export class Lexicon {
     }
     readList(`visual_${language}.txt`, this.displayStopwords)
     readList(`allow_${language}.txt`, this.displayAllow)
+    readList('lexicon_pt.txt', this.lexiconStopwords)
   }
 
   /**
@@ -157,6 +167,35 @@ export class Lexicon {
     return this.entries.size
   }
 
+  /**
+   * labiia_lex's filter of English words in Portuguese corpora (applied when
+   * it builds the vocabulary of most tests, not the CHD's): a plain ASCII
+   * word the Portuguese dictionary does not know (as word or lemma) but the
+   * English one does. English "-ing" borrowings are dropped even when the
+   * Portuguese dictionary lists them.
+   */
+  isEnglishOnly(word: string, lemma: string = word): boolean {
+    if (this.language !== 'pt') return false
+    const w = word.trim().toLowerCase()
+    const l = (lemma || w).trim().toLowerCase()
+    if (w.length < 2 || !/^[a-z]+$/.test(w.replace(/-/g, ''))) return false
+    const ing = /ings?$/.test(w) || /ings?$/.test(l)
+    if ((this.entries.has(w) || this.entries.has(l)) && !ing) return false
+    const en = englishLexicon(this.resourcesDir)
+    return en.knows(w) || en.knows(l)
+  }
+
+  /**
+   * Whether the dictionary knows a word the way labiia_lex's non-strict
+   * lookup does: as written, without accents, or as a Portuguese plural.
+   */
+  knows(word: string): boolean {
+    const w = word.trim().toLowerCase()
+    if (!w) return false
+    const direct = (x: string): boolean => this.entries.has(x) || this.folded.has(stripAccents(x))
+    return direct(w) || singularCandidates(w).some(direct)
+  }
+
   /** Lemma and grammatical class of a word form, or null when the dictionary does not know it. */
   lookup(word: string): [string, string] | null {
     const direct = this.entries.get(word)
@@ -164,6 +203,32 @@ export class Lexicon {
     if (!ACCENT_FOLDING[this.language]) return null
     return this.folded.get(stripAccents(word)) ?? null
   }
+}
+
+let english: { dir: string; lex: Lexicon } | null = null
+function englishLexicon(resourcesDir: string): Lexicon {
+  if (!english || english.dir !== resourcesDir) english = { dir: resourcesDir, lex: new Lexicon('en', resourcesDir) }
+  return english.lex
+}
+
+/** labiia_lex's conservative Portuguese singulars, tried when a word is not found as written. */
+export function singularCandidates(token: string): string[] {
+  const base = token.trim().toLowerCase()
+  if (base.length < 3) return []
+  const out: string[] = []
+  const push = (v: string): void => {
+    if (v.length >= 2 && v !== base && !out.includes(v)) out.push(v)
+  }
+  if (base.endsWith('ões')) push(base.slice(0, -3) + 'ão')
+  if (base.endsWith('ães')) { push(base.slice(0, -3) + 'ão'); push(base.slice(0, -3) + 'ãe') }
+  if (base.endsWith('ãos')) push(base.slice(0, -3) + 'ão')
+  if (base.endsWith('ais')) push(base.slice(0, -3) + 'al')
+  if (base.endsWith('eis')) push(base.slice(0, -3) + 'el')
+  if (base.endsWith('óis')) push(base.slice(0, -3) + 'ol')
+  if (base.endsWith('is')) push(base.slice(0, -2) + 'il')
+  if (base.endsWith('ns')) push(base.slice(0, -2) + 'm')
+  if (base.endsWith('s') && base.length > 3 && !base.endsWith('ss')) push(base.slice(0, -1))
+  return out
 }
 
 const ROMAN_NUMERAL = /^(?=[ivxlcdm]{2,}$)m{0,4}(?:cm|cd|d?c{0,3})(?:xc|xl|l?x{0,3})(?:ix|iv|v?i{0,3})$/

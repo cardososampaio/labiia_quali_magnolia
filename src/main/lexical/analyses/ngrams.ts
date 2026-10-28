@@ -18,21 +18,27 @@ const ENGLISH_STOPWORDS = new Set([
   'who', 'whom', 'why', 'how', 'into', 'onto', 'over', 'under', 'than', 'then', 'there', 'their', 'them'
 ])
 
-/** Content words of each text, in order (labiia_lex's tokenize_text with stopword removal). */
+/**
+ * Content words of each text, in order (labiia_lex's tokenize_text with
+ * stopword removal), over the words labiia_lex keeps; a heading line starts
+ * a new text, so no n-gram spans it.
+ */
 export function contentTokensByUnit(c: PreparedCorpus, lex: Lexicon): string[][] {
   const keep = new Map<string, boolean>()
   const ok = (w: string): boolean => {
     let v = keep.get(w)
     if (v === undefined) {
-      v = TOKEN.test(w) && !ENGLISH_STOPWORDS.has(w) && lex.isDisplayTerm(w)
+      v = TOKEN.test(w) && !ENGLISH_STOPWORDS.has(w) && !lex.lexiconStopwords.has(w) && lex.isDisplayTerm(w)
       keep.set(w, v)
     }
     return v
   }
-  const out: string[][] = c.units.map(() => [])
+  const out: string[][] = []
   for (let s = 0; s < c.uceText.length; s++) {
-    const tokens = out[c.uceUnit[s]]
+    if (c.uceNewText[s] || out.length === 0) out.push([])
+    const tokens = out[out.length - 1]
     for (let t = c.uceStart[s]; t < c.uceStart[s + 1]; t++) {
+      if (!c.tokenKept[t]) continue
       const w = c.forms[c.tokens[t]]
       if (ok(w)) tokens.push(w)
     }

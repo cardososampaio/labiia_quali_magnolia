@@ -3,21 +3,23 @@
  * document (a "text unit", IRaMuTeQ's UCI) to text segments (UCE), word
  * forms, lemmas and grammatical classes.
  *
- * It follows IRaMuTeQ's own parser, as labiia_lex's strict mode does, with
- * three corrections to labiia_lex:
- *  - stopwords stay in the text and are only marked supplementary, so
- *    segments are cut on the real text (40 words counts every word) and
- *    typical segments read as written;
- *  - the stopword list follows the corpus language;
- *  - punctuation is kept until segments are cut, so cuts prefer sentence
- *    ends, as IRaMuTeQ intends.
+ * It follows IRaMuTeQ's own parser, as labiia_lex's strict mode does. The
+ * tests run on labiia_lex's segments ('content' cutting: only the words it
+ * keeps count toward the 40, see contentChain), so the same corpus gives
+ * labiia_lex's results. Two things differ from it on purpose:
+ *  - the stopwords it deletes stay in the segment text, flagged in
+ *    tokenKept, so segments shown to the user read as written while the
+ *    tests read only the kept words;
+ *  - the stopword list follows the corpus language.
+ * The 'all' cutting (IRaMuTeQ's own: every word counts, cuts prefer
+ * sentence ends) remains available.
  */
 import { Lexicon, gramIsActive, type CorpusLanguage } from './lexicon'
 
 /** Bump when a change here would give different results for the same text. */
 // 2: units carry variables and a date.
-// 4: the CHD's segments are cut on labiia_lex's word chain (contentChain).
-export const PREPARATION_VERSION = 4
+// 5: segments are cut on labiia_lex's word chain (contentChain); tokens flag what it keeps.
+export const PREPARATION_VERSION = 5
 
 export interface TextUnitInput {
   id: string
@@ -45,10 +47,10 @@ export interface PrepareOptions {
   uceSize: number
   /**
    * How segments are cut. 'all' (IRaMuTeQ): every word counts toward the
-   * length and cuts prefer sentence ends. 'content' (labiia_lex's CHD):
-   * only the words labiia_lex keeps before cutting count, so the same text
-   * gives the same segments as in labiia_lex (see contentChain); the
-   * segments keep their stopwords.
+   * length and cuts prefer sentence ends. 'content' (labiia_lex): only the
+   * words labiia_lex keeps before cutting count, so the same text gives the
+   * same segments as in labiia_lex (see contentChain); the segments keep
+   * their stopwords, flagged in tokenKept.
    */
   segmentCount?: 'all' | 'content'
 }
@@ -60,11 +62,25 @@ export interface PreparedCorpus {
   units: { id: string; name: string; document?: string; variables: string[]; date?: string }[]
   /** Unit index of each segment. */
   uceUnit: Uint32Array
+  /**
+   * 1 for a segment that starts a text as labiia_lex reads it: a unit's first
+   * segment, or the first after a heading line ("****", "-*"), which starts a
+   * new text in IRaMuTeQ's format. Its per-text analyses (n-grams) do not
+   * join words across that point.
+   */
+  uceNewText: Uint8Array
   /** Cleaned segment text (lower case, punctuation removed), as IRaMuTeQ stores it. */
   uceText: string[]
   /** tokens[uceStart[i] .. uceStart[i+1]) are the form ids of segment i, in order. */
   uceStart: Uint32Array
   tokens: Uint32Array
+  /**
+   * 1 for each token labiia_lex keeps in its text (see contentChain), 0 for
+   * the stopwords it deletes before any test runs. The tests read only the
+   * kept tokens, as labiia_lex does; the segment text keeps them all for
+   * reading. All 1 when cut the IRaMuTeQ way.
+   */
+  tokenKept: Uint8Array
   forms: string[]
   formFreq: Uint32Array
   formLemma: Uint32Array
@@ -194,18 +210,32 @@ export function decouperlist(
  * uceSize + 15). `counted` flags the words that count (all when absent).
  */
 export function makeSegments(cleaned: string, uceSize: number, counted?: boolean[]): string[] {
+  return cutSegments(cleaned, uceSize, counted).map((s) => s.words.join(' '))
+}
+
+/** makeSegments keeping, for each word of each segment, its `counted` flag (true when absent). */
+export function cutSegments(cleaned: string, uceSize: number, counted?: boolean[]): { words: string[]; kept: boolean[] }[] {
   if (!cleaned) return []
-  const out: string[] = []
-  const push = (seg: string[]): void => {
-    const s = seg.filter((w) => !PUNCTUATION.has(w)).join(' ').trim()
-    if (s) out.push(s)
+  const out: { words: string[]; kept: boolean[] }[] = []
+  const all = cleaned.split(' ')
+  let offset = 0
+  const push = (len: number): void => {
+    const words: string[] = []
+    const kept: boolean[] = []
+    for (let i = offset; i < offset + len && i < all.length; i++) {
+      if (PUNCTUATION.has(all[i])) continue
+      words.push(all[i])
+      kept.push(counted ? counted[i] : true)
+    }
+    offset += len
+    if (words.length) out.push({ words, kept })
   }
-  let cut = decouperlist([...cleaned.split(' '), END], uceSize + 15, uceSize, counted ? [...counted, false] : undefined)
+  let cut = decouperlist([...all, END], uceSize + 15, uceSize, counted ? [...counted, false] : undefined)
   while (cut.found) {
-    push(cut.segment)
+    push(cut.segment.length)
     cut = decouperlist(cut.rest, uceSize + 15, uceSize, cut.restCounted)
   }
-  push(cut.segment.filter((w) => w !== END))
+  push(cut.segment.filter((w) => w !== END).length)
   return out
 }
 
@@ -303,6 +333,8 @@ export function prepareCorpus(
   const uceText: string[] = []
   const uceStart: number[] = [0]
   const tokens: number[] = []
+  const tokenKept: number[] = []
+  const uceNewText: number[] = []
 
   const formIndex = new Map<string, number>()
   const forms: string[] = []
@@ -358,26 +390,31 @@ export function prepareCorpus(
     if (isCancelled?.()) throw new Error('cancelled')
     // The lines of a text are one stream, as in IRaMuTeQ: segments may span line breaks.
     const lines = repairExtraction(units[u].text).split('\n').map((l) => l.trim()).filter(Boolean)
-    const segments: string[] = []
+    const segments: { words: string[]; kept: boolean[]; newText: boolean }[] = []
+    const add = (cut: { words: string[]; kept: boolean[] }[]): void => {
+      cut.forEach((s, i) => segments.push({ ...s, newText: i === 0 }))
+    }
     if (options.segmentCount === 'content') {
       // labiia_lex reads texts in IRaMuTeQ's format: a line starting with "****" (a text)
       // or "-*" (a theme) is a heading, so it is left out and the cutting starts again after it.
       for (const part of splitAtHeadings(lines)) {
         const chain = contentChain(part.join(' '), lexicon)
-        segments.push(...makeSegments(chain.cleaned, uceSize, chain.counted))
+        add(cutSegments(chain.cleaned, uceSize, chain.counted))
       }
     } else {
-      segments.push(...makeSegments(cleanText(lines.join(' '), lexicon.expressions), uceSize))
+      add(cutSegments(cleanText(lines.join(' '), lexicon.expressions), uceSize))
     }
     for (const seg of segments) {
       uceUnit.push(u)
-      uceText.push(seg)
-      for (const w of seg.split(' ')) {
+      uceNewText.push(seg.newText ? 1 : 0)
+      uceText.push(seg.words.join(' '))
+      seg.words.forEach((w, i) => {
         const id = formId(w)
         tokens.push(id)
+        tokenKept.push(seg.kept[i] ? 1 : 0)
         formFreq[id]++
         lemmaFreq[formLemma[id]]++
-      }
+      })
       uceStart.push(tokens.length)
     }
     onProgress?.({ done: u + 1, total: units.length })
@@ -391,9 +428,11 @@ export function prepareCorpus(
     uceSize,
     units: units.map((x) => ({ id: x.id, name: x.name, ...(x.document ? { document: x.document } : {}), variables: x.variables ?? [], ...(x.date ? { date: x.date } : {}) })),
     uceUnit: Uint32Array.from(uceUnit),
+    uceNewText: Uint8Array.from(uceNewText),
     uceText,
     uceStart: Uint32Array.from(uceStart),
     tokens: Uint32Array.from(tokens),
+    tokenKept: Uint8Array.from(tokenKept),
     forms,
     formFreq: Uint32Array.from(formFreq),
     formLemma: Uint32Array.from(formLemma),
@@ -437,8 +476,29 @@ export function wordFrequencies(c: PreparedCorpus, opts: { useLemmas: boolean; a
     out.length = 0
     for (const e of merged) out.push(e)
   }
-  // Ties in reverse alphabetical order, as labiia_lex and IRaMuTeQ sort (frequency, word) descending.
-  return out.sort((a, b) => b[1] - a[1] || (a[0] < b[0] ? 1 : a[0] > b[0] ? -1 : 0))
+  // Ties keep the order in which the words first appear in labiia_lex's text: it sorts its
+  // word table, filled in reading order, by frequency only.
+  const first = firstAppearance(c, opts.useLemmas)
+  return out.sort((a, b) => b[1] - a[1] || (first.get(a[0]) ?? Infinity) - (first.get(b[0]) ?? Infinity))
+}
+
+/** The words of segment `s` that labiia_lex keeps (its text has the others deleted). */
+export function keptWords(c: PreparedCorpus, s: number): string[] {
+  const out: string[] = []
+  for (let t = c.uceStart[s]; t < c.uceStart[s + 1]; t++) if (c.tokenKept[t]) out.push(c.forms[c.tokens[t]])
+  return out
+}
+
+/** Position of each form (or lemma) at its first kept occurrence, in reading order. */
+export function firstAppearance(c: PreparedCorpus, useLemmas: boolean): Map<string, number> {
+  const first = new Map<string, number>()
+  for (let t = 0; t < c.tokens.length; t++) {
+    if (!c.tokenKept[t]) continue
+    const f = c.tokens[t]
+    const w = useLemmas ? c.lemmas[c.formLemma[f]] : c.forms[f]
+    if (!first.has(w)) first.set(w, t)
+  }
+  return first
 }
 
 /**

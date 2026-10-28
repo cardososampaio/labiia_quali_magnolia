@@ -176,3 +176,44 @@ describe('variables and timelines', () => {
     expect(dateLabel('2024-03-15')).toBe('15/03/2024')
   })
 })
+
+describe('the other tests read labiia_lex text', () => {
+  it('flags the words labiia_lex keeps and where its texts start', () => {
+    const c = prepareCorpus([{ id: 'a', name: 'A', text: 'A escola pública.\n**** cabeçalho\nO hospital.' }], pt, { language: 'pt', uceSize: 40, segmentCount: 'content' })
+    const words = Array.from(c.tokens, (f) => c.forms[f])
+    expect(words).toEqual(['a', 'escola', 'pública', 'o', 'hospital'])
+    // "a" and "o" are Snowball stopwords: deleted from labiia_lex's text before any test.
+    expect(Array.from(c.tokenKept)).toEqual([0, 1, 1, 0, 1])
+    expect(Array.from(c.uceNewText)).toEqual([1, 1])
+  })
+
+  it('breaks ties among word frequencies by first appearance', async () => {
+    const { wordFrequencies } = await import('../../src/main/lexical/corpus/prepare')
+    const c = prepareCorpus([{ id: 'a', name: 'A', text: 'zebra escola zebra escola' }], pt, { language: 'pt', uceSize: 40, segmentCount: 'content' })
+    expect(wordFrequencies(c, { useLemmas: false, activeOnly: true }).map(([w]) => w)).toEqual(['zebra', 'escola'])
+  })
+
+  it('leaves English-only words out of Portuguese vocabularies', () => {
+    expect(pt.isEnglishOnly('run')).toBe(true)
+    expect(pt.isEnglishOnly('escola')).toBe(false)
+    // Known in Portuguese: kept even if English has it too.
+    expect(pt.isEnglishOnly('mar')).toBe(false)
+  })
+
+  it('cuts a capped vocabulary as IRaMuTeQ: a tie at the limit drops the whole tied group', async () => {
+    const { activeVocabulary } = await import('../../src/main/lexical/analyses/lda')
+    // escola 4, hospital 3, médico 2, saúde 2: limit 3 falls on the tie at 2, so the
+    // tied group goes, and with it the next frequency up (3), as labiia_lex cuts.
+    const text = 'escola escola escola escola hospital hospital hospital médico médico saúde saúde'
+    const c = prepareCorpus([{ id: 'a', name: 'A', text }], pt, { language: 'pt', uceSize: 40, segmentCount: 'content' })
+    expect(activeVocabulary(c, pt, { minFreq: 1, maxFeatures: 3, useLemmas: false, floor: 1 })).toEqual(['escola'])
+    // No tie at the limit: limit - 1 words.
+    expect(activeVocabulary(c, pt, { minFreq: 1, maxFeatures: 2, useLemmas: false, floor: 1 })).toEqual(['escola'])
+  })
+
+  it('does not join n-grams across a heading line', async () => {
+    const { contentTokensByUnit } = await import('../../src/main/lexical/analyses/ngrams')
+    const c = prepareCorpus([{ id: 'a', name: 'A', text: 'escola pública\n**** fala\nhospital central' }], pt, { language: 'pt', uceSize: 40, segmentCount: 'content' })
+    expect(contentTokensByUnit(c, pt)).toEqual([['escola', 'pública'], ['hospital', 'central']])
+  })
+})

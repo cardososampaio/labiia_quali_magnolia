@@ -87,7 +87,7 @@ export interface PrepareResult {
   stats: PreparedCorpus['stats']
 }
 
-function handle(msg: WorkerRequest, post: (m: WorkerMessage) => void): unknown {
+export function handle(msg: WorkerRequest, post: (m: WorkerMessage) => void): unknown {
   if (msg.type === 'prepare') {
     const inMemory = corpora.get(msg.key)
     if (inMemory) return { fromCache: true, stats: inMemory.stats } satisfies PrepareResult

@@ -72,13 +72,13 @@ export function similitudeMatrix(
   o: { minFreq: number; maxTerms: number; useLemmas: boolean; coefficient: string }
 ): SimilitudeMatrix | null {
   const minFreq = Math.max(1, Math.round(o.minFreq))
-  // Vocabulary: active terms with enough occurrences that pass the display gate, in alphabetical order.
+  // Vocabulary: active terms with enough occurrences that pass the display gate and are not English, in alphabetical order.
   const candidates: { term: string; freq: number }[] = []
   if (o.useLemmas) {
     const seen = new Set<string>()
     for (let i = 0; i < c.lemmas.length; i++) {
       const t = c.lemmas[i]
-      if (c.lemmaAct[i] === 1 && c.lemmaFreq[i] >= minFreq && !lex.isStopwordLike(t) && lex.isDisplayTerm(t) && !seen.has(t)) {
+      if (c.lemmaAct[i] === 1 && c.lemmaFreq[i] >= minFreq && !lex.isStopwordLike(t) && lex.isDisplayTerm(t) && !lex.isEnglishOnly(t) && !seen.has(t)) {
         seen.add(t)
         candidates.push({ term: t, freq: c.lemmaFreq[i] })
       }
@@ -86,7 +86,7 @@ export function similitudeMatrix(
   } else {
     for (let i = 0; i < c.forms.length; i++) {
       const t = c.forms[i]
-      if (c.formAct[i] === 1 && c.formFreq[i] >= minFreq && !lex.isStopwordLike(t) && lex.isDisplayTerm(t)) candidates.push({ term: t, freq: c.formFreq[i] })
+      if (c.formAct[i] === 1 && c.formFreq[i] >= minFreq && !lex.isStopwordLike(t) && lex.isDisplayTerm(t) && !lex.isEnglishOnly(t, c.lemmas[c.formLemma[i]])) candidates.push({ term: t, freq: c.formFreq[i] })
     }
   }
   candidates.sort((a, b) => (a.term < b.term ? -1 : a.term > b.term ? 1 : 0))

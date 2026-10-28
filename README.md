@@ -39,18 +39,18 @@ exportados em PNG, SVG e CSV e ficam guardados dentro do arquivo do projeto.
 **Como funciona**
 
 - **Preparação do corpus** (TypeScript, num processo de fundo): cada
-  documento é um texto, cortado em segmentos de cerca de 40 palavras como no
-  IRaMuTeQ, e as palavras são lematizadas com os dicionários do IRaMuTeQ. As
-  stopwords não são apagadas: ficam marcadas como suplementares e não entram
-  nos cálculos, para que os trechos mostrados continuem legíveis. Na CHD, os
-  segmentos são cortados exatamente como no labiia_lex, para que o mesmo corpus
-  dê as mesmas classes: só contam para os 40 as palavras que o labiia_lex
-  mantém antes de cortar (fora da lista Snowball; palavras com pontuação
-  interna, como "1.1" ou "o.com", contam inteiras), os documentos são lidos em
-  ordem alfabética de nome (a CHD do IRaMuTeQ muda conforme a ordem dos
-  segmentos, e assim o resultado não depende da ordem de importação) e uma
-  linha que começa com `****` ou `-*` é tratada como cabeçalho do formato do
-  IRaMuTeQ: fica de fora e o corte recomeça depois dela. O corpus preparado vai para um cache em disco:
+  documento é um texto, cortado em segmentos de cerca de 40 palavras, e as
+  palavras são lematizadas com os dicionários do IRaMuTeQ. Todos os testes
+  usam os mesmos segmentos e as mesmas palavras do labiia_lex, para que o
+  mesmo corpus dê os mesmos resultados: só contam para os 40 as palavras que
+  o labiia_lex mantém (fora da lista Snowball; palavras com pontuação
+  interna, como "1.1" ou "o.com", contam inteiras); os documentos são lidos
+  em ordem alfabética de nome (a CHD, o LDA e o Mapa temático mudam conforme a
+  ordem, e assim o resultado não depende da ordem de importação); e uma linha
+  que começa com `****` ou `-*` é tratada como cabeçalho do formato do
+  IRaMuTeQ: fica de fora e o corte recomeça depois dela. As stopwords
+  apagadas pelo labiia_lex ficam no texto dos segmentos mostrados, para que
+  continuem legíveis, mas os testes não as leem. O corpus preparado vai para um cache em disco:
   a segunda execução com os mesmos documentos começa direto.
 - **Motores R**: Nuvem, Similitude, Emoções, LDA e CHD usam os mesmos scripts
   R do labiia_lex e do IRaMuTeQ. O R (4.0 ou mais recente) precisa estar
@@ -59,12 +59,25 @@ exportados em PNG, SVG e CSV e ficam guardados dentro do arquivo do projeto.
 - **Demais cálculos e gráficos** são feitos em TypeScript, reproduzindo os
   algoritmos e o desenho (matplotlib) do labiia_lex.
 
+Conferido no corpus "Grupos focais - politica" do labiia_lex: Nuvem (imagem
+idêntica pixel a pixel), Bigramas, Trigramas, Word Tree, Associações, CHD e
+Mapa temático dão os mesmos números do labiia_lex.
+
 **Diferenças em relação ao labiia_lex**, escolhidas para corrigir erros:
 
 - Quebras de linha escritas como "\n" no texto não viram palavras falsas
   ("neu", "nolha").
 - Os documentos aparecem com o nome, não como "Doc_0", "Doc_1".
-- YAKE conta as ocorrências reais de cada expressão.
+- YAKE conta as ocorrências reais de cada expressão e lê cada segmento como
+  uma frase (o labiia_lex lhe entrega o corpus como uma frase só, e as notas
+  empatam).
+- Similitude escolhe as palavras pela frequência do lema (o labiia_lex usava
+  a frequência da forma escrita igual ao lema e perdia verbos frequentes,
+  como "achar").
+- Sentimento e Emoções também leem as palavras que o labiia_lex apaga antes
+  dos testes ("mesmo", "são").
+- Uma linha `****` dentro de um documento não o divide em dois documentos no
+  LDA e no Mapa temático.
 - O dendrograma com palavras da CHD usa a árvore que a CHD construiu.
 - Os segmentos típicos da CHD são encontrados pelos lemas.
 - A classificação dupla da CHD segue o método do IRaMuTeQ.
