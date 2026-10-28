@@ -181,3 +181,15 @@ describe('similitude indices', () => {
     for (const [name, value] of Object.entries(expected)) expect(SIMILARITY_INDEX[name](7, 5, 3, 85, 100), name).toBeCloseTo(value, 12)
   })
 })
+
+describe('intertopic map', () => {
+  it('matches labiia_lex Jensen-Shannon distances and PCoA coordinates', async () => {
+    const { jensenShannon, classicalMds } = await import('../../src/main/lexical/plot/intertopic')
+    const phi = [[0.5, 0.3, 0.1, 0.1], [0.1, 0.6, 0.2, 0.1], [0.25, 0.25, 0.25, 0.25], [0.05, 0.05, 0.1, 0.8], [0.4, 0.1, 0.4, 0.1]]
+    const d = jensenShannon(phi)
+    // Values printed by labiia_lex's _jensen_shannon and _classical_mds (numpy eigh).
+    expect(d[0][1]).toBeCloseTo(0.10675559886717172, 12)
+    const expected = [[-0.0954398078534647, -0.016178893625991897], [-0.07818695810356582, 0.08613060619733275], [0.016923172168774075, 0.003961870459847369], [0.2149839004198464, 0.002984020149723649], [-0.05828030663158993, -0.07689760318091202]]
+    classicalMds(d).forEach((c, i) => { expect(c[0]).toBeCloseTo(expected[i][0], 9); expect(c[1]).toBeCloseTo(expected[i][1], 9) })
+  })
+})

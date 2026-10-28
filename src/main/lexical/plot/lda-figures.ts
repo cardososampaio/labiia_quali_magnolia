@@ -4,7 +4,7 @@
  */
 import { ggplotHue } from './colors'
 import type { LdaModel } from '../analyses/lda'
-import type { BarFigure, PanelBarsFigure } from '../../../renderer/models/lexical-figures'
+import type { BarFigure, HeatmapFigure, PanelBarsFigure } from '../../../renderer/models/lexical-figures'
 
 export function meanTopicProbabilities(m: LdaModel): number[] {
   const means = new Array(m.k).fill(0)
@@ -65,5 +65,39 @@ export function ldaTopTerms(m: LdaModel, topN = 10): PanelBarsFigure {
         bars: [...top].reverse().map((t) => ({ label: t.term, value: t.weight, text: '' }))
       }
     })
+  }
+}
+
+export function ldaHeatmap(m: LdaModel): HeatmapFigure {
+  // Up to 40 documents, labels cut at 28 characters, as labiia_lex.
+  const rows = m.gamma.slice(0, 40)
+  const labels = m.docLabels.slice(0, 40).map((l) => l.slice(0, 28))
+  const values = rows.flat()
+  const n = rows.length
+  const colors = ggplotHue(m.k)
+  const legend = {
+    title: 'Tópicos',
+    entries: m.labels.map((l, i) => ({ code: `T${i + 1}`, label: l ?? `T${i + 1}`, color: colors[i] })),
+    fontScale: 1.6,
+    compact: true,
+    widthScale: 1.6,
+    gap: 0.18
+  }
+  const maxLen = Math.max(10, ...legend.entries.map((e) => e.label.length))
+  const legendIn = Math.min(10, Math.max(3, Math.min(6, maxLen * 0.115)) * 1.6)
+  return {
+    kind: 'heatmap',
+    title: `Heatmap Doc-Tópico${m.gamma.length > 40 ? ' (Top 40 Documentos)' : ''}`,
+    figW: Math.max(10, 6 + m.k) + legendIn,
+    figH: Math.max(9, Math.max(4, Math.min(12, 0.4 * n)) + 3),
+    dpi: 120,
+    matrix: rows,
+    rowLabels: labels,
+    colLabels: m.labels.map((_l, i) => `T${i + 1}`),
+    vmin: Math.min(...values),
+    vmax: Math.max(...values),
+    cellFont: n <= 25 ? 12 : n <= 45 ? 10 : 8,
+    colorbarLabel: 'P(Tópico | Doc)',
+    legend
   }
 }

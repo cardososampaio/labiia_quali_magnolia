@@ -10,7 +10,8 @@ import type { TestContext } from '../engine'
 import type { LexicalFile, LexicalRunResult } from '../../../renderer/models/lexical-api'
 import type { LdaInput } from '../analyses/lda'
 import { readLdaOutputs } from '../analyses/lda'
-import { ldaDistribution, ldaTopTerms } from '../plot/lda-figures'
+import { ldaDistribution, ldaHeatmap, ldaTopTerms } from '../plot/lda-figures'
+import { intertopicFigure } from '../plot/intertopic'
 
 const b64 = (text: string): string => Buffer.from(text, 'utf-8').toString('base64')
 
@@ -65,9 +66,13 @@ export async function runLda(ctx: TestContext): Promise<Omit<LexicalRunResult, '
   const files: LexicalFile[] = [
     { name: 'lda_distribution.json', mime: 'application/json', role: 'figure', data: b64(JSON.stringify(ldaDistribution(model))) },
     { name: 'lda_top_terms.json', mime: 'application/json', role: 'figure', data: b64(JSON.stringify(ldaTopTerms(model))) },
+    { name: 'lda_doc_topic_heatmap.json', mime: 'application/json', role: 'figure', data: b64(JSON.stringify(ldaHeatmap(model))) },
     { name: 'lda_doc_topic.csv', mime: 'text/csv', role: 'table', title: 'DocTopic', data: b64(docTopicCsv) },
     { name: 'lda_topics.csv', mime: 'text/csv', role: 'data', data: b64(topicsCsv) }
   ]
+  if (model.k >= 2) {
+    files.splice(3, 0, { name: 'lda_intertopic_map.json', mime: 'application/json', role: 'figure', data: b64(JSON.stringify(intertopicFigure(model, input.vocabulary, input.docLengths))) })
+  }
   for (const name of ['lda_terms_beta.csv', 'lda_documents_gamma.csv', 'lda_tuning.csv', 'lda_summary.json']) {
     if (existsSync(out(name))) files.push({ name, mime: name.endsWith('.json') ? 'application/json' : 'text/csv', role: 'data', data: readFileSync(out(name)).toString('base64') })
   }

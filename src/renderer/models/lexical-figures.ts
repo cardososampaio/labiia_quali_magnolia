@@ -116,4 +116,34 @@ export interface VBarFigure {
   edgeWidth: number
 }
 
-export type LexicalFigure = NetworkFigure | TreeFigure | BarFigure | PanelBarsFigure | RadialFigure | VBarFigure
+/** LDA intertopic distance map: circles at PCoA coordinates (data units, equal aspect). */
+export interface IntertopicFigure {
+  kind: 'intertopic'
+  title: string
+  footnote: string
+  figW: number
+  figH: number
+  dpi: number
+  xlim: [number, number]
+  ylim: [number, number]
+  topics: { id: number; x: number; y: number; r: number; lines: string[]; proportion: number }[]
+}
+
+/** LDA document x topic heatmap (YlGnBu), with a colour bar and the legend panel. */
+export interface HeatmapFigure {
+  kind: 'heatmap'
+  title: string
+  figW: number
+  figH: number
+  dpi: number
+  matrix: number[][]
+  rowLabels: string[]
+  colLabels: string[]
+  vmin: number
+  vmax: number
+  cellFont: number
+  colorbarLabel: string
+  legend: FigureLegend
+}
+
+export type LexicalFigure = NetworkFigure | TreeFigure | BarFigure | PanelBarsFigure | RadialFigure | VBarFigure | IntertopicFigure | HeatmapFigure
