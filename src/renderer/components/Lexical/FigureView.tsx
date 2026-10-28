@@ -7,7 +7,7 @@
  * and SVG with the font embedded.
  */
 import { useEffect, useMemo, useState } from 'react'
-import type { LexicalFigure, NetworkFigure } from '../../models/lexical-figures'
+import type { LexicalFigure, NetworkFigure, TreeFigure } from '../../models/lexical-figures'
 import { t } from '../../i18n'
 import dejavuUrl from '../../assets/fonts/DejaVuSans.ttf?url'
 import dejavuBoldUrl from '../../assets/fonts/DejaVuSans-Bold.ttf?url'
@@ -41,7 +41,7 @@ function measure(text: string, px: number, bold = false): { width: number; ascen
 const esc = (s: string): string => s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;')
 const fmt = (n: number): string => (Math.round(n * 100) / 100).toString()
 
-interface Built { svgBody: string; x: number; y: number; width: number; height: number }
+interface Built { svgBody: string; x: number; y: number; width: number; height: number; background: string }
 
 /** The network figure as SVG markup in pixels, cropped like savefig(bbox_inches="tight"). */
 function buildNetwork(f: NetworkFigure): Built {
@@ -108,11 +108,79 @@ function buildNetwork(f: NetworkFigure): Built {
   const pad = PAD_INCHES * f.dpi
   const x = Math.floor(bx0 - pad)
   const y = Math.floor(by0 - pad)
-  return { svgBody: parts.join(''), x, y, width: Math.ceil(bx1 + pad) - x, height: Math.ceil(by1 + pad) - y }
+  return { svgBody: parts.join(''), x, y, width: Math.ceil(bx1 + pad) - x, height: Math.ceil(by1 + pad) - y, background: '#FFFFFF' }
+}
+
+/**
+ * The word tree, as labiia_lex saves it: 14 × 10 in at 220 dpi, grey
+ * background, fig.tight_layout() (axes stretched so every label and the
+ * title fit inside a 10.8 pt border), then the tight crop.
+ */
+function buildTree(f: TreeFigure): Built {
+  const W = f.figW * f.dpi
+  const H = f.figH * f.dpi
+  const pt = f.dpi / 72
+  const xs = f.lines.flatMap((l) => [l.x1, l.x2])
+  const ys = f.lines.flatMap((l) => [l.y1, l.y2])
+  const minX = Math.min(...xs, 0), maxX = Math.max(...xs, 0), minY = Math.min(...ys, 0), maxY = Math.max(...ys, 0)
+  // matplotlib's default 5% data margins (lines autoscale, texts do not).
+  const dx = maxX - minX || 1, dy = maxY - minY || 1
+  const x0 = minX - 0.05 * dx, x1 = maxX + 0.05 * dx, y0 = minY - 0.05 * dy, y1 = maxY + 0.05 * dy
+  const tSize = 16 * pt
+  // labiia_lex's chart theme sets axes titles in bold.
+  const tm = measure(f.title, tSize, true)
+
+  const draw = (axL: number, axR: number, axT: number, axB: number) => {
+    const px = (x: number): number => axL + ((x - x0) / (x1 - x0)) * (axR - axL)
+    const py = (y: number): number => axB - ((y - y0) / (y1 - y0)) * (axB - axT)
+    let bx0 = Infinity, by0 = Infinity, bx1 = -Infinity, by1 = -Infinity
+    const grow = (a: number, b: number, c: number, d: number): void => {
+      bx0 = Math.min(bx0, a); by0 = Math.min(by0, b); bx1 = Math.max(bx1, c); by1 = Math.max(by1, d)
+    }
+    const parts: string[] = ['<g stroke="#7c8894" stroke-linecap="round" fill="none">']
+    for (const l of f.lines) {
+      const a = [px(l.x1), py(l.y1), px(l.x2), py(l.y2)]
+      const hw = (l.width * pt) / 2
+      parts.push(`<line x1="${fmt(a[0])}" y1="${fmt(a[1])}" x2="${fmt(a[2])}" y2="${fmt(a[3])}" stroke-width="${fmt(l.width * pt)}" stroke-opacity="${fmt(l.alpha)}"/>`)
+      grow(Math.min(a[0], a[2]) - hw, Math.min(a[1], a[3]) - hw, Math.max(a[0], a[2]) + hw, Math.max(a[1], a[3]) + hw)
+    }
+    parts.push(`</g><g font-family="${FONT}" text-anchor="middle">`)
+    for (const lab of f.labels) {
+      const size = lab.size * pt
+      const m = measure(lab.text, size, lab.bold)
+      const cx = px(lab.x)
+      // va="center": the middle of the text's ink box sits on the point.
+      const baseline = py(lab.y) + (m.ascent - m.descent) / 2
+      parts.push(`<text x="${fmt(cx)}" y="${fmt(baseline)}" font-size="${fmt(size)}"${lab.bold ? ' font-weight="700"' : ''} fill="${lab.color}">${esc(lab.text)}</text>`)
+      grow(cx - m.width / 2, baseline - m.ascent, cx + m.width / 2, baseline + m.descent)
+    }
+    parts.push('</g>')
+    const tBase = axT - 10 * pt
+    const tx = (axL + axR) / 2
+    parts.push(`<text x="${fmt(tx)}" y="${fmt(tBase)}" font-family="${FONT}" font-weight="700" font-size="${fmt(tSize)}" fill="#111827" text-anchor="middle">${esc(f.title)}</text>`)
+    grow(tx - tm.width / 2, tBase - tm.ascent, tx + tm.width / 2, tBase + tm.descent)
+    return { body: parts.join(''), bx0, by0, bx1, by1 }
+  }
+
+  // tight_layout: measure how far labels and title reach past the default
+  // axes box, then move the box in so they fit inside the 10.8 pt border.
+  const dL = AX_LEFT * W, dR = AX_RIGHT * W, dT = (1 - AX_TOP) * H, dB = (1 - AX_BOTTOM) * H
+  const first = draw(dL, dR, dT, dB)
+  const border = 1.08 * 10 * pt
+  const axL = border + Math.max(0, dL - first.bx0)
+  const axR = W - border - Math.max(0, first.bx1 - dR)
+  const axT = border + Math.max(0, dT - first.by0)
+  const axB = H - border - Math.max(0, first.by1 - dB)
+  const out = draw(axL, axR, axT, axB)
+  const bx0 = Math.min(out.bx0, axL), by0 = Math.min(out.by0, axT), bx1 = Math.max(out.bx1, axR), by1 = Math.max(out.by1, axB)
+  const pad = PAD_INCHES * f.dpi
+  const x = Math.floor(bx0 - pad)
+  const y = Math.floor(by0 - pad)
+  return { svgBody: out.body, x, y, width: Math.ceil(bx1 + pad) - x, height: Math.ceil(by1 + pad) - y, background: f.background }
 }
 
 function build(f: LexicalFigure): Built {
-  return buildNetwork(f)
+  return f.kind === 'tree' ? buildTree(f) : buildNetwork(f)
 }
 
 async function fontFaceCss(): Promise<string> {
@@ -129,7 +197,7 @@ async function fontFaceCss(): Promise<string> {
 /** A standalone SVG document (white background, font embedded). */
 async function standaloneSvg(b: Built): Promise<string> {
   return `<svg xmlns="http://www.w3.org/2000/svg" width="${b.width}" height="${b.height}" viewBox="${b.x} ${b.y} ${b.width} ${b.height}">` +
-    `<style>${await fontFaceCss()}</style><rect x="${b.x}" y="${b.y}" width="${b.width}" height="${b.height}" fill="#FFFFFF"/>${b.svgBody}</svg>`
+    `<style>${await fontFaceCss()}</style><rect x="${b.x}" y="${b.y}" width="${b.width}" height="${b.height}" fill="${b.background}"/>${b.svgBody}</svg>`
 }
 
 async function toPngBase64(b: Built): Promise<string> {
@@ -182,7 +250,7 @@ export function FigureView({ figure, baseName }: { figure: LexicalFigure; baseNa
           height={actualSize ? built.height : undefined}
           role="img"
           aria-label={figure.title}
-          dangerouslySetInnerHTML={{ __html: `<rect x="${built.x}" y="${built.y}" width="${built.width}" height="${built.height}" fill="#FFFFFF"/>${built.svgBody}` }}
+          dangerouslySetInnerHTML={{ __html: `<rect x="${built.x}" y="${built.y}" width="${built.width}" height="${built.height}" fill="${built.background}"/>${built.svgBody}` }}
         />
       </div>
     </div>

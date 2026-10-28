@@ -23,4 +23,18 @@ export interface NetworkFigure {
   margins: number
 }
 
-export type LexicalFigure = NetworkFigure
+/** Word tree: words in columns left and right of the central word (matplotlib text and lines). */
+export interface TreeFigure {
+  kind: 'tree'
+  title: string
+  figW: number
+  figH: number
+  dpi: number
+  background: string
+  /** `width` in points. */
+  lines: { x1: number; y1: number; x2: number; y2: number; width: number; alpha: number }[]
+  /** Centred on (x, y); `size` in points. */
+  labels: { text: string; x: number; y: number; size: number; bold: boolean; color: string }[]
+}
+
+export type LexicalFigure = NetworkFigure | TreeFigure

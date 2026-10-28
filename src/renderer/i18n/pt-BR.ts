@@ -1231,4 +1231,7 @@ export const ptBR: Record<string, string> = {
   "Drawing…": "Desenhando…",
   "Word {{n}}": "Palavra {{n}}",
   "No sequence of words reaches the minimum frequency. Lower the minimum frequency and run again.": "Nenhuma sequência de palavras atinge a frequência mínima. Diminua a frequência mínima e execute de novo.",
+  "Branches": "Ramos",
+  "\"{{word}}\" does not appear in the segments with these settings. Check the spelling, lower the minimum frequency or untick \"Active forms only\".": "\"{{word}}\" não aparece nos segmentos com estes parâmetros. Confira a grafia, diminua a frequência mínima ou desmarque \"Só formas ativas\".",
+  "The branches are below the minimum branch frequency. Lower it or choose another word.": "Os ramos ficaram abaixo da frequência mínima do ramo. Diminua esse valor ou escolha outra palavra.",
 }

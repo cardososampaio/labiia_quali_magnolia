@@ -151,6 +151,7 @@ export function LexicalResultView({ result, stale, title }: { result: StoredLexi
 function tableTitle(f: LexicalFile): string {
   if (f.title === 'Bigrams') return t('Bigrams')
   if (f.title === 'Trigrams') return t('Trigrams')
+  if (f.title === 'Branches') return t('Branches')
   return t('Word frequencies')
 }
 
@@ -159,6 +160,9 @@ export function runErrorText(error: string, detail?: string, missing?: string[])
   switch (error) {
     case 'no-text': return t('The chosen documents have no text to analyse.')
     case 'no-words': return t('No word reaches the minimum frequency. Lower the minimum frequency and run again.')
+    case 'no-vocabulary': return t('No word reaches the minimum frequency. Lower the minimum frequency and run again.')
+    case 'keyword-not-found': return t('"{{word}}" does not appear in the segments with these settings. Check the spelling, lower the minimum frequency or untick "Active forms only".', { word: detail ?? '' })
+    case 'no-branches': return t('The branches are below the minimum branch frequency. Lower it or choose another word.')
     case 'no-ngrams': return t('No sequence of words reaches the minimum frequency. Lower the minimum frequency and run again.')
     case 'r-not-found': return t('R was not found on this computer. The tests marked "R" need R 4.0 or newer.')
     case 'r-packages-missing': return t('These R packages are missing: {{list}}. Install them above and run again.', { list: (missing ?? []).join(', ') })

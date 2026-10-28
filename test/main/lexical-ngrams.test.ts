@@ -89,3 +89,29 @@ describe('n-grams', () => {
     expect(net.allBigrams[0].frequency).toBe(3)
   })
 })
+
+describe('word tree', () => {
+  const lex = new Lexicon('pt', join(__dirname, '..', '..', 'resources', 'lexical'))
+  const text = Array.from({ length: 4 }, () => 'A democracia digital exige participação social.').join(' ') + ' Participação popular amplia a democracia.'
+  const corpus = prepareCorpus([{ id: '1', name: 'A', text }], lex, { language: 'pt', uceSize: 40 })
+
+  it('branches left and right of the central word, counted per occurrence', async () => {
+    const { wordTree } = await import('../../src/main/lexical/analyses/word-tree')
+    const r = wordTree(corpus, lex, { keyword: 'participação', minFreq: 1, maxDepth: 2, minBranchFreq: 1, topBranches: 120, useLemmas: true, activeOnly: true })
+    expect(r.ok).toBe(true)
+    if (!r.ok) return
+    expect(r.root).toBe('participação')
+    expect(r.rootFrequency).toBe(5)
+    const branch = (side: string, child: string) => r.rows.find((x) => x[0] === side && x[3] === child)?.[6]
+    expect(branch('left', 'exigir')).toBe('4')
+    expect(branch('right', 'social')).toBe('4')
+    expect(branch('right', 'popular')).toBe('1')
+    expect(r.figure.labels.at(-1)).toMatchObject({ text: 'participação', bold: true, size: 26 })
+  })
+
+  it('says when the central word is not in the segments', async () => {
+    const { wordTree } = await import('../../src/main/lexical/analyses/word-tree')
+    expect(wordTree(corpus, lex, { keyword: 'inexistente', minFreq: 1, maxDepth: 2, minBranchFreq: 1, topBranches: 120, useLemmas: true, activeOnly: true }))
+      .toEqual({ ok: false, error: 'keyword-not-found', keyword: 'inexistente' })
+  })
+})

@@ -17,6 +17,7 @@ import { checkPackages } from './r-packages'
 import { LEXICAL_R_PACKAGES, type LexicalRunRequest, type LexicalRunResult, type LexicalRunProgress } from '../../renderer/models/lexical-api'
 import { runWordcloud } from './tests/wordcloud'
 import { runBigrams, runTrigrams } from './tests/ngrams'
+import { runWordTree } from './tests/word-tree'
 
 /** Bundled R scripts, dictionaries and stopword lists. */
 export function lexicalResourcesDir(): string {
@@ -87,7 +88,8 @@ type TestRunner = (ctx: TestContext) => Promise<Omit<LexicalRunResult, 'ok' | 'c
 const TESTS: Record<string, { runner: TestRunner; rPackages: string[] }> = {
   wordcloud: { runner: runWordcloud, rPackages: LEXICAL_R_PACKAGES.wordcloud },
   bigrams: { runner: runBigrams, rPackages: [] },
-  trigrams: { runner: runTrigrams, rPackages: [] }
+  trigrams: { runner: runTrigrams, rPackages: [] },
+  'word-tree': { runner: runWordTree, rPackages: [] }
 }
 
 const cancelled = new Set<string>()

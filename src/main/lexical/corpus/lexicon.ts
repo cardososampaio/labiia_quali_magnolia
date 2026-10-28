@@ -109,6 +109,19 @@ export class Lexicon {
   }
 
   /**
+   * labiia_lex's is_stopword_like: noise (roman numerals, web fragments,
+   * abbreviations, letters mixed with digits) or a display stopword. Used to
+   * build analysis vocabularies; unlike isDisplayTerm it keeps short words.
+   */
+  isStopwordLike(word: string): boolean {
+    if (!word) return true
+    const folded = stripAccents(word)
+    if (WEB_FRAGMENTS.has(folded) || ABBREVIATIONS.has(folded) || ROMAN_NUMERAL.test(folded)) return true
+    if (/\d/.test(word) && /\p{L}/u.test(word)) return true
+    return this.displayStopwords.has(folded) || this.displayStopwords.has(word)
+  }
+
+  /**
    * Whether a word is shown in charts and clouds: labiia_lex's display gate.
    * Leaves out numbers, roman numerals, web fragments, abbreviations,
    * words under three letters (unless allowed) and display stopwords;

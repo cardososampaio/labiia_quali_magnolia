@@ -9,11 +9,13 @@ import { Lexicon, type CorpusLanguage } from './corpus/lexicon'
 import { prepareCorpus, wordFrequencies, type PreparedCorpus, type PrepareOptions, type TextUnitInput } from './corpus/prepare'
 import { readCachedCorpus, writeCachedCorpus, hasCachedCorpus } from './corpus/cache'
 import { ngramNetwork } from './analyses/ngrams'
+import { wordTree, type WordTreeOptions } from './analyses/word-tree'
 
 export type WorkerRequest =
   | { id: number; type: 'prepare'; key: string; units: TextUnitInput[]; options: PrepareOptions; resourcesDir: string; cacheDir: string }
   | { id: number; type: 'word-frequencies'; key: string; resourcesDir: string; useLemmas: boolean; activeOnly: boolean }
   | { id: number; type: 'ngram-network'; key: string; resourcesDir: string; n: 2 | 3; minFreq: number; topEdges: number; title: string }
+  | { id: number; type: 'word-tree'; key: string; resourcesDir: string; options: WordTreeOptions }
 
 export type WorkerMessage =
   | { id: number; type: 'progress'; done: number; total: number }
@@ -80,6 +82,10 @@ function handle(msg: WorkerRequest, post: (m: WorkerMessage) => void): unknown {
   if (msg.type === 'ngram-network') {
     const c = corpusFor(msg.key)
     return ngramNetwork(c, lexiconFor(c.language, msg.resourcesDir), { n: msg.n, minFreq: msg.minFreq, topEdges: msg.topEdges, title: msg.title })
+  }
+  if (msg.type === 'word-tree') {
+    const c = corpusFor(msg.key)
+    return wordTree(c, lexiconFor(c.language, msg.resourcesDir), msg.options)
   }
   throw new Error(`unknown request ${(msg as { type: string }).type}`)
 }
