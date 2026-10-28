@@ -25,6 +25,7 @@ import { runEmotions } from './tests/emotions'
 import { runSimilitude } from './tests/similitude'
 import { runLda } from './tests/lda'
 import { runThematicMap } from './tests/thematic-map'
+import { runChd } from './tests/chd'
 
 /** Bundled R scripts, dictionaries and stopword lists. */
 export function lexicalResourcesDir(): string {
@@ -103,7 +104,8 @@ const TESTS: Record<string, { runner: TestRunner; rPackages: string[] }> = {
   emotions: { runner: runEmotions, rPackages: LEXICAL_R_PACKAGES.emotions },
   similitude: { runner: runSimilitude, rPackages: LEXICAL_R_PACKAGES.similitude },
   lda: { runner: runLda, rPackages: LEXICAL_R_PACKAGES.lda },
-  'thematic-map': { runner: runThematicMap, rPackages: [] }
+  'thematic-map': { runner: runThematicMap, rPackages: [] },
+  chd: { runner: runChd, rPackages: ['Matrix', 'ape', 'wordcloud', 'irlba'] }
 }
 
 const cancelled = new Set<string>()

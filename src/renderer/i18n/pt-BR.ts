@@ -1251,4 +1251,8 @@ export const ptBR: Record<string, string> = {
   "The thematic map needs at least two terms. Lower the minimum frequency or use more documents.": "O mapa temático precisa de pelo menos dois termos. Diminua a frequência mínima ou use mais documentos.",
   "No pair of words shares enough segments to form a network. Lower the minimum co-occurrences or use more documents.": "Nenhum par de palavras divide segmentos suficientes para formar uma rede. Diminua as coocorrências mínimas ou use mais documentos.",
   "No theme has a word that appears at least {{count}} times. Lower the minimum theme frequency.": "Nenhum tema tem uma palavra que apareça pelo menos {{count}} vezes. Diminua a frequência mínima do tema.",
+  "Classes": "Classes",
+  "The CHD needs more text: too few segments or active words. Choose more documents or lower the minimum frequency.": "A CHD precisa de mais texto: há poucos segmentos ou palavras ativas. Escolha mais documentos ou diminua a frequência mínima.",
+  "The CHD found no stable classes in this corpus. Use more documents or fewer classes.": "A CHD não encontrou classes estáveis neste corpus. Use mais documentos ou menos classes.",
+  "The double classification is not available yet. Choose the simple classification on text segments or on texts.": "A classificação dupla ainda não está disponível. Escolha a classificação simples sobre segmentos de texto ou sobre textos.",
 }

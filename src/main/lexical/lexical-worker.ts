@@ -17,6 +17,7 @@ import { sentiment, loadOpLexicon, type SentimentResult } from './analyses/senti
 import { similitudeMatrix, matrixCsv } from './analyses/similitude'
 import { ldaInput } from './analyses/lda'
 import { thematicMap, type ThematicOptions } from './analyses/thematic-map'
+import { writeChdMatrix, type ChdMatrixOptions } from './analyses/chd'
 import { keywordAssociations, type Collocate } from './analyses/keyword-associations'
 import { associationBars, associationRadial } from './plot/association-figures'
 
@@ -41,6 +42,7 @@ export type WorkerRequest =
   | { id: number; type: 'word-tree'; key: string; resourcesDir: string; options: WordTreeOptions }
   | { id: number; type: 'keyword-associations'; key: string; resourcesDir: string; options: { focalTerms: string; topN: number; minJoint: number; minFreq: number; useLemmas: boolean } }
   | { id: number; type: 'corpus-text'; key: string }
+  | { id: number; type: 'chd-matrix'; key: string; resourcesDir: string; options: ChdMatrixOptions; dir: string }
   | { id: number; type: 'thematic-map'; key: string; resourcesDir: string; options: ThematicOptions }
   | { id: number; type: 'lda-input'; key: string; resourcesDir: string; options: { minFreq: number; maxFeatures: number; useLemmas: boolean } }
   | { id: number; type: 'similitude-matrix'; key: string; resourcesDir: string; options: { minFreq: number; maxTerms: number; useLemmas: boolean; coefficient: string } }
@@ -129,6 +131,10 @@ function handle(msg: WorkerRequest, post: (m: WorkerMessage) => void): unknown {
     if (!sm) return null satisfies SimilitudeRun
     const freqCsv = 'word,frequency\n' + sm.vocabulary.map((w, i) => `${w},${sm.frequencies[i]}`).join('\n') + '\n'
     return { matrixCsv: matrixCsv(sm), freqCsv, terms: sm.vocabulary.length, segments: sm.segments } satisfies SimilitudeRun
+  }
+  if (msg.type === 'chd-matrix') {
+    const c = corpusFor(msg.key)
+    return writeChdMatrix(c, lexiconFor(c.language, msg.resourcesDir), msg.options, msg.dir)
   }
   if (msg.type === 'thematic-map') {
     const c = corpusFor(msg.key)
