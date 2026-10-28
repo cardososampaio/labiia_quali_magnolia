@@ -25,7 +25,7 @@ export const LEXICAL_R_PACKAGES: Record<LexicalTestId, string[]> = {
   wordcloud: ['ggplot2', 'ggwordcloud', 'RColorBrewer', 'jsonlite', 'png'],
   chd: ['Matrix', 'ape', 'wordcloud', 'irlba', 'ca', 'cluster', 'textometry'],
   similitude: ['igraph', 'sna', 'intergraph', 'network', 'jsonlite'],
-  emotions: ['syuzhet', 'fmsb'],
+  emotions: ['syuzhet', 'fmsb', 'jsonlite'],
   'keyword-associations': [],
   lda: ['topicmodels', 'slam', 'jsonlite'],
   'thematic-map': [],

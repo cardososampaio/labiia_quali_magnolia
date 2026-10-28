@@ -19,6 +19,9 @@ import { associationBars, associationRadial } from './plot/association-figures'
 
 export interface YakeRun { keyphrases: Keyphrase[]; figure: BarFigure }
 
+/** The prepared segments as running text, one segment per line (input of the R text engines). */
+export interface CorpusText { text: string }
+
 export interface SentimentRun { result: SentimentResult; figure: VBarFigure }
 
 export type AssociationsRun =
@@ -32,6 +35,7 @@ export type WorkerRequest =
   | { id: number; type: 'ngram-network'; key: string; resourcesDir: string; n: 2 | 3; minFreq: number; topEdges: number; title: string }
   | { id: number; type: 'word-tree'; key: string; resourcesDir: string; options: WordTreeOptions }
   | { id: number; type: 'keyword-associations'; key: string; resourcesDir: string; options: { focalTerms: string; topN: number; minJoint: number; minFreq: number; useLemmas: boolean } }
+  | { id: number; type: 'corpus-text'; key: string }
   | { id: number; type: 'sentiment'; key: string; resourcesDir: string; topWords: number }
   | { id: number; type: 'yake'; key: string; resourcesDir: string; options: { minTokens: number; maxTokens: number; minFreq: number; topN: number; dedupThreshold: number; windowSize: number } }
 
@@ -110,6 +114,9 @@ function handle(msg: WorkerRequest, post: (m: WorkerMessage) => void): unknown {
     const res = keywordAssociations(c, lexiconFor(c.language, msg.resourcesDir), msg.options)
     if ('error' in res) return res satisfies AssociationsRun
     return { ...res, bars: associationBars(res.focalTerms, res.collocates), radial: associationRadial(res.focalTerms, res.collocates) } satisfies AssociationsRun
+  }
+  if (msg.type === 'corpus-text') {
+    return { text: corpusFor(msg.key).uceText.join('\n') } satisfies CorpusText
   }
   if (msg.type === 'sentiment') {
     const c = corpusFor(msg.key)

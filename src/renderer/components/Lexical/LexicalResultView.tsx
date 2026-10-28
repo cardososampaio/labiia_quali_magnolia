@@ -160,6 +160,7 @@ function tableTitle(f: LexicalFile): string {
   if (f.title === 'Associations') return t('Associations')
   if (f.title === 'Examples') return t('Examples')
   if (f.title === 'Distribution') return t('Distribution')
+  if (f.title === 'Emotions') return t('Emotions')
   if (f.title === 'SentimentWords') return t('Words with polarity')
   return t('Word frequencies')
 }

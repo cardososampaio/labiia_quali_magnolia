@@ -21,6 +21,7 @@ import { runWordTree } from './tests/word-tree'
 import { runYake } from './tests/yake'
 import { runKeywordAssociations } from './tests/keyword-associations'
 import { runSentiment } from './tests/sentiment'
+import { runEmotions } from './tests/emotions'
 
 /** Bundled R scripts, dictionaries and stopword lists. */
 export function lexicalResourcesDir(): string {
@@ -95,7 +96,8 @@ const TESTS: Record<string, { runner: TestRunner; rPackages: string[] }> = {
   'word-tree': { runner: runWordTree, rPackages: [] },
   yake: { runner: runYake, rPackages: [] },
   'keyword-associations': { runner: runKeywordAssociations, rPackages: [] },
-  sentiment: { runner: runSentiment, rPackages: [] }
+  sentiment: { runner: runSentiment, rPackages: [] },
+  emotions: { runner: runEmotions, rPackages: LEXICAL_R_PACKAGES.emotions }
 }
 
 const cancelled = new Set<string>()
