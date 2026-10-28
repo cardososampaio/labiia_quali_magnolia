@@ -16,7 +16,8 @@ import { Lexicon, gramIsActive, type CorpusLanguage } from './lexicon'
 
 /** Bump when a change here would give different results for the same text. */
 // 2: units carry variables and a date.
-export const PREPARATION_VERSION = 2
+// 4: the CHD's segments are cut on labiia_lex's word chain (contentChain).
+export const PREPARATION_VERSION = 4
 
 export interface TextUnitInput {
   id: string
@@ -28,6 +29,16 @@ export interface TextUnitInput {
   date?: string
 }
 
+/**
+ * Texts in the order labiia_lex reads a folder: by document name, ignoring
+ * case (as Windows sorts paths). Coded passages keep their order inside
+ * their document.
+ */
+export function sortByDocumentName<T extends TextUnitInput>(units: T[]): T[] {
+  const key = (u: T): string => (u.document ?? u.name).toLowerCase()
+  return [...units].sort((a, b) => (key(a) < key(b) ? -1 : key(a) > key(b) ? 1 : 0))
+}
+
 export interface PrepareOptions {
   language: CorpusLanguage
   /** Target segment length in words (IRaMuTeQ default 40). */
@@ -35,9 +46,9 @@ export interface PrepareOptions {
   /**
    * How segments are cut. 'all' (IRaMuTeQ): every word counts toward the
    * length and cuts prefer sentence ends. 'content' (labiia_lex's CHD):
-   * only words outside the stopword list count and no punctuation is
-   * preferred, as labiia_lex deletes both before cutting; the segments keep
-   * their stopwords.
+   * only the words labiia_lex keeps before cutting count, so the same text
+   * gives the same segments as in labiia_lex (see contentChain); the
+   * segments keep their stopwords.
    */
   segmentCount?: 'all' | 'content'
 }
@@ -114,13 +125,18 @@ export function cleanText(text: string, expressions: [string, string][] = []): s
   return txt.split(/\s+/).filter(Boolean).join(' ')
 }
 
-/** One cut of IRaMuTeQ's decouperlist: the next segment and what remains. */
+/**
+ * One cut of IRaMuTeQ's decouperlist: the next segment and what remains.
+ * With `counted` (one flag per word of `chaine`), only the flagged words
+ * occupy positions, as if the others were not there: labiia_lex's CHD cuts
+ * a text from which they were deleted.
+ */
 export function decouperlist(
   chaine: string[],
   longueur: number,
   longueurOptimale: number,
-  counted?: (w: string) => boolean
-): { found: boolean; segment: string[]; rest: string[] } {
+  counted?: boolean[]
+): { found: boolean; segment: string[]; rest: string[]; restCounted?: boolean[] } {
   let trouve = false
   let iDecoupe = 0
   let travail: string[]
@@ -135,8 +151,8 @@ export function decouperlist(
     let k = -1
     let i = 0
     for (; i < chaine.length; i++) {
-      const w = chaine[i]
-      if (w !== END && counted(w)) {
+      // The end marker takes a position too, as in labiia_lex's chain.
+      if (counted[i] || chaine[i] === END) {
         if (k + 1 > longueur) break
         k++
       }
@@ -157,8 +173,8 @@ export function decouperlist(
       const mot = travail[nb]
       const distance = Math.abs(longueurOptimale - posOf(nb)) + 1
       const bestDistance = Math.abs(longueurOptimale - best.pos) + 1
-      // labiia_lex deletes punctuation before cutting, so in its mode no position is preferred.
-      const weight = counted ? SPACE_WEIGHT : SEPARATOR_WEIGHT[mot] ?? SPACE_WEIGHT
+      // A word that does not count is not in labiia_lex's chain, so it is no preferred place to cut.
+      const weight = counted && !counted[nb] ? SPACE_WEIGHT : SEPARATOR_WEIGHT[mot] ?? SPACE_WEIGHT
       if (weight / distance > best.weight / bestDistance) {
         best = { weight, pos: posOf(nb) }
         trouve = true
@@ -168,26 +184,107 @@ export function decouperlist(
   }
   if (trouve) {
     const segment = travail.slice(0, iDecoupe + 1)
-    return { found: segment.length > 0, segment, rest: chaine.slice(iDecoupe + 1) }
+    return { found: segment.length > 0, segment, rest: chaine.slice(iDecoupe + 1), restCounted: counted?.slice(iDecoupe + 1) }
   }
-  return { found: false, segment: chaine, rest: [] }
+  return { found: false, segment: chaine, rest: [], restCounted: [] }
 }
 
-/** Cuts a cleaned text into segments of about `uceSize` words (at most uceSize + 15). */
-export function makeSegments(cleaned: string, uceSize: number, counted?: (w: string) => boolean): string[] {
+/**
+ * Cuts a cleaned text into segments of about `uceSize` words (at most
+ * uceSize + 15). `counted` flags the words that count (all when absent).
+ */
+export function makeSegments(cleaned: string, uceSize: number, counted?: boolean[]): string[] {
   if (!cleaned) return []
   const out: string[] = []
   const push = (seg: string[]): void => {
     const s = seg.filter((w) => !PUNCTUATION.has(w)).join(' ').trim()
     if (s) out.push(s)
   }
-  let cut = decouperlist([...cleaned.split(' '), END], uceSize + 15, uceSize, counted)
+  let cut = decouperlist([...cleaned.split(' '), END], uceSize + 15, uceSize, counted ? [...counted, false] : undefined)
   while (cut.found) {
     push(cut.segment)
-    cut = decouperlist(cut.rest, uceSize + 15, uceSize, counted)
+    cut = decouperlist(cut.rest, uceSize + 15, uceSize, cut.restCounted)
   }
   push(cut.segment.filter((w) => w !== END))
   return out
+}
+
+/** The text's lines split at IRaMuTeQ heading lines ("****" text, "-*" theme), which are left out. */
+export function splitAtHeadings(lines: string[]): string[][] {
+  const parts: string[][] = [[]]
+  for (const line of lines) {
+    if (line.startsWith('****') || line.startsWith('-*')) parts.push([])
+    else parts[parts.length - 1].push(line)
+  }
+  return parts.filter((p) => p.length > 0)
+}
+
+const WORD_CHAR = /[\p{L}\p{M}\p{N}_]/u
+const LETTER = /\p{L}/u
+const DIGIT = /\p{Nd}/u
+// Unicode word-boundary classes (UAX #29) of the punctuation that can sit inside a word.
+const MID_NUM_LET = new Set(['.', "'", '‘', '’', '․', '﹒', '＇', '．'])
+const MID_LETTER = new Set([':', '·', '·', '‧', '︓', '﹕', '：'])
+const MID_NUM = new Set([',', ';', ';', '٬', '︐', '︔', '﹐', '﹔', '，', '；'])
+
+/**
+ * The text split into words and what lies between them, by the Unicode
+ * word-boundary rules that quanteda (labiia_lex) applies: letters, digits
+ * and "_" join, and a "." or apostrophe between two letters or two digits,
+ * ":" between two letters, or "," or ";" between two digits stays inside
+ * the word ("o.com", "d'água", "1.1", "1,5"). Written out rather than taken
+ * from Intl.Segmenter, whose rules differ between Node and Electron.
+ */
+export function unicodeWords(text: string): { text: string; word: boolean }[] {
+  const chars = [...text]
+  const out: { text: string; word: boolean }[] = []
+  let i = 0
+  while (i < chars.length) {
+    const start = i
+    if (!WORD_CHAR.test(chars[i])) {
+      while (i < chars.length && !WORD_CHAR.test(chars[i])) i++
+      out.push({ text: chars.slice(start, i).join(''), word: false })
+      continue
+    }
+    for (;;) {
+      while (i < chars.length && WORD_CHAR.test(chars[i])) i++
+      const mid = chars[i]
+      const prev = chars[i - 1]
+      const next = chars[i + 1]
+      if (mid === undefined || next === undefined) break
+      const letters = LETTER.test(prev) && LETTER.test(next)
+      const digits = DIGIT.test(prev) && DIGIT.test(next)
+      const joins = (MID_NUM_LET.has(mid) && (letters || digits)) || (MID_LETTER.has(mid) && letters) || (MID_NUM.has(mid) && digits)
+      if (!joins) break
+      i++
+    }
+    out.push({ text: chars.slice(start, i).join(''), word: true })
+  }
+  return out
+}
+
+/**
+ * labiia_lex's CHD chain. Before cutting, labiia_lex's R text pipeline
+ * splits the text into words by the Unicode rules (quanteda), drops loose
+ * punctuation and deletes the stopwords; what remains is then cleaned as by
+ * IRaMuTeQ. So a word with punctuation inside ("1.1", "o.com", "1,5") is
+ * never deleted, and its inner punctuation stays and is a place to cut.
+ * Returns the IRaMuTeQ-cleaned text with one flag per word: whether it is
+ * in that chain.
+ */
+export function contentChain(text: string, lexicon: Lexicon): { cleaned: string; counted: boolean[] } {
+  const words: string[] = []
+  const counted: boolean[] = []
+  for (const part of unicodeWords(text)) {
+    const kept = part.word && !lexicon.segmentStopwords.has(part.text.toLowerCase())
+    const cleaned = cleanText(part.text)
+    if (!cleaned) continue
+    for (const w of cleaned.split(' ')) {
+      words.push(w)
+      counted.push(kept)
+    }
+  }
+  return { cleaned: words.join(' '), counted }
 }
 
 export interface PrepareProgress {
@@ -257,14 +354,22 @@ export function prepareCorpus(
   }
 
   const uceSize = Math.max(20, Math.min(200, Math.round(options.uceSize || 40)))
-  const counted = options.segmentCount === 'content'
-    ? (w: string): boolean => !PUNCTUATION.has(w) && !lexicon.stopwords.has(w)
-    : undefined
   for (let u = 0; u < units.length; u++) {
     if (isCancelled?.()) throw new Error('cancelled')
     // The lines of a text are one stream, as in IRaMuTeQ: segments may span line breaks.
-    const joined = repairExtraction(units[u].text).split('\n').map((l) => l.trim()).filter(Boolean).join(' ')
-    for (const seg of makeSegments(cleanText(joined, lexicon.expressions), uceSize, counted)) {
+    const lines = repairExtraction(units[u].text).split('\n').map((l) => l.trim()).filter(Boolean)
+    const segments: string[] = []
+    if (options.segmentCount === 'content') {
+      // labiia_lex reads texts in IRaMuTeQ's format: a line starting with "****" (a text)
+      // or "-*" (a theme) is a heading, so it is left out and the cutting starts again after it.
+      for (const part of splitAtHeadings(lines)) {
+        const chain = contentChain(part.join(' '), lexicon)
+        segments.push(...makeSegments(chain.cleaned, uceSize, chain.counted))
+      }
+    } else {
+      segments.push(...makeSegments(cleanText(lines.join(' '), lexicon.expressions), uceSize))
+    }
+    for (const seg of segments) {
       uceUnit.push(u)
       uceText.push(seg)
       for (const w of seg.split(' ')) {

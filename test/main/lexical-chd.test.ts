@@ -52,6 +52,36 @@ describe('CHD segments (labiia_lex)', () => {
     // The stopwords stay in the segment text.
     expect(content.uceText[0].startsWith('de escola')).toBe(true)
   })
+
+  it('count words with inner punctuation whole, and cut at that punctuation', async () => {
+    const { contentChain } = await import('../../src/main/lexical/corpus/prepare')
+    // "o.com" and "1.1" are single words for labiia_lex: never deleted as stopwords.
+    const c = contentChain('ganhar o.com a gente, opinião 1.1 acesso', pt)
+    const words = c.cleaned.split(' ')
+    const flags = Object.fromEntries(words.map((w, i) => [`${w}@${i}`, c.counted[i]]))
+    expect(flags).toEqual({
+      'ganhar@0': true, 'o@1': true, '.@2': true, 'com@3': true, 'a@4': false, 'gente@5': true,
+      ',@6': false, 'opinião@7': true, '1@8': true, '.@9': true, '1@10': true,
+      // labiia_lex deletes its longer always-on list ("acesso", "doi"...) only after cutting.
+      'acesso@11': true
+    })
+  })
+
+  it('restart at IRaMuTeQ heading lines, which are left out', () => {
+    const lines = Array.from({ length: 30 }, () => 'escola pública').join(' ')
+    const text = `${lines}\n**** e aí queria entender\n${lines}`
+    const c = prepareCorpus([{ id: 'a', name: 'A', text }], pt, { language: 'pt', uceSize: 40, segmentCount: 'content' })
+    expect(c.uceText.join(' ')).not.toMatch(/entender/)
+    // Each side of the heading (60 words) is cut on its own, so no segment spans it.
+    expect(c.uceText.map((s) => s.split(' ').length)).toEqual([41, 19, 41, 19])
+  })
+
+  it('reads the texts by document name, ignoring case, whatever the import order', async () => {
+    const { sortByDocumentName } = await import('../../src/main/lexical/corpus/prepare')
+    const names = ['0-2sm_CB_T3.txt', '0-2sm__CB_T5.txt', 'b.txt', 'A.txt']
+    expect(sortByDocumentName(names.map((n) => ({ id: n, name: n, text: '' }))).map((u) => u.name))
+      .toEqual(['0-2sm__CB_T5.txt', '0-2sm_CB_T3.txt', 'A.txt', 'b.txt'])
+  })
 })
 
 describe('CHD profiles and dendrogram', () => {

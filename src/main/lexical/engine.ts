@@ -9,7 +9,7 @@ import { existsSync, mkdirSync, mkdtempSync, rmSync } from 'fs'
 import { join } from 'path'
 import workerPath from './lexical-worker?modulePath'
 import { corpusKey, hasCachedCorpus } from './corpus/cache'
-import type { PrepareOptions, TextUnitInput } from './corpus/prepare'
+import { sortByDocumentName, type PrepareOptions, type TextUnitInput } from './corpus/prepare'
 import type { WorkerMessage, WorkerRequest, PrepareResult } from './lexical-worker'
 import { cancelRun } from './r-runner'
 import { resolveR, type RInstallation } from './r-runtime'
@@ -123,8 +123,11 @@ export function cancelLexicalRun(runId: string): void {
 export async function runLexicalTest(req: LexicalRunRequest, send: (p: LexicalRunProgress) => void): Promise<LexicalRunResult> {
   const test = TESTS[req.testId]
   if (!test) return { ok: false, error: 'not-available' }
-  const units: TextUnitInput[] = req.units.filter((u) => u.text.trim())
+  let units: TextUnitInput[] = req.units.filter((u) => u.text.trim())
   if (units.length === 0) return { ok: false, error: 'no-text' }
+  // The CHD reallocates segments one by one in order, so the order of the texts changes its
+  // classes: they are read by document name, as labiia_lex reads a folder, not in import order.
+  if (req.testId === 'chd') units = sortByDocumentName(units)
 
   let r: RInstallation | null = null
   if (test.rPackages.length > 0) {

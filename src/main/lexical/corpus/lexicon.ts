@@ -49,6 +49,13 @@ export class Lexicon {
   private folded = new Map<string, [string, string]>()
   readonly expressions: [string, string][] = []
   readonly stopwords = new Set<string>()
+  /**
+   * Words labiia_lex deletes before cutting the CHD segments (its R text
+   * pipeline): the language's Snowball list plus "et", "al", "the" and
+   * "off". Its longer always-on list ("acesso", "in", "doi"...) is applied
+   * only later, so those words still count toward the segment length.
+   */
+  readonly segmentStopwords = new Set<string>()
   /** Words left out of charts, clouds and labels (labiia_lex's display gate): function words and conversational fillers. */
   readonly displayStopwords = new Set<string>()
   /** Short words that are shown even though they are under three letters ("ia", "sus"). */
@@ -97,6 +104,8 @@ export class Lexicon {
     if (existsSync(swPath)) {
       for (const w of readFileSync(swPath, 'utf-8').split(/\r?\n/)) if (w.trim()) this.stopwords.add(w.trim().toLowerCase())
     }
+    for (const w of this.stopwords) this.segmentStopwords.add(w)
+    for (const w of ['et', 'al', 'the', 'off']) this.segmentStopwords.add(w)
     for (const w of ALWAYS_STOPWORDS) this.stopwords.add(w)
 
     const readList = (file: string, into: Set<string>): void => {

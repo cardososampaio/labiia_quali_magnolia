@@ -43,8 +43,14 @@ exportados em PNG, SVG e CSV e ficam guardados dentro do arquivo do projeto.
   IRaMuTeQ, e as palavras são lematizadas com os dicionários do IRaMuTeQ. As
   stopwords não são apagadas: ficam marcadas como suplementares e não entram
   nos cálculos, para que os trechos mostrados continuem legíveis. Na CHD, os
-  segmentos são cortados como no labiia_lex (só as palavras fora da lista de
-  stopwords contam para os 40). O corpus preparado vai para um cache em disco:
+  segmentos são cortados exatamente como no labiia_lex, para que o mesmo corpus
+  dê as mesmas classes: só contam para os 40 as palavras que o labiia_lex
+  mantém antes de cortar (fora da lista Snowball; palavras com pontuação
+  interna, como "1.1" ou "o.com", contam inteiras), os documentos são lidos em
+  ordem alfabética de nome (a CHD do IRaMuTeQ muda conforme a ordem dos
+  segmentos, e assim o resultado não depende da ordem de importação) e uma
+  linha que começa com `****` ou `-*` é tratada como cabeçalho do formato do
+  IRaMuTeQ: fica de fora e o corte recomeça depois dela. O corpus preparado vai para um cache em disco:
   a segunda execução com os mesmos documentos começa direto.
 - **Motores R**: Nuvem, Similitude, Emoções, LDA e CHD usam os mesmos scripts
   R do labiia_lex e do IRaMuTeQ. O R (4.0 ou mais recente) precisa estar
