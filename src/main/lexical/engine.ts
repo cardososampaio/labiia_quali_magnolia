@@ -20,6 +20,7 @@ import { runBigrams, runTrigrams } from './tests/ngrams'
 import { runWordTree } from './tests/word-tree'
 import { runYake } from './tests/yake'
 import { runKeywordAssociations } from './tests/keyword-associations'
+import { runSentiment } from './tests/sentiment'
 
 /** Bundled R scripts, dictionaries and stopword lists. */
 export function lexicalResourcesDir(): string {
@@ -93,7 +94,8 @@ const TESTS: Record<string, { runner: TestRunner; rPackages: string[] }> = {
   trigrams: { runner: runTrigrams, rPackages: [] },
   'word-tree': { runner: runWordTree, rPackages: [] },
   yake: { runner: runYake, rPackages: [] },
-  'keyword-associations': { runner: runKeywordAssociations, rPackages: [] }
+  'keyword-associations': { runner: runKeywordAssociations, rPackages: [] },
+  sentiment: { runner: runSentiment, rPackages: [] }
 }
 
 const cancelled = new Set<string>()

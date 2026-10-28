@@ -13,6 +13,7 @@ import dejavuUrl from '../../assets/fonts/DejaVuSans.ttf?url'
 import dejavuBoldUrl from '../../assets/fonts/DejaVuSans-Bold.ttf?url'
 import { buildBars } from './bar-figure'
 import { buildPanelBars, buildRadial } from './panel-figures'
+import { buildVBars } from './vbar-figure'
 
 const FONT = 'LexDejaVu'
 // matplotlib's default subplot box (figure fractions) and savefig pad.
@@ -189,6 +190,7 @@ function build(f: LexicalFigure): Built {
   if (f.kind === 'barh') return buildBars(f, kit)
   if (f.kind === 'panel-bars') return buildPanelBars(f, kit)
   if (f.kind === 'radial') return buildRadial(f, kit)
+  if (f.kind === 'vbar') return buildVBars(f, kit)
   return buildNetwork(f)
 }
 

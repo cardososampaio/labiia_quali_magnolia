@@ -256,8 +256,7 @@ export const LEXICAL_TESTS: LexicalTestDef[] = [
     engine: 'app',
     rPackages: LEXICAL_R_PACKAGES['sentiment'],
     params: [
-      { key: 'top_words', label: t('Words listed'), kind: 'int', default: 25, min: 5, max: 200 },
-      { key: 'with_timeline', label: t('Timeline (when documents have dates)'), kind: 'bool', default: true }
+      { key: 'top_words', label: t('Words listed'), kind: 'int', default: 25, min: 10, max: 200 }
     ]
   },
   {
@@ -308,7 +307,7 @@ export const LEXICAL_TESTS: LexicalTestDef[] = [
 ]
 
 /** Tests whose engine is connected; the others show their settings but cannot run yet. */
-export const CONNECTED_TESTS = new Set<LexicalTestId>(['wordcloud', 'bigrams', 'trigrams', 'word-tree', 'yake', 'keyword-associations'])
+export const CONNECTED_TESTS = new Set<LexicalTestId>(['wordcloud', 'bigrams', 'trigrams', 'word-tree', 'yake', 'keyword-associations', 'sentiment'])
 
 export const LEXICAL_TOOL_PREFIX = 'lexical-'
 

@@ -12,11 +12,14 @@ import { ngramNetwork } from './analyses/ngrams'
 import { wordTree, type WordTreeOptions } from './analyses/word-tree'
 import { yakeKeyphrases, type Keyphrase } from './analyses/yake'
 import { rankingBars } from './plot/bars'
-import type { BarFigure, PanelBarsFigure, RadialFigure } from '../../renderer/models/lexical-figures'
+import type { BarFigure, PanelBarsFigure, RadialFigure, VBarFigure } from '../../renderer/models/lexical-figures'
+import { sentiment, loadOpLexicon, type SentimentResult } from './analyses/sentiment'
 import { keywordAssociations, type Collocate } from './analyses/keyword-associations'
 import { associationBars, associationRadial } from './plot/association-figures'
 
 export interface YakeRun { keyphrases: Keyphrase[]; figure: BarFigure }
+
+export interface SentimentRun { result: SentimentResult; figure: VBarFigure }
 
 export type AssociationsRun =
   | { focalTerms: string[]; missing: string[]; collocates: Map<string, Collocate[]>; segments: number; examples: [string, string, string][]; bars: PanelBarsFigure; radial: RadialFigure }
@@ -29,6 +32,7 @@ export type WorkerRequest =
   | { id: number; type: 'ngram-network'; key: string; resourcesDir: string; n: 2 | 3; minFreq: number; topEdges: number; title: string }
   | { id: number; type: 'word-tree'; key: string; resourcesDir: string; options: WordTreeOptions }
   | { id: number; type: 'keyword-associations'; key: string; resourcesDir: string; options: { focalTerms: string; topN: number; minJoint: number; minFreq: number; useLemmas: boolean } }
+  | { id: number; type: 'sentiment'; key: string; resourcesDir: string; topWords: number }
   | { id: number; type: 'yake'; key: string; resourcesDir: string; options: { minTokens: number; maxTokens: number; minFreq: number; topN: number; dedupThreshold: number; windowSize: number } }
 
 export type WorkerMessage =
@@ -106,6 +110,29 @@ function handle(msg: WorkerRequest, post: (m: WorkerMessage) => void): unknown {
     const res = keywordAssociations(c, lexiconFor(c.language, msg.resourcesDir), msg.options)
     if ('error' in res) return res satisfies AssociationsRun
     return { ...res, bars: associationBars(res.focalTerms, res.collocates), radial: associationRadial(res.focalTerms, res.collocates) } satisfies AssociationsRun
+  }
+  if (msg.type === 'sentiment') {
+    const c = corpusFor(msg.key)
+    const result = sentiment(c, loadOpLexicon(msg.resourcesDir), msg.topWords)
+    const total = result.matched || 1
+    const colors = { Positivo: '#00BA38', Negativa: '#F8766D', Neutro: '#9CA3AF' }
+    const max = Math.max(result.counts.Positivo, result.counts.Negativa, result.counts.Neutro)
+    // labiia_lex's figure: 1100 x 700 "pixels" turned into inches (/125, /130), saved at 160 dpi.
+    const figure: VBarFigure = {
+      kind: 'vbar',
+      title: 'Análise de Sentimentos (Polaridade Lexical)',
+      ylabel: 'Frequência',
+      figW: Math.max(8, 1100 / 125),
+      figH: Math.max(5, 700 / 130),
+      dpi: 160,
+      bars: (['Positivo', 'Negativa', 'Neutro'] as const).map((p) => ({ label: p, value: result.counts[p], color: colors[p], text: `${((result.counts[p] / total) * 100).toFixed(1)}% (${result.counts[p]})` })),
+      ymax: (max || 1) * 1.25,
+      barWidth: 0.8,
+      alpha: 0.92,
+      edgeColor: '#FFFFFF',
+      edgeWidth: 1.2
+    }
+    return { result, figure } satisfies SentimentRun
   }
   if (msg.type === 'yake') {
     const c = corpusFor(msg.key)

@@ -1138,7 +1138,6 @@ export const ptBR: Record<string, string> = {
   "Sentiment": "Sentimento",
   "Positive and negative words per document (OpLexicon)": "Palavras positivas e negativas por documento (OpLexicon)",
   "Words listed": "Palavras listadas",
-  "Timeline (when documents have dates)": "Linha do tempo (quando os documentos têm datas)",
   "Word Tree": "Word Tree",
   "What comes before and after a word": "O que vem antes e depois de uma palavra",
   "Empty = the most frequent word": "Vazio = a palavra mais frequente",
@@ -1245,4 +1244,7 @@ export const ptBR: Record<string, string> = {
   "Examples": "Exemplos",
   "The corpus is too small for associations. Use more documents or lower the minimum frequency.": "O corpus é pequeno demais para as associações. Use mais documentos ou diminua a frequência mínima.",
   "None of these keywords is in the analysed vocabulary: {{list}}. Check the spelling, use the dictionary form (\"dado\" instead of \"dados\") or lower the minimum frequency.": "Nenhuma destas palavras-chave está no vocabulário analisado: {{list}}. Confira a grafia, use a forma de dicionário (\"dado\" em vez de \"dados\") ou diminua a frequência mínima.",
+  "Words with polarity": "Palavras com polaridade",
+  "Sentiment uses OpLexicon, a Portuguese lexicon. Choose Portuguese as the corpus language.": "O Sentimento usa o OpLexicon, um léxico do português. Escolha português como idioma do corpus.",
+  "No word of the texts is in the sentiment lexicon.": "Nenhuma palavra dos textos está no léxico de sentimentos.",
 }

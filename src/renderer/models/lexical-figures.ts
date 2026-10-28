@@ -83,4 +83,21 @@ export interface RadialFigure {
   panels: { focal: string; color: string; spokes: { label: string; x: number; y: number; alpha: number; width: number; size: number }[] }[]
 }
 
-export type LexicalFigure = NetworkFigure | TreeFigure | BarFigure | PanelBarsFigure | RadialFigure
+/** Vertical bars in labiia_lex's theme (grey panel, horizontal grid, labels above the bars). */
+export interface VBarFigure {
+  kind: 'vbar'
+  title: string
+  ylabel: string
+  figW: number
+  figH: number
+  dpi: number
+  bars: { label: string; value: number; color: string; text: string }[]
+  /** Top of the value axis (labiia_lex leaves 25% room for the labels). */
+  ymax: number
+  barWidth: number
+  alpha: number
+  edgeColor: string
+  edgeWidth: number
+}
+
+export type LexicalFigure = NetworkFigure | TreeFigure | BarFigure | PanelBarsFigure | RadialFigure | VBarFigure

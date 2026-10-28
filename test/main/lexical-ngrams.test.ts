@@ -154,3 +154,21 @@ describe('keyword associations', () => {
     expect(parseFocalTerms('Dados; governo, dados\nescola')).toEqual(['dados', 'governo', 'escola'])
   })
 })
+
+describe('sentiment', () => {
+  it('counts each word of the texts by its OpLexicon polarity', async () => {
+    const { sentiment, loadOpLexicon } = await import('../../src/main/lexical/analyses/sentiment')
+    const res = join(__dirname, '..', '..', 'resources', 'lexical')
+    const lexicon = loadOpLexicon(res)
+    expect(lexicon.size).toBeGreaterThan(20000)
+    expect(lexicon.get('abafado')).toBe('Negativa')
+    const lex = new Lexicon('pt', res)
+    const corpus = prepareCorpus([{ id: '1', name: 'A', text: 'Um dia bom, um dia ruim e um dia abafado. Foi bom.' }], lex, { language: 'pt', uceSize: 40 })
+    const r = sentiment(corpus, lexicon, 25)
+    const count = (w: string) => r.words.find((x) => x.word === w)?.frequency ?? 0
+    expect(count('bom')).toBe(2)
+    expect(lexicon.get('bom')).toBe('Positivo')
+    expect(r.counts.Negativa).toBeGreaterThanOrEqual(2) // ruim, abafado
+    expect(r.matched).toBe(r.counts.Positivo + r.counts.Negativa + r.counts.Neutro)
+  })
+})
