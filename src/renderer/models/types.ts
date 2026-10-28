@@ -1,3 +1,4 @@
+import type { LexicalApi, LexicalToolType } from './lexical-api'
 /** Magnolia-specific document folder. The REFI-QDA standard has no
  *  folder concept — these are persisted in a `magnolia-folders.json`
  *  side table inside the .qdpx alongside the per-doc folder mapping. */
@@ -517,6 +518,8 @@ export interface EditorInfo {
 
 // IPC API exposed to renderer
 export interface ElectronAPI {
+  /** Lexical analyses: R and its packages (src/main/lexical). */
+  lexical: LexicalApi
   getFileSize: (filePath: string) => Promise<number | null>
   readPdfFile: (filePath: string) => Promise<Uint8Array>
   onProjectLoadProgress: (callback: (p: { stage: string; current: number; total: number }) => void) => () => void
@@ -880,6 +883,7 @@ export type AnalysisToolType =
   | 'word-frequencies'
   | 'relationship-map'
   | 'reports'
+  | LexicalToolType
 
 export interface AnalysisInitData {
   toolType: AnalysisToolType

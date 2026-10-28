@@ -35,6 +35,8 @@ import { ResultsInDocuments } from './ResultsInDocuments'
 import { Reports } from './Reports'
 import { QueryBuilderWindow } from '../QueryBuilder/QueryBuilderWindow'
 import { MemoFab } from '../Memos/MemoFab'
+import { LexicalAnalysisTab } from '../Lexical/LexicalAnalysisTab'
+import { lexicalTestFor } from '../Lexical/lexical-catalog'
 import type { AnalysisToolType } from '../../models/types'
 import { t } from '../../i18n'
 
@@ -201,7 +203,10 @@ function dispatch(
       return <WordFrequencies data={data} savedConfig={savedConfig} inTab={inTab} />
     case 'reports':
       return <Reports data={data} savedConfig={savedConfig} inTab={inTab} />
-    default:
+    default: {
+      const lexical = lexicalTestFor(toolType)
+      if (lexical) return <LexicalAnalysisTab key={lexical.id} test={lexical} data={data} savedConfig={savedConfig} inTab={inTab} />
       return <div style={{ padding: 20, color: 'var(--text-muted)' }}>{t("Unknown tool:")}{' '}{toolType}</div>
+    }
   }
 }

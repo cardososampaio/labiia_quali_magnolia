@@ -26,6 +26,7 @@
 import { create } from 'zustand'
 import { useProjectStore } from './project-store'
 import { makeHmrSafe } from './hmr-preserve'
+import type { LexicalToolType } from '../models/lexical-api'
 
 export type ToolKind =
   | 'code-cooccurrences'
@@ -37,6 +38,7 @@ export type ToolKind =
   | 'word-frequencies'
   | 'reports'
   | 'query-builder'
+  | LexicalToolType
 
 export interface AnalysisTabInstance {
   toolType: ToolKind

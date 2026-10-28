@@ -96,6 +96,19 @@ import {
   ClockArrowLeft,
   GitMerge,
   Heart,
+  Cloud,
+  GitFork,
+  Waypoints,
+  Smile,
+  Link2,
+  Layers,
+  Map as MapIcon,
+  KeyRound,
+  ThumbsUp,
+  ListTree,
+  Spline,
+  Workflow,
+  TextSearch,
   createLucideIcon
 } from 'lucide-react'
 import type { LucideIcon } from 'lucide-react'
@@ -228,3 +241,18 @@ export const faClockArrowLeft = ClockArrowLeft
 export const faGitMerge = GitMerge
 /** Donate / sponsor — Help popover's "Donate" row. */
 export const faHeart = Heart
+
+/** Lexical analyses (toolbar button and the tests' tiles). */
+export const faTextSearch = TextSearch
+export const faCloud = Cloud
+export const faGitFork = GitFork
+export const faWaypoints = Waypoints
+export const faSmile = Smile
+export const faLink2 = Link2
+export const faLayers = Layers
+export const faMap = MapIcon
+export const faKeyRound = KeyRound
+export const faThumbsUp = ThumbsUp
+export const faListTree = ListTree
+export const faSpline = Spline
+export const faWorkflow = Workflow

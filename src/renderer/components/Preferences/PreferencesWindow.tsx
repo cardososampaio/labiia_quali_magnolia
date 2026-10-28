@@ -13,6 +13,7 @@ import { useState, useEffect, useCallback, useRef } from 'react'
 import { Icon, faGear } from '../Icon'
 import { COLOURFUL_INTERFACE_ENABLED, colourfulInterfaceFromSaved } from '../../utils/colourful-interface'
 import { t, LANGUAGES, DEFAULT_LANGUAGE, getLanguage, normalizeLanguage, type Language } from '../../i18n'
+import { RSettingsPanel } from '../Lexical/RStatusPanel'
 
 interface FootPedalMappings {
   playPause: string
@@ -99,7 +100,7 @@ const THEME_OPTIONS: ThemeOption[] = [
   { id: 'high-contrast', label: t("High Contrast"), swatch: { bg: '#000000', surface: '#ffffff', accent: '#ffff00' } }
 ]
 
-type CategoryId = 'appearance' | 'general' | 'media-playback' | 'paper-size' | 'updates' | 'support'
+type CategoryId = 'appearance' | 'general' | 'media-playback' | 'paper-size' | 'r' | 'updates' | 'support'
 
 interface Category {
   id: CategoryId
@@ -111,6 +112,7 @@ const CATEGORIES: Category[] = [
   { id: 'appearance',     label: t("Appearance") },
   { id: 'media-playback', label: t("Media Playback") },
   { id: 'paper-size',     label: t("Paper Size") },
+  { id: 'r',              label: 'R' },
   { id: 'updates',        label: t("Updates") },
   { id: 'support',        label: t('About labiia_quali') }
 ]
@@ -859,6 +861,7 @@ export function PreferencesWindow({ onClose }: PreferencesWindowProps = {}) {
           {selected.id === 'paper-size' && (
             <PaperSizeSettings prefs={prefs} save={save} />
           )}
+          {selected.id === 'r' && <RSettingsPanel />}
           {selected.id === 'updates' && <UpdatesSettings />}
           {selected.id === 'support' && <SupportSettings />}
         </div>

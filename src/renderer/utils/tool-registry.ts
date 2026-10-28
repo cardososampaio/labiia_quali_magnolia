@@ -16,6 +16,7 @@ import {
 } from '../components/Icon'
 import type { IconComponent } from '../components/Icon'
 import { t } from '../i18n'
+import { LEXICAL_TESTS, lexicalToolType } from '../components/Lexical/lexical-catalog'
 
 export interface ToolDef {
   icon: IconComponent
@@ -50,6 +51,8 @@ export const TOOL_REGISTRY: Record<string, ToolDef> = {
   'word-frequencies':      { icon: faFont,             label: t("Word Frequencies"),     color: '#6848E0', description: t("See which words often appear") },                           // indigo
   'relationship-map':      { icon: faCircleNodes,      label: t("Relationships"),        color: '#A830D0', description: t("Map relationships between different things") },             // violet
   'reports':               { icon: faNotebookTabs,     label: t("Reports"),              color: '#607080', description: t("Compile results into an exportable PDF report") },          // slate
+  // Lexical analyses: one entry per test, so saved analyses and tabs show its icon and name.
+  ...Object.fromEntries(LEXICAL_TESTS.map((d) => [lexicalToolType(d.id), { icon: d.icon, label: d.label, color: d.color, description: d.description }]))
 }
 
 /** Backward-compatible color map (used by many components) */

@@ -16,7 +16,8 @@ import {
   faGitMerge,
   faGear,
   faChevronsLeft,
-  faChevronsRight
+  faChevronsRight,
+  faTextSearch
 } from './components/Icon'
 import { LicenceDialog } from './components/Licence/LicenceDialog'
 import { UpdateDialog, type UpdateAvailableInfo } from './components/Update/UpdateDialog'
@@ -38,7 +39,8 @@ const ANALYSIS_TOOL_TITLES: Record<string, string> = {
   'code-frequencies': t("Code Frequencies"),
   'code-orders': t("Code Orders"),
   'word-frequencies': t("Word Frequencies"),
-  'reports': t("Report")
+  'reports': t("Report"),
+  ...Object.fromEntries(LEXICAL_TESTS.map((d) => [lexicalToolType(d.id), d.label]))
 }
 
 /** Flatten a code tree, tagging each code with its parent guid */
@@ -95,6 +97,7 @@ import { WindowControls } from './components/Toolbar/WindowControls'
 import type { Project, Query, CodeCondition, Code, TextSource, QDASet, LogbookInitData, AnalysisInitData, AnalysisToolType, PlainTextSelection, Memo, MemoEditInitData, SurveyCellScopeArgs } from './models/types'
 import { buildSurveyEntityLabels } from './utils/survey/survey-labels'
 import { t } from './i18n'
+import { LEXICAL_TESTS, lexicalToolType } from './components/Lexical/lexical-catalog'
 
 /** Fold the survey-cell scope carried by an analysis cell-click into the
  *  documentFilter of the Query being generated, so it re-runs against the
@@ -2712,6 +2715,14 @@ function App() {
               "Analysis ▾" button that opens a tile-grid popover.
               See AnalysisPopover for the popover UI. */}
           <AnalysisPopover onSelect={(toolType) => openAnalysis(toolType)} />
+          {/* Lexical analyses ported from labiia_lex, behind their own button. */}
+          <AnalysisPopover
+            onSelect={(toolType) => openAnalysis(toolType)}
+            tools={LEXICAL_TESTS.map((d) => lexicalToolType(d.id))}
+            icon={faTextSearch}
+            label={t("Lexical")}
+            title={t("Lexical analyses")}
+          />
           </div>
 
           <div className="app-toolbar-pill" style={TOOLBAR_PILL_STYLE}>

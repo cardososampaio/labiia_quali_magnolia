@@ -1,0 +1,57 @@
+/* Lexical analyses tab and R status. Built on the analysis tools' look
+   (.analysis-section cards, small secondary header buttons). */
+
+.lex-tab { height: 100%; display: flex; flex-direction: column; overflow: hidden; }
+
+.lex-header { padding: 14px 20px 6px; flex-shrink: 0; display: flex; align-items: center; gap: 8px; }
+.lex-header h2 { margin: 0; font-size: 18px; font-weight: 600; display: flex; align-items: center; gap: 8px; color: var(--text-secondary); }
+.lex-header-btn { font-size: 11px !important; padding: 4px 14px !important; }
+
+.lex-body { flex: 1; overflow: auto; padding: 8px 20px 24px; }
+.lex-description { margin: 0 0 12px; color: var(--text-muted); font-size: var(--font-size-sm); }
+
+.lex-section { margin-bottom: 14px; }
+.lex-section-toggle { display: flex; align-items: center; gap: 8px; cursor: pointer; user-select: none; }
+.lex-section-title { font-size: var(--font-size-lg); font-weight: 600; color: var(--text-secondary); }
+.lex-section-summary { margin-left: auto; color: var(--text-muted); font-size: var(--font-size-sm); }
+.lex-advanced-title { font-weight: 600; color: var(--text-secondary); font-size: var(--font-size-sm); }
+
+.lex-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 12px 18px; align-items: end; }
+.lex-field { display: flex; flex-direction: column; gap: 4px; font-size: var(--font-size-sm); min-width: 0; }
+.lex-field input[type="number"], .lex-field input[type="text"], .lex-field select { width: 100%; padding: 4px 8px; }
+.lex-field-check { flex-direction: row; align-items: center; gap: 8px; cursor: pointer; padding-bottom: 4px; }
+.lex-label { color: var(--text-secondary); font-weight: 500; }
+
+.lex-reset { margin-top: 14px; font-size: 11px !important; padding: 2px 10px !important; }
+
+.lex-note { display: flex; align-items: center; gap: 6px; margin-top: 10px; color: var(--text-muted); font-size: var(--font-size-sm); }
+.lex-note-error { color: var(--danger, #c0392b); }
+.lex-muted { color: var(--text-muted); font-size: var(--font-size-sm); }
+
+.lex-run-row { display: flex; align-items: center; gap: 12px; margin-top: 4px; }
+.lex-run { min-width: 120px; padding: 6px 22px !important; font-weight: 600; }
+.lex-run-note { color: var(--text-muted); font-size: var(--font-size-sm); }
+
+/* R status */
+.lex-r-panel { display: flex; flex-direction: column; gap: 8px; }
+.lex-r-line { display: flex; align-items: flex-start; gap: 8px; font-size: var(--font-size-sm); }
+.lex-r-line svg { flex-shrink: 0; margin-top: 2px; }
+.lex-r-ok { color: var(--success, #2e7d32); }
+.lex-r-bad { color: var(--warning, #b26a00); }
+.lex-r-actions { display: flex; flex-wrap: wrap; gap: 6px; }
+.lex-small-btn { font-size: 11px !important; padding: 3px 10px !important; align-self: flex-start; }
+
+.lex-install { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; font-size: var(--font-size-sm); }
+.lex-install-line { color: var(--text-secondary); }
+.lex-progress { width: 180px; height: 6px; border-radius: 3px; background: var(--bg-tertiary); overflow: hidden; }
+.lex-progress-bar { height: 100%; background: var(--accent); transition: width 0.2s; }
+
+.lex-r-settings h3 { margin: 0 0 6px; font-size: 15px; }
+.lex-r-settings h4 { margin: 18px 0 8px; font-size: 13px; color: var(--text-secondary); }
+.lex-r-row { display: flex; align-items: center; flex-wrap: wrap; gap: 8px 12px; margin-top: 10px; font-size: var(--font-size-sm); }
+.lex-r-row .lex-label { width: 130px; flex-shrink: 0; }
+.lex-r-row code, .lex-path { font-size: 11px; word-break: break-all; }
+.lex-pkg-grid { display: flex; flex-wrap: wrap; gap: 6px; }
+.lex-pkg { display: inline-flex; align-items: center; gap: 5px; padding: 2px 8px; border-radius: 10px; border: 1px solid var(--border-color); font-size: 11px; color: var(--text-secondary); }
+.lex-pkg.ok { color: var(--success, #2e7d32); }
+.lex-pkg.missing { color: var(--warning, #b26a00); border-color: currentColor; }

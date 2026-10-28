@@ -5,6 +5,7 @@ import { pathToFileURL } from 'url'
 import { is } from '@electron-toolkit/utils'
 import icon from '../../resources/icon.png?asset'
 import { registerIpcHandlers } from './ipc-handlers'
+import { registerLexicalIpc } from './lexical/lexical-ipc'
 import { buildMenu, type WindowListEntry } from './menu'
 import { readQdpx } from './qdpx/reader'
 import { createEmptyProjectFile } from './qdpx/writer'
@@ -1032,6 +1033,7 @@ app.whenReady().then(() => {
   })
 
   registerIpcHandlers()
+  registerLexicalIpc()
 
   // If the user launched Magnolia by double-clicking a .qdpx (or passed
   // one on the command line), skip the welcome screen and open the

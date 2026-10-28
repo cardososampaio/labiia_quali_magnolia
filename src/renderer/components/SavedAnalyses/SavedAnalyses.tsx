@@ -10,6 +10,7 @@ import { toolColors } from '../../utils/tool-colors'
 import { makeMapTabId } from '../../utils/tab-ids'
 import { useClampedMenuPosition } from '../../utils/use-clamped-menu-position'
 import { t } from '../../i18n'
+import { LEXICAL_TESTS, lexicalToolType } from '../Lexical/lexical-catalog'
 
 interface Props {
   onOpen: (toolType: AnalysisToolType, savedConfig: any) => void
@@ -36,7 +37,8 @@ const TOOL_ORDER: AnalysisToolType[] = [
   'code-frequencies',
   'code-orders',
   'word-frequencies',
-  'relationship-map'
+  'relationship-map',
+  ...LEXICAL_TESTS.map((d) => lexicalToolType(d.id))
 ]
 
 export function SavedAnalyses({ onOpen, onClose, onPopOut, isPoppedOut, findMemoGuidForAnalysis, onOpenAnalysisMemo }: Props) {

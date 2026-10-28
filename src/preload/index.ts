@@ -9,6 +9,19 @@ import type { ElectronAPI } from '../renderer/models/types'
 let activeProjectPath: string | null = null
 
 const api: ElectronAPI = {
+  lexical: {
+    rStatus: (refresh?: boolean) => ipcRenderer.invoke('lexical:r-status', refresh),
+    setRPath: (path: string) => ipcRenderer.invoke('lexical:r-set-path', path),
+    pickRPath: () => ipcRenderer.invoke('lexical:r-pick-path'),
+    checkPackages: (packages: string[]) => ipcRenderer.invoke('lexical:r-check-packages', packages),
+    installPackages: (packages: string[]) => ipcRenderer.invoke('lexical:r-install-packages', packages),
+    cancelInstall: () => ipcRenderer.invoke('lexical:r-cancel-install'),
+    onInstallProgress: (callback) => {
+      const handler = (_event: unknown, p: Parameters<typeof callback>[0]) => callback(p)
+      ipcRenderer.on('lexical:r-install-progress', handler)
+      return () => { ipcRenderer.removeListener('lexical:r-install-progress', handler) }
+    }
+  },
   getFileSize: (filePath: string) => ipcRenderer.invoke('get-file-size', filePath),
   readPdfFile: (filePath: string) => ipcRenderer.invoke('read-pdf-file', filePath, activeProjectPath),
   setActiveProjectPath: (filePath: string | null) => {

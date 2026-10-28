@@ -49,9 +49,16 @@ const EDGE_PAD = 8
 
 interface Props {
   onSelect: (toolType: AnalysisToolType) => void
+  /** Another set of tiles behind its own toolbar button, such as the
+   *  lexical analyses. Defaults to the qualitative analysis tools. */
+  tools?: AnalysisToolType[]
+  icon?: IconComponent
+  label?: string
+  title?: string
 }
 
-export function AnalysisPopover({ onSelect }: Props) {
+export function AnalysisPopover({ onSelect, tools = ANALYSIS_TOOL_ORDER, icon = faLightbulb, label, title }: Props) {
+  const popoverTitle = title ?? t("Analysis tools")
   const [open, setOpen] = useState(false)
   const buttonRef = useRef<HTMLButtonElement>(null)
   const popoverRef = useRef<HTMLDivElement>(null)
@@ -122,7 +129,7 @@ export function AnalysisPopover({ onSelect }: Props) {
         ref={buttonRef}
         type="button"
         className="app-toolbar-btn"
-        title={t("Analysis tools")}
+        title={popoverTitle}
         aria-haspopup="menu"
         aria-expanded={open}
         onClick={() => setOpen((v) => !v)}
@@ -148,8 +155,8 @@ export function AnalysisPopover({ onSelect }: Props) {
           (e.currentTarget.querySelector('.toolbar-label') as HTMLElement).style.color = 'var(--text-secondary)'
         }}
       >
-        <Icon icon={faLightbulb} style={{ fontSize: 20 }} />
-        <span className="toolbar-label" style={{ fontSize: 9, whiteSpace: 'nowrap', fontWeight: 400, color: 'var(--text-secondary)', transition: 'color 0.12s' }}>{t("Analyse")}</span>
+        <Icon icon={icon} style={{ fontSize: 20 }} />
+        <span className="toolbar-label" style={{ fontSize: 9, whiteSpace: 'nowrap', fontWeight: 400, color: 'var(--text-secondary)', transition: 'color 0.12s' }}>{label ?? t("Analyse")}</span>
       </button>
 
       {open && pos && createPortal(
@@ -160,9 +167,9 @@ export function AnalysisPopover({ onSelect }: Props) {
           style={{ position: 'fixed', top: pos.top, left: pos.left, transform: 'none', zIndex: 10000 }}
         >
           <div className="analysis-popover-arrow" style={{ left: pos.arrowLeft, transform: 'rotate(45deg)' }} />
-          <div className="analysis-popover-title">{t("Analysis tools")}</div>
+          <div className="analysis-popover-title">{popoverTitle}</div>
           <div className="analysis-popover-grid">
-            {ANALYSIS_TOOL_ORDER.map((toolType) => {
+            {tools.map((toolType) => {
               const def = TOOL_REGISTRY[toolType]
               if (!def) return null
               const ToolIcon: IconComponent = def.icon
