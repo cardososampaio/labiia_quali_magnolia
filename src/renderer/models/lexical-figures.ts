@@ -37,6 +37,16 @@ export interface TreeFigure {
   labels: { text: string; x: number; y: number; size: number; bold: boolean; color: string }[]
 }
 
+/** labiia_lex's legend panel to the right of a chart (create_figure with_legend_panel). */
+export interface FigureLegend {
+  title: string
+  entries: { code: string; label: string; color: string }[]
+  fontScale?: number
+  compact?: boolean
+  widthScale?: number
+  gap?: number
+}
+
 /**
  * Horizontal bar chart in labiia_lex's ggplot-like matplotlib theme
  * (grey #FAFAFA panel, vertical grid lines, bottom and left spines, value
@@ -55,6 +65,10 @@ export interface BarFigure {
   /** Right end of the value axis (labiia_lex leaves 32% room for the value labels). */
   xmax: number
   barHeight: number
+  /** With a legend, figW includes the panel and the chart box comes from the gridspec. */
+  legend?: FigureLegend
+  /** Category (bar name) labels; default 9 pt grey. */
+  categoryStyle?: { size: number; bold: boolean; color: string }
 }
 
 /** Bars in a grid of panels (one per focal word), matplotlib's default style with tight_layout. */
@@ -67,7 +81,9 @@ export interface PanelBarsFigure {
   dpi: number
   rows: number
   cols: number
-  panels: ({ title: string; color: string; xlabel: string; xmax: number; bars: { label: string; value: number; text: string }[] } | { empty: string })[]
+  /** labiia_lex's chart theme (grey panels, grid, small grey ticks) instead of matplotlib's default look. */
+  theme?: boolean
+  panels: ({ title: string; color: string; xlabel: string; ylabel?: string; xmax: number; bars: { label: string; value: number; text: string }[] } | { empty: string })[]
 }
 
 /** Spokes around each focal word: closer and thicker = stronger. */

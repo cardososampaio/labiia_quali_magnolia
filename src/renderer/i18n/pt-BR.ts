@@ -1243,4 +1243,6 @@ export const ptBR: Record<string, string> = {
   "Coloured communities": "Comunidades coloridas",
   "Communities are always detected; off, they are drawn in grey as in IRaMuTeQ": "As comunidades são sempre detectadas; desligado, ficam em cinza como no IRaMuTeQ",
   "Vocabulary": "Vocabulário",
+  "Topics per document": "Tópicos por documento",
+  "LDA needs at least two documents and two terms. Choose more documents or lower the minimum frequency.": "O LDA precisa de pelo menos dois documentos e dois termos. Escolha mais documentos ou diminua a frequência mínima.",
 }

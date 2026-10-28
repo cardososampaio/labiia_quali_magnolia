@@ -5,6 +5,7 @@
  * labels to the right of the bars, bold title.
  */
 import type { BarFigure } from '../../models/lexical-figures'
+import { chartAndLegendBoxes, drawLegendPanel, legendWidth } from './legend-panel'
 
 export interface FigureKit {
   font: string
@@ -62,7 +63,16 @@ export function buildBars(f: BarFigure, k: FigureKit): { svgBody: string; x: num
   const W = f.figW * f.dpi
   const H = f.figH * f.dpi
   const pt = f.dpi / 72
-  const axL = f.box.left * W, axR = f.box.right * W, axT = (1 - f.box.top) * H, axB = (1 - f.box.bottom) * H
+  let axL = f.box.left * W, axR = f.box.right * W, axT = (1 - f.box.top) * H, axB = (1 - f.box.bottom) * H
+  let legendMarkup = ''
+  let legendBox: { l: number; r: number; t: number; b: number } | null = null
+  if (f.legend) {
+    const legIn = legendWidth(f.legend)
+    const boxes = chartAndLegendBoxes(W, H, f.figW - legIn, legIn, f.legend.gap ?? 0.04)
+    ;({ l: axL, r: axR, t: axT, b: axB } = boxes.chart)
+    legendBox = boxes.legend
+    legendMarkup = drawLegendPanel(boxes.legend, f.legend, f.dpi, k)
+  }
   const n = f.bars.length
   const half = f.barHeight / 2
   const span = Math.max(n - 1, 0) + f.barHeight
@@ -77,7 +87,7 @@ export function buildBars(f: BarFigure, k: FigureKit): { svgBody: string; x: num
   const parts: string[] = [`<rect x="${fmt(axL)}" y="${fmt(axT)}" width="${fmt(axR - axL)}" height="${fmt(axB - axT)}" fill="#FAFAFA"/>`]
 
   // As many value ticks as fit at 9 pt labels (matplotlib's tick space: width / (3 x font size)), at most 9.
-  const nbins = Math.max(1, Math.min(9, Math.floor(((f.box.right - f.box.left) * f.figW * 72) / 27)))
+  const nbins = Math.max(1, Math.min(9, Math.floor(((axR - axL) / f.dpi) * 72 / 27)))
   const ticks = autoTicks(0, f.xmax, nbins)
   const { labels: tickText, offsetText } = tickLabels(ticks)
   parts.push(`<g stroke="#E5E5E5" stroke-opacity="0.7" stroke-width="${fmt(0.6 * pt)}">`)
@@ -108,15 +118,17 @@ export function buildBars(f: BarFigure, k: FigureKit): { svgBody: string; x: num
     labelsBottom = Math.max(labelsBottom, base + m.descent)
   })
   // Category labels (wrapped lines) centred on their bar, right-aligned before the ticks.
-  const lineH = 1.2 * tickSize
+  const cat = f.categoryStyle ?? { size: 9, bold: false, color: '#666666' }
+  const catSize = cat.size * pt
+  const lineH = 1.2 * catSize
   f.bars.forEach((b, i) => {
     const lines = b.label.split('\n')
-    const firstBase = py(i) - ((lines.length - 1) * lineH) / 2 + tickSize * 0.36
+    const firstBase = py(i) - ((lines.length - 1) * lineH) / 2 + catSize * 0.36
     const right = axL - tickLen - pad
     lines.forEach((line, j) => {
-      const m = measure(line, tickSize)
+      const m = measure(line, catSize, cat.bold)
       const base = firstBase + j * lineH
-      parts.push(`<text x="${fmt(right)}" y="${fmt(base)}" text-anchor="end">${esc(line)}</text>`)
+      parts.push(`<text x="${fmt(right)}" y="${fmt(base)}" text-anchor="end" font-size="${fmt(catSize)}"${cat.bold ? ' font-weight="700"' : ''} fill="${cat.color}">${esc(line)}</text>`)
       grow(right - m.width, base - m.ascent, right, base + m.descent)
     })
   })
@@ -154,6 +166,12 @@ export function buildBars(f: BarFigure, k: FigureKit): { svgBody: string; x: num
   const tBase = axT - 6 * pt
   parts.push(`<text x="${fmt(cx)}" y="${fmt(tBase)}" font-family="${font}" font-weight="700" font-size="${fmt(tSize)}" fill="#2D2D2D" text-anchor="middle">${esc(f.title)}</text>`)
   grow(cx - tm.width / 2, tBase - tm.ascent, cx + tm.width / 2, tBase + tm.descent)
+
+  if (legendBox) {
+    parts.push(legendMarkup)
+    // The panel's rounded box reaches 0.01 beyond its axes (pad 0.02 from 0.03 and 0.98).
+    grow(legendBox.l + 0.01 * (legendBox.r - legendBox.l), legendBox.t, legendBox.r - 0.01 * (legendBox.r - legendBox.l), legendBox.b)
+  }
 
   const padPx = k.padInches * f.dpi
   const x = Math.floor(bx0 - padPx)

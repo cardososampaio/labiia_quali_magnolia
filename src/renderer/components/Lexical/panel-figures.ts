@@ -15,7 +15,7 @@ const LINE_EM = 1.164
 const BASELINE_FROM_CENTRE_EM = 0.346
 
 /** matplotlib tight_layout for a grid: margins and gaps from each panel's decorations. */
-function gridBoxes(W: number, H: number, pt: number, rows: number, cols: number, deco: Deco[], suptitleHeight: number): Box[] {
+function gridBoxes(W: number, H: number, pt: number, rows: number, cols: number, deco: Deco[], suptitleHeight: number, rect = { top: 0.97, bottom: 0.02 }): Box[] {
   const pad = 1.08 * 10 * pt
   const at = (r: number, c: number): Deco => deco[r * cols + c] ?? { left: 0, right: 0, top: 0, bottom: 0 }
   const colMax = (c: number, k: keyof Deco): number => Math.max(0, ...Array.from({ length: rows }, (_, r) => at(r, c)[k]))
@@ -24,8 +24,8 @@ function gridBoxes(W: number, H: number, pt: number, rows: number, cols: number,
   // suptitle with its own pad on top. Then rect=(0, 0.02, 1, 0.97) is shrunk by those margins.
   const left = colMax(0, 'left') + pad
   const right = W - (colMax(cols - 1, 'right') + pad)
-  const top = H * 0.03 + rowMax(0, 'top') + pad + suptitleHeight + pad
-  const bottom = H * (1 - 0.02) - (rowMax(rows - 1, 'bottom') + pad)
+  const top = H * (1 - rect.top) + rowMax(0, 'top') + pad + suptitleHeight + pad
+  const bottom = H * (1 - rect.bottom) - (rowMax(rows - 1, 'bottom') + pad)
   // Gaps between panels: the largest facing decorations in any one row or column, plus the pad.
   let hgap = 0
   for (let c = 0; c + 1 < cols; c++) for (let r = 0; r < rows; r++) hgap = Math.max(hgap, at(r, c).right + at(r, c + 1).left)
@@ -44,9 +44,9 @@ function gridBoxes(W: number, H: number, pt: number, rows: number, cols: number,
   return boxes
 }
 
-/** Height matplotlib gives a one-line 16 pt bold suptitle (its "lp" line metrics). */
-function suptitleHeight(pt: number, k: FigureKit): number {
-  const size = 16 * pt
+/** Height matplotlib gives a one-line bold suptitle (its "lp" line metrics). */
+function suptitleHeight(pt: number, k: FigureKit, sizePt = 16): number {
+  const size = sizePt * pt
   return k.measure('l', size, true).ascent + k.measure('p', size, true).descent
 }
 
@@ -60,21 +60,23 @@ function canvas(): Canvas {
   }
 }
 
-function finish(cv: Canvas, f: { title: string; footnote: string; figW: number; figH: number; dpi: number }, k: FigureKit) {
+function finish(cv: Canvas, f: { title: string; footnote: string; figW: number; figH: number; dpi: number }, k: FigureKit, suptitlePt = 16) {
   const { font, measure, esc, fmt } = k
   const W = f.figW * f.dpi, H = f.figH * f.dpi, pt = f.dpi / 72
-  // Suptitle: 16 pt bold, top edge at 98% of the figure height.
-  const sSize = 16 * pt
+  // Suptitle: bold, top edge at 98% of the figure height.
+  const sSize = suptitlePt * pt
   const sm = measure(f.title, sSize, true)
   const sBase = H * 0.02 + sm.ascent
   cv.parts.push(`<text x="${fmt(W / 2)}" y="${fmt(sBase)}" font-family="${font}" font-weight="700" font-size="${fmt(sSize)}" fill="#000000" text-anchor="middle">${esc(f.title)}</text>`)
   cv.grow(W / 2 - sm.width / 2, sBase - sm.ascent, W / 2 + sm.width / 2, sBase + sm.descent)
   // Footnote: 10 pt grey, baseline at 0.5% of the height.
+  if (f.footnote) {
   const nSize = 10 * pt
   const nm = measure(f.footnote, nSize)
   const nBase = H * (1 - 0.005)
   cv.parts.push(`<text x="${fmt(W / 2)}" y="${fmt(nBase)}" font-family="${font}" font-size="${fmt(nSize)}" fill="#555555" text-anchor="middle">${esc(f.footnote)}</text>`)
   cv.grow(W / 2 - nm.width / 2, nBase - nm.ascent, W / 2 + nm.width / 2, nBase + nm.descent)
+  }
   const b = cv.bounds()
   const padPx = k.padInches * f.dpi
   const x = Math.floor(b.l - padPx), y = Math.floor(b.t - padPx)
@@ -84,8 +86,15 @@ function finish(cv: Canvas, f: { title: string; footnote: string; figW: number; 
 export function buildPanelBars(f: PanelBarsFigure, k: FigureKit) {
   const { font, measure, esc, fmt } = k
   const W = f.figW * f.dpi, H = f.figH * f.dpi, pt = f.dpi / 72
-  const tickLen = 3.5 * pt, tickPad = 3.5 * pt
-  const ySize = 12 * pt, xSize = 10 * pt, titleSize = 14 * pt, valSize = 10 * pt
+  // matplotlib defaults, or labiia_lex's chart theme (style_axes) when f.theme is set.
+  const th = f.theme === true
+  const tickLen = (th ? 3 : 3.5) * pt, tickPad = 3.5 * pt, tickWidth = (th ? 0.5 : 0.8) * pt
+  const ySize = (th ? 9 : 12) * pt, xSize = (th ? 9 : 10) * pt, titleSize = (th ? 11 : 14) * pt, valSize = 10 * pt
+  const labelSize = 10 * pt
+  const tickColor = th ? '#666666' : '#000000'
+  const spineColor = th ? '#CCCCCC' : '#000000'
+  const spineWidth = (th ? 0.5 : 0.8) * pt
+  const labelColor = th ? '#4D4D4D' : '#000000'
   const spaceW = (size: number): number => measure('  ', size).width
 
   const layoutPanel = (p: PanelBarsFigure['panels'][number], box: Box | null): { deco: Deco; draw?: (cv: Canvas) => void } => {
@@ -105,12 +114,12 @@ export function buildPanelBars(f: PanelBarsFigure, k: FigureKit) {
     }
     const labelW = Math.max(0, ...p.bars.map((b) => measure(b.label, ySize).width))
     const tm = measure(p.title, titleSize, true)
-    const xm = measure(p.xlabel, xSize)
+    const ylabelW = p.ylabel ? 4 * pt + LINE_EM * labelSize : 0
     const deco: Deco = {
-      left: tickLen + tickPad + labelW,
+      left: tickLen + tickPad + labelW + ylabelW,
       right: 0,
       top: 6 * pt + tm.ascent + tm.descent,
-      bottom: tickLen + tickPad + LINE_EM * xSize + 4 * pt + LINE_EM * xSize
+      bottom: tickLen + tickPad + LINE_EM * xSize + 4 * pt + LINE_EM * labelSize
     }
     if (!box) return { deco }
     const n = p.bars.length
@@ -125,17 +134,24 @@ export function buildPanelBars(f: PanelBarsFigure, k: FigureKit) {
       deco,
       draw: (cv) => {
         const P = cv.parts
-        p.bars.forEach((b, i) => {
-          const top = py(i + half), bottom = py(i - half)
-          P.push(`<rect x="${fmt(px(0))}" y="${fmt(top)}" width="${fmt(Math.max(0, px(b.value) - px(0)))}" height="${fmt(bottom - top)}" fill="${p.color}" fill-opacity="0.9"/>`)
-        })
-        P.push(`<g stroke="#000000" stroke-width="${fmt(0.8 * pt)}"><line x1="${fmt(box.l)}" y1="${fmt(box.b)}" x2="${fmt(box.r)}" y2="${fmt(box.b)}"/><line x1="${fmt(box.l)}" y1="${fmt(box.t)}" x2="${fmt(box.l)}" y2="${fmt(box.b)}"/>`)
-        const nbins = Math.max(1, Math.min(9, Math.floor((box.r - box.l) / pt / 30)))
+        const nbins = Math.max(1, Math.min(9, Math.floor((box.r - box.l) / pt / (3 * xSize / pt))))
         const ticks = autoTicks(0, p.xmax, nbins)
         const { labels } = tickLabels(ticks)
+        if (th) {
+          P.push(`<rect x="${fmt(box.l)}" y="${fmt(box.t)}" width="${fmt(box.r - box.l)}" height="${fmt(box.b - box.t)}" fill="#FAFAFA"/>`)
+          P.push(`<g stroke="#E5E5E5" stroke-opacity="0.7" stroke-width="${fmt(0.6 * pt)}">`)
+          for (const t of ticks) P.push(`<line x1="${fmt(px(t))}" y1="${fmt(box.t)}" x2="${fmt(px(t))}" y2="${fmt(box.b)}"/>`)
+          P.push('</g>')
+        }
+        p.bars.forEach((b, i) => {
+          const top = py(i + half), bottom = py(i - half)
+          P.push(`<rect x="${fmt(px(0))}" y="${fmt(top)}" width="${fmt(Math.max(0, px(b.value) - px(0)))}" height="${fmt(bottom - top)}" fill="${p.color}" fill-opacity="${th ? 1 : 0.9}"/>`)
+        })
+        P.push(`<g stroke="${spineColor}" stroke-width="${fmt(spineWidth)}"><line x1="${fmt(box.l)}" y1="${fmt(box.b)}" x2="${fmt(box.r)}" y2="${fmt(box.b)}"/><line x1="${fmt(box.l)}" y1="${fmt(box.t)}" x2="${fmt(box.l)}" y2="${fmt(box.b)}"/></g>`)
+        P.push(`<g stroke="${tickColor}" stroke-width="${fmt(tickWidth)}">`)
         for (const t of ticks) P.push(`<line x1="${fmt(px(t))}" y1="${fmt(box.b)}" x2="${fmt(px(t))}" y2="${fmt(box.b + tickLen)}"/>`)
         p.bars.forEach((_b, i) => P.push(`<line x1="${fmt(box.l - tickLen)}" y1="${fmt(py(i))}" x2="${fmt(box.l)}" y2="${fmt(py(i))}"/>`))
-        P.push(`</g><g font-family="${font}" fill="#000000">`)
+        P.push(`</g><g font-family="${font}" fill="${tickColor}">`)
         let xlBottom = box.b + tickLen + tickPad
         ticks.forEach((t, i) => {
           const m = measure(labels[i], xSize)
@@ -152,7 +168,15 @@ export function buildPanelBars(f: PanelBarsFigure, k: FigureKit) {
           cv.grow(right - m.width, base - m.ascent, right, base + m.descent)
         })
         P.push('</g>')
-        p.bars.forEach((b, i) => {
+        if (p.ylabel) {
+          const ym = measure(p.ylabel, labelSize)
+          const left = box.l - tickLen - tickPad - labelW - 4 * pt
+          const lx = left - ym.descent, ly = (box.t + box.b) / 2
+          P.push(`<text x="${fmt(lx)}" y="${fmt(ly)}" transform="rotate(-90 ${fmt(lx)} ${fmt(ly)})" font-family="${font}" font-size="${fmt(labelSize)}" fill="${labelColor}" text-anchor="middle">${esc(p.ylabel)}</text>`)
+          cv.grow(lx - ym.ascent, ly - ym.width / 2, lx + ym.descent, ly + ym.width / 2)
+        }
+        p.bars.filter((b) => b.text).forEach((b) => {
+          const i = p.bars.indexOf(b)
           const x = px(b.value) + spaceW(valSize)
           const text = b.text.trim()
           const m = measure(text, valSize)
@@ -160,13 +184,13 @@ export function buildPanelBars(f: PanelBarsFigure, k: FigureKit) {
           P.push(`<text x="${fmt(x)}" y="${fmt(base)}" font-family="${font}" font-size="${fmt(valSize)}" fill="#333333">${esc(text)}</text>`)
           cv.grow(x, base - m.ascent, x + m.width, base + m.descent)
         })
-        const xm2 = measure(p.xlabel, xSize)
+        const xm2 = measure(p.xlabel, labelSize)
         const lb = xlBottom + 4 * pt + xm2.ascent
         const cx = (box.l + box.r) / 2
-        P.push(`<text x="${fmt(cx)}" y="${fmt(lb)}" font-family="${font}" font-size="${fmt(xSize)}" fill="#000000" text-anchor="middle">${esc(p.xlabel)}</text>`)
+        P.push(`<text x="${fmt(cx)}" y="${fmt(lb)}" font-family="${font}" font-size="${fmt(labelSize)}" fill="${labelColor}" text-anchor="middle">${esc(p.xlabel)}</text>`)
         cv.grow(cx - xm2.width / 2, lb - xm2.ascent, cx + xm2.width / 2, lb + xm2.descent)
         const tb = box.t - 6 * pt
-        P.push(`<text x="${fmt(cx)}" y="${fmt(tb)}" font-family="${font}" font-weight="700" font-size="${fmt(titleSize)}" fill="${p.color}" text-anchor="middle">${esc(p.title)}</text>`)
+        P.push(`<text x="${fmt(cx)}" y="${fmt(tb)}" font-family="${font}" font-weight="700" font-size="${fmt(titleSize)}" fill="${th ? '#2D2D2D' : p.color}" text-anchor="middle">${esc(p.title)}</text>`)
         cv.grow(cx - tm.width / 2, tb - tm.ascent, cx + tm.width / 2, tb + tm.descent)
         cv.grow(box.l, box.t, box.r, box.b)
       }
@@ -174,13 +198,15 @@ export function buildPanelBars(f: PanelBarsFigure, k: FigureKit) {
   }
 
   // First pass on equal cells to measure what reaches past the panels, then lay out and draw.
-  const supH = suptitleHeight(pt, k)
-  const first = gridBoxes(W, H, pt, f.rows, f.cols, f.panels.map((p) => layoutPanel(p, null).deco), supH)
+  const supPt = th ? 14 : 16
+  const supH = suptitleHeight(pt, k, supPt)
+  const rect = th ? { top: 0.96, bottom: 0 } : { top: 0.97, bottom: 0.02 }
+  const first = gridBoxes(W, H, pt, f.rows, f.cols, f.panels.map((p) => layoutPanel(p, null).deco), supH, rect)
   const firstDeco = f.panels.map((p, i) => layoutPanel(p, first[i]).deco)
-  const boxes = gridBoxes(W, H, pt, f.rows, f.cols, firstDeco, supH)
+  const boxes = gridBoxes(W, H, pt, f.rows, f.cols, firstDeco, supH, rect)
   const cv = canvas()
   f.panels.forEach((p, i) => layoutPanel(p, boxes[i]).draw?.(cv))
-  return finish(cv, f, k)
+  return finish(cv, f, k, supPt)
 }
 
 export function buildRadial(f: RadialFigure, k: FigureKit) {

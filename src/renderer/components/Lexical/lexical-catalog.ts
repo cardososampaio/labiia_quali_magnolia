@@ -301,7 +301,7 @@ export const LEXICAL_TESTS: LexicalTestDef[] = [
 ]
 
 /** Tests whose engine is connected; the others show their settings but cannot run yet. */
-export const CONNECTED_TESTS = new Set<LexicalTestId>(['wordcloud', 'bigrams', 'trigrams', 'word-tree', 'yake', 'keyword-associations', 'sentiment', 'emotions', 'similitude'])
+export const CONNECTED_TESTS = new Set<LexicalTestId>(['wordcloud', 'bigrams', 'trigrams', 'word-tree', 'yake', 'keyword-associations', 'sentiment', 'emotions', 'similitude', 'lda'])
 
 export const LEXICAL_TOOL_PREFIX = 'lexical-'
 
