@@ -69,10 +69,27 @@ function decodeText(data: string): string {
   return new TextDecoder('utf-8').decode(bytes)
 }
 
+/** One line of a ;-separated file; "quoted" cells may contain ; and doubled quotes. */
+function splitCsvLine(line: string): string[] {
+  const out: string[] = []
+  let cur = ''
+  let quoted = false
+  for (let i = 0; i < line.length; i++) {
+    const ch = line[i]
+    if (quoted) {
+      if (ch === '"' && line[i + 1] === '"') { cur += '"'; i++ } else if (ch === '"') quoted = false
+      else cur += ch
+    } else if (ch === '"') quoted = true
+    else if (ch === ';') { out.push(cur); cur = '' } else cur += ch
+  }
+  out.push(cur)
+  return out
+}
+
 function CsvPreview({ file, limit = 30 }: { file: LexicalFile; limit?: number }) {
   const rows = useMemo(() => {
     if (!file.data) return []
-    return decodeText(file.data).split(/\r?\n/).filter(Boolean).map((l) => l.split(';'))
+    return decodeText(file.data).split(/\r?\n/).filter(Boolean).map(splitCsvLine)
   }, [file.data])
   if (rows.length < 2) return null
   const [head, ...body] = rows
@@ -82,13 +99,21 @@ function CsvPreview({ file, limit = 30 }: { file: LexicalFile; limit?: number })
         <thead><tr>{head.map((h, i) => <th key={i}>{columnLabel(h)}</th>)}</tr></thead>
         <tbody>
           {body.slice(0, limit).map((r, i) => (
-            <tr key={i}>{r.map((c, j) => <td key={j} className={/^-?\d+([.,]\d+)?$/.test(c) ? 'num' : undefined}>{/^-?\d+$/.test(c) ? formatNumber(Number(c)) : c}</td>)}</tr>
+            <tr key={i}>{r.map((c, j) => <td key={j} className={/^-?\d+([.,]\d+)?$/.test(c) ? 'num' : undefined}>{/^-?\d+$/.test(c) ? formatNumber(Number(c)) : head[j] === 'type' ? termType(c) : c}</td>)}</tr>
           ))}
         </tbody>
       </table>
       {body.length > limit && <div className="lex-muted" style={{ marginTop: 6 }}>{t('Showing {{shown}} of {{total}} rows. Export the CSV for all of them.', { shown: limit, total: formatNumber(body.length) })}</div>}
     </div>
   )
+}
+
+/** Kind of word in the CHD profiles. */
+function termType(v: string): string {
+  if (v === 'active') return t('Active')
+  if (v === 'supplementary') return t('Supplementary')
+  if (v === 'variable') return t('Variable')
+  return v
 }
 
 function columnLabel(h: string): string {
@@ -98,6 +123,17 @@ function columnLabel(h: string): string {
   if (h === 'RawYAKE') return t('YAKE score')
   if (h === 'Relevance') return t('Relevance')
   if (h === 'DocCount') return t('Segments')
+  if (h === 'class') return t('Class')
+  if (h === 'segments') return t('Segments')
+  if (h === 'percent') return t('Percent')
+  if (h === 'type') return t('Type')
+  if (h === 'segments_in_class') return t('Segments in the class')
+  if (h === 'segments_total') return t('Segments in the corpus')
+  if (h === 'chi2') return t('Chi²')
+  if (h === 'p') return 'p'
+  if (h === 'score') return t('Score')
+  if (h === 'document') return t('Document')
+  if (h === 'text') return t('Text')
   const m = h.match(/^word_(\d)$/)
   if (m) return t('Word {{n}}', { n: m[1] })
   return h
@@ -105,10 +141,13 @@ function columnLabel(h: string): string {
 
 export function LexicalResultView({ result, stale, title }: { result: StoredLexicalResult; stale: boolean; title: string }) {
   const [actualSize, setActualSize] = useState(false)
-  const images = result.files.filter((f) => f.role === 'image' && f.data)
-  const figures = useMemo(() => result.files.flatMap((f) => {
-    if (f.role !== 'figure' || !f.data) return []
-    try { return [{ name: f.name.replace(/\.json$/, ''), figure: JSON.parse(decodeText(f.data)) as LexicalFigure }] } catch { return [] }
+  // Pictures (R images and window-drawn figures) in the order the test lists them.
+  type Visual = { kind: 'image'; file: LexicalFile } | { kind: 'figure'; file: LexicalFile; name: string; figure: LexicalFigure }
+  const visuals = useMemo(() => result.files.flatMap<Visual>((f) => {
+    if (!f.data) return []
+    if (f.role === 'image') return [{ kind: 'image' as const, file: f }]
+    if (f.role !== 'figure') return []
+    try { return [{ kind: 'figure' as const, file: f, name: f.name.replace(/\.json$/, ''), figure: JSON.parse(decodeText(f.data)) as LexicalFigure }] } catch { return [] }
   }), [result.files])
   const tables = result.files.filter((f) => f.role === 'table' && f.data)
   const save = (f: LexicalFile): void => { void window.api.lexical.saveFile({ name: f.name, mime: f.mime, data: f.data! }) }
@@ -122,21 +161,19 @@ export function LexicalResultView({ result, stale, title }: { result: StoredLexi
       {stale && <div className="lex-note lex-note-warn">{t('The documents or settings changed after this result. Run again to update it.')}</div>}
       {result.corpus && <CorpusFigures corpus={result.corpus} />}
 
-      {images.map((f) => (
-        <div key={f.name} className="lex-figure">
+      {visuals.map((v) => v.kind === 'figure' ? <FigureView key={v.file.name} figure={v.figure} baseName={v.name} /> : (
+        <div key={v.file.name} className="lex-figure">
           <div className="lex-figure-tools">
             <button className="secondary lex-small-btn" onClick={() => setActualSize(!actualSize)}>
               {actualSize ? t('Fit to window') : t('Actual size')}
             </button>
-            <button className="secondary lex-small-btn" onClick={() => save(f)}>{t('Export PNG')}</button>
+            <button className="secondary lex-small-btn" onClick={() => save(v.file)}>{t('Export PNG')}</button>
           </div>
           <div className={`lex-figure-frame${actualSize ? ' actual' : ''}`}>
-            <img src={`data:${f.mime};base64,${f.data}`} alt={title} draggable={false} />
+            <img src={`data:${v.file.mime};base64,${v.file.data}`} alt={title} draggable={false} />
           </div>
         </div>
       ))}
-
-      {figures.map((f) => <FigureView key={f.name} figure={f.figure} baseName={f.name} />)}
 
       {tables.map((f) => (
         <div key={f.name} className="lex-table-block">
@@ -166,6 +203,9 @@ function tableTitle(f: LexicalFile): string {
   if (f.title === 'SentimentWords') return t('Words with polarity')
   if (f.title === 'Themes') return t('Themes')
   if (f.title === 'ChdClasses') return t('Classes')
+  if (f.title === 'ChdProfiles') return t('Class profiles')
+  if (f.title === 'ChdAntiprofiles') return t('Antiprofiles')
+  if (f.title === 'ChdTypical') return t('Typical segments')
   if (f.title === 'ThemeDocuments') return t('Documents per theme')
   if (f.title === 'ThemeSegments') return t('Representative segments')
   return t('Word frequencies')

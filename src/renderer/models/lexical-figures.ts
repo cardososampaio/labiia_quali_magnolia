@@ -164,4 +164,18 @@ export interface StrategicFigure {
   corners: { topRight: string; topLeft: string; bottomRight: string; bottomLeft: string }
 }
 
-export type LexicalFigure = NetworkFigure | TreeFigure | BarFigure | PanelBarsFigure | RadialFigure | VBarFigure | IntertopicFigure | HeatmapFigure | StrategicFigure
+/** CHD dendrogram with each class's share and most specific words (labiia_lex's readable dendrogram). */
+export interface ChdDendrogramFigure {
+  kind: 'chd-dendrogram'
+  title: string
+  figW: number
+  figH: number
+  dpi: number
+  /** Leaves left to right, x = 1..n. */
+  classes: { id: number; x: number; color: string; percent: number; words: string[] }[]
+  /** Tree segments in data units (x: class positions, y: 0..1). */
+  lines: [number, number, number, number][]
+  rectW: number
+}
+
+export type LexicalFigure = NetworkFigure | TreeFigure | BarFigure | PanelBarsFigure | RadialFigure | VBarFigure | IntertopicFigure | HeatmapFigure | StrategicFigure | ChdDendrogramFigure

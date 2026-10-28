@@ -53,3 +53,52 @@ describe('CHD segments (labiia_lex)', () => {
     expect(content.uceText[0].startsWith('de escola')).toBe(true)
   })
 })
+
+describe('CHD profiles and dendrogram', () => {
+  it('reads IRaMuTeQ profile sections and the chi2 table', async () => {
+    const { readProfiles, readChiTable } = await import('../../src/main/lexical/tests/chd')
+    const profiles = readProfiles([
+      '"V1";"V2";"V3";"V4";"V5";"V6"',
+      '"***";"nb classes";"2";"***";"";""',
+      '"**";"classe";"1";"**";"";""',
+      '"****";"131";"674";"19.44";"****";""',
+      '"52";"119";" 43.70";"54.324";"democracia";"1.7e-13"',
+      '"**";"classe";"2";"**";"";""',
+      '" 8";"  8";"100.00";"33.559";"líder";"6.9e-09"'
+    ].join('\n'))
+    expect(profiles).toEqual([
+      { cls: 1, word: 'democracia', inClass: 52, total: 119, percent: 43.7, chi2: 54.324, p: 1.7e-13 },
+      { cls: 2, word: 'líder', inClass: 8, total: 8, percent: 100, chi2: 33.559, p: 6.9e-9 }
+    ])
+    const chi = readChiTable('"";"classe 1";"classe 2"\n"achar";-0,235;6,8\n')
+    expect(chi.get('achar')).toEqual([-0.235, 6.8])
+  })
+
+  it('draws the tree the CHD built, not one rebuilt from the profiles', async () => {
+    const { chdDendrogram, parseNewick } = await import('../../src/main/lexical/plot/chd-dendrogram')
+    expect(parseNewick('((1,((4,(5,6)),2)),3);')).toEqual([[1, [[4, [5, 6]], 2]], 3])
+    const fig = chdDendrogram('((1,((4,(5,6)),2)),3);', [10, 10, 10, 10, 10, 50], (k) => [`w${k}`])
+    expect(fig.classes.map((c) => c.id)).toEqual([1, 4, 5, 6, 2, 3])
+    expect(fig.classes.find((c) => c.id === 6)!.percent).toBeCloseTo(50)
+    // Class k keeps colour k whatever its place in the tree.
+    expect(fig.classes.find((c) => c.id === 1)!.color).toBe('#C0405C')
+  })
+
+  it('counts, per class, the rows where each word appears', async () => {
+    const { writeChdProfileTables, docVariable } = await import('../../src/main/lexical/analyses/chd')
+    expect(docVariable('Entrevista Uirá.md')).toBe('*doc_EntrevistaUiramd')
+    const text = 'A escola pública precisa de professores. O hospital precisa de médicos. '.repeat(6)
+    const c = prepareCorpus([{ id: 'a', name: 'Doc A', text }, { id: 'b', name: 'Doc B', text }], pt, { language: 'pt', uceSize: 40 })
+    const dir = mkdtempSync(join(tmpdir(), 'chdprof-'))
+    const classes = c.uceText.map((_t, i) => (i % 2) + 1)
+    writeChdProfileTables(c, pt, { minFreq: 3, maxActives: 20000, useLemmas: true, rows: 'segments' }, dir, classes)
+    const cont = readFileSync(join(dir, 'Contout.csv'), 'utf-8').trim().split('\n').map((l) => l.split(';'))
+    const escola = cont.find(([w]) => w === 'escola')!
+    const expected = [1, 2].map((k) => c.uceText.filter((s, i) => classes[i] === k && s.split(' ').includes('escola')).length)
+    expect(escola.slice(1).map(Number)).toEqual(expected)
+    // Stopwords are not supplementary words here (labiia_lex deletes them).
+    const sup = readFileSync(join(dir, 'ContSupOut.csv'), 'utf-8')
+    expect(sup).not.toMatch(/^de;/m)
+    expect(readFileSync(join(dir, 'ContEtOut.csv'), 'utf-8')).toMatch(/^\*doc_DocA;/m)
+  })
+})

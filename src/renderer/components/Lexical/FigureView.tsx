@@ -17,6 +17,7 @@ import { buildVBars } from './vbar-figure'
 import { buildIntertopic } from './intertopic-figure'
 import { buildHeatmap } from './heatmap-figure'
 import { buildStrategic } from './strategic-figure'
+import { buildChdDendrogram } from './chd-dendrogram-figure'
 
 const FONT = 'LexDejaVu'
 // matplotlib's default subplot box (figure fractions) and savefig pad.
@@ -197,6 +198,7 @@ function build(f: LexicalFigure): Built {
   if (f.kind === 'intertopic') return buildIntertopic(f, kit)
   if (f.kind === 'heatmap') return buildHeatmap(f, kit)
   if (f.kind === 'strategic') return buildStrategic(f, kit)
+  if (f.kind === 'chd-dendrogram') return buildChdDendrogram(f, kit)
   return buildNetwork(f)
 }
 

@@ -62,3 +62,71 @@ export function writeChdMatrix(c: PreparedCorpus, lex: Lexicon, o: ChdMatrixOpti
   writeFileSync(join(dir, 'formes.csv'), 'word;freq\n' + vocab.map((w, i) => `${w};${freq[i]}`).join('\n') + '\n', 'utf-8')
   return { rows: nRows, terms: vocab.length, nonZero: lines.length }
 }
+
+/** Document variable as labiia_lex names it (*doc_ + the name without accents or spaces). */
+export function docVariable(name: string): string {
+  const slug = name.normalize('NFKD').replace(/[̀-ͯ]/g, '').replace(/[^A-Za-z0-9]+/g, '').slice(0, 30) || 'doc'
+  return `*doc_${slug}`
+}
+
+/**
+ * Tables of IRaMuTeQ's profile stage (make_and_write_profile): for each word,
+ * in how many rows of each class it appears. Active words (Contout), other
+ * supplementary words (ContSupOut; stopwords left out, since labiia_lex
+ * deletes them from the text) and document variables (ContEtOut). Words
+ * appearing in fewer than 3 classified rows are dropped, as in IRaMuTeQ.
+ * Also writes the active terms of each row (rowterms.csv) for the typical segments.
+ */
+export function writeChdProfileTables(
+  c: PreparedCorpus,
+  lex: Lexicon,
+  o: ChdMatrixOptions,
+  dir: string,
+  classes: number[]
+): { classes: number } {
+  const nClass = Math.max(0, ...classes)
+  const vocab = new Set(activeVocabulary(c, lex, { minFreq: Math.max(CHD_MIN_FREQ, o.minFreq), maxFeatures: o.maxActives, useLemmas: o.useLemmas }))
+  const termOf = (f: number): string => (o.useLemmas ? c.lemmas[c.formLemma[f]] : c.forms[f])
+  const nRows = o.rows === 'texts' ? c.units.length : c.uceText.length
+  const actRows = new Map<string, Set<number>>()
+  const supRows = new Map<string, Set<number>>()
+  const actFreq = new Map<string, number>()
+  const supFreq = new Map<string, number>()
+  const rowTerms: Set<string>[] = Array.from({ length: nRows }, () => new Set())
+  const add = (m: Map<string, Set<number>>, t: string, r: number): void => { let s = m.get(t); if (!s) m.set(t, (s = new Set())); s.add(r) }
+  for (let s = 0; s < c.uceText.length; s++) {
+    const r = o.rows === 'texts' ? c.uceUnit[s] : s
+    for (let t = c.uceStart[s]; t < c.uceStart[s + 1]; t++) {
+      const f = c.tokens[t]
+      const term = termOf(f)
+      if (c.formAct[f] === 1 && vocab.has(term)) {
+        add(actRows, term, r); actFreq.set(term, (actFreq.get(term) ?? 0) + 1); rowTerms[r].add(term)
+      } else if (c.formAct[f] === 2 && !lex.stopwords.has(c.forms[f]) && !/^\d+$/.test(term)) {
+        add(supRows, term, r); supFreq.set(term, (supFreq.get(term) ?? 0) + 1)
+      }
+    }
+  }
+  const perClass = (rows: Set<number>): number[] => {
+    const counts = new Array(nClass).fill(0)
+    for (const r of rows) if (classes[r] > 0) counts[classes[r] - 1]++
+    return counts
+  }
+  // IRaMuTeQ orders by frequency, then by name, both descending.
+  const order = (freq: Map<string, number>): string[] =>
+    [...freq.entries()].filter(([, f]) => f >= CHD_MIN_FREQ).sort((a, b) => b[1] - a[1] || (a[0] < b[0] ? 1 : a[0] > b[0] ? -1 : 0)).map(([t]) => t)
+  const table = (terms: string[], rowsOf: Map<string, Set<number>>): string => terms
+    .map((t) => [t, perClass(rowsOf.get(t)!)] as const)
+    .filter(([, n]) => n.reduce((a, b) => a + b, 0) >= 3)
+    .map(([t, n]) => `${t};${n.join(';')}`).join('\n')
+  const actives = order(actFreq)
+  const activeSet = new Set(actives)
+  const write = (name: string, body: string): void => writeFileSync(join(dir, name), body ? body + '\n' : '', 'utf-8')
+  write('Contout.csv', table(actives, actRows))
+  write('ContSupOut.csv', table(order(supFreq).filter((t) => !activeSet.has(t)), supRows))
+  // Document variables: rows of each document per class.
+  const docRows = new Map<string, Set<number>>()
+  for (let r = 0; r < nRows; r++) add(docRows, docVariable(c.units[o.rows === 'texts' ? r : c.uceUnit[r]].name), r)
+  write('ContEtOut.csv', [...docRows.keys()].sort().map((v) => `${v};${perClass(docRows.get(v)!).join(';')}`).join('\n'))
+  write('rowterms.csv', rowTerms.map((s, r) => `${r};${[...s].join(' ')}`).join('\n'))
+  return { classes: nClass }
+}
