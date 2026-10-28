@@ -146,4 +146,22 @@ export interface HeatmapFigure {
   legend: FigureLegend
 }
 
-export type LexicalFigure = NetworkFigure | TreeFigure | BarFigure | PanelBarsFigure | RadialFigure | VBarFigure | IntertopicFigure | HeatmapFigure
+/** Strategic diagram of themes: bubbles at centrality x density ranks, quadrants split at the mean ranks. */
+export interface StrategicFigure {
+  kind: 'strategic'
+  title: string
+  xlabel: string
+  ylabel: string
+  figW: number
+  figH: number
+  dpi: number
+  xlim: [number, number]
+  ylim: [number, number]
+  meanX: number
+  meanY: number
+  /** size: marker area in points squared, as matplotlib's scatter. */
+  bubbles: { x: number; y: number; size: number; color: string; lines: string[] }[]
+  corners: { topRight: string; topLeft: string; bottomRight: string; bottomLeft: string }
+}
+
+export type LexicalFigure = NetworkFigure | TreeFigure | BarFigure | PanelBarsFigure | RadialFigure | VBarFigure | IntertopicFigure | HeatmapFigure | StrategicFigure

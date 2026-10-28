@@ -1245,4 +1245,10 @@ export const ptBR: Record<string, string> = {
   "Vocabulary": "Vocabulário",
   "Topics per document": "Tópicos por documento",
   "LDA needs at least two documents and two terms. Choose more documents or lower the minimum frequency.": "O LDA precisa de pelo menos dois documentos e dois termos. Escolha mais documentos ou diminua a frequência mínima.",
+  "Themes": "Temas",
+  "Documents per theme": "Documentos por tema",
+  "Representative segments": "Segmentos representativos",
+  "The thematic map needs at least two terms. Lower the minimum frequency or use more documents.": "O mapa temático precisa de pelo menos dois termos. Diminua a frequência mínima ou use mais documentos.",
+  "No pair of words shares enough segments to form a network. Lower the minimum co-occurrences or use more documents.": "Nenhum par de palavras divide segmentos suficientes para formar uma rede. Diminua as coocorrências mínimas ou use mais documentos.",
+  "No theme has a word that appears at least {{count}} times. Lower the minimum theme frequency.": "Nenhum tema tem uma palavra que apareça pelo menos {{count}} vezes. Diminua a frequência mínima do tema.",
 }

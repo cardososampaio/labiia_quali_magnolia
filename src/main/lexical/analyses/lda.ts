@@ -19,7 +19,12 @@ export interface LdaInput {
   termFrequencies: number[]
 }
 
-export function ldaInput(c: PreparedCorpus, lex: Lexicon, o: { minFreq: number; maxFeatures: number; useLemmas: boolean }): LdaInput | null {
+/**
+ * labiia_lex's vocabulary (SemanticTextBundle): active lemmas (or forms) with
+ * at least `minFreq` occurrences that are not stopword-like, the `maxFeatures`
+ * most frequent (ties alphabetical), in alphabetical order.
+ */
+export function activeVocabulary(c: PreparedCorpus, lex: Lexicon, o: { minFreq: number; maxFeatures: number; useLemmas: boolean; floor?: number }): string[] {
   const minFreq = Math.max(1, Math.round(o.minFreq))
   const cand: { term: string; freq: number }[] = []
   const seen = new Set<string>()
@@ -33,9 +38,12 @@ export function ldaInput(c: PreparedCorpus, lex: Lexicon, o: { minFreq: number; 
       cand.push({ term: t, freq: freqs[i] })
     }
   }
-  // The most frequent first (ties alphabetical), then alphabetical order as the columns.
   cand.sort((a, b) => b.freq - a.freq || (a.term < b.term ? -1 : 1))
-  const vocabulary = cand.slice(0, Math.max(10, Math.round(o.maxFeatures))).map((x) => x.term).sort()
+  return cand.slice(0, Math.max(o.floor ?? 10, Math.round(o.maxFeatures))).map((x) => x.term).sort()
+}
+
+export function ldaInput(c: PreparedCorpus, lex: Lexicon, o: { minFreq: number; maxFeatures: number; useLemmas: boolean }): LdaInput | null {
+  const vocabulary = activeVocabulary(c, lex, o)
   if (vocabulary.length < 2 || c.units.length < 2) return null
   const index = new Map(vocabulary.map((t, i) => [t, i]))
   const counts = c.units.map(() => new Uint32Array(vocabulary.length))

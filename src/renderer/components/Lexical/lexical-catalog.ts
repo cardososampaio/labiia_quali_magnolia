@@ -217,7 +217,7 @@ export const LEXICAL_TESTS: LexicalTestDef[] = [
       { key: 'min_cooc', label: t('Minimum co-occurrences'), kind: 'int', default: 2, min: 1, max: 100 },
       { key: 'max_features', label: t('Maximum terms'), kind: 'int', default: 300, min: 50, max: 5000 },
       { key: 'resolution', label: t('Community resolution'), kind: 'number', default: 0.5, min: 0.1, max: 3, step: 0.1 },
-      { key: 'label_words', label: t('Words in each theme name'), kind: 'int', default: 2, min: 1, max: 5 },
+      { key: 'label_words', label: t('Words in each theme name'), kind: 'int', default: 2, min: 1, max: 3 },
       { key: 'min_theme_freq', label: t('Minimum theme frequency (per 1,000 segments)'), kind: 'number', default: 5, min: 0, max: 100, step: 0.5 },
       USE_LEMMAS
     ],
@@ -301,7 +301,7 @@ export const LEXICAL_TESTS: LexicalTestDef[] = [
 ]
 
 /** Tests whose engine is connected; the others show their settings but cannot run yet. */
-export const CONNECTED_TESTS = new Set<LexicalTestId>(['wordcloud', 'bigrams', 'trigrams', 'word-tree', 'yake', 'keyword-associations', 'sentiment', 'emotions', 'similitude', 'lda'])
+export const CONNECTED_TESTS = new Set<LexicalTestId>(['wordcloud', 'bigrams', 'trigrams', 'word-tree', 'yake', 'keyword-associations', 'sentiment', 'emotions', 'similitude', 'lda', 'thematic-map'])
 
 export const LEXICAL_TOOL_PREFIX = 'lexical-'
 

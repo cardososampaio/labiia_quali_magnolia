@@ -13,8 +13,8 @@ const LOWER = 0x7fffffff
 const MATRIX_A = 0x9908b0df
 
 export class RandomState {
-  private mt = new Uint32Array(N)
-  private index = N
+  protected mt = new Uint32Array(N)
+  protected index = N
 
   constructor(seed: number) {
     this.mt[0] = seed >>> 0
@@ -25,7 +25,7 @@ export class RandomState {
     }
   }
 
-  private nextUint32(): number {
+  protected nextUint32(): number {
     if (this.index >= N) {
       const mt = this.mt
       let y: number
@@ -55,5 +55,54 @@ export class RandomState {
     const a = this.nextUint32() >>> 5
     const b = this.nextUint32() >>> 6
     return (a * 67108864 + b) / 9007199254740992
+  }
+}
+
+/**
+ * Python's own `random.Random(seed)` (also MT19937, but seeded through
+ * init_by_array). networkx's Louvain shuffles the nodes with it, so the same
+ * seed gives the same communities as in labiia_lex.
+ */
+export class PyRandom extends RandomState {
+  constructor(seed: number) {
+    super(19650218)
+    const mt = this.mt
+    const key = [Math.abs(Math.trunc(seed)) >>> 0]
+    let i = 1, j = 0
+    for (let k = Math.max(N, key.length); k > 0; k--) {
+      const prev = mt[i - 1] ^ (mt[i - 1] >>> 30)
+      mt[i] = ((mt[i] ^ Math.imul(prev, 1664525)) + key[j] + j) >>> 0
+      i++; j++
+      if (i >= N) { mt[0] = mt[N - 1]; i = 1 }
+      if (j >= key.length) j = 0
+    }
+    for (let k = N - 1; k > 0; k--) {
+      const prev = mt[i - 1] ^ (mt[i - 1] >>> 30)
+      mt[i] = ((mt[i] ^ Math.imul(prev, 1566083941)) - i) >>> 0
+      i++
+      if (i >= N) { mt[0] = mt[N - 1]; i = 1 }
+    }
+    mt[0] = 0x80000000
+    this.index = N
+  }
+
+  /** random.getrandbits(k) for 1 <= k <= 32. */
+  getrandbits(k: number): number {
+    return this.nextUint32() >>> (32 - k)
+  }
+
+  /** random._randbelow(n): rejection sampling on n's bit length. */
+  randbelow(n: number): number {
+    const k = 32 - Math.clz32(n)
+    let r = this.getrandbits(k)
+    while (r >= n) r = this.getrandbits(k)
+    return r
+  }
+
+  shuffle<T>(x: T[]): void {
+    for (let i = x.length - 1; i > 0; i--) {
+      const j = this.randbelow(i + 1)
+      const t = x[i]; x[i] = x[j]; x[j] = t
+    }
   }
 }
