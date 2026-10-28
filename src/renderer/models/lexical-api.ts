@@ -68,6 +68,8 @@ export interface RInstallResult {
 export interface LexicalUnit {
   id: string
   name: string
+  /** Source document of a coded passage. */
+  document?: string
   text: string
   /** IRaMuTeQ-style variables (*variable_value) from the document's tags and folder. */
   variables?: string[]

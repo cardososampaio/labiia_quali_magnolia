@@ -174,7 +174,8 @@ export function writeChdProfileTables(
   const docRows = new Map<string, Set<number>>()
   for (let r = 0; r < nRows; r++) {
     const unit = c.units[o.rows === 'texts' ? r : c.uceUnit[r]]
-    add(docRows, docVariable(unit.name), r)
+    // Coded passages count for their document.
+    add(docRows, docVariable(unit.document ?? unit.name), r)
     for (const v of unit.variables ?? []) add(docRows, v, r)
   }
   write('ContEtOut.csv', [...docRows.keys()].sort().map((v) => `${v};${perClass(docRows.get(v)!).join(';')}`).join('\n'))

@@ -25,7 +25,8 @@ import {
   type LexicalParamValue,
   type LexicalTestDef
 } from './lexical-catalog'
-import { documentUnits, type LexicalSource } from './lexical-units'
+import { codeUnits, documentUnits, type LexicalSource } from './lexical-units'
+import { ManualSelectButton } from '../ItemPicker/ManualSelectButton'
 import { RStatusPanel } from './RStatusPanel'
 import { LexicalResultView, RunProgressNotice, runErrorText, type StoredLexicalResult } from './LexicalResultView'
 import { useLexicalRStore } from './lexical-r-store'
@@ -36,6 +37,9 @@ import './Lexical.css'
 export interface LexicalSavedConfig {
   docFilter: DocumentFilterState
   source: LexicalSource
+  /** "Codes" source: the chosen codes and whether their subcodes count. */
+  codeGuids?: string[]
+  includeSubcodes?: boolean
   language: CorpusLanguage
   params: Record<string, LexicalParamValue>
   result?: StoredLexicalResult
@@ -61,7 +65,9 @@ export function LexicalAnalysisTab({ test, data: propData, savedConfig, inTab }:
 
   const [docFilter, setDocFilter] = useState<DocumentFilterState>(savedConfig?.docFilter ?? emptyDocumentFilter())
   const [docSectionOpen, setDocSectionOpen] = useState(!savedConfig?.guid)
-  const [source, setSource] = useState<LexicalSource>('documents')
+  const [source, setSource] = useState<LexicalSource>(savedConfig?.source ?? 'documents')
+  const [codeGuids, setCodeGuids] = useState<string[]>(savedConfig?.codeGuids ?? [])
+  const [includeSubcodes, setIncludeSubcodes] = useState(savedConfig?.includeSubcodes ?? true)
   const [language, setLanguage] = useState<CorpusLanguage>(savedConfig?.language ?? 'pt')
   const [params, setParams] = useState(() => defaultParams(test, savedConfig?.params))
   const [showAdvanced, setShowAdvanced] = useState(false)
@@ -79,10 +85,12 @@ export function LexicalAnalysisTab({ test, data: propData, savedConfig, inTab }:
   const connected = CONNECTED_TESTS.has(test.id)
 
   // The result's run time stands for the result in dirty tracking (comparing images would be slow).
-  const currentConfig = useMemo(() => ({ docFilter, source, language, params, ranAt: result?.ranAt ?? '' }), [docFilter, source, language, params, result])
+  const currentConfig = useMemo(() => ({ docFilter, source, codeGuids, includeSubcodes, language, params, ranAt: result?.ranAt ?? '' }), [docFilter, source, codeGuids, includeSubcodes, language, params, result])
   const initialBaseline = useMemo(() => ({
     docFilter: savedConfig?.docFilter ?? emptyDocumentFilter(),
-    source: 'documents' as LexicalSource,
+    source: (savedConfig?.source ?? 'documents') as LexicalSource,
+    codeGuids: savedConfig?.codeGuids ?? [],
+    includeSubcodes: savedConfig?.includeSubcodes ?? true,
     language: savedConfig?.language ?? ('pt' as CorpusLanguage),
     params: defaultParams(test, savedConfig?.params),
     ranAt: savedConfig?.result?.ranAt ?? ''
@@ -91,6 +99,9 @@ export function LexicalAnalysisTab({ test, data: propData, savedConfig, inTab }:
 
   const handleDiscard = useCallback(() => {
     setDocFilter(baseline.docFilter)
+    setSource(baseline.source)
+    setCodeGuids(baseline.codeGuids)
+    setIncludeSubcodes(baseline.includeSubcodes)
     setLanguage(baseline.language)
     setParams(baseline.params)
     setResult(savedConfig?.result)
@@ -100,7 +111,14 @@ export function LexicalAnalysisTab({ test, data: propData, savedConfig, inTab }:
     () => resolveFilteredSources(data, docFilter.sourceGuids, docFilter.tagGuids, docFilter.tagExcludeGuids, docFilter.typeInclude, docFilter.typeExclude),
     [data, docFilter]
   )
-  const { units, skipped } = useMemo(() => documentUnits(data, filteredSourceGuids), [data, filteredSourceGuids])
+  const docUnits = useMemo(() => documentUnits(data, filteredSourceGuids), [data, filteredSourceGuids])
+  const passageUnits = useMemo(
+    () => (source === 'codes' ? codeUnits(data, filteredSourceGuids, codeGuids, includeSubcodes) : null),
+    [source, data, filteredSourceGuids, codeGuids, includeSubcodes]
+  )
+  // The "Codes" source analyses the coded passages of the chosen documents instead of whole documents.
+  const units = passageUnits ? passageUnits.units : docUnits.units
+  const skipped = docUnits.skipped
   const wordEstimate = useMemo(() => units.reduce((n, u) => n + countWords(u.text), 0), [units])
 
   // What a result depends on: which documents, the language and the settings.
@@ -128,7 +146,7 @@ export function LexicalAnalysisTab({ test, data: propData, savedConfig, inTab }:
         testId: test.id,
         language,
         params,
-        units: units.map((u) => ({ id: u.id, name: u.name, text: u.text, variables: u.variables, date: u.date }))
+        units: units.map((u) => ({ id: u.id, name: u.name, document: u.document, text: u.text, variables: u.variables, date: u.date }))
       })
       if (runIdRef.current !== runId) return
       if (res.ok && res.files) {
@@ -178,11 +196,11 @@ export function LexicalAnalysisTab({ test, data: propData, savedConfig, inTab }:
       guid: analysisGuid,
       toolType: lexicalToolType(test.id),
       name,
-      config: { docFilter, source, language, params, result }
+      config: { docFilter, source, codeGuids, includeSubcodes, language, params, result }
     })
-    setBaseline({ docFilter, source, language, params, ranAt: result?.ranAt ?? '' })
+    setBaseline({ docFilter, source, codeGuids, includeSubcodes, language, params, ranAt: result?.ranAt ?? '' })
     if (inTab) inTab.onSaved(analysisGuid, name)
-  }, [analysisGuid, test.id, docFilter, source, language, params, result, inTab, setBaseline])
+  }, [analysisGuid, test.id, docFilter, source, codeGuids, includeSubcodes, language, params, result, inTab, setBaseline])
 
   useRegisterToolSave(inTab?.tabId, () => {
     if (isExisting) {
@@ -260,7 +278,7 @@ export function LexicalAnalysisTab({ test, data: propData, savedConfig, inTab }:
               label={t('Analyse')}
               options={[
                 { value: 'documents', label: t('Documents') },
-                { value: 'codes', label: t('Codes (coming soon)'), disabled: true }
+                { value: 'codes', label: t('Codes') }
               ]}
             />
           </div>
@@ -271,6 +289,47 @@ export function LexicalAnalysisTab({ test, data: propData, savedConfig, inTab }:
             </select>
           </label>
         </div>
+
+        {source === 'codes' && (
+          <div className="analysis-section lex-section">
+            <div className="lex-codes-head">
+              <span className="lex-section-title">{t('Codes')}</span>
+              <ManualSelectButton
+                kinds={['code']}
+                data={data}
+                title={t('Codes')}
+                label={codeGuids.length ? t('Change codes…') : t('Choose codes…')}
+                onPicked={(picked) => setCodeGuids([...new Set([...codeGuids, ...(picked.code ?? []).map((c) => c.guid)])])}
+              />
+              <label className="lex-field-check">
+                <input type="checkbox" checked={includeSubcodes} onChange={(e) => setIncludeSubcodes(e.target.checked)} />
+                <span>{t('Include subcodes')}</span>
+              </label>
+            </div>
+            {codeGuids.length > 0 && (
+              <div className="lex-chips">
+                {codeGuids.map((g) => {
+                  const code = data.codes.find((c) => c.guid === g)
+                  return (
+                    <span key={g} className="lex-chip" style={{ borderColor: code?.color ?? 'var(--border)' }}>
+                      {code?.name ?? g}
+                      <button className="lex-chip-x" title={t('Remove')} onClick={() => setCodeGuids(codeGuids.filter((x) => x !== g))}>×</button>
+                    </span>
+                  )
+                })}
+              </div>
+            )}
+            <div className="lex-note">
+              {codeGuids.length === 0
+                ? t('Choose the codes whose passages will be analysed. Each coded passage of the chosen documents becomes a text.')
+                : tn(units.length, '{{count}} coded passage in the chosen documents', '{{count}} coded passages in the chosen documents')}
+              {passageUnits && passageUnits.passagesWithoutText > 0 && (
+                <> · {tn(passageUnits.passagesWithoutText, '{{count}} passage without text (image or PDF area) is left out', '{{count}} passages without text (image or PDF area) are left out')}</>
+              )}
+            </div>
+          </div>
+        )}
+
 
         {test.params.length > 0 && (
           <div className="analysis-section lex-section">
@@ -302,7 +361,7 @@ export function LexicalAnalysisTab({ test, data: propData, savedConfig, inTab }:
             {result ? t('Run again') : t('Run')}
           </button>
           {!connected && <span className="lex-run-note">{t('This test is still being connected')}</span>}
-          {connected && units.length === 0 && <span className="lex-run-note">{t('Choose at least one document with text.')}</span>}
+          {connected && units.length === 0 && <span className="lex-run-note">{source === 'codes' ? t('Choose at least one code with coded passages in the chosen documents.') : t('Choose at least one document with text.')}</span>}
         </div>
 
         {running && <RunProgressNotice progress={progress} onCancel={handleCancel} />}

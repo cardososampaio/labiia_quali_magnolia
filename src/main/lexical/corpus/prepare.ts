@@ -21,6 +21,8 @@ export const PREPARATION_VERSION = 2
 export interface TextUnitInput {
   id: string
   name: string
+  /** Source document of a coded passage (the CHD groups passages by it). */
+  document?: string
   text: string
   variables?: string[]
   date?: string
@@ -44,7 +46,7 @@ export interface PreparedCorpus {
   version: number
   language: CorpusLanguage
   uceSize: number
-  units: { id: string; name: string; variables: string[]; date?: string }[]
+  units: { id: string; name: string; document?: string; variables: string[]; date?: string }[]
   /** Unit index of each segment. */
   uceUnit: Uint32Array
   /** Cleaned segment text (lower case, punctuation removed), as IRaMuTeQ stores it. */
@@ -282,7 +284,7 @@ export function prepareCorpus(
     version: PREPARATION_VERSION,
     language: options.language,
     uceSize,
-    units: units.map((x) => ({ id: x.id, name: x.name, variables: x.variables ?? [], ...(x.date ? { date: x.date } : {}) })),
+    units: units.map((x) => ({ id: x.id, name: x.name, ...(x.document ? { document: x.document } : {}), variables: x.variables ?? [], ...(x.date ? { date: x.date } : {}) })),
     uceUnit: Uint32Array.from(uceUnit),
     uceText,
     uceStart: Uint32Array.from(uceStart),

@@ -80,9 +80,15 @@ documento (dd/mm/aaaa, mm/aaaa, aaaa ou aaaa-mm-dd); com datas, o Sentimento e
 o LDA ganham a linha do tempo. Documentos sem data ficam fora das linhas do
 tempo.
 
-**Ainda não disponível**: rodar os testes sobre trechos codificados (origem
-"Códigos"; a base já está pronta). Os créditos dos dicionários, léxicos e
-scripts incluídos estão em
+**Origem "Códigos"**: em vez dos documentos inteiros, os testes podem rodar
+sobre os trechos codificados. Escolha os códigos (com ou sem subcódigos) e cada
+trecho codificado dos documentos selecionados vira um texto, que herda as
+variáveis e a data do seu documento e ganha a variável `*codigo_nome`. Um mesmo
+trecho codificado com vários códigos entra uma vez só, com todas as variáveis
+de código. Na CHD, os trechos continuam agrupados pelo documento de origem.
+Trechos sem texto (áreas de imagem ou de PDF) ficam de fora, com aviso.
+
+Os créditos dos dicionários, léxicos e scripts incluídos estão em
 [resources/lexical/README.md](resources/lexical/README.md).
 
 ## Como rodar em desenvolvimento
