@@ -3,7 +3,8 @@ import type { AnalysisInitData, SurveyEntityRef } from '../../models/types'
 import type { GroupByEntry, GroupedHeader } from './group-by'
 import { Icon, faXmark, faQuestion, faUser } from '../Icon'
 import { truncate, tagColumnSources } from './analysis-helpers'
-import { t } from '../../i18n'
+import { t } from '../../i18n'
+import { ManualSelectButton } from '../ItemPicker/ManualSelectButton'
 
 /** One slot produced by the "Respondents" grouping: a single respondent
  *  of a survey, or the whole-survey subtotal. Tools map these into their
@@ -311,8 +312,9 @@ export function QuestionScopeBox({
     >
       <div style={{ display: 'flex', alignItems: 'baseline', justifyContent: 'space-between', gap: 12, marginBottom: value.length > 0 ? 8 : 0, position: 'relative', zIndex: 1 }}>
         <span style={{ fontSize: 'var(--font-size-lg)', fontWeight: 600, color: 'var(--text-secondary)' }}>{t("Questions")}</span>
-        <span style={{ fontSize: 11, color: 'var(--text-muted)' }}>
+        <span style={{ display: 'flex', alignItems: 'center', gap: 8, fontSize: 11, color: 'var(--text-muted)' }}>
           {value.length > 0 ? t("Analysis limited to these questions") : t("Drag survey questions here to scope (default: all)")}
+          <ManualSelectButton kinds={['survey-question']} title={t('Questions')} />
         </span>
       </div>
       {value.length > 0 && (
@@ -399,8 +401,9 @@ export function RespondentScopeBox({
     >
       <div style={{ display: 'flex', alignItems: 'baseline', justifyContent: 'space-between', gap: 12, marginBottom: value.length > 0 ? 8 : 0, position: 'relative', zIndex: 1 }}>
         <span style={{ fontSize: 'var(--font-size-lg)', fontWeight: 600, color: 'var(--text-secondary)' }}>{t("Respondents")}</span>
-        <span style={{ fontSize: 11, color: 'var(--text-muted)' }}>
+        <span style={{ display: 'flex', alignItems: 'center', gap: 8, fontSize: 11, color: 'var(--text-muted)' }}>
           {value.length > 0 ? t("Limited to these respondents") : t("Drag survey respondents here to scope (default: all)")}
+          <ManualSelectButton kinds={['survey-respondent']} title={t('Respondents')} />
         </span>
       </div>
       {value.length > 0 && (

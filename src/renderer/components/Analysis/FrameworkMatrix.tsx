@@ -63,7 +63,8 @@ import { generateGuid } from '../../utils/guid'
 import { useToolDirtyState } from '../../hooks/use-tool-dirty-state'
 import { useRegisterToolSave } from '../../hooks/use-register-tool-save'
 import { useAnalysisTabsStore } from '../../stores/analysis-tabs-store'
-import { t } from '../../i18n'
+import { t } from '../../i18n'
+import { ManualSelectButton } from '../ItemPicker/ManualSelectButton'
 
 interface Props {
   data: AnalysisInitData
@@ -570,14 +571,29 @@ export function FrameworkMatrix({ data: propData, savedConfig, inTab }: Props) {
         </div>
       )}
 
-      <div style={{ padding: '4px 20px 8px', fontSize: 11, color: 'var(--text-muted)', flexShrink: 0 }}>
-        {t("Drag documents, tags, categories, folders, or survey respondents and questions in to add rows, and codes to add columns. Click a cell to see its coded segments in Query Results and write a summary.")}
+      <div style={{ padding: '4px 20px 8px', fontSize: 11, color: 'var(--text-muted)', flexShrink: 0, display: 'flex', alignItems: 'center', gap: 8, flexWrap: 'wrap' }}>
+        <span style={{ flex: 1, minWidth: 240 }}>
+          {t("Drag documents, tags, categories, folders, or survey respondents and questions in to add rows, and codes to add columns. Click a cell to see its coded segments in Query Results and write a summary.")}
+        </span>
+        <ManualSelectButton
+          label={t('Select rows…')}
+          title={t('Select rows')}
+          kinds={['document', 'folder', 'tag', 'category', 'survey-respondent', 'survey-question']}
+          target={() => wrapperRef.current?.querySelector('[data-matrix-drop]') ?? null}
+        />
+        <ManualSelectButton
+          label={t('Select columns…')}
+          title={t('Select columns')}
+          kinds={['code']}
+          target={() => wrapperRef.current?.querySelector('[data-matrix-drop]') ?? null}
+        />
       </div>
 
       {/* The whole matrix area is the drop target and the scroll
           container, so the header row and label column can stick. */}
       <div ref={wrapperRef} style={{ flex: 1, minHeight: 0, margin: '0 20px 14px', position: 'relative' }}>
       <div
+        data-matrix-drop
         style={{ height: '100%', overflow: 'auto', background: 'var(--bg-panel)', border: '1px solid var(--border-color)', borderRadius: 'var(--radius-md)' }}
         onDragOver={(e) => {
           if (e.dataTransfer.types.includes(REORDER_MIME)) {

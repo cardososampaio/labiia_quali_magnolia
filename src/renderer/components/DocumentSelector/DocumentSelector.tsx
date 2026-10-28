@@ -12,6 +12,9 @@ import {
   type DocCategory
 } from '../../utils/document-graph'
 import { t } from '../../i18n'
+import { ItemPickerDialog } from '../ItemPicker/ItemPickerDialog'
+import type { PickedItems } from '../../utils/drag-payload'
+import type { AnalysisInitData } from '../../models/types'
 
 const CATEGORY_LABELS: Record<DocCategory, string> = {
   video: t("Video"),
@@ -196,7 +199,8 @@ function graphFromFilter(
   const hasSourceGuids = filter.sourceGuids && filter.sourceGuids.length > 0
   const hasTagGuids = filter.tagGuids && filter.tagGuids.length > 0
   const hasTagExclude = filter.tagExcludeGuids && filter.tagExcludeGuids.length > 0
-  if (!hasSourceGuids && !hasTagGuids && !hasTagExclude) return null
+  const hasFolderGuids = filter.folderGuids && filter.folderGuids.length > 0
+  if (!hasSourceGuids && !hasTagGuids && !hasTagExclude && !hasFolderGuids) return null
 
   const nodes: DNode[] = []
   const conns: DConn[] = []
@@ -244,6 +248,16 @@ function graphFromFilter(
       }
       nodes.push(tagNode)
       sourceNodes.push(tagNode)
+      nextRow++
+    }
+  }
+
+  // A folder node for each folder (its subfolders are included by the node)
+  if (hasFolderGuids) {
+    for (const folderGuid of filter.folderGuids) {
+      const folderNode: DNode = { id: uid(), kind: 'folder', x: COL_SOURCES, y: 30 + nextRow * ROW_GAP, folderGuid }
+      nodes.push(folderNode)
+      sourceNodes.push(folderNode)
       nextRow++
     }
   }
@@ -638,6 +652,7 @@ export function DocumentSelector({
   )
   const [selNodes, setSelNodes] = useState<Set<string>>(new Set())
   const [selConn, setSelConn] = useState<string | null>(null)
+  const [manualOpen, setManualOpen] = useState(false)
   const [marqueeRect, setMarqueeRect] = useState<{ x: number; y: number; w: number; h: number } | null>(null)
   const [pan, setPan] = useState({ x: 0, y: 0 })
   const panRef = useRef(pan)
@@ -680,6 +695,27 @@ export function DocumentSelector({
     },
     []
   )
+
+  /* --- manual selection: replace the drawing with the chosen documents --- */
+  const applyManual = useCallback((picked: PickedItems) => {
+    const g = graphFromFilter({
+      ...emptyDocumentFilter(),
+      sourceGuids: (picked.document ?? []).map((d) => d.guid),
+      tagGuids: (picked.tag ?? []).map((tg) => tg.guid),
+      folderGuids: (picked.folder ?? []).map((f) => f.guid)
+    }, tags)
+    if (!g) return
+    // Only the default "All documents → Result" drawing is replaced silently.
+    const custom = nodesRef.current.some((n) => n.kind !== 'allDocs' && n.kind !== 'result') ||
+      nodesRef.current.filter((n) => n.kind === 'allDocs').length > 1
+    if (custom && !window.confirm(t('Replace the current document selection?'))) return
+    advanceUidPast(g.nodes, g.conns)
+    setNodes(g.nodes)
+    setConns(g.conns)
+    setSelNodes(new Set())
+    setSelConn(null)
+    setManualOpen(false)
+  }, [tags])
 
   /* --- add nodes --- */
   const addNode = useCallback((kind: DNodeKind, extra?: Partial<DNode>) => {
@@ -1202,7 +1238,34 @@ export function DocumentSelector({
             onClick={() => addNode('setOp', { setOps: [undefined] })}
           />
         </PaletteGroup>
+
+        <PaletteDivider />
+
+        <PaletteGroup label={t('Manual')}>
+          <button
+            type="button"
+            className="secondary"
+            style={{ fontSize: 12, padding: '3px 10px' }}
+            title={t('Choose documents, folders and tags from a list and let labiia_quali draw the selection')}
+            onClick={() => setManualOpen(true)}
+          >
+            {t('Select manually…')}
+          </button>
+        </PaletteGroup>
       </div>
+
+      {manualOpen && (
+        <ItemPickerDialog
+          title={t('Select documents')}
+          kinds={['document', 'folder', 'tag']}
+          // The selector's own lists, so the dialog matches what its nodes
+          // can resolve (and works in popped-out analysis windows).
+          data={{ sources, folders, tags, categories, codes: [] } as unknown as AnalysisInitData}
+          confirmLabel={t('Use these documents')}
+          onConfirm={(picked) => applyManual(picked)}
+          onCancel={() => setManualOpen(false)}
+        />
+      )}
 
       {/* ── Canvas + Selected Documents ── */}
       <div style={{ display: 'flex', gap: 10 }}>

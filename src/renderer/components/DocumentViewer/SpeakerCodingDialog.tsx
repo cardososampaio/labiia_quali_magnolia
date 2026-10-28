@@ -2,7 +2,8 @@ import { useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react'
 import { Icon, faPlay, faPause } from '../Icon'
 import type { DetectedSpeaker } from '../../utils/transcript-speakers'
 import { useCodeColourPresets } from '../../utils/code-colours'
-import { t } from '../../i18n'
+import { t } from '../../i18n'
+import { ManualSelectButton } from '../ItemPicker/ManualSelectButton'
 
 /** Seconds of audio the play button previews. */
 const CLIP_SECONDS = 5
@@ -286,6 +287,8 @@ export function SpeakerCodingDialog({ open, speakers, source, onApply, onClose }
                       style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 8, padding: '6px 8px', borderRadius: 6, border: `1px dashed ${dragOver === sp.id ? 'var(--accent-color, #5080e0)' : 'var(--border-color)'}`, background: dragOver === sp.id ? 'var(--bg-secondary)' : 'transparent' }}
                     >
                       <span style={{ fontSize: 11, color: 'var(--text-muted)' }}>{t("Drag a code here")}</span>
+                      <span style={{ flex: 1 }} />
+                      <ManualSelectButton kinds={['code']} title={t('Code these lines with')} />
                       <button onClick={() => startNewCode(sp.id)} style={{ fontSize: 11, padding: '2px 8px', border: '1px solid var(--border-color)', borderRadius: 4, background: 'var(--bg-secondary)', color: 'var(--text-primary)', cursor: 'pointer', flexShrink: 0 }}>{t("+ New code")}</button>
                     </div>
                   )}

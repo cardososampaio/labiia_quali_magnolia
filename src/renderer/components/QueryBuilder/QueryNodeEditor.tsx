@@ -3,6 +3,9 @@ import type { CodeCondition } from '../../models/types'
 import { validateCondition } from '../../utils/query-engine'
 import { Icon, faExclamationTriangle, faCircle, faXmark } from '../Icon'
 import { PaletteGroup, PaletteDivider, PaletteButton } from '../NodePalette'
+import { ItemPickerDialog } from '../ItemPicker/ItemPickerDialog'
+import type { PickedItems } from '../../utils/drag-payload'
+import { useCodeStore } from '../../stores/code-store'
 import { modKey, altClickHint } from '../../utils/platform'
 import { t } from '../../i18n'
 
@@ -583,6 +586,48 @@ function conditionToGraph(
    Component
    ═══════════════════════════════════════════════════ */
 
+/** AND / OR nodes take at most this many inputs; longer manual selections
+ *  are nested in groups of this size, which gives the same result. */
+const MAX_LOGICAL_INPUTS = 10
+
+function combineConditions(op: 'and' | 'or', items: CodeCondition[]): CodeCondition {
+  if (items.length === 1) return items[0]
+  if (items.length <= MAX_LOGICAL_INPUTS) return { type: op, conditions: items }
+  const groups: CodeCondition[] = []
+  for (let i = 0; i < items.length; i += MAX_LOGICAL_INPUTS) groups.push(combineConditions(op, items.slice(i, i + MAX_LOGICAL_INPUTS)))
+  return combineConditions(op, groups)
+}
+
+/**
+ * The query a manual selection describes: passages coded with all ("and")
+ * or any ("or") of the chosen codes — the "All / Any of the following" rule
+ * of form-based query tools — narrowed to those containing the search text
+ * when one is given. With subcodes
+ * included, a ticked parent stands for its whole branch (the node's "And
+ * subcodes" box), so its ticked descendants are not added again.
+ */
+function manualCondition(
+  picked: PickedItems,
+  op: 'and' | 'or',
+  searchText: string,
+  includeSubcodes: boolean,
+  codes: CodeInfo[]
+): CodeCondition | null {
+  const parent = new Map(codes.map((c) => [c.guid, c.parentGuid]))
+  const chosen = new Set((picked.code ?? []).map((c) => c.guid))
+  const hasChosenAncestor = (guid: string): boolean => {
+    for (let p = parent.get(guid); p; p = parent.get(p)) if (chosen.has(p)) return true
+    return false
+  }
+  const items: CodeCondition[] = (picked.code ?? [])
+    .filter((c) => !(includeSubcodes && hasChosenAncestor(c.guid)))
+    .map((c) => ({ type: 'code', codeGuid: c.guid, includeSubcodes: includeSubcodes || undefined }))
+  const text: CodeCondition | null = searchText.trim() ? { type: 'text', searchText: searchText.trim() } : null
+  if (!items.length) return text
+  const codesCond = combineConditions(op, items)
+  return text ? { type: 'and', conditions: [codesCond, text] } : codesCond
+}
+
 interface Props {
   onChange: (condition: CodeCondition | null) => void
   onGraphChange?: (graph: { nodes: any[]; conns: any[] }) => void
@@ -632,6 +677,9 @@ export function QueryNodeEditor({ onChange, onGraphChange, initialCondition, ini
   const [selNodes, setSelNodes] = useState<Set<string>>(new Set())
   const [selConn, setSelConn] = useState<string | null>(null)
   const [marqueeRect, setMarqueeRect] = useState<{ x: number; y: number; w: number; h: number } | null>(null)
+  const [manualOpen, setManualOpen] = useState(false)
+  const [manualOp, setManualOp] = useState<'and' | 'or'>('or')
+  const [manualText, setManualText] = useState('')
   const [pan, setPan] = useState({ x: 0, y: 0 })
   const panRef = useRef(pan)
   panRef.current = pan
@@ -1128,6 +1176,30 @@ export function QueryNodeEditor({ onChange, onGraphChange, initialCondition, ini
     [cpos]
   )
 
+  /* --- manual selection: replace the drawing with the chosen query --- */
+  const applyManual = useCallback((picked: PickedItems, includeSubcodes: boolean) => {
+    const codeInfos: CodeInfo[] = codes ?? (() => {
+      const acc: CodeInfo[] = []
+      const visit = (cs: ReturnType<typeof useCodeStore.getState>['codes'], parentGuid?: string): void => {
+        for (const c of cs) { acc.push({ guid: c.guid, name: c.name, color: c.color, isCodable: c.isCodable, parentGuid }); visit(c.children, c.guid) }
+      }
+      visit(useCodeStore.getState().codes)
+      return acc
+    })()
+    const cond = manualCondition(picked, manualOp, manualText, includeSubcodes, codeInfos)
+    if (!cond) return
+    const hasDrawing = nodesRef.current.some((n) => n.kind !== 'result')
+    if (hasDrawing && !window.confirm(t('Replace the current query with this selection?'))) return
+    const g = conditionToGraph(cond, codeInfos)
+    advanceUidPast(g.nodes, g.conns)
+    setNodes(g.nodes)
+    setConns(g.conns)
+    setSelNodes(new Set())
+    setSelConn(null)
+    setPan({ x: 0, y: 0 })
+    setManualOpen(false)
+  }, [codes, manualOp, manualText])
+
   /* ═══ Render ═══ */
 
   const condition = graphToCondition(nodes, conns, codes)
@@ -1212,7 +1284,52 @@ export function QueryNodeEditor({ onChange, onGraphChange, initialCondition, ini
             />
           ))}
         </PaletteGroup>
+
+        <PaletteDivider />
+
+        <PaletteGroup label={t('Manual')}>
+          <button
+            type="button"
+            className="secondary"
+            style={{ fontSize: 12, padding: '3px 10px' }}
+            title={t('Choose codes from a list and let labiia_quali draw the query')}
+            onClick={() => setManualOpen(true)}
+          >
+            {t('Select manually…')}
+          </button>
+        </PaletteGroup>
       </div>
+
+      {manualOpen && (
+        <ItemPickerDialog
+          title={t('Select query content')}
+          kinds={['code']}
+          confirmLabel={t('Build query')}
+          requireSelection={false}
+          extra={
+            <div className="ip-fieldset">
+              <span className="ip-fieldset-label">{t('Find passages coded with')}</span>
+              <label className="ip-radio">
+                <input type="radio" checked={manualOp === 'or'} onChange={() => setManualOp('or')} />
+                {t('any of the selected codes (OR)')}
+              </label>
+              <label className="ip-radio">
+                <input type="radio" checked={manualOp === 'and'} onChange={() => setManualOp('and')} />
+                {t('all of the selected codes (AND)')}
+              </label>
+              <input
+                className="ip-text-input"
+                value={manualText}
+                placeholder={t('…and containing this text (optional)')}
+                aria-label={t('Text to search for (optional)')}
+                onChange={(e) => setManualText(e.target.value)}
+              />
+            </div>
+          }
+          onConfirm={(picked, { includeSubcodes }) => applyManual(picked, includeSubcodes)}
+          onCancel={() => setManualOpen(false)}
+        />
+      )}
 
       {/* ── Canvas ── */}
       <div

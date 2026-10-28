@@ -34,7 +34,8 @@ import { EditableTitleSuffix } from '../EditableTitleSuffix'
 import { renameSavedAnalysis } from '../../utils/rename-saved-analysis'
 import { useToolDirtyState } from '../../hooks/use-tool-dirty-state'
 import { useRegisterToolSave } from '../../hooks/use-register-tool-save'
-import { t } from '../../i18n'
+import { t } from '../../i18n'
+import { ManualSelectButton } from '../ItemPicker/ManualSelectButton'
 
 interface Props {
   data: AnalysisInitData
@@ -537,8 +538,9 @@ export function CodesInDocuments({ data: propData, savedConfig, inTab }: Props) 
         >
           <div style={{ display: 'flex', alignItems: 'baseline', justifyContent: 'space-between', gap: 12, marginBottom: groupBy.length > 0 ? 8 : 0, position: 'relative', zIndex: 1 }}>
             <span style={{ fontSize: 'var(--font-size-lg)', fontWeight: 600, color: 'var(--text-secondary)' }}>{t("Group by")}</span>
-            <span style={{ fontSize: 11, color: 'var(--text-muted)' }}>
+            <span style={{ display: 'flex', alignItems: 'center', gap: 8, fontSize: 11, color: 'var(--text-muted)' }}>
               {t("Drag tags, categories, or folders here")}
+              <ManualSelectButton kinds={['tag', 'category', 'folder', 'respondents-group']} title={t('Group by')} />
             </span>
           </div>
           <div style={{ position: 'relative', zIndex: 1 }}>
@@ -576,6 +578,7 @@ export function CodesInDocuments({ data: propData, savedConfig, inTab }: Props) 
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 10, position: 'relative', zIndex: 1 }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: 8, flexWrap: 'wrap' }}>
               <span style={{ fontSize: 'var(--font-size-lg)', fontWeight: 600, color: 'var(--text-secondary)', marginRight: 4 }}>{t("Results")}</span>
+              <ManualSelectButton kinds={['code']} />
               <SegmentedControl
                 label={t("View")}
                 value={view}

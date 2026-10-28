@@ -49,7 +49,8 @@ import {
   type ReportItem,
   type AnalysisItemOptions
 } from './report-export'
-import { t } from '../../i18n'
+import { t } from '../../i18n'
+import { ManualSelectButton } from '../ItemPicker/ManualSelectButton'
 
 interface Props {
   data: AnalysisInitData
@@ -457,10 +458,17 @@ export function Reports({ savedConfig, inTab }: Props) {
         <span style={{ fontSize: 11, color: 'var(--text-muted)', marginRight: 4 }}>{t("Drag to add:")}</span>
         <PaletteChip block="section" icon={faHeading1} label={t("Section")} />
         <PaletteChip block="text" icon={faFont} label={t("Text")} />
+        <span style={{ flex: 1 }} />
+        <ManualSelectButton
+          title={t('Add to report')}
+          kinds={['document', 'query', 'analysis', 'quote', 'memo']}
+          target={(button) => button.parentElement?.parentElement?.querySelector('[data-report-drop]')}
+        />
       </div>
 
       {/* The report list */}
       <div
+        data-report-drop
         style={{ flex: 1, overflow: 'auto', padding: '14px 20px' }}
         onDragOver={(e) => {
           if (!isAcceptedDrag(e)) return

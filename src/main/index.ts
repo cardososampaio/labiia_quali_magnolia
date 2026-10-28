@@ -329,7 +329,13 @@ function createWindow(): void {
     memoEditWindows.clear()
     mainWindow = null
 
-    if (!isQuitting) showWelcome()
+    // Closing the project window ends the program instead of returning to
+    // the Welcome screen, as people expect from a desktop app. The close
+    // handler above has already flushed unsaved work by this point.
+    if (!isQuitting) {
+      isQuitting = true
+      app.quit()
+    }
   })
 }
 
@@ -1059,7 +1065,8 @@ app.on('window-all-closed', () => {
     app.quit()
     return
   }
-  // Otherwise, the user just closed the main window (X button) and the
-  // mainWindow 'closed' handler has already reopened the welcome screen.
-  // On macOS, apps conventionally stay running with no windows.
+  // Otherwise the last window closed on the way to another one (the
+  // Welcome screen closes just before a project window opens), so the app
+  // keeps running. Closing a project window quits from its own 'closed'
+  // handler.
 })

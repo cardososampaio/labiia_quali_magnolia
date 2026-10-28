@@ -31,7 +31,8 @@ import { renameSavedAnalysis } from '../../utils/rename-saved-analysis'
 import { useToolDirtyState } from '../../hooks/use-tool-dirty-state'
 import { useRegisterToolSave } from '../../hooks/use-register-tool-save'
 import { useThemeSvgColors, SVG_FONT_FAMILY } from '../../utils/use-theme-svg-colors'
-import { t, formatNumber } from '../../i18n'
+import { t, formatNumber } from '../../i18n'
+import { ManualSelectButton } from '../ItemPicker/ManualSelectButton'
 
 interface Props {
   data: AnalysisInitData
@@ -440,8 +441,9 @@ export function CodeFrequencies({ data: propData, savedConfig, inTab }: Props) {
         >
           <div style={{ display: 'flex', alignItems: 'baseline', justifyContent: 'space-between', gap: 12, marginBottom: groupBy.length > 0 ? 8 : 0, position: 'relative', zIndex: 1 }}>
             <span style={{ fontSize: 'var(--font-size-lg)', fontWeight: 600, color: 'var(--text-secondary)' }}>{t("Group by")}</span>
-            <span style={{ fontSize: 11, color: 'var(--text-muted)' }}>
+            <span style={{ display: 'flex', alignItems: 'center', gap: 8, fontSize: 11, color: 'var(--text-muted)' }}>
               {t("Drag tags, categories, or folders here")}
+              <ManualSelectButton kinds={['tag', 'category', 'folder', 'respondents-group']} title={t('Group by')} />
             </span>
           </div>
           <div style={{ position: 'relative', zIndex: 1 }}>
@@ -482,7 +484,7 @@ export function CodeFrequencies({ data: propData, savedConfig, inTab }: Props) {
           onDrop={(e) => { setDropOver(false); handleDrop(e) }}
         >
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 10, position: 'relative', zIndex: 1 }}>
-            <span style={{ fontSize: 'var(--font-size-lg)', fontWeight: 600, color: 'var(--text-secondary)' }}>{t("Frequency Grid")}</span>
+            <span style={{ display: 'flex', alignItems: 'center', gap: 8 }}><span style={{ fontSize: 'var(--font-size-lg)', fontWeight: 600, color: 'var(--text-secondary)' }}>{t("Frequency Grid")}</span><ManualSelectButton kinds={['code']} /></span>
             <div style={{ display: 'flex', alignItems: 'center', gap: 6, position: 'relative' }}>
               <button className="secondary" style={{ fontSize: 10, padding: '3px 8px' }} onClick={handleExportCsv} disabled={codeGuids.length === 0}>
                 {t("Export CSV")}

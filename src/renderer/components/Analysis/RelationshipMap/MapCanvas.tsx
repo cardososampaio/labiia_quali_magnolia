@@ -6,7 +6,8 @@ import { MapElement } from './MapElement'
 import { MapConnectionComponent } from './MapConnection'
 import { FreeTextNode } from './FreeTextNode'
 import { Icon, MEMO_RANGED_ICON } from '../../Icon'
-import { t } from '../../../i18n'
+import { t } from '../../../i18n'
+import { ManualSelectButton } from '../../ItemPicker/ManualSelectButton'
 
 interface Props {
   elements: MapElementType[]
@@ -592,6 +593,13 @@ export function MapCanvas({
             {t("Re-centre")}
           </button>
         </div>
+        <ManualSelectButton
+          title={t('Add to map')}
+          kinds={['code', 'document', 'folder', 'tag', 'category', 'query', 'memo', 'quote', 'analysis', 'survey-question', 'survey-respondent']}
+          target={() => containerRef.current}
+          spread
+          style={{ marginLeft: 8 }}
+        />
         <span className="viewer-spacer" />
         <span className="viewer-meta">{t("Map")}</span>
       </div>

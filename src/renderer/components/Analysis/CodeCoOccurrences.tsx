@@ -17,7 +17,8 @@ import { EditableTitleSuffix } from '../EditableTitleSuffix'
 import { renameSavedAnalysis } from '../../utils/rename-saved-analysis'
 import { useToolDirtyState } from '../../hooks/use-tool-dirty-state'
 import { useRegisterToolSave } from '../../hooks/use-register-tool-save'
-import { t } from '../../i18n'
+import { t } from '../../i18n'
+import { ManualSelectButton } from '../ItemPicker/ManualSelectButton'
 
 interface Props {
   data: AnalysisInitData
@@ -85,7 +86,10 @@ function CodeDropZone({ label, onDrop: onDropCodes, existingGuids }: {
         if (newGuids.length > 0) onDropCodes(newGuids)
       }}
     >
-      {label}
+      <span style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8, flexWrap: 'wrap' }}>
+        {label}
+        <ManualSelectButton kinds={['code']} />
+      </span>
     </div>
   )
 }

@@ -628,7 +628,7 @@ export function InlineRelationshipMap({ mapGuid }: Props) {
             <Icon icon={faCircleNodes} className="analysis-header-icon" style={{ fontSize: 16 }} />
             {t("Relationships:")}
             <EditableTitleSuffix
-              name={map.name?.trim() || 'Untitled map'}
+              name={map.name?.trim() || t('Untitled map')}
               onRename={handleRenameMap}
             />
           </h2>
