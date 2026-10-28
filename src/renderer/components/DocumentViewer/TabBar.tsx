@@ -1,4 +1,4 @@
-import { useState, useCallback, useRef } from 'react'
+import { useState, useCallback, useRef, useEffect } from 'react'
 import type { TextSource } from '../../models/types'
 import { Icon, faXmark, faFile, faHeadphones, faVideo, faImage, faGear, faGitMerge, SURVEY_ICON, type IconComponent } from '../Icon'
 import { isAnalysisTab, isMapTab, isPreferencesTab, isMergeTab, isQueryBuilderTab, mapGuidFromTabId } from '../../utils/tab-ids'
@@ -22,6 +22,28 @@ interface TabBarProps {
 export function TabBar({ openTabs, activeTab, sources, onSelectTab, onCloseTab, onReorderTabs }: TabBarProps) {
   const [dragOverIdx, setDragOverIdx] = useState<number | null>(null)
   const dragGuidRef = useRef<string | null>(null)
+  const barRef = useRef<HTMLDivElement>(null)
+
+  // When the tabs overflow, the active tab (a newly opened one is added at the
+  // right end) scrolls into view, pushing the others to the left.
+  useEffect(() => {
+    const bar = barRef.current
+    const el = bar?.querySelector<HTMLElement>('.tab-item.active')
+    if (bar && el) el.scrollIntoView({ block: 'nearest', inline: 'nearest' })
+  }, [activeTab, openTabs.length])
+
+  // The mouse wheel scrolls the tabs sideways (they only overflow horizontally).
+  useEffect(() => {
+    const bar = barRef.current
+    if (!bar) return
+    const onWheel = (e: WheelEvent): void => {
+      if (bar.scrollWidth <= bar.clientWidth || Math.abs(e.deltaX) > Math.abs(e.deltaY)) return
+      e.preventDefault()
+      bar.scrollLeft += e.deltaY
+    }
+    bar.addEventListener('wheel', onWheel, { passive: false })
+    return () => bar.removeEventListener('wheel', onWheel)
+  }, [])
   const maps = useRelationshipMapStore((s) => s.maps)
   const setMapName = useRelationshipMapStore((s) => s.setName)
   // Inline-edit state: which map tab is being renamed, and the draft text.
@@ -199,6 +221,7 @@ export function TabBar({ openTabs, activeTab, sources, onSelectTab, onCloseTab, 
 
   return (
     <div
+      ref={barRef}
       className="tab-bar"
       onDragLeave={(e) => {
         if (!(e.currentTarget as HTMLElement).contains(e.relatedTarget as Node)) {

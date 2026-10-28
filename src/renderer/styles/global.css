@@ -980,12 +980,21 @@ div:hover > .folder-row-add,
   display: flex;
   align-items: stretch;
   overflow-x: auto;
+  overflow-y: hidden;
   background: var(--bg-panel);
   flex-shrink: 0;
-  scrollbar-width: none;
 }
+/* A thin scrollbar shows that more tabs are hidden when they overflow
+ * (it takes no room when they fit). */
 .tab-bar::-webkit-scrollbar {
-  display: none;
+  height: 4px;
+}
+.tab-bar::-webkit-scrollbar-thumb {
+  background: var(--border-color);
+  border-radius: 2px;
+}
+.tab-bar:hover::-webkit-scrollbar-thumb {
+  background: var(--text-muted);
 }
 /* Filler — extends the inactive-tab bottom rule across the empty
  * area to the right of the last tab so the line reaches the panel
