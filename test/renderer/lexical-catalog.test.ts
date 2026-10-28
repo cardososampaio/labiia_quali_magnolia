@@ -20,7 +20,7 @@ describe('lexical catalog', () => {
     expect(p('similitude')).toMatchObject({ max_words: 80, min_freq: 3, coefficient: 'cooccurrence', layout: 'frutch', arbremax: true })
     expect(p('lda')).toMatchObject({ k: 6, method: 'VEM', seed: 42, max_features: 2000 })
     expect(p('thematic-map')).toMatchObject({ top_edges: 160, max_nodes: 120, resolution: 0.5 })
-    expect(p('yake')).toMatchObject({ top_n: 50, max_tokens: 3, dedup_threshold: 0.7 })
+    expect(p('yake')).toMatchObject({ top_n: 50, max_tokens: 3, dedup_threshold: 0.9 })
     expect(p('word-tree')).toMatchObject({ max_depth: 4, top_branches: 120, min_branch_freq: 2 })
     expect(p('bigrams')).toMatchObject({ min_freq: 2, top_edges: 120 })
   })

@@ -11,6 +11,7 @@ import type { LexicalFigure, NetworkFigure, TreeFigure } from '../../models/lexi
 import { t } from '../../i18n'
 import dejavuUrl from '../../assets/fonts/DejaVuSans.ttf?url'
 import dejavuBoldUrl from '../../assets/fonts/DejaVuSans-Bold.ttf?url'
+import { buildBars } from './bar-figure'
 
 const FONT = 'LexDejaVu'
 // matplotlib's default subplot box (figure fractions) and savefig pad.
@@ -180,7 +181,9 @@ function buildTree(f: TreeFigure): Built {
 }
 
 function build(f: LexicalFigure): Built {
-  return f.kind === 'tree' ? buildTree(f) : buildNetwork(f)
+  if (f.kind === 'tree') return buildTree(f)
+  if (f.kind === 'barh') return buildBars(f, { font: FONT, measure, esc, fmt, padInches: PAD_INCHES })
+  return buildNetwork(f)
 }
 
 async function fontFaceCss(): Promise<string> {

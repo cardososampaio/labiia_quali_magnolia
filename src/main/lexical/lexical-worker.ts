@@ -10,12 +10,18 @@ import { prepareCorpus, wordFrequencies, type PreparedCorpus, type PrepareOption
 import { readCachedCorpus, writeCachedCorpus, hasCachedCorpus } from './corpus/cache'
 import { ngramNetwork } from './analyses/ngrams'
 import { wordTree, type WordTreeOptions } from './analyses/word-tree'
+import { yakeKeyphrases, type Keyphrase } from './analyses/yake'
+import { rankingBars } from './plot/bars'
+import type { BarFigure } from '../../renderer/models/lexical-figures'
+
+export interface YakeRun { keyphrases: Keyphrase[]; figure: BarFigure }
 
 export type WorkerRequest =
   | { id: number; type: 'prepare'; key: string; units: TextUnitInput[]; options: PrepareOptions; resourcesDir: string; cacheDir: string }
   | { id: number; type: 'word-frequencies'; key: string; resourcesDir: string; useLemmas: boolean; activeOnly: boolean }
   | { id: number; type: 'ngram-network'; key: string; resourcesDir: string; n: 2 | 3; minFreq: number; topEdges: number; title: string }
   | { id: number; type: 'word-tree'; key: string; resourcesDir: string; options: WordTreeOptions }
+  | { id: number; type: 'yake'; key: string; resourcesDir: string; options: { minTokens: number; maxTokens: number; minFreq: number; topN: number; dedupThreshold: number; windowSize: number } }
 
 export type WorkerMessage =
   | { id: number; type: 'progress'; done: number; total: number }
@@ -86,6 +92,14 @@ function handle(msg: WorkerRequest, post: (m: WorkerMessage) => void): unknown {
   if (msg.type === 'word-tree') {
     const c = corpusFor(msg.key)
     return wordTree(c, lexiconFor(c.language, msg.resourcesDir), msg.options)
+  }
+  if (msg.type === 'yake') {
+    const c = corpusFor(msg.key)
+    const keyphrases = yakeKeyphrases(c, lexiconFor(c.language, msg.resourcesDir), msg.resourcesDir, msg.options)
+    const figure = rankingBars(keyphrases.map((k) => ({ label: k.phrase, value: k.relevance })), {
+      title: 'Ranking de Palavras-Chave (YAKE)', xlabel: 'YAKE Relevância', format: (v) => v.toFixed(3)
+    })
+    return { keyphrases, figure } satisfies YakeRun
   }
   throw new Error(`unknown request ${(msg as { type: string }).type}`)
 }

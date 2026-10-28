@@ -242,7 +242,8 @@ export const LEXICAL_TESTS: LexicalTestDef[] = [
       { key: 'min_tokens', label: t('Smallest expression (words)'), kind: 'int', default: 1, min: 1, max: 3 },
       { key: 'max_tokens', label: t('Largest expression (words)'), kind: 'int', default: 3, min: 1, max: 3 },
       { key: 'min_freq', label: t('Minimum frequency'), kind: 'int', default: 1, min: 1, max: 100 },
-      { key: 'dedup_threshold', label: t('Duplicate threshold'), kind: 'number', default: 0.7, min: 0.1, max: 1, step: 0.05 }
+      // 0.9: the value labiia_lex really uses (it passes its 0.7 under a name yake ignores).
+      { key: 'dedup_threshold', label: t('Duplicate threshold'), kind: 'number', default: 0.9, min: 0.1, max: 1, step: 0.05, help: t('Expressions more similar than this to a better-ranked one are left out') }
     ],
     advanced: ['min_freq', 'dedup_threshold']
   },
@@ -307,7 +308,7 @@ export const LEXICAL_TESTS: LexicalTestDef[] = [
 ]
 
 /** Tests whose engine is connected; the others show their settings but cannot run yet. */
-export const CONNECTED_TESTS = new Set<LexicalTestId>(['wordcloud', 'bigrams', 'trigrams', 'word-tree'])
+export const CONNECTED_TESTS = new Set<LexicalTestId>(['wordcloud', 'bigrams', 'trigrams', 'word-tree', 'yake'])
 
 export const LEXICAL_TOOL_PREFIX = 'lexical-'
 

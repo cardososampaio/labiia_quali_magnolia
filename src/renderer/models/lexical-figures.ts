@@ -37,4 +37,24 @@ export interface TreeFigure {
   labels: { text: string; x: number; y: number; size: number; bold: boolean; color: string }[]
 }
 
-export type LexicalFigure = NetworkFigure | TreeFigure
+/**
+ * Horizontal bar chart in labiia_lex's ggplot-like matplotlib theme
+ * (grey #FAFAFA panel, vertical grid lines, bottom and left spines, value
+ * labels to the right of the bars). Bars are listed bottom to top.
+ */
+export interface BarFigure {
+  kind: 'barh'
+  title: string
+  xlabel: string
+  figW: number
+  figH: number
+  dpi: number
+  /** Axes box as figure fractions (matplotlib subplot parameters). */
+  box: { left: number; right: number; bottom: number; top: number }
+  bars: { label: string; value: number; color: string; text: string }[]
+  /** Right end of the value axis (labiia_lex leaves 32% room for the value labels). */
+  xmax: number
+  barHeight: number
+}
+
+export type LexicalFigure = NetworkFigure | TreeFigure | BarFigure

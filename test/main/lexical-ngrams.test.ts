@@ -115,3 +115,30 @@ describe('word tree', () => {
       .toEqual({ ok: false, error: 'keyword-not-found', keyword: 'inexistente' })
   })
 })
+
+describe('YAKE', () => {
+  it('scores like the yake library (0.7.3, one sentence, default window and threshold)', async () => {
+    const { extractKeywords, yakeStopwords } = await import('../../src/main/lexical/analyses/yake')
+    const text = 'a democracia digital exige participação social e a participação social fortalece a democracia digital no brasil enquanto a tecnologia muda a política e a política digital muda a democracia'
+    const res = join(__dirname, '..', '..', 'resources', 'lexical')
+    const got = extractKeywords([text.split(' ')], yakeStopwords('pt', res), { n: 3, windowSize: 1, dedupLim: 0.9, top: 8 })
+    // Printed by yake 0.7.3: KeywordExtractor(lan='pt', n=3, top=8).extract_keywords(text).
+    const expected: [string, number][] = [
+      ['democracia digital exige', 0.000825276238124], ['exige participação social', 0.000943894602498],
+      ['participação social fortalece', 0.000943894602498], ['política digital muda', 0.00105392584143],
+      ['digital exige participação', 0.00109546982993], ['democracia digital', 0.00406866450661],
+      ['participação social', 0.00465053369332], ['muda a democracia', 0.00702289973599]
+    ]
+    expect(got.map((g) => g[0])).toEqual(expected.map((e) => e[0]))
+    got.forEach((g, i) => expect(g[1]).toBeCloseTo(expected[i][1], 12))
+  })
+
+  it('leaves out fillers and counts real occurrences', async () => {
+    const { isNoiseKeyphrase } = await import('../../src/main/lexical/analyses/yake')
+    const lex = new Lexicon('pt', join(__dirname, '..', '..', 'resources', 'lexical'))
+    expect(isNoiseKeyphrase('a gente', lex)).toBe(true)
+    expect(isNoiseKeyphrase('né', lex)).toBe(true)
+    expect(isNoiseKeyphrase('entrevistador', lex)).toBe(true)
+    expect(isNoiseKeyphrase('democracia digital', lex)).toBe(false)
+  })
+})

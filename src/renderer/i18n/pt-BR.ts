@@ -1234,4 +1234,11 @@ export const ptBR: Record<string, string> = {
   "Branches": "Ramos",
   "\"{{word}}\" does not appear in the segments with these settings. Check the spelling, lower the minimum frequency or untick \"Active forms only\".": "\"{{word}}\" não aparece nos segmentos com estes parâmetros. Confira a grafia, diminua a frequência mínima ou desmarque \"Só formas ativas\".",
   "The branches are below the minimum branch frequency. Lower it or choose another word.": "Os ramos ficaram abaixo da frequência mínima do ramo. Diminua esse valor ou escolha outra palavra.",
+  "Key expressions": "Expressões-chave",
+  "Expression": "Expressão",
+  "YAKE score": "Pontuação YAKE",
+  "Relevance": "Relevância",
+  "Segments": "Segmentos",
+  "Expressions more similar than this to a better-ranked one are left out": "Expressões mais parecidas do que isto com outra mais bem colocada ficam de fora",
+  "No key expression passed the filters. Lower the minimum frequency or the smallest expression size.": "Nenhuma expressão-chave passou pelos filtros. Diminua a frequência mínima ou o tamanho mínimo da expressão.",
 }

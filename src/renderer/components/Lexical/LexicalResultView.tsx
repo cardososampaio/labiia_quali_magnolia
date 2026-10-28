@@ -93,7 +93,11 @@ function CsvPreview({ file, limit = 30 }: { file: LexicalFile; limit?: number })
 
 function columnLabel(h: string): string {
   if (h === 'word') return t('Word')
-  if (h === 'freq' || h === 'frequency') return t('Frequency')
+  if (h === 'freq' || h === 'frequency' || h === 'Frequency') return t('Frequency')
+  if (h === 'Phrase') return t('Expression')
+  if (h === 'RawYAKE') return t('YAKE score')
+  if (h === 'Relevance') return t('Relevance')
+  if (h === 'DocCount') return t('Segments')
   const m = h.match(/^word_(\d)$/)
   if (m) return t('Word {{n}}', { n: m[1] })
   return h
@@ -152,6 +156,7 @@ function tableTitle(f: LexicalFile): string {
   if (f.title === 'Bigrams') return t('Bigrams')
   if (f.title === 'Trigrams') return t('Trigrams')
   if (f.title === 'Branches') return t('Branches')
+  if (f.title === 'Keyphrases') return t('Key expressions')
   return t('Word frequencies')
 }
 
@@ -163,6 +168,7 @@ export function runErrorText(error: string, detail?: string, missing?: string[])
     case 'no-vocabulary': return t('No word reaches the minimum frequency. Lower the minimum frequency and run again.')
     case 'keyword-not-found': return t('"{{word}}" does not appear in the segments with these settings. Check the spelling, lower the minimum frequency or untick "Active forms only".', { word: detail ?? '' })
     case 'no-branches': return t('The branches are below the minimum branch frequency. Lower it or choose another word.')
+    case 'no-keyphrases': return t('No key expression passed the filters. Lower the minimum frequency or the smallest expression size.')
     case 'no-ngrams': return t('No sequence of words reaches the minimum frequency. Lower the minimum frequency and run again.')
     case 'r-not-found': return t('R was not found on this computer. The tests marked "R" need R 4.0 or newer.')
     case 'r-packages-missing': return t('These R packages are missing: {{list}}. Install them above and run again.', { list: (missing ?? []).join(', ') })
