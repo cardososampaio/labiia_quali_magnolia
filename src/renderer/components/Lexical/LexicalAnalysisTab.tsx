@@ -3,7 +3,7 @@
  * test's settings, and Run. Shared by all twelve tests; what differs
  * between them (settings, engine, result view) comes from the catalog.
  */
-import { useCallback, useMemo, useState } from 'react'
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import type { AnalysisInitData } from '../../models/types'
 import { Icon, faChevronDown, faChevronRight, faExclamationTriangle } from '../Icon'
 import { DocumentSelector, emptyDocumentFilter, type DocumentFilterState } from '../DocumentSelector/DocumentSelector'
@@ -27,6 +27,10 @@ import {
 } from './lexical-catalog'
 import { documentUnits, type LexicalSource } from './lexical-units'
 import { RStatusPanel } from './RStatusPanel'
+import { LexicalResultView, RunProgressNotice, runErrorText, type StoredLexicalResult } from './LexicalResultView'
+import { useLexicalRStore } from './lexical-r-store'
+import { CONNECTED_TESTS } from './lexical-catalog'
+import type { LexicalRunProgress } from '../../models/lexical-api'
 import './Lexical.css'
 
 export interface LexicalSavedConfig {
@@ -34,6 +38,7 @@ export interface LexicalSavedConfig {
   source: LexicalSource
   language: CorpusLanguage
   params: Record<string, LexicalParamValue>
+  result?: StoredLexicalResult
   guid: string
   name: string
 }
@@ -64,13 +69,23 @@ export function LexicalAnalysisTab({ test, data: propData, savedConfig, inTab }:
   const [analysisName, setAnalysisName] = useState(savedConfig?.name ?? '')
   const [showSaveDialog, setShowSaveDialog] = useState(false)
   const isExisting = !!savedConfig?.guid
+  const [result, setResult] = useState<StoredLexicalResult | undefined>(savedConfig?.result)
+  const [running, setRunning] = useState<string | null>(null)
+  const [progress, setProgress] = useState<LexicalRunProgress | null>(null)
+  const [runError, setRunError] = useState<{ text: string; detail?: string } | null>(null)
+  const runIdRef = useRef<string | null>(null)
+  const resultRef = useRef<HTMLDivElement>(null)
+  const scrollToResult = useRef(false)
+  const connected = CONNECTED_TESTS.has(test.id)
 
-  const currentConfig = useMemo(() => ({ docFilter, source, language, params }), [docFilter, source, language, params])
+  // The result's run time stands for the result in dirty tracking (comparing images would be slow).
+  const currentConfig = useMemo(() => ({ docFilter, source, language, params, ranAt: result?.ranAt ?? '' }), [docFilter, source, language, params, result])
   const initialBaseline = useMemo(() => ({
     docFilter: savedConfig?.docFilter ?? emptyDocumentFilter(),
     source: 'documents' as LexicalSource,
     language: savedConfig?.language ?? ('pt' as CorpusLanguage),
-    params: defaultParams(test, savedConfig?.params)
+    params: defaultParams(test, savedConfig?.params),
+    ranAt: savedConfig?.result?.ranAt ?? ''
   }), [])
   const { dirty, baseline, setBaseline } = useToolDirtyState(currentConfig, initialBaseline, inTab)
 
@@ -78,6 +93,7 @@ export function LexicalAnalysisTab({ test, data: propData, savedConfig, inTab }:
     setDocFilter(baseline.docFilter)
     setLanguage(baseline.language)
     setParams(baseline.params)
+    setResult(savedConfig?.result)
   }, [baseline])
 
   const filteredSourceGuids = useMemo(
@@ -86,6 +102,67 @@ export function LexicalAnalysisTab({ test, data: propData, savedConfig, inTab }:
   )
   const { units, skipped } = useMemo(() => documentUnits(data, filteredSourceGuids), [data, filteredSourceGuids])
   const wordEstimate = useMemo(() => units.reduce((n, u) => n + countWords(u.text), 0), [units])
+
+  // What a result depends on: which documents, the language and the settings.
+  const runSignature = useMemo(() => JSON.stringify({ docs: units.map((u) => u.id), language, params }), [units, language, params])
+
+  const rStatus = useLexicalRStore((s) => s.status)
+  const rPackages = useLexicalRStore((s) => s.packages)
+  const rReady = test.engine !== 'r' || (rStatus?.found === true && test.rPackages.every((p) => rPackages[p] === true))
+  const canRun = connected && !running && units.length > 0 && rReady
+
+  useEffect(() => window.api.lexical.onRunProgress((p) => {
+    if (p.runId === runIdRef.current) setProgress(p)
+  }), [])
+
+  const handleRun = useCallback(async () => {
+    const runId = generateGuid()
+    runIdRef.current = runId
+    setRunning(runId)
+    setProgress(null)
+    setRunError(null)
+    try {
+      const res = await window.api.lexical.run({
+        runId,
+        testId: test.id,
+        language,
+        params,
+        units: units.map((u) => ({ id: u.id, name: u.name, text: u.text }))
+      })
+      if (runIdRef.current !== runId) return
+      if (res.ok && res.files) {
+        setResult({ files: res.files, summary: res.summary, corpus: res.corpus, ranWith: runSignature, ranAt: new Date().toISOString() })
+        scrollToResult.current = true
+      } else if (res.error !== 'cancelled') {
+        setRunError({ text: runErrorText(res.error ?? 'failed', res.detail, res.missingPackages), detail: res.error === 'r-failed' ? res.detail : undefined })
+        if (res.error === 'r-packages-missing') void useLexicalRStore.getState().checkPackages(test.rPackages)
+      }
+    } catch (err) {
+      setRunError({ text: runErrorText('failed', String(err)) })
+    } finally {
+      if (runIdRef.current === runId) {
+        runIdRef.current = null
+        setRunning(null)
+        setProgress(null)
+      }
+    }
+  }, [test, language, params, units, runSignature])
+
+  // A fresh result sits below the settings: bring it into view once it is drawn.
+  useEffect(() => {
+    if (!scrollToResult.current || running || !result) return
+    scrollToResult.current = false
+    resultRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' })
+  }, [result, running])
+
+  const handleCancel = useCallback(() => {
+    const runId = runIdRef.current
+    if (!runId) return
+    runIdRef.current = null
+    setRunning(null)
+    setProgress(null)
+    void window.api.lexical.cancelRun(runId)
+  }, [])
 
   const handleRename = useCallback((newName: string) => {
     setAnalysisName(newName)
@@ -100,11 +177,11 @@ export function LexicalAnalysisTab({ test, data: propData, savedConfig, inTab }:
       guid: analysisGuid,
       toolType: lexicalToolType(test.id),
       name,
-      config: { docFilter, source, language, params }
+      config: { docFilter, source, language, params, result }
     })
-    setBaseline({ docFilter, source, language, params })
+    setBaseline({ docFilter, source, language, params, ranAt: result?.ranAt ?? '' })
     if (inTab) inTab.onSaved(analysisGuid, name)
-  }, [analysisGuid, test.id, docFilter, source, language, params, inTab, setBaseline])
+  }, [analysisGuid, test.id, docFilter, source, language, params, result, inTab, setBaseline])
 
   useRegisterToolSave(inTab?.tabId, () => {
     if (isExisting) {
@@ -220,10 +297,27 @@ export function LexicalAnalysisTab({ test, data: propData, savedConfig, inTab }:
         {test.engine === 'r' && <RStatusPanel packages={test.rPackages} />}
 
         <div className="lex-run-row">
-          <button className="lex-run" disabled title={t('This test is still being connected')}>
-            {t('Run')}
+          <button className="lex-run" disabled={!canRun} onClick={() => void handleRun()}>
+            {result ? t('Run again') : t('Run')}
           </button>
-          <span className="lex-run-note">{t('This test is still being connected')}</span>
+          {!connected && <span className="lex-run-note">{t('This test is still being connected')}</span>}
+          {connected && units.length === 0 && <span className="lex-run-note">{t('Choose at least one document with text.')}</span>}
+        </div>
+
+        {running && <RunProgressNotice progress={progress} onCancel={handleCancel} />}
+        {runError && (
+          <div className="analysis-section lex-section lex-run-error">
+            <div className="lex-r-line lex-r-bad"><Icon icon={faExclamationTriangle} style={{ fontSize: 13 }} /><span>{runError.text}</span></div>
+            {runError.detail && (
+              <details className="lex-details">
+                <summary>{t('Details from R')}</summary>
+                <pre>{runError.detail}</pre>
+              </details>
+            )}
+          </div>
+        )}
+        <div ref={resultRef}>
+          {result && !running && <LexicalResultView result={result} stale={result.ranWith !== runSignature} title={test.label} />}
         </div>
       </div>
     </div>

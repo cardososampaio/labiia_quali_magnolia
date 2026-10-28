@@ -55,3 +55,33 @@
 .lex-pkg { display: inline-flex; align-items: center; gap: 5px; padding: 2px 8px; border-radius: 10px; border: 1px solid var(--border-color); font-size: 11px; color: var(--text-secondary); }
 .lex-pkg.ok { color: var(--success, #2e7d32); }
 .lex-pkg.missing { color: var(--warning, #b26a00); border-color: currentColor; }
+
+/* Run progress (corpus preparation can take minutes). */
+.lex-progress-notice { display: flex; align-items: flex-start; gap: 14px; margin: 12px 0 14px; padding: 14px 16px; border: 1px solid var(--accent); border-radius: var(--radius-md); background: var(--selection-bg); }
+.lex-progress-title { font-weight: 600; margin-bottom: 4px; }
+.lex-progress-line { display: flex; align-items: center; gap: 10px; margin-top: 8px; }
+.lex-spinner { width: 18px; height: 18px; flex-shrink: 0; margin-top: 1px; border-radius: 50%; border: 2px solid var(--border-color); border-top-color: var(--accent); animation: lex-spin 0.9s linear infinite; }
+@keyframes lex-spin { to { transform: rotate(360deg); } }
+
+.lex-run-error { margin-top: 12px; }
+.lex-details { margin-top: 8px; font-size: 11px; }
+.lex-details pre { max-height: 220px; overflow: auto; white-space: pre-wrap; padding: 8px; background: var(--bg-tertiary); border-radius: var(--radius-sm); }
+.lex-note-warn { color: var(--warning, #b26a00); }
+
+/* Result */
+.lex-result { margin-top: 14px; }
+.lex-result-head { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; margin-bottom: 6px; }
+.lex-figures { display: flex; flex-wrap: wrap; gap: 4px 16px; margin: 6px 0 12px; color: var(--text-secondary); font-size: var(--font-size-sm); }
+.lex-figure { margin-top: 8px; }
+.lex-figure-tools { display: flex; align-items: center; gap: 6px; margin-bottom: 6px; }
+/* Fit: the whole figure visible at once. Actual size: full resolution, scrollable. */
+.lex-figure-frame { border: 1px solid var(--border-color); border-radius: var(--radius-sm); background: #fff; text-align: center; }
+.lex-figure-frame img { display: block; margin: 0 auto; max-width: 100%; max-height: 72vh; width: auto; height: auto; }
+.lex-figure-frame.actual { overflow: auto; max-height: 78vh; }
+.lex-figure-frame.actual img { max-width: none; max-height: none; }
+.lex-table-block { margin-top: 16px; }
+.lex-table-wrap { max-height: 360px; overflow: auto; border: 1px solid var(--border-color); border-radius: var(--radius-sm); }
+.lex-table { width: 100%; border-collapse: collapse; font-size: var(--font-size-sm); }
+.lex-table th, .lex-table td { padding: 3px 10px; border-bottom: 1px solid var(--border-color); text-align: left; }
+.lex-table th { position: sticky; top: 0; background: var(--bg-panel); font-weight: 600; color: var(--text-secondary); }
+.lex-table td.num { text-align: right; font-variant-numeric: tabular-nums; }

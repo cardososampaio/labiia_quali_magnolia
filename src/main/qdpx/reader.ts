@@ -8,6 +8,7 @@ import { graphToMap, type RefiGraph, type RefiLink, type GraphEntity } from './g
 import { reconstructLineTimes, reconstructTranscriptSelections, reconcileMediaTranscripts, lineStartOffsetsWithEnd, deriveLineTimeRange, transcriptTwinGuidFor, type RefiTranscript } from './transcript-refi'
 import type { Project, PlainTextSelection, Memo } from '../../renderer/models/types'
 import { extractPdfTextWithPositions } from '../pdf-extract'
+import { unpackLexicalResults } from './lexical-results'
 import { archiveHandle, archiveHandleForFile } from '../binary-store'
 import { decodeMaybeWindows1252 } from './text-encoding'
 import { detectSourcesDir, detectSourcesDirFromNames } from './zip-sources-dir'
@@ -636,6 +637,7 @@ export async function readQdpx(
     try {
       const analysesJson = await analysesFile.async('string')
       project.savedAnalyses = JSON.parse(analysesJson)
+      await unpackLexicalResults((project.savedAnalyses ?? []) as any[], zip)
     } catch {
       // Ignore malformed analyses file
     }

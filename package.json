@@ -89,11 +89,16 @@
     },
     "files": [
       "out/**/*",
-      "resources/**"
+      "resources/**",
+      "!resources/lexical/**"
     ],
     "extraResources": [
       "LICENSE",
-      "THIRD-PARTY-LICENSES.txt"
+      "THIRD-PARTY-LICENSES.txt",
+      {
+        "from": "resources/lexical",
+        "to": "lexical"
+      }
     ],
     "mac": {
       "icon": "build/icon.icns",

@@ -25,7 +25,7 @@ import {
 } from '../Icon'
 import { t } from '../../i18n'
 
-import type { LexicalTestId, LexicalToolType } from '../../models/lexical-api'
+import { LEXICAL_R_PACKAGES, type LexicalTestId, type LexicalToolType } from '../../models/lexical-api'
 
 export type { LexicalTestId, LexicalToolType }
 
@@ -73,7 +73,7 @@ export const LEXICAL_TESTS: LexicalTestDef[] = [
     icon: faCloud,
     color: '#3A7BD5',
     engine: 'r',
-    rPackages: ['ggplot2', 'ggwordcloud', 'RColorBrewer', 'jsonlite'],
+    rPackages: LEXICAL_R_PACKAGES['wordcloud'],
     params: [
       { key: 'max_words', label: t('Maximum words'), kind: 'int', default: 100, min: 10, max: 2000, step: 10 },
       { key: 'min_freq', label: t('Minimum frequency'), kind: 'int', default: 3, min: 1, max: 1000 },
@@ -98,7 +98,7 @@ export const LEXICAL_TESTS: LexicalTestDef[] = [
     icon: faGitFork,
     color: '#C0392B',
     engine: 'r',
-    rPackages: ['Matrix', 'ape', 'wordcloud', 'irlba', 'ca', 'cluster', 'textometry'],
+    rPackages: LEXICAL_R_PACKAGES['chd'],
     params: [
       { key: 'n_classes', label: t('Number of terminal classes (phase 1)'), kind: 'int', default: 5, min: 2, max: 10 },
       { key: 'min_freq', label: t('Minimum frequency'), kind: 'int', default: 3, min: 3, max: 1000, help: t('IRaMuTeQ uses at least 3') },
@@ -129,7 +129,7 @@ export const LEXICAL_TESTS: LexicalTestDef[] = [
     icon: faWaypoints,
     color: '#16A085',
     engine: 'r',
-    rPackages: ['igraph', 'sna', 'intergraph', 'network', 'jsonlite'],
+    rPackages: LEXICAL_R_PACKAGES['similitude'],
     params: [
       { key: 'max_words', label: t('Maximum words'), kind: 'int', default: 80, min: 10, max: 200 },
       { key: 'min_freq', label: t('Minimum frequency'), kind: 'int', default: 3, min: 1, max: 1000 },
@@ -163,7 +163,7 @@ export const LEXICAL_TESTS: LexicalTestDef[] = [
     icon: faSmile,
     color: '#E67E22',
     engine: 'r',
-    rPackages: ['syuzhet', 'fmsb'],
+    rPackages: LEXICAL_R_PACKAGES['emotions'],
     params: []
   },
   {
@@ -173,7 +173,7 @@ export const LEXICAL_TESTS: LexicalTestDef[] = [
     icon: faLink2,
     color: '#8E44AD',
     engine: 'app',
-    rPackages: [],
+    rPackages: LEXICAL_R_PACKAGES['keyword-associations'],
     params: [
       { key: 'focal_terms', label: t('Keywords'), kind: 'text', default: '', placeholder: t('Up to 6, separated by commas; empty = the 4 most frequent') },
       { key: 'top_n', label: t('Associations per keyword'), kind: 'int', default: 12, min: 3, max: 50 },
@@ -190,7 +190,7 @@ export const LEXICAL_TESTS: LexicalTestDef[] = [
     icon: faLayers,
     color: '#2C3E50',
     engine: 'r',
-    rPackages: ['topicmodels', 'slam', 'jsonlite'],
+    rPackages: LEXICAL_R_PACKAGES['lda'],
     params: [
       { key: 'k', label: t('Number of topics'), kind: 'int', default: 6, min: 2, max: 50 },
       { key: 'method', label: t('Method'), kind: 'select', default: 'VEM', options: [opt('VEM', 'VEM'), opt('Gibbs', 'Gibbs')] },
@@ -215,7 +215,7 @@ export const LEXICAL_TESTS: LexicalTestDef[] = [
     icon: faMap,
     color: '#27AE60',
     engine: 'app',
-    rPackages: [],
+    rPackages: LEXICAL_R_PACKAGES['thematic-map'],
     params: [
       { key: 'max_nodes', label: t('Maximum words in the network'), kind: 'int', default: 120, min: 20, max: 500 },
       { key: 'top_edges', label: t('Maximum links'), kind: 'int', default: 160, min: 20, max: 2000 },
@@ -236,7 +236,7 @@ export const LEXICAL_TESTS: LexicalTestDef[] = [
     icon: faKeyRound,
     color: '#D4AC0D',
     engine: 'app',
-    rPackages: [],
+    rPackages: LEXICAL_R_PACKAGES['yake'],
     params: [
       { key: 'top_n', label: t('Number of expressions'), kind: 'int', default: 50, min: 5, max: 500 },
       { key: 'min_tokens', label: t('Smallest expression (words)'), kind: 'int', default: 1, min: 1, max: 3 },
@@ -253,7 +253,7 @@ export const LEXICAL_TESTS: LexicalTestDef[] = [
     icon: faThumbsUp,
     color: '#E84393',
     engine: 'app',
-    rPackages: [],
+    rPackages: LEXICAL_R_PACKAGES['sentiment'],
     params: [
       { key: 'top_words', label: t('Words listed'), kind: 'int', default: 25, min: 5, max: 200 },
       { key: 'with_timeline', label: t('Timeline (when documents have dates)'), kind: 'bool', default: true }
@@ -266,7 +266,7 @@ export const LEXICAL_TESTS: LexicalTestDef[] = [
     icon: faListTree,
     color: '#6C5CE7',
     engine: 'app',
-    rPackages: [],
+    rPackages: LEXICAL_R_PACKAGES['word-tree'],
     params: [
       { key: 'keyword', label: t('Word'), kind: 'text', default: '', placeholder: t('Empty = the most frequent word') },
       { key: 'max_depth', label: t('Depth'), kind: 'int', default: 4, min: 1, max: 8 },
@@ -285,7 +285,7 @@ export const LEXICAL_TESTS: LexicalTestDef[] = [
     icon: faSpline,
     color: '#0984E3',
     engine: 'app',
-    rPackages: [],
+    rPackages: LEXICAL_R_PACKAGES['bigrams'],
     params: [
       { key: 'min_freq', label: t('Minimum pair frequency'), kind: 'int', default: 2, min: 1, max: 1000 },
       { key: 'top_edges', label: t('Maximum links'), kind: 'int', default: 120, min: 10, max: 1000 }
@@ -298,13 +298,16 @@ export const LEXICAL_TESTS: LexicalTestDef[] = [
     icon: faWorkflow,
     color: '#00838F',
     engine: 'app',
-    rPackages: [],
+    rPackages: LEXICAL_R_PACKAGES['trigrams'],
     params: [
       { key: 'min_freq', label: t('Minimum sequence frequency'), kind: 'int', default: 2, min: 1, max: 1000 },
       { key: 'top_edges', label: t('Maximum links'), kind: 'int', default: 120, min: 10, max: 1000 }
     ]
   }
 ]
+
+/** Tests whose engine is connected; the others show their settings but cannot run yet. */
+export const CONNECTED_TESTS = new Set<LexicalTestId>(['wordcloud'])
 
 export const LEXICAL_TOOL_PREFIX = 'lexical-'
 

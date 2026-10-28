@@ -1,10 +1,13 @@
 /**
  * IPC for the lexical analyses: R status, the Rscript path chosen in
- * Preferences, and package checks and installs.
+ * Preferences, package checks and installs, running a test and saving its files.
  */
 import { ipcMain, dialog, BrowserWindow } from 'electron'
 import { resolveR, writeConfiguredRPath, type RStatus } from './r-runtime'
 import { checkPackages, installPackages, cancelInstall, type InstallResult } from './r-packages'
+import { runLexicalTest, cancelLexicalRun } from './engine'
+import { writeFile } from 'fs/promises'
+import type { LexicalRunRequest, LexicalRunResult } from '../../renderer/models/lexical-api'
 
 let installing = false
 
@@ -52,4 +55,19 @@ export function registerLexicalIpc(): void {
   })
 
   ipcMain.handle('lexical:r-cancel-install', (): boolean => cancelInstall())
+
+  ipcMain.handle('lexical:run', (e, req: LexicalRunRequest): Promise<LexicalRunResult> =>
+    runLexicalTest(req, (p) => { if (!e.sender.isDestroyed()) e.sender.send('lexical:run-progress', p) }))
+
+  ipcMain.handle('lexical:cancel-run', (_e, runId: string): void => cancelLexicalRun(runId))
+
+  ipcMain.handle('lexical:save-file', async (e, file: { name: string; mime: string; data: string }): Promise<boolean> => {
+    const win = BrowserWindow.fromWebContents(e.sender) ?? undefined
+    const ext = file.name.includes('.') ? file.name.slice(file.name.lastIndexOf('.') + 1) : ''
+    const opts: Electron.SaveDialogOptions = { defaultPath: file.name, filters: ext ? [{ name: ext.toUpperCase(), extensions: [ext] }] : [] }
+    const res = win ? await dialog.showSaveDialog(win, opts) : await dialog.showSaveDialog(opts)
+    if (res.canceled || !res.filePath) return false
+    await writeFile(res.filePath, Buffer.from(file.data, 'base64'))
+    return true
+  })
 }

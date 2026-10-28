@@ -8,6 +8,7 @@ import { serializeProject } from './xml-serializer'
 import { buildTranscript } from './transcript-refi'
 import { getPdfPageSizes } from '../pdf-extract'
 import { detectSourcesDir } from './zip-sources-dir'
+import { packLexicalResults } from './lexical-results'
 import { EDITOR_ENTRY } from './checkout-marker'
 import type { Project } from '../../renderer/models/types'
 
@@ -321,7 +322,8 @@ export async function writeQdpx(
 
   // Store saved analyses as JSON (app-specific)
   if (project.savedAnalyses && project.savedAnalyses.length > 0) {
-    zip.file('magnolia-analyses.json', JSON.stringify(project.savedAnalyses))
+    // Lexical analyses' images and tables go in as their own entries.
+    zip.file('magnolia-analyses.json', JSON.stringify(packLexicalResults(project.savedAnalyses as any[], zip)))
   }
 
   // Store open Document Viewer tabs + per-tool counters (app-specific).

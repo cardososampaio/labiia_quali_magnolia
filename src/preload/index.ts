@@ -16,6 +16,14 @@ const api: ElectronAPI = {
     checkPackages: (packages: string[]) => ipcRenderer.invoke('lexical:r-check-packages', packages),
     installPackages: (packages: string[]) => ipcRenderer.invoke('lexical:r-install-packages', packages),
     cancelInstall: () => ipcRenderer.invoke('lexical:r-cancel-install'),
+    run: (req) => ipcRenderer.invoke('lexical:run', req),
+    cancelRun: (runId: string) => ipcRenderer.invoke('lexical:cancel-run', runId),
+    onRunProgress: (callback) => {
+      const handler = (_event: unknown, p: Parameters<typeof callback>[0]) => callback(p)
+      ipcRenderer.on('lexical:run-progress', handler)
+      return () => { ipcRenderer.removeListener('lexical:run-progress', handler) }
+    },
+    saveFile: (file) => ipcRenderer.invoke('lexical:save-file', file),
     onInstallProgress: (callback) => {
       const handler = (_event: unknown, p: Parameters<typeof callback>[0]) => callback(p)
       ipcRenderer.on('lexical:r-install-progress', handler)
