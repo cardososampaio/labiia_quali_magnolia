@@ -218,12 +218,13 @@ export async function runChd(ctx: TestContext): Promise<Omit<LexicalRunResult, '
     }).join('') + '</body>'
 
   const raw = (name: string): string => readFileSync(out(name)).toString('base64')
-  const afcImages: LexicalFile[] = ['AFC2DL.png', 'AFC2DSL.png', 'AFC2DEL.png', 'AFC2DCL.png']
+  // Only the profiles AFC (active words) is shown, as in labiia_lex; R's own dendrogram and the
+  // supplementary-word, variable and segment AFCs are not part of its result.
+  const afcImages: LexicalFile[] = ['AFC2DL.png']
     .filter((f) => existsSync(out(f)))
     .map((f) => ({ name: f, mime: 'image/png', role: 'image' as const, data: raw(f) }))
   const files: LexicalFile[] = [
     { name: 'chd_dendrogram.json', mime: 'application/json', role: 'figure', data: b64(JSON.stringify(dendro)) },
-    { name: 'dendrogramme.png', mime: 'image/png', role: 'image', data: raw('dendrogramme.png') },
     ...afcImages,
     { name: 'chd_classes.csv', mime: 'text/csv', role: 'table', title: 'ChdClasses', data: b64(classesCsv) },
     { name: 'chd_profiles.csv', mime: 'text/csv', role: 'table', title: 'ChdProfiles', data: b64(profileCsv(profiles)) },
