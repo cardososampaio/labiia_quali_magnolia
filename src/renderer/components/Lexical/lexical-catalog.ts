@@ -131,7 +131,8 @@ export const LEXICAL_TESTS: LexicalTestDef[] = [
     engine: 'r',
     rPackages: LEXICAL_R_PACKAGES['similitude'],
     params: [
-      { key: 'max_words', label: t('Maximum words'), kind: 'int', default: 80, min: 10, max: 200 },
+      // 200: the cap labiia_lex applies in its default (IRaMuTeQ) mode.
+      { key: 'max_words', label: t('Maximum words'), kind: 'int', default: 200, min: 10, max: 300 },
       { key: 'min_freq', label: t('Minimum frequency'), kind: 'int', default: 3, min: 1, max: 1000 },
       {
         key: 'coefficient', label: t('Index'), kind: 'select', default: 'cooccurrence',
@@ -139,22 +140,15 @@ export const LEXICAL_TESTS: LexicalTestDef[] = [
       },
       {
         key: 'layout', label: t('Layout'), kind: 'select', default: 'frutch', options: [
-          opt('frutch', 'Fruchterman-Reingold'), opt('kawa', 'Kamada-Kawai'), opt('graphopt', 'Graphopt'),
-          opt('circle', t('Circle')), opt('random', t('Random'))
+          opt('frutch', 'Fruchterman-Reingold (sna)'), opt('kawa', 'Kamada-Kawai'), opt('fr', 'Fruchterman-Reingold (igraph)')
         ]
       },
-      {
-        key: 'vertex_scaling', label: t('Word size by'), kind: 'select', default: 'frequency', options: [
-          opt('frequency', t('Frequency')), opt('chi2', t('Chi-square')), opt('degree', t('Degree'))
-        ]
-      },
-      { key: 'min_edge', label: t('Minimum edge value'), kind: 'int', default: 0, min: 0, max: 10000 },
       { key: 'arbremax', label: t('Maximum tree'), kind: 'bool', default: true },
-      { key: 'detect_communities', label: t('Communities'), kind: 'bool', default: false },
+      { key: 'detect_communities', label: t('Coloured communities'), kind: 'bool', default: false, help: t('Communities are always detected; off, they are drawn in grey as in IRaMuTeQ') },
       { key: 'show_halo', label: t('Halo'), kind: 'bool', default: false },
       USE_LEMMAS
     ],
-    advanced: ['layout', 'vertex_scaling', 'min_edge', 'use_lemmas']
+    advanced: ['layout', 'arbremax', 'use_lemmas']
   },
   {
     id: 'emotions',
@@ -307,7 +301,7 @@ export const LEXICAL_TESTS: LexicalTestDef[] = [
 ]
 
 /** Tests whose engine is connected; the others show their settings but cannot run yet. */
-export const CONNECTED_TESTS = new Set<LexicalTestId>(['wordcloud', 'bigrams', 'trigrams', 'word-tree', 'yake', 'keyword-associations', 'sentiment', 'emotions'])
+export const CONNECTED_TESTS = new Set<LexicalTestId>(['wordcloud', 'bigrams', 'trigrams', 'word-tree', 'yake', 'keyword-associations', 'sentiment', 'emotions', 'similitude'])
 
 export const LEXICAL_TOOL_PREFIX = 'lexical-'
 

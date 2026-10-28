@@ -172,3 +172,12 @@ describe('sentiment', () => {
     expect(r.matched).toBe(r.counts.Positivo + r.counts.Negativa + r.counts.Neutro)
   })
 })
+
+describe('similitude indices', () => {
+  it('match labiia_lex for every IRaMuTeQ index', async () => {
+    const { SIMILARITY_INDEX } = await import('../../src/main/lexical/analyses/similitude')
+    // Values printed by labiia_lex's similitude matrix registry for a=7, b=5, c=3, d=85, n=100.
+    const expected: Record<string, number> = { cooccurrence: 7, 'percentual de coocorrência': 0.07, russel: 0.07, jaccard: 0.4666666666666667, kulczynski1: 0.875, kulczynski2: 0.6416666666666666, mountford: 0.16279069767441862, fager: 0.48089576741427476, 'simple matching': 0.92, hamman: 0.84, faith: 0.495, tanimoto: 0.8518518518518519, dice: 0.6363636363636364, phi: 0.5949422064001082, stiles: 1.4706453115644598, michael: 0.27204502814258913, mozley: 5.833333333333333, yule: 0.9508196721311475, yule2: 0.7259578684880831, ochiai: 0.6390096504226938, simpson: 0.7, 'braun-blanquet': 0.5833333333333334, 'chi-squared': 35.39562289562289, 'phi-squared': 0.35395622895622897, tschuprow: 0.5949422064001082, cramer: 0.5949422064001082, pearson: 0.5949422064001082, binomial: 5.326708098187177 }
+    for (const [name, value] of Object.entries(expected)) expect(SIMILARITY_INDEX[name](7, 5, 3, 85, 100), name).toBeCloseTo(value, 12)
+  })
+})

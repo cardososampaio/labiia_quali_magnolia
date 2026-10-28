@@ -22,6 +22,7 @@ import { runYake } from './tests/yake'
 import { runKeywordAssociations } from './tests/keyword-associations'
 import { runSentiment } from './tests/sentiment'
 import { runEmotions } from './tests/emotions'
+import { runSimilitude } from './tests/similitude'
 
 /** Bundled R scripts, dictionaries and stopword lists. */
 export function lexicalResourcesDir(): string {
@@ -97,7 +98,8 @@ const TESTS: Record<string, { runner: TestRunner; rPackages: string[] }> = {
   yake: { runner: runYake, rPackages: [] },
   'keyword-associations': { runner: runKeywordAssociations, rPackages: [] },
   sentiment: { runner: runSentiment, rPackages: [] },
-  emotions: { runner: runEmotions, rPackages: LEXICAL_R_PACKAGES.emotions }
+  emotions: { runner: runEmotions, rPackages: LEXICAL_R_PACKAGES.emotions },
+  similitude: { runner: runSimilitude, rPackages: LEXICAL_R_PACKAGES.similitude }
 }
 
 const cancelled = new Set<string>()
