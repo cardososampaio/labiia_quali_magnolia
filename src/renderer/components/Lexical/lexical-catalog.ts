@@ -139,7 +139,7 @@ export const LEXICAL_TESTS: LexicalTestDef[] = [
         ]
       },
       { key: 'arbremax', label: t('Maximum tree'), kind: 'bool', default: true },
-      { key: 'detect_communities', label: t('Coloured communities'), kind: 'bool', default: false, help: t('Communities are always detected; off, they are drawn in grey as in IRaMuTeQ') },
+      { key: 'detect_communities', label: t('Coloured communities'), kind: 'bool', default: false, help: t('Communities are always detected; off, the words stay black as in IRaMuTeQ (halos, when shown, are still coloured)') },
       { key: 'show_halo', label: t('Halo'), kind: 'bool', default: false },
       USE_LEMMAS
     ],

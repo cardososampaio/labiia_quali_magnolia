@@ -42,6 +42,7 @@ export async function runSimilitude(ctx: TestContext): Promise<Omit<LexicalRunRe
     community_method: 'edge_betweenness',
     halo: p.show_halo === true,
     edge_curved: true,
+    // Off, the words stay black (as IRaMuTeQ); the halos, when shown, are coloured either way.
     grayscale: p.detect_communities !== true,
     show_edge_labels: false,
     dpi: 96,

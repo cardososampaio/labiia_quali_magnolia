@@ -1235,7 +1235,7 @@ export const ptBR: Record<string, string> = {
   "Sentiment uses OpLexicon, a Portuguese lexicon. Choose Portuguese as the corpus language.": "O Sentimento usa o OpLexicon, um léxico do português. Escolha português como idioma do corpus.",
   "No word of the texts is in the sentiment lexicon.": "Nenhuma palavra dos textos está no léxico de sentimentos.",
   "Coloured communities": "Comunidades coloridas",
-  "Communities are always detected; off, they are drawn in grey as in IRaMuTeQ": "As comunidades são sempre detectadas; desligado, ficam em cinza como no IRaMuTeQ",
+  "Communities are always detected; off, the words stay black as in IRaMuTeQ (halos, when shown, are still coloured)": "As comunidades são sempre detectadas; desligado, as palavras ficam pretas como no IRaMuTeQ (os halos, se ativados, continuam coloridos)",
   "Vocabulary": "Vocabulário",
   "Topics per document": "Tópicos por documento",
   "LDA needs at least two documents and two terms. Choose more documents or lower the minimum frequency.": "O LDA precisa de pelo menos dois documentos e dois termos. Escolha mais documentos ou diminua a frequência mínima.",
@@ -1275,4 +1275,7 @@ export const ptBR: Record<string, string> = {
   "{{count}} passage without text (image or PDF area) is left out": "{{count}} trecho sem texto (imagem ou área de PDF) fica de fora",
   "{{count}} passages without text (image or PDF area) are left out": "{{count}} trechos sem texto (imagem ou área de PDF) ficam de fora",
   "Choose at least one code with coded passages in the chosen documents.": "Escolha pelo menos um código com trechos codificados nos documentos escolhidos.",
+  "Zoom": "Zoom",
+  "Fitted": "Ajustado",
+  "Ctrl + mouse wheel zooms": "Ctrl + roda do mouse muda o zoom",
 }

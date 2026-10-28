@@ -3,10 +3,11 @@
  * test produced, and export. Also the progress notice shown while a test
  * runs (corpus preparation can take minutes on large corpora).
  */
-import { useMemo, useState } from 'react'
+import { useMemo } from 'react'
 import type { LexicalFile, LexicalRunProgress, LexicalCorpusStats } from '../../models/lexical-api'
 import { t, tn, formatNumber, formatDate } from '../../i18n'
 import { FigureView } from './FigureView'
+import { ZoomFrame } from './ZoomFrame'
 import type { LexicalFigure } from '../../models/lexical-figures'
 
 export interface StoredLexicalResult {
@@ -145,7 +146,6 @@ function columnLabel(h: string): string {
 }
 
 export function LexicalResultView({ result, stale, title }: { result: StoredLexicalResult; stale: boolean; title: string }) {
-  const [actualSize, setActualSize] = useState(false)
   // Pictures (R images and window-drawn figures) in the order the test lists them.
   type Visual = { kind: 'image'; file: LexicalFile } | { kind: 'figure'; file: LexicalFile; name: string; figure: LexicalFigure }
   const visuals = useMemo(() => result.files.flatMap<Visual>((f) => {
@@ -167,17 +167,9 @@ export function LexicalResultView({ result, stale, title }: { result: StoredLexi
       {result.corpus && <CorpusFigures corpus={result.corpus} />}
 
       {visuals.map((v) => v.kind === 'figure' ? <FigureView key={v.file.name} figure={v.figure} baseName={v.name} /> : (
-        <div key={v.file.name} className="lex-figure">
-          <div className="lex-figure-tools">
-            <button className="secondary lex-small-btn" onClick={() => setActualSize(!actualSize)}>
-              {actualSize ? t('Fit to window') : t('Actual size')}
-            </button>
-            <button className="secondary lex-small-btn" onClick={() => save(v.file)}>{t('Export PNG')}</button>
-          </div>
-          <div className={`lex-figure-frame${actualSize ? ' actual' : ''}`}>
-            <img src={`data:${v.file.mime};base64,${v.file.data}`} alt={title} draggable={false} />
-          </div>
-        </div>
+        <ZoomFrame key={v.file.name} tools={<button className="secondary lex-small-btn" onClick={() => save(v.file)}>{t('Export PNG')}</button>}>
+          {(style) => <img src={`data:${v.file.mime};base64,${v.file.data}`} alt={title} draggable={false} style={style} />}
+        </ZoomFrame>
       ))}
 
       {tables.map((f) => (

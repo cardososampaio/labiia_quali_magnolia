@@ -11,6 +11,7 @@ import type { LexicalFigure, NetworkFigure, TreeFigure } from '../../models/lexi
 import { t } from '../../i18n'
 import dejavuUrl from '../../assets/fonts/DejaVuSans.ttf?url'
 import dejavuBoldUrl from '../../assets/fonts/DejaVuSans-Bold.ttf?url'
+import { ZoomFrame } from './ZoomFrame'
 import { buildBars } from './bar-figure'
 import { buildPanelBars, buildRadial } from './panel-figures'
 import { buildVBars } from './vbar-figure'
@@ -242,7 +243,6 @@ function utf8Base64(text: string): string {
 
 export function FigureView({ figure, baseName }: { figure: LexicalFigure; baseName: string }) {
   const [ready, setReady] = useState(false)
-  const [actualSize, setActualSize] = useState(false)
   useEffect(() => { void loadFonts().then(() => setReady(true)) }, [])
   const built = useMemo(() => (ready ? build(figure) : null), [ready, figure])
   if (!built) return <div className="lex-muted">{t('Drawing…')}</div>
@@ -255,25 +255,23 @@ export function FigureView({ figure, baseName }: { figure: LexicalFigure; baseNa
   }
 
   return (
-    <div className="lex-figure">
-      <div className="lex-figure-tools">
-        <button className="secondary lex-small-btn" onClick={() => setActualSize(!actualSize)}>
-          {actualSize ? t('Fit to window') : t('Actual size')}
-        </button>
+    <ZoomFrame
+      natural={{ width: built.width, height: built.height }}
+      tools={<>
         <button className="secondary lex-small-btn" onClick={() => void exportPng()}>{t('Export PNG')}</button>
         <button className="secondary lex-small-btn" onClick={() => void exportSvg()}>{t('Export SVG')}</button>
-      </div>
-      <div className={`lex-figure-frame${actualSize ? ' actual' : ''}`}>
+      </>}
+    >
+      {(style) => (
         <svg
           className="lex-figure-svg"
           viewBox={`${built.x} ${built.y} ${built.width} ${built.height}`}
-          width={actualSize ? built.width : undefined}
-          height={actualSize ? built.height : undefined}
+          style={style}
           role="img"
           aria-label={figure.title}
           dangerouslySetInnerHTML={{ __html: `<rect x="${built.x}" y="${built.y}" width="${built.width}" height="${built.height}" fill="${built.background}"/>${built.svgBody}` }}
         />
-      </div>
-    </div>
+      )}
+    </ZoomFrame>
   )
 }

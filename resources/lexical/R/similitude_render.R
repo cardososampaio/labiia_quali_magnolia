@@ -288,19 +288,19 @@ render_similitude <- function(params) {
         # Halo transparency from alpha param (IRaMuTeQ default: 20 → 0.20)
         alpha_fill <- alpha / 100
         alpha_border <- min((alpha + 15) / 100, 1.0)
+        # labiia_quali: colour-blind-safe hues (Okabe-Ito). Words use darkened versions so they
+        # read on white and on the light halos; halos are always coloured, since they are what
+        # shows which words form a community. "grayscale" now only keeps the words black.
+        cb.text <- c("#0072B2", "#B34700", "#007A5A", "#A1457E", "#8A5A00", "#1F6E99", "#5B4FA8", "#444444")
+        cb.fill <- c("#0072B2", "#D55E00", "#009E73", "#CC79A7", "#E69F00", "#56B4E9", "#7B6FD0", "#999999")
+        hue <- ((seq_len(n_comm) - 1) %% length(cb.text)) + 1
         if (grayscale) {
-            rain <- grey.colors(n_comm, start = 0.4, end = 0.7)
             vertex.label.color <- rep("black", vcount(g.toplot))
-            halo.colors <- adjustcolor(grey.colors(n_comm, start = 0.7, end = 0.9), alpha.f = alpha_fill)
-            halo.border <- adjustcolor(grey.colors(n_comm, start = 0.5, end = 0.7), alpha.f = alpha_border)
         } else {
-            rain <- rainbow(n_comm)
-            rain <- del.yellow(rain)
-            vertex.label.color <- rain[membership(com)]
-            # Halo: same colors with transparency controlled by alpha param
-            halo.colors <- adjustcolor(rain, alpha.f = alpha_fill)
-            halo.border <- adjustcolor(rain, alpha.f = alpha_fill)  # IRaMuTeQ: same as fill
+            vertex.label.color <- cb.text[hue][membership_vec]
         }
+        halo.colors <- adjustcolor(cb.fill[hue], alpha.f = alpha_fill)
+        halo.border <- adjustcolor(cb.fill[hue], alpha.f = alpha_border)
     }
 
     if (nzchar(community_sensitivity_file) && ecount(g.toplot) > 0) {
