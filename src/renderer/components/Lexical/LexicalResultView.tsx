@@ -157,6 +157,8 @@ function tableTitle(f: LexicalFile): string {
   if (f.title === 'Trigrams') return t('Trigrams')
   if (f.title === 'Branches') return t('Branches')
   if (f.title === 'Keyphrases') return t('Key expressions')
+  if (f.title === 'Associations') return t('Associations')
+  if (f.title === 'Examples') return t('Examples')
   return t('Word frequencies')
 }
 
@@ -168,6 +170,8 @@ export function runErrorText(error: string, detail?: string, missing?: string[])
     case 'no-vocabulary': return t('No word reaches the minimum frequency. Lower the minimum frequency and run again.')
     case 'keyword-not-found': return t('"{{word}}" does not appear in the segments with these settings. Check the spelling, lower the minimum frequency or untick "Active forms only".', { word: detail ?? '' })
     case 'no-branches': return t('The branches are below the minimum branch frequency. Lower it or choose another word.')
+    case 'too-small': return t('The corpus is too small for associations. Use more documents or lower the minimum frequency.')
+    case 'focal-not-found': return t('None of these keywords is in the analysed vocabulary: {{list}}. Check the spelling, use the dictionary form ("dado" instead of "dados") or lower the minimum frequency.', { list: detail ?? '' })
     case 'no-keyphrases': return t('No key expression passed the filters. Lower the minimum frequency or the smallest expression size.')
     case 'no-ngrams': return t('No sequence of words reaches the minimum frequency. Lower the minimum frequency and run again.')
     case 'r-not-found': return t('R was not found on this computer. The tests marked "R" need R 4.0 or newer.')

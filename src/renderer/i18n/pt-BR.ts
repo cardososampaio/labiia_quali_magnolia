@@ -1241,4 +1241,8 @@ export const ptBR: Record<string, string> = {
   "Segments": "Segmentos",
   "Expressions more similar than this to a better-ranked one are left out": "Expressões mais parecidas do que isto com outra mais bem colocada ficam de fora",
   "No key expression passed the filters. Lower the minimum frequency or the smallest expression size.": "Nenhuma expressão-chave passou pelos filtros. Diminua a frequência mínima ou o tamanho mínimo da expressão.",
+  "Associations": "Associações",
+  "Examples": "Exemplos",
+  "The corpus is too small for associations. Use more documents or lower the minimum frequency.": "O corpus é pequeno demais para as associações. Use mais documentos ou diminua a frequência mínima.",
+  "None of these keywords is in the analysed vocabulary: {{list}}. Check the spelling, use the dictionary form (\"dado\" instead of \"dados\") or lower the minimum frequency.": "Nenhuma destas palavras-chave está no vocabulário analisado: {{list}}. Confira a grafia, use a forma de dicionário (\"dado\" em vez de \"dados\") ou diminua a frequência mínima.",
 }

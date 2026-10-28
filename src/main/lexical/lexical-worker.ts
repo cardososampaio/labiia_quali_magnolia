@@ -12,15 +12,23 @@ import { ngramNetwork } from './analyses/ngrams'
 import { wordTree, type WordTreeOptions } from './analyses/word-tree'
 import { yakeKeyphrases, type Keyphrase } from './analyses/yake'
 import { rankingBars } from './plot/bars'
-import type { BarFigure } from '../../renderer/models/lexical-figures'
+import type { BarFigure, PanelBarsFigure, RadialFigure } from '../../renderer/models/lexical-figures'
+import { keywordAssociations, type Collocate } from './analyses/keyword-associations'
+import { associationBars, associationRadial } from './plot/association-figures'
 
 export interface YakeRun { keyphrases: Keyphrase[]; figure: BarFigure }
+
+export type AssociationsRun =
+  | { focalTerms: string[]; missing: string[]; collocates: Map<string, Collocate[]>; segments: number; examples: [string, string, string][]; bars: PanelBarsFigure; radial: RadialFigure }
+  | { error: 'too-small' }
+  | { error: 'focal-not-found'; requested: string[] }
 
 export type WorkerRequest =
   | { id: number; type: 'prepare'; key: string; units: TextUnitInput[]; options: PrepareOptions; resourcesDir: string; cacheDir: string }
   | { id: number; type: 'word-frequencies'; key: string; resourcesDir: string; useLemmas: boolean; activeOnly: boolean }
   | { id: number; type: 'ngram-network'; key: string; resourcesDir: string; n: 2 | 3; minFreq: number; topEdges: number; title: string }
   | { id: number; type: 'word-tree'; key: string; resourcesDir: string; options: WordTreeOptions }
+  | { id: number; type: 'keyword-associations'; key: string; resourcesDir: string; options: { focalTerms: string; topN: number; minJoint: number; minFreq: number; useLemmas: boolean } }
   | { id: number; type: 'yake'; key: string; resourcesDir: string; options: { minTokens: number; maxTokens: number; minFreq: number; topN: number; dedupThreshold: number; windowSize: number } }
 
 export type WorkerMessage =
@@ -92,6 +100,12 @@ function handle(msg: WorkerRequest, post: (m: WorkerMessage) => void): unknown {
   if (msg.type === 'word-tree') {
     const c = corpusFor(msg.key)
     return wordTree(c, lexiconFor(c.language, msg.resourcesDir), msg.options)
+  }
+  if (msg.type === 'keyword-associations') {
+    const c = corpusFor(msg.key)
+    const res = keywordAssociations(c, lexiconFor(c.language, msg.resourcesDir), msg.options)
+    if ('error' in res) return res satisfies AssociationsRun
+    return { ...res, bars: associationBars(res.focalTerms, res.collocates), radial: associationRadial(res.focalTerms, res.collocates) } satisfies AssociationsRun
   }
   if (msg.type === 'yake') {
     const c = corpusFor(msg.key)

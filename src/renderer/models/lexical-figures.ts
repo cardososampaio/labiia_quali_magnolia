@@ -57,4 +57,30 @@ export interface BarFigure {
   barHeight: number
 }
 
-export type LexicalFigure = NetworkFigure | TreeFigure | BarFigure
+/** Bars in a grid of panels (one per focal word), matplotlib's default style with tight_layout. */
+export interface PanelBarsFigure {
+  kind: 'panel-bars'
+  title: string
+  footnote: string
+  figW: number
+  figH: number
+  dpi: number
+  rows: number
+  cols: number
+  panels: ({ title: string; color: string; xlabel: string; xmax: number; bars: { label: string; value: number; text: string }[] } | { empty: string })[]
+}
+
+/** Spokes around each focal word: closer and thicker = stronger. */
+export interface RadialFigure {
+  kind: 'radial'
+  title: string
+  footnote: string
+  figW: number
+  figH: number
+  dpi: number
+  rows: number
+  cols: number
+  panels: { focal: string; color: string; spokes: { label: string; x: number; y: number; alpha: number; width: number; size: number }[] }[]
+}
+
+export type LexicalFigure = NetworkFigure | TreeFigure | BarFigure | PanelBarsFigure | RadialFigure

@@ -12,6 +12,7 @@ import { t } from '../../i18n'
 import dejavuUrl from '../../assets/fonts/DejaVuSans.ttf?url'
 import dejavuBoldUrl from '../../assets/fonts/DejaVuSans-Bold.ttf?url'
 import { buildBars } from './bar-figure'
+import { buildPanelBars, buildRadial } from './panel-figures'
 
 const FONT = 'LexDejaVu'
 // matplotlib's default subplot box (figure fractions) and savefig pad.
@@ -39,7 +40,9 @@ function measure(text: string, px: number, bold = false): { width: number; ascen
   return { width: m.width, ascent: m.actualBoundingBoxAscent, descent: m.actualBoundingBoxDescent }
 }
 
+// Runs of spaces are kept (SVG would collapse them; labiia_lex's titles use double spaces).
 const esc = (s: string): string => s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;')
+  .replace(/ {2,}/g, (m) => ' ' + '\u00a0'.repeat(m.length - 1))
 const fmt = (n: number): string => (Math.round(n * 100) / 100).toString()
 
 interface Built { svgBody: string; x: number; y: number; width: number; height: number; background: string }
@@ -182,7 +185,10 @@ function buildTree(f: TreeFigure): Built {
 
 function build(f: LexicalFigure): Built {
   if (f.kind === 'tree') return buildTree(f)
-  if (f.kind === 'barh') return buildBars(f, { font: FONT, measure, esc, fmt, padInches: PAD_INCHES })
+  const kit = { font: FONT, measure, esc, fmt, padInches: PAD_INCHES }
+  if (f.kind === 'barh') return buildBars(f, kit)
+  if (f.kind === 'panel-bars') return buildPanelBars(f, kit)
+  if (f.kind === 'radial') return buildRadial(f, kit)
   return buildNetwork(f)
 }
 

@@ -142,3 +142,15 @@ describe('YAKE', () => {
     expect(isNoiseKeyphrase('democracia digital', lex)).toBe(false)
   })
 })
+
+describe('keyword associations', () => {
+  it('computes Dunning log-likelihood and ranks attracted collocates like labiia_lex', async () => {
+    const { dunningLogLikelihood, rankCollocates, parseFocalTerms } = await import('../../src/main/lexical/analyses/keyword-associations')
+    // Values printed by labiia_lex's dunning_log_likelihood and rank_collocates.
+    expect(dunningLogLikelihood(10, 5, 5, 80)).toBeCloseTo(27.41431958116207, 10)
+    const segs = [['a', 'b', 'c'], ['a', 'b'], ['a', 'b', 'd'], ['c', 'd'], ['d'], ['a', 'c'], ['b', 'd'], ['a', 'b', 'c']].map((s) => new Set(s))
+    const ranked = rankCollocates(segs, 'a', 5, 1)
+    expect(ranked.map((c) => [c.term, Number(c.logLikelihood.toFixed(10)), c.joint])).toEqual([['b', 1.7619025654, 4], ['c', 0.5411532091, 3]])
+    expect(parseFocalTerms('Dados; governo, dados\nescola')).toEqual(['dados', 'governo', 'escola'])
+  })
+})
