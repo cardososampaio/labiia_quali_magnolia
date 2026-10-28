@@ -36,3 +36,20 @@ describe('CHD input table', () => {
     expect(readClasses('"";"V1";"V2"\n"1";2;3\n"2";0;0\n')).toEqual([3, 0])
   })
 })
+
+describe('CHD segments (labiia_lex)', () => {
+  it('count only words outside the stopword list toward the 40 words', () => {
+    // 200 words: "de" (stopword) alternating with "escola". labiia_lex deletes
+    // "de" before cutting, so each of its segments spans about 80 words.
+    const text = Array.from({ length: 100 }, () => 'de escola').join(' ')
+    const units = [{ id: 'a', name: 'A', text }]
+    const all = prepareCorpus(units, pt, { language: 'pt', uceSize: 40 })
+    const content = prepareCorpus(units, pt, { language: 'pt', uceSize: 40, segmentCount: 'content' })
+    const counts = (c: typeof all): number[] => c.uceText.map((s) => s.split(' ').filter((w) => w === 'escola').length)
+    expect(counts(all)[0]).toBeLessThanOrEqual(28)
+    expect(counts(content)[0]).toBeGreaterThanOrEqual(39)
+    expect(counts(content)[0]).toBeLessThanOrEqual(41)
+    // The stopwords stay in the segment text.
+    expect(content.uceText[0].startsWith('de escola')).toBe(true)
+  })
+})

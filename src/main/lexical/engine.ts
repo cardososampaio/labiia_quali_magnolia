@@ -138,7 +138,8 @@ export async function runLexicalTest(req: LexicalRunRequest, send: (p: LexicalRu
 
   const resourcesDir = lexicalResourcesDir()
   const cacheDir = lexicalCacheDir()
-  const options: PrepareOptions = { language: req.language, uceSize: 40 }
+  // The CHD cuts segments like labiia_lex (counting content words only); the other tests like IRaMuTeQ.
+  const options: PrepareOptions = { language: req.language, uceSize: 40, ...(req.testId === 'chd' ? { segmentCount: 'content' as const } : {}) }
   const key = corpusKey(units, options)
   const progress = (p: Omit<LexicalRunProgress, 'runId'>): void => send({ runId: req.runId, ...p })
 

@@ -27,6 +27,14 @@ export interface PrepareOptions {
   language: CorpusLanguage
   /** Target segment length in words (IRaMuTeQ default 40). */
   uceSize: number
+  /**
+   * How segments are cut. 'all' (IRaMuTeQ): every word counts toward the
+   * length and cuts prefer sentence ends. 'content' (labiia_lex's CHD):
+   * only words outside the stopword list count and no punctuation is
+   * preferred, as labiia_lex deletes both before cutting; the segments keep
+   * their stopwords.
+   */
+  segmentCount?: 'all' | 'content'
 }
 
 export interface PreparedCorpus {
@@ -102,11 +110,37 @@ export function cleanText(text: string, expressions: [string, string][] = []): s
 }
 
 /** One cut of IRaMuTeQ's decouperlist: the next segment and what remains. */
-export function decouperlist(chaine: string[], longueur: number, longueurOptimale: number): { found: boolean; segment: string[]; rest: string[] } {
+export function decouperlist(
+  chaine: string[],
+  longueur: number,
+  longueurOptimale: number,
+  counted?: (w: string) => boolean
+): { found: boolean; segment: string[]; rest: string[] } {
   let trouve = false
   let iDecoupe = 0
-  longueur = Math.min(longueur, chaine.length - 1)
-  const travail = chaine.slice(0, longueur + 1)
+  let travail: string[]
+  // Position of each word measured in counted words (every word when `counted` is absent).
+  let posOf: (nb: number) => number
+  if (!counted) {
+    longueur = Math.min(longueur, chaine.length - 1)
+    travail = chaine.slice(0, longueur + 1)
+    posOf = (nb) => nb
+  } else {
+    const pos: number[] = []
+    let k = -1
+    let i = 0
+    for (; i < chaine.length; i++) {
+      const w = chaine[i]
+      if (w !== END && counted(w)) {
+        if (k + 1 > longueur) break
+        k++
+      }
+      pos.push(Math.max(0, k))
+    }
+    travail = chaine.slice(0, i)
+    longueur = travail.length - 1
+    posOf = (nb) => pos[nb]
+  }
   let best = { weight: 0, pos: 0 }
 
   const endAt = travail.indexOf(END)
@@ -116,11 +150,12 @@ export function decouperlist(chaine: string[], longueur: number, longueurOptimal
   } else {
     for (let nb = longueur; nb >= 0; nb--) {
       const mot = travail[nb]
-      const distance = Math.abs(longueurOptimale - nb) + 1
+      const distance = Math.abs(longueurOptimale - posOf(nb)) + 1
       const bestDistance = Math.abs(longueurOptimale - best.pos) + 1
-      const weight = SEPARATOR_WEIGHT[mot] ?? SPACE_WEIGHT
+      // labiia_lex deletes punctuation before cutting, so in its mode no position is preferred.
+      const weight = counted ? SPACE_WEIGHT : SEPARATOR_WEIGHT[mot] ?? SPACE_WEIGHT
       if (weight / distance > best.weight / bestDistance) {
-        best = { weight, pos: nb }
+        best = { weight, pos: posOf(nb) }
         trouve = true
         iDecoupe = nb
       }
@@ -134,17 +169,17 @@ export function decouperlist(chaine: string[], longueur: number, longueurOptimal
 }
 
 /** Cuts a cleaned text into segments of about `uceSize` words (at most uceSize + 15). */
-export function makeSegments(cleaned: string, uceSize: number): string[] {
+export function makeSegments(cleaned: string, uceSize: number, counted?: (w: string) => boolean): string[] {
   if (!cleaned) return []
   const out: string[] = []
   const push = (seg: string[]): void => {
     const s = seg.filter((w) => !PUNCTUATION.has(w)).join(' ').trim()
     if (s) out.push(s)
   }
-  let cut = decouperlist([...cleaned.split(' '), END], uceSize + 15, uceSize)
+  let cut = decouperlist([...cleaned.split(' '), END], uceSize + 15, uceSize, counted)
   while (cut.found) {
     push(cut.segment)
-    cut = decouperlist(cut.rest, uceSize + 15, uceSize)
+    cut = decouperlist(cut.rest, uceSize + 15, uceSize, counted)
   }
   push(cut.segment.filter((w) => w !== END))
   return out
@@ -217,11 +252,14 @@ export function prepareCorpus(
   }
 
   const uceSize = Math.max(20, Math.min(200, Math.round(options.uceSize || 40)))
+  const counted = options.segmentCount === 'content'
+    ? (w: string): boolean => !PUNCTUATION.has(w) && !lexicon.stopwords.has(w)
+    : undefined
   for (let u = 0; u < units.length; u++) {
     if (isCancelled?.()) throw new Error('cancelled')
     // The lines of a text are one stream, as in IRaMuTeQ: segments may span line breaks.
     const joined = repairExtraction(units[u].text).split('\n').map((l) => l.trim()).filter(Boolean).join(' ')
-    for (const seg of makeSegments(cleanText(joined, lexicon.expressions), uceSize)) {
+    for (const seg of makeSegments(cleanText(joined, lexicon.expressions), uceSize, counted)) {
       uceUnit.push(u)
       uceText.push(seg)
       for (const w of seg.split(' ')) {

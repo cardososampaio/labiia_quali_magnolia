@@ -20,6 +20,8 @@ export const CACHE_LIMIT_BYTES = 2 * 1024 ** 3
 export function corpusKey(units: TextUnitInput[], options: PrepareOptions): string {
   const h = createHash('sha256')
   h.update(`v${PREPARATION_VERSION}\u0000${options.language}\u0000${options.uceSize}\u0000${units.length}\u0000`)
+  // Content-word segments are a different corpus; the default keeps the earlier keys.
+  if (options.segmentCount === 'content') h.update('segments:content\u0000')
   for (const u of units) {
     // Lengths before each field keep "ab"+"c" and "a"+"bc" apart.
     for (const field of [u.id, u.name, u.text]) {
