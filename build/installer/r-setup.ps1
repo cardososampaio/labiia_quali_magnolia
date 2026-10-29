@@ -8,7 +8,7 @@
 #              own library (%LOCALAPPDATA%\labiia_quali\R\library\<x.y>).
 #
 # Exit codes: 0 done; 2 R could not be downloaded; 3 R did not install;
-# 4 some packages failed; 5 no usable R. The app stays installed in every
+# 4 some packages failed; 5 no usable R; 6 unexpected error. The app stays installed in every
 # case and offers the missing packages itself.
 # Written for Windows PowerShell 5.1, which every Windows 10/11 has.
 [CmdletBinding()]
@@ -140,8 +140,22 @@ function Install-Packages([string]$Rscript) {
     $packages = Join-Path $Resources 'r_packages.txt'
     $libBase = Join-Path $DataDir 'R\library'
     Say "Instalando os pacotes R dos testes (alguns minutos)..."
-    & $Rscript --vanilla $script $libBase $packages $LogFile 2>&1 | ForEach-Object { Say ([string]$_) }
+    # R prints notes and warnings on stderr. Under 'Stop', Windows PowerShell 5.1
+    # turns the first such line into a fatal error (exit code 1) while R keeps
+    # installing, so the installer reported a failure that did not happen. The
+    # result comes from R's own exit code instead.
+    $ErrorActionPreference = 'Continue'
+    & $Rscript --vanilla $script $libBase $packages $LogFile 2>&1 | ForEach-Object {
+        if ($_ -is [System.Management.Automation.ErrorRecord]) { Say $_.Exception.Message } else { Say ([string]$_) }
+    }
     return $LASTEXITCODE
+}
+
+# Any unexpected error is written to the log with its cause, so the installer's
+# warning points to something readable.
+trap {
+    Say "Erro inesperado: $($_.Exception.Message)"
+    exit 6
 }
 
 switch ($Action) {
