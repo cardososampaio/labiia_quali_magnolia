@@ -109,7 +109,19 @@ import {
   Spline,
   Workflow,
   TextSearch,
-  createLucideIcon
+  createLucideIcon,
+  FilePlus,
+  FolderOpen,
+  Save,
+  Undo2,
+  Redo2,
+  Sun,
+  Moon,
+  ChevronUp,
+  ZoomIn,
+  ZoomOut,
+  SaveAll,
+  PanelsTopLeft
 } from 'lucide-react'
 import type { LucideIcon } from 'lucide-react'
 
@@ -256,3 +268,17 @@ export const faThumbsUp = ThumbsUp
 export const faListTree = ListTree
 export const faSpline = Spline
 export const faWorkflow = Workflow
+
+// Windows shell: title bar, Start menu and ribbon.
+export const faFilePlus = FilePlus
+export const faFolderOpen = FolderOpen
+export const faSave = Save
+export const faUndo2 = Undo2
+export const faRedo2 = Redo2
+export const faSun = Sun
+export const faMoon = Moon
+export const faChevronUp = ChevronUp
+export const faZoomIn = ZoomIn
+export const faZoomOut = ZoomOut
+export const faSaveAll = SaveAll
+export const faPanelsTopLeft = PanelsTopLeft

@@ -17,6 +17,7 @@
  * menus and dialogs) and the renderer share the same dictionary.
  */
 import { ptBR } from './pt-BR'
+import { en } from './en'
 
 export type Language = 'pt-BR' | 'en'
 
@@ -64,7 +65,7 @@ export type TranslationVars = Record<string, string | number | null | undefined>
 /** Translate `key` (the English text). `{{name}}` placeholders are filled
  *  from `vars`; a missing value renders as empty text. */
 export function t(key: string, vars?: TranslationVars): string {
-  const template = current === 'pt-BR' ? ptBR[key] ?? key : key
+  const template = current === 'pt-BR' ? ptBR[key] ?? key : en[key] ?? key
   if (!vars) return template
   return template.replace(/\{\{(\w+)\}\}/g, (match, name: string) =>
     name in vars ? String(vars[name] ?? '') : match

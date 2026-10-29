@@ -12,6 +12,8 @@ import { createEmptyProjectFile } from './qdpx/writer'
 import { initAutoUpdater, checkForUpdatesManually, getUpdateBadgeState } from './auto-updater'
 import { openBundledLicenceFile } from './licence-files'
 import { showOpenDialog, showSaveDialog } from './dialogs'
+import { migrateThemePreference } from './theme-migration'
+import { confirmClose, shouldConfirmClose, type CloseReason } from './close-confirm'
 import { normalizeLanguage, setLanguage, t, type Language } from '../renderer/i18n'
 
 // Register custom protocol scheme BEFORE app.ready (required by Electron)
@@ -66,6 +68,10 @@ let pendingMemoEditDataMap: Map<string, any> = new Map() // memo guid -> init da
 let pendingCodebookData: any = null
 let pendingLogbookData: any = null
 let isQuitting = false
+// Why the program is closing; 'user' asks for confirmation first.
+let closeReason: CloseReason = 'user'
+let closeConfirmed = false
+let confirmingClose = false
 let currentPanelVisibility: Record<string, boolean> | undefined = undefined
 
 /** A .qdpx path that arrived via Finder double-click ('open-file' event)
@@ -292,7 +298,7 @@ function createWindow(): void {
 
   // Wire auto-update to GitHub Releases. Safe in dev — electron-updater
   // no-ops when running unpackaged.
-  initAutoUpdater(mainWindow, () => { isQuitting = true })
+  initAutoUpdater(mainWindow, () => { isQuitting = true; closeReason = 'update' })
 
   // Hidden flush-on-close: intercept the close, ask the renderer to write
   // any unsaved work to its current file, then complete the close once the
@@ -304,10 +310,29 @@ function createWindow(): void {
   // on a large project will keep extending it indefinitely.
   flushPending = false
   clearFlushWatchdog()
+  // Windows is shutting down, restarting or signing out: close without asking.
+  mainWindow.on('query-session-end', () => { closeReason = 'system-shutdown' })
+  mainWindow.on('session-end', () => { closeReason = 'system-shutdown' })
   mainWindow.on('close', (e) => {
     if (flushPending) return
     if (!mainWindow || mainWindow.isDestroyed()) return
     e.preventDefault()
+    if (shouldConfirmClose(closeReason) && !closeConfirmed) {
+      if (confirmingClose) return
+      confirmingClose = true
+      void confirmClose(mainWindow).then((yes) => {
+        confirmingClose = false
+        if (yes) {
+          closeConfirmed = true
+          if (isQuitting) app.quit()
+          else mainWindow?.close()
+        } else {
+          // A cancelled menu Quit must not leave the app half-quitting.
+          isQuitting = false
+        }
+      })
+      return
+    }
     flushPending = true
     mainWindow.webContents.send('flush-and-close')
     armFlushWatchdog()
@@ -562,16 +587,27 @@ const preferencesPath = join(app.getPath('userData'), 'magnolia-preferences.json
 
 function loadPreferencesFromDisk(): any {
   try {
-    if (existsSync(preferencesPath)) return JSON.parse(readFileSync(preferencesPath, 'utf-8'))
+    if (existsSync(preferencesPath)) {
+      const saved = JSON.parse(readFileSync(preferencesPath, 'utf-8'))
+      const migrated = migrateThemePreference(saved)
+      if (migrated !== saved) writePreferencesFile(migrated)
+      return migrated
+    }
   } catch { /* ignore */ }
   return null
 }
 
+function writePreferencesFile(prefs: any): void {
+  const dir = app.getPath('userData')
+  if (!existsSync(dir)) mkdirSync(dir, { recursive: true })
+  writeFileSync(preferencesPath, JSON.stringify(prefs, null, 2))
+}
+
 function savePreferencesToDisk(prefs: any): void {
   try {
-    const dir = app.getPath('userData')
-    if (!existsSync(dir)) mkdirSync(dir, { recursive: true })
-    writeFileSync(preferencesPath, JSON.stringify(prefs, null, 2))
+    // Keep keys a window does not know about (such as themeRevision), so a
+    // save from one window never undoes the theme migration.
+    writePreferencesFile({ ...(loadPreferencesFromDisk() ?? {}), ...prefs })
   } catch { /* ignore */ }
 }
 
@@ -821,6 +857,7 @@ ipcMain.handle('get-recent-projects', () => {
 
 ipcMain.on('welcome-action', async (event, action: string) => {
   if (action === 'quit') {
+    if (!(await confirmClose(welcomeWindow))) return
     if (welcomeWindow && !welcomeWindow.isDestroyed()) {
       welcomeWindow.close()
       welcomeWindow = null
@@ -833,6 +870,12 @@ ipcMain.on('welcome-action', async (event, action: string) => {
     // The welcome window has no setWindowOpenHandler, so open the GitHub
     // Sponsors page in the user's browser from the main process directly.
     shell.openExternal('https://github.com/sponsors/caledavis')
+    return
+  }
+
+  if (action === 'author') {
+    // Author credit on the Welcome screen: opens the profile in the browser.
+    shell.openExternal('https://www.linkedin.com/in/rafael-cardoso-sampaio-4a8b3822/')
     return
   }
 
@@ -975,6 +1018,7 @@ app.on('before-quit', () => {
 // the quit callback passed to initAutoUpdater (onQuitForUpdateRef).
 nativeAutoUpdater.on('before-quit-for-update', () => {
   isQuitting = true
+  closeReason = 'update'
 })
 
 app.whenReady().then(() => {

@@ -2636,6 +2636,18 @@ export function DocumentBrowser({ onImport, onSurveyImport, showManageDocTags, o
           className="panel-header-add"
           onClick={() => {
             if (lockedBy) { promptCheckoutLocked(); return }
+            onImport()
+          }}
+          title={lockedBy ? checkoutLockedTitle(lockedBy) : t("Import sources")}
+          aria-label={t("Import sources")}
+          style={lockedBy ? { opacity: 0.4 } : undefined}
+        >
+          <Icon icon={faPlus} />
+        </button>
+        <button
+          className="panel-header-add"
+          onClick={() => {
+            if (lockedBy) { promptCheckoutLocked(); return }
             setIsNewFolder(true)
             setNewFolderKind('folder')
             setNewFolderParentGuid(null)

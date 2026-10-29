@@ -6,15 +6,15 @@
  *
  * First-install defaults follow the OS's appearance preferences:
  *   - prefers-contrast: more  →  "high-contrast"
- *   - prefers-color-scheme: dark  →  "magnolia-dark"
- *   - otherwise  →  "magnolia"
+ *   - prefers-color-scheme: dark  →  "windows-dark"
+ *   - otherwise  →  "windows"
  * These only apply when no theme has been saved yet; any saved value
  * wins.
  */
 import { colourfulInterfaceFromSaved } from './colourful-interface'
 
 export async function applyStoredAppearance(): Promise<void> {
-  let theme = 'magnolia'
+  let theme = 'windows'
   let hadSavedTheme = false
   let interfaceScale = 1
   let colourful = colourfulInterfaceFromSaved(undefined)
@@ -48,7 +48,7 @@ export async function applyStoredAppearance(): Promise<void> {
       if (window.matchMedia && window.matchMedia('(prefers-contrast: more)').matches) {
         theme = 'high-contrast'
       } else if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
-        theme = 'magnolia-dark'
+        theme = 'windows-dark'
       }
     } catch { /* matchMedia unavailable — keep default */ }
   }

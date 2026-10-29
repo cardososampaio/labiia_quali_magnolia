@@ -20,8 +20,8 @@ import { t } from '../../i18n'
 
 /** GitHub Sponsors page for funding Magnolia's development — same link
  *  as Preferences → Support Magnolia and the Welcome screen's ♥. */
-const SPONSOR_URL = 'https://github.com/sponsors/caledavis'
-const MANUAL_URL = 'https://caledavis.github.io/Magnolia/'
+export const SPONSOR_URL = 'https://github.com/sponsors/caledavis'
+export const MANUAL_URL = 'https://caledavis.github.io/Magnolia/'
 
 interface Props {
   onShowLicence: () => void

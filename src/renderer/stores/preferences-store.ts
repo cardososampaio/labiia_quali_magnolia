@@ -18,7 +18,7 @@ export interface FootPedalMappings {
  *  (Lab Dark when the OS reports prefers-color-scheme: dark, per
  *  apply-theme.ts); the empty string is preserved as a valid id
  *  ("Clean") for backwards compatibility with older preference files. */
-export type ThemeId = '' | 'dark' | 'granola' | 'granola-dark' | 'high-contrast' | 'magnolia' | 'magnolia-dark'
+export type ThemeId = '' | 'dark' | 'granola' | 'granola-dark' | 'high-contrast' | 'magnolia' | 'magnolia-dark' | 'windows' | 'windows-dark'
 
 /** Paper size for PDFs Magnolia exports. Values are Electron
  *  printToPDF `pageSize` strings. */
@@ -55,7 +55,7 @@ const DEFAULT_PREFERENCES: Preferences = {
     fastForwardSeconds: 5
   },
   defaultPlaybackSpeed: 1.0,
-  theme: 'magnolia',
+  theme: 'windows',
   paperSize: 'A4',
   interfaceScale: 1,
   userName: '',

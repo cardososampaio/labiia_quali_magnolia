@@ -23,7 +23,7 @@ interface FootPedalMappings {
   fastForwardSeconds: number
 }
 
-type ThemeId = '' | 'dark' | 'granola' | 'granola-dark' | 'high-contrast' | 'magnolia' | 'magnolia-dark'
+type ThemeId = '' | 'dark' | 'granola' | 'granola-dark' | 'high-contrast' | 'magnolia' | 'magnolia-dark' | 'windows' | 'windows-dark'
 
 /** Paper size for exported PDFs — Electron printToPDF `pageSize` values. */
 type PaperSize = 'A4' | 'A3' | 'A5' | 'Letter' | 'Legal' | 'Tabloid'
@@ -63,7 +63,7 @@ const DEFAULT_PREFS: Preferences = {
   // reports prefers-color-scheme: dark — handled by apply-theme.ts
   // on first paint). Existing pref files that already carry a saved
   // theme (including the legacy '' for Clean) override this.
-  theme: 'magnolia',
+  theme: 'windows',
   paperSize: 'A4',
   interfaceScale: 1,
   userName: '',
@@ -91,6 +91,8 @@ interface ThemeOption {
 }
 
 const THEME_OPTIONS: ThemeOption[] = [
+  { id: 'windows',       label: t("Windows"),       swatch: { bg: '#F3F4F6', surface: '#FFFFFF', accent: '#0F6CBD' } },
+  { id: 'windows-dark',  label: t("Windows Dark"),  swatch: { bg: '#1F1F1F', surface: '#2B2B2B', accent: '#4CA3F0' } },
   { id: 'magnolia',      label: t("Magnolia"),      swatch: { bg: '#C8D0DA', surface: '#FFFFFF', accent: '#2563EB' } },
   { id: 'magnolia-dark', label: t("Magnolia Dark"), swatch: { bg: '#14181E', surface: '#252B35', accent: '#5B8FFF' } },
   { id: 'granola',       label: t("Granola"),       swatch: { bg: '#f1e6cf', surface: '#ffffff', accent: '#c97134' } },
@@ -262,7 +264,7 @@ function AppearanceSettings({
               <div style={{ flex: 1, minWidth: 0 }}>
                 <div style={{ fontSize: 12.5, fontWeight: 600, color: 'var(--text-primary)' }}>
                   {opt.label}
-                  {opt.id === 'magnolia' && (
+                  {opt.id === 'windows' && (
                     <span style={{ fontSize: 10, color: 'var(--text-muted)', fontWeight: 500, marginLeft: 6 }}>{t("(default)")}</span>
                   )}
                 </div>

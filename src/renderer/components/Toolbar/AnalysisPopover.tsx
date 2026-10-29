@@ -30,7 +30,7 @@ import { t } from '../../i18n'
 /** Tools the popover surfaces, in the order they appear in the grid.
  *  Query Builder is intentionally NOT in this list — it stays on the
  *  top toolbar as a primary action. */
-const ANALYSIS_TOOL_ORDER: AnalysisToolType[] = [
+export const ANALYSIS_TOOL_ORDER: AnalysisToolType[] = [
   'codes-in-documents',
   'framework-matrix',
   'results-in-documents',

@@ -90,11 +90,12 @@ maioria dos testes em menos de 2 segundos (YAKE em 5 a 12 segundos, conforme a
 carga do computador; os testes em R dependem do R). Pico de memória de cerca
 de 350 MB.
 
-**Variáveis dos documentos**: cada etiqueta de um documento vira uma variável
-no formato do IRaMuTeQ (`*categoria_valor`, ou `*etiqueta_nome` para etiquetas
-sem categoria), assim como a pasta (`*pasta_nome`). A CHD mostra as variáveis
-mais associadas a cada classe (tabela "Variáveis por classe" e AFC das
-variáveis). Uma etiqueta numa categoria do tipo **data** dá a data do
+**Variáveis dos documentos**: cada característica de um documento vira uma
+variável no formato do IRaMuTeQ (`*atributo_valor`, ou `*caracteristica_nome`
+para características sem atributo), assim como a pasta (`*pasta_nome`). A CHD
+mostra as variáveis mais associadas a cada classe (tabela "Variáveis por
+classe" e AFC das variáveis). Uma característica num atributo do tipo **data**
+dá a data do
 documento (dd/mm/aaaa, mm/aaaa, aaaa ou aaaa-mm-dd); com datas, o Sentimento e
 o LDA ganham a linha do tempo. Documentos sem data ficam fora das linhas do
 tempo.

@@ -79,6 +79,10 @@
 .lex-figure-frame img { display: block; margin: 0 auto; max-width: 100%; max-height: 72vh; width: auto; height: auto; }
 .lex-figure-frame.actual { overflow: auto; max-height: 78vh; }
 .lex-figure-frame.actual img { max-width: none; max-height: none; }
+/* Hand tool on a zoomed picture larger than the view. */
+.lex-figure-frame.pannable { cursor: grab; }
+.lex-figure-frame.panning { cursor: grabbing; user-select: none; }
+.lex-figure-frame.pannable img, .lex-figure-frame.pannable svg { -webkit-user-drag: none; user-select: none; }
 .lex-table-block { margin-top: 16px; }
 .lex-table-wrap { max-height: 360px; overflow: auto; border: 1px solid var(--border-color); border-radius: var(--radius-sm); }
 .lex-table { width: 100%; border-collapse: collapse; font-size: var(--font-size-sm); }

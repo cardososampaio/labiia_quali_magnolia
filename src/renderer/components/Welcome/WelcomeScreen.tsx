@@ -1,11 +1,6 @@
 import { useState, useEffect } from 'react'
-// ES imports so Vite bundles and hashes the assets — plain `url(./assets/…)`
-// strings only resolve in dev; production builds drop them.
-// Welcome background lives in graphic_files/ alongside the icon sources so
-// all app artwork is in one place. Replace that one file (1440×1040 ideal)
-// to change the welcome image.
-import welcomeBgUrl from '../../../../graphic_files/welcome-bg.png'
 import { t } from '../../i18n'
+import { WelcomeArt } from './WelcomeArt'
 
 export function WelcomeScreen() {
   const [recentProjects, setRecentProjects] = useState<{ name: string; path: string }[]>([])
@@ -28,9 +23,6 @@ export function WelcomeScreen() {
       width: '100vw',
       display: 'grid',
       gridTemplateColumns: '1fr 1fr',
-      backgroundImage: `url("${welcomeBgUrl}")`,
-      backgroundSize: 'cover',
-      backgroundPosition: 'center',
       fontFamily: 'var(--font-family)',
       color: 'var(--text-primary)',
       userSelect: 'none'
@@ -40,7 +32,7 @@ export function WelcomeScreen() {
         // No bottom padding: the sponsor link's flex:1 region extends to the
         // true window bottom so it centres between the buttons and that edge.
         padding: '40px 48px 0',
-        boxShadow: '16px 0 60px rgba(0,0,0,0.18), 4px 0 16px rgba(0,0,0,0.10)',
+        borderRight: '1px solid var(--border-color)',
         height: '100vh',
         display: 'flex',
         flexDirection: 'column',
@@ -182,24 +174,33 @@ export function WelcomeScreen() {
             {t("Based on Magnolia, by Cale Davis — support the original project")}
           </span>
           <span style={{ fontSize: 11.5, color: 'var(--text-secondary)', textAlign: 'center' }}>
+            {t("Version developed by")}{' '}
+            <a
+              href="https://www.linkedin.com/in/rafael-cardoso-sampaio-4a8b3822/"
+              onClick={(e) => { e.preventDefault(); window.api.sendWelcomeAction('author') }}
+              style={{ color: 'var(--accent)', textDecoration: 'underline', cursor: 'pointer' }}
+            >
+              Rafael Sampaio
+            </a>
+            {' '}(UFPE)
+          </span>
+          <span style={{ fontSize: 11.5, color: 'var(--text-secondary)', textAlign: 'center' }}>
             {t("Use labiia_quali at your own risk.")}
             <br />
             {t("Coded by Claude.")}
           </span>
         </div>
       </div>
-      <div />
+      <WelcomeArt />
 
-      {/* App version — bottom-right corner, over the welcome artwork.
-          White with a soft shadow so it stays legible on any image. */}
+      {/* App version — bottom-right corner, over the welcome artwork. */}
       <div style={{
         position: 'absolute',
         bottom: 10,
         right: 14,
         fontSize: 11,
         fontWeight: 500,
-        color: 'rgba(255, 255, 255, 0.9)',
-        textShadow: '0 1px 3px rgba(0, 0, 0, 0.55)',
+        color: 'var(--text-muted)',
         letterSpacing: 0.2,
         pointerEvents: 'none'
       }}>

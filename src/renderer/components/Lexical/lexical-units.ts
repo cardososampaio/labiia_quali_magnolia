@@ -71,7 +71,7 @@ export function documentVariables(data: AnalysisInitData, sourceGuid: string): {
     const cat = tag.categoryGuid ? catOf.get(tag.categoryGuid) : undefined
     const value = (tag.value || tag.name || '').trim()
     if (!value) continue
-    variables.push(`*${variablePart(cat?.name ?? 'etiqueta')}_${variablePart(value)}`)
+    variables.push(`*${variablePart(cat?.name ?? 'caracteristica')}_${variablePart(value)}`)
     if (cat?.type === 'date' && date === undefined) date = parseTagDate(value)
   }
   const folderGuid = data.sourceFolder?.[sourceGuid]

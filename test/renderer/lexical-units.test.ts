@@ -31,7 +31,7 @@ describe('document variables', () => {
       sourceFolder: { doc: 'f1' }
     } as unknown as AnalysisInitData
     expect(documentVariables(data, 'doc')).toEqual({
-      variables: ['*datadaentrevista_15032024', '*etiqueta_gestor', '*genero_feminino', '*pasta_rodada1'],
+      variables: ['*caracteristica_gestor', '*datadaentrevista_15032024', '*genero_feminino', '*pasta_rodada1'],
       date: '2024-03-15'
     })
   })

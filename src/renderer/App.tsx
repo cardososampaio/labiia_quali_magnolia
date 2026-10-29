@@ -15,9 +15,18 @@ import {
   faSquareArrowRightEnter,
   faGitMerge,
   faGear,
-  faChevronsLeft,
-  faChevronsRight,
-  faTextSearch
+  faFolderPlus,
+  faSave,
+  faUndo2,
+  faRedo2,
+  faSun,
+  faMoon,
+  faZoomIn,
+  faZoomOut,
+  faPanelsTopLeft,
+  faScale,
+  faFileAlt,
+  faHeart
 } from './components/Icon'
 import { LicenceDialog } from './components/Licence/LicenceDialog'
 import { UpdateDialog, type UpdateAvailableInfo } from './components/Update/UpdateDialog'
@@ -90,14 +99,17 @@ import { ProjectDetailsDialog } from './components/ProjectDetails/ProjectDetails
 import { FindDialog } from './components/Find/FindDialog'
 import { MemosPane } from './components/Memos/MemosPane'
 import { QuotesPane } from './components/Quotes/QuotesPane'
-import { AnalysisPopover } from './components/Toolbar/AnalysisPopover'
-import { StudioPopover } from './components/Toolbar/StudioPopover'
-import { HelpPopover } from './components/Toolbar/HelpPopover'
+import { ANALYSIS_TOOL_ORDER } from './components/Toolbar/AnalysisPopover'
+import { MANUAL_URL, SPONSOR_URL } from './components/Toolbar/HelpPopover'
+import { Ribbon, type RibbonButtonDef, type RibbonTabDef } from './components/Toolbar/Ribbon'
+import { StartMenu } from './components/Toolbar/StartMenu'
+import { StatusBar } from './components/StatusBar'
 import { WindowControls } from './components/Toolbar/WindowControls'
 import type { Project, Query, CodeCondition, Code, TextSource, QDASet, LogbookInitData, AnalysisInitData, AnalysisToolType, PlainTextSelection, Memo, MemoEditInitData, SurveyCellScopeArgs } from './models/types'
 import { buildSurveyEntityLabels } from './utils/survey/survey-labels'
 import { t } from './i18n'
-import { LEXICAL_TESTS, lexicalToolType } from './components/Lexical/lexical-catalog'
+import { LEXICAL_TESTS, lexicalToolType, type LexicalTestId } from './components/Lexical/lexical-catalog'
+import { TOOL_REGISTRY } from './utils/tool-registry'
 
 /** Fold the survey-cell scope carried by an analysis cell-click into the
  *  documentFilter of the Query being generated, so it re-runs against the
@@ -201,23 +213,17 @@ function describeQuery(
   return name
 }
 
-/** Toolbar pill layout: groups a set of related buttons in a row. The
- *  rounded chip background/padding itself (macOS Mail-style) is CSS,
- *  scoped to Icons mode only via .app-toolbar-pill in global.css —
- *  Icons and Text mode reverts to a plain, unfilled row (see
- *  Preferences → Appearance → Toolbar Style). */
-const TOOLBAR_PILL_STYLE: React.CSSProperties = {
-  display: 'flex',
-  alignItems: 'center'
+/** Each theme's light/dark partner, for the ribbon's dark-mode button. */
+const DARK_PAIR: Record<string, string> = {
+  'windows': 'windows-dark', 'windows-dark': 'windows',
+  'magnolia': 'magnolia-dark', 'magnolia-dark': 'magnolia',
+  'granola': 'granola-dark', 'granola-dark': 'granola',
+  '': 'dark', 'dark': '',
+  'high-contrast': 'windows-dark'
 }
-
-/** Thin divider between two buttons that share a toolbar pill — not
- *  between pills themselves, which are already visually separated by
- *  their own chip background (same convention macOS Mail's toolbar
- *  uses: dividers inside a group, plain gaps between groups). */
-function ToolbarDivider(): JSX.Element {
-  return <div style={{ width: 1, height: 16, background: 'var(--border-color)', margin: '0 4px', flexShrink: 0 }} />
-}
+const DARK_THEMES = new Set(['windows-dark', 'magnolia-dark', 'granola-dark', 'dark'])
+/** Interface sizes offered by Preferences → Appearance, also stepped by the ribbon. */
+const INTERFACE_SCALES = [1, 1.25, 1.5, 2]
 
 function App() {
   const [showNewCodeDialog, setShowNewCodeDialog] = useState(false)
@@ -360,32 +366,6 @@ function App() {
     activePanelRef.current = panel
   }
 
-  // Tracks whether the scrollable toolbar (GitHub issue #15, see the
-  // .app-toolbar-scroll comment further down) has more content hidden
-  // off the left/right edge, so the chevron hints can fade in/out to
-  // match — no chevron once you've scrolled all the way to that side.
-  const toolbarScrollRef = useRef<HTMLDivElement>(null)
-  const [toolbarCanScrollLeft, setToolbarCanScrollLeft] = useState(false)
-  const [toolbarCanScrollRight, setToolbarCanScrollRight] = useState(false)
-  const updateToolbarScrollFade = useCallback(() => {
-    const el = toolbarScrollRef.current
-    if (!el) return
-    setToolbarCanScrollLeft(el.scrollLeft > 1)
-    setToolbarCanScrollRight(el.scrollLeft < el.scrollWidth - el.clientWidth - 1)
-  }, [])
-  useEffect(() => {
-    const el = toolbarScrollRef.current
-    if (!el) return
-    updateToolbarScrollFade()
-    el.addEventListener('scroll', updateToolbarScrollFade, { passive: true })
-    const resizeObserver = new ResizeObserver(updateToolbarScrollFade)
-    resizeObserver.observe(el)
-    return () => {
-      el.removeEventListener('scroll', updateToolbarScrollFade)
-      resizeObserver.disconnect()
-    }
-  }, [updateToolbarScrollFade])
-
   const projectStore = useProjectStore()
   const documentStore = useDocumentStore()
   const codeStore = useCodeStore()
@@ -422,6 +402,10 @@ function App() {
   // component below reads independently rather than threading this value
   // through props.
   const checkoutLockedBy = useCheckoutLockedBy()
+  // Opens a project file in this window; set by the open-recent-project listener.
+  const openProjectAtPathRef = useRef<((path: string) => Promise<void>) | null>(null)
+  const canUndo = useUndoStore((s) => s.undoStack.length > 0)
+  const canRedo = useUndoStore((s) => s.redoStack.length > 0)
   const checkoutLocked = !!checkoutLockedBy
   const logbookStore = useLogbookStore()
   const memoStore = useMemoStore()
@@ -1965,7 +1949,7 @@ function App() {
 
   // Listen for open-recent-project from welcome screen
   useEffect(() => {
-    const unsub = window.api.onOpenRecentProject(async (filePath) => {
+    const openAtPath = async (filePath: string) => {
       loadInProgressRef.current = true
       cancelPendingAutoSave()
       setLoadProgress({ stage: t("Opening project…"), current: 0, total: 0 })
@@ -2039,7 +2023,10 @@ function App() {
         setLoadProgress(null)
         liftLoadSuppression()
       }
-    })
+    }
+    // The Start menu's recent projects open through the same path.
+    openProjectAtPathRef.current = openAtPath
+    const unsub = window.api.onOpenRecentProject(openAtPath)
     return unsub
   }, [cancelPendingAutoSave, liftLoadSuppression, applyCheckoutInfo])
 
@@ -2446,6 +2433,141 @@ function App() {
     return unsub
   }, [])
 
+  // ── Ribbon ── The tabs and groups of the Windows-style toolbar. Every
+  // button reuses the action the old toolbar pills and popovers ran.
+  const [themeId, setThemeId] = useState(() => document.documentElement.getAttribute('data-theme') ?? 'windows')
+  useEffect(() => window.api.onThemeChanged((theme: string) => setThemeId(theme)), [])
+  const darkLook = DARK_THEMES.has(themeId)
+  const toggleDarkLook = useCallback(async () => {
+    const next = DARK_PAIR[themeId] ?? (darkLook ? 'windows' : 'windows-dark')
+    document.documentElement.setAttribute('data-theme', next)
+    setThemeId(next)
+    window.api.broadcastTheme(next)
+    const prefs = (await window.api.loadPreferences()) ?? {}
+    await window.api.savePreferences({ ...prefs, theme: next })
+  }, [themeId, darkLook])
+  const changeInterfaceScale = useCallback(async (direction: 1 | -1) => {
+    const prefs = (await window.api.loadPreferences()) ?? {}
+    const current = typeof prefs.interfaceScale === 'number' ? prefs.interfaceScale : 1
+    const index = INTERFACE_SCALES.findIndex((v) => v >= current - 0.001)
+    const next = INTERFACE_SCALES[Math.min(INTERFACE_SCALES.length - 1, Math.max(0, (index < 0 ? 0 : index) + direction))]
+    window.api.setZoomFactor(next)
+    window.api.broadcastZoomFactor(next)
+    await window.api.savePreferences({ ...prefs, interfaceScale: next })
+  }, [])
+  const lockedReason = checkoutLockedBy ? checkoutLockedTitle(checkoutLockedBy) : undefined
+  const analysisButton = (toolType: AnalysisToolType): RibbonButtonDef => {
+    const def = TOOL_REGISTRY[toolType]
+    return { id: toolType, label: def.label, title: def.description, icon: def.icon, family: 'analysis', onClick: () => openAnalysis(toolType) }
+  }
+  const lexicalButton = (id: LexicalTestId): RibbonButtonDef => {
+    const def = LEXICAL_TESTS.find((d) => d.id === id)!
+    const family = id === 'sentiment' || id === 'emotions' ? 'affect' : 'lexical'
+    // Ribbon labels stay short: "CHD (Classificação …)" shows as "CHD", the full name in the tooltip.
+    const label = def.label.split(' (')[0]
+    return { id, label, title: `${def.label}: ${def.description}`, icon: def.icon, family, onClick: () => openAnalysis(lexicalToolType(id)) }
+  }
+  const panelButton = (id: PanelId | 'queries', label: string, visible: boolean): RibbonButtonDef => ({
+    id: `panel-${id}`, label, icon: faPanelsTopLeft, family: 'neutral', pressed: visible,
+    title: visible ? t("Hide the {{name}} panel", { name: label }) : t("Show the {{name}} panel", { name: label }),
+    onClick: () => (id === 'queries' ? setQueryResultsClosed((prev) => !prev) : togglePanel(id))
+  })
+  const ribbonTabs: RibbonTabDef[] = [
+    {
+      id: 'home',
+      label: t("Home"),
+      groups: [
+        {
+          label: t("Sources"),
+          buttons: [
+            { id: 'import', label: t("Import"), title: t("Import sources"), icon: faSquareArrowRightEnter, family: 'sources', disabledReason: lockedReason, onClick: () => handleImportDocument() },
+            { id: 'folder', label: t("New folder"), icon: faFolderPlus, family: 'sources', disabledReason: lockedReason, onClick: () => { if (!checkoutLockedBy) documentStore.addFolder(t("New Folder")) } }
+          ]
+        },
+        {
+          label: t("Coding"),
+          buttons: [
+            { id: 'codebook', label: t("Codebook"), icon: faBook, family: 'coding', onClick: () => openCodebook() },
+            { id: 'tags', label: t("Tags"), icon: faTags, family: 'coding', onClick: () => setShowManageDocTags(true) },
+            { id: 'logbook', label: t("Logbook"), icon: faNotebookPen, family: 'coding', onClick: () => openLogbook() }
+          ]
+        },
+        {
+          label: t("Query"),
+          buttons: [
+            { id: 'query', label: t("Query"), title: t("Build a code / text query"), icon: faMagnifyingGlass, family: 'query', onClick: () => openQueryBuilder() }
+          ]
+        }
+      ]
+    },
+    {
+      id: 'analyses',
+      label: t("Analyses"),
+      groups: [
+        { label: t("Codes"), buttons: (['codes-in-documents', 'framework-matrix', 'code-cooccurrences', 'code-orders', 'code-frequencies'] as AnalysisToolType[]).map(analysisButton) },
+        { label: t("Results and words"), buttons: (['results-in-documents', 'word-frequencies', 'relationship-map'] as AnalysisToolType[]).map(analysisButton) },
+        { label: t("Reports"), buttons: ANALYSIS_TOOL_ORDER.filter((tool) => tool === 'reports').map(analysisButton) }
+      ]
+    },
+    {
+      id: 'lexical',
+      label: t("Lexical analyses"),
+      groups: [
+        { label: t("Exploration"), buttons: (['wordcloud', 'word-tree', 'bigrams', 'trigrams'] as LexicalTestId[]).map(lexicalButton) },
+        { label: t("Structure"), buttons: (['chd', 'similitude', 'thematic-map', 'lda'] as LexicalTestId[]).map(lexicalButton) },
+        { label: t("Keywords and affect"), buttons: (['yake', 'keyword-associations', 'sentiment', 'emotions'] as LexicalTestId[]).map(lexicalButton) }
+      ]
+    },
+    {
+      id: 'view',
+      label: t("View"),
+      groups: [
+        {
+          label: t("Panels"),
+          buttons: [
+            panelButton('documents', t("Documents"), panelVisibility.documents),
+            panelButton('tags', t("Tags"), panelVisibility.tags),
+            panelButton('codes', t("Codes"), panelVisibility.codes),
+            panelButton('queries', t("Queries"), !queryResultsClosed),
+            panelButton('memos', t("Memos"), panelVisibility.memos),
+            panelButton('quotes', t("Quotes"), panelVisibility.quotes),
+            panelButton('analyses', t("Analyses"), panelVisibility.analyses)
+          ]
+        },
+        {
+          label: t("Appearance"),
+          buttons: [
+            { id: 'dark', label: darkLook ? t("Light mode") : t("Dark mode"), icon: darkLook ? faSun : faMoon, family: 'neutral', onClick: () => void toggleDarkLook() },
+            { id: 'zoom-in', label: t("Larger"), title: t("Make the interface larger"), icon: faZoomIn, family: 'neutral', onClick: () => void changeInterfaceScale(1) },
+            { id: 'zoom-out', label: t("Smaller"), title: t("Make the interface smaller"), icon: faZoomOut, family: 'neutral', onClick: () => void changeInterfaceScale(-1) }
+          ]
+        }
+      ]
+    },
+    {
+      id: 'help',
+      label: t("Help"),
+      groups: [
+        {
+          label: t("labiia_quali"),
+          buttons: [
+            {
+              id: 'preferences', label: t("Preferences"), icon: faGear, family: 'neutral', badge: updateBadgeAvailable,
+              title: updateBadgeAvailable ? t("A new version is available — open Preferences → Updates") : t("Preferences"),
+              onClick: () => {
+                if (updateBadgeAvailable) requestPreferencesCategory('updates')
+                useDocumentStore.getState().openToolTab(PREFERENCES_TAB_ID)
+              }
+            },
+            { id: 'licence', label: t("Licence"), title: t("Licence & Attributions"), icon: faScale, family: 'neutral', onClick: () => setShowLicenceDialog(true) },
+            { id: 'manual', label: t("Manual"), title: t("Open the user manual of Magnolia, the software labiia_quali is based on, in your browser (in English)."), icon: faFileAlt, family: 'neutral', onClick: () => window.open(MANUAL_URL, '_blank') },
+            { id: 'support', label: t("Support Magnolia"), icon: faHeart, family: 'affect', onClick: () => window.open(SPONSOR_URL, '_blank') }
+          ]
+        }
+      ]
+    }
+  ]
+
   return (
     <div
       className="app-shell"
@@ -2466,376 +2588,48 @@ function App() {
         if (paths.length > 0) handleOSFileDrop(paths)
       }}
     >
-      {/* ── Toolbar ── */}
-      <div
-        className="app-toolbar"
-        data-toolbar-style={toolbarStyle}
-        style={{
-          display: 'flex',
-          alignItems: 'center',
-          // Vertical padding only here. Horizontal padding lives in
-          // .app-toolbar so the macOS-only override can replace the
-          // left edge with the traffic-light indent.
-          paddingTop: 6,
-          paddingBottom: 6,
-          borderBottom: '1px solid var(--border-color)',
-          background: 'var(--bg-secondary)',
-          flexShrink: 0,
-          height: 54
-        }}
-      >
-        {/* Left: the Magnolia icon followed by the open project's file
-            name. Clicking the name opens the Project Info pane. Pinned —
-            flexShrink: 0 keeps it (and the project name) visible at any
-            window size; see the scrollable middle section below
-            (GitHub issue #15). */}
-        <div
-          style={{
-            flexShrink: 0,
-            marginRight: 12,
-            padding: '4px 6px',
-            display: 'flex',
-            alignItems: 'center',
-            gap: 8
-          }}
+      {/* ── Title bar: Start, quick actions, project name, window controls ── */}
+      <div className="app-titlebar">
+        <StartMenu
+          iconUrl={labiiaIconUrl}
+          onNewProject={() => handleNewProject()}
+          onOpenProject={() => handleOpenProject()}
+          onSaveProjectAs={() => handleSaveProjectAs()}
+          onImportSources={() => handleImportDocument()}
+          onMergeProject={() => handleMergeProject()}
+          onOpenRecent={(path) => openProjectAtPathRef.current?.(path)}
+          importLockedReason={checkoutLockedBy ? checkoutLockedTitle(checkoutLockedBy) : undefined}
+        />
+        <div className="titlebar-quick">
+          <button type="button" className="titlebar-btn" title={t("Save (Ctrl+S)")} aria-label={t("Save")} onClick={() => handleSaveProject()}>
+            <Icon icon={faSave} />
+          </button>
+          <button type="button" className="titlebar-btn" title={t("Undo (Ctrl+Z)")} aria-label={t("Undo")} disabled={!canUndo} onClick={() => useUndoStore.getState().undo()}>
+            <Icon icon={faUndo2} />
+          </button>
+          <button type="button" className="titlebar-btn" title={t("Redo (Ctrl+Shift+Z)")} aria-label={t("Redo")} disabled={!canRedo} onClick={() => useUndoStore.getState().redo()}>
+            <Icon icon={faRedo2} />
+          </button>
+        </div>
+        <button
+          type="button"
+          className="titlebar-project"
+          title={t("Project info")}
+          onClick={() => setShowProjectDetails(true)}
         >
-          <img
-            src={labiiaIconUrl}
-            alt={t("labiia_quali")}
-            draggable={false}
-            style={{ width: 24, height: 24, flexShrink: 0, pointerEvents: 'none' }}
-          />
-          <button
-            type="button"
-            className="app-toolbar-btn"
-            title={t("Project info")}
-            onClick={() => setShowProjectDetails(true)}
-            style={{
-              border: 'none',
-              background: 'transparent',
-              color: 'var(--text-secondary)',
-              cursor: 'pointer',
-              fontSize: 13,
-              fontWeight: 500,
-              padding: '2px 6px',
-              borderRadius: 'var(--radius-sm)',
-              maxWidth: 240,
-              overflow: 'hidden',
-              textOverflow: 'ellipsis',
-              whiteSpace: 'nowrap',
-              transition: 'background 0.12s, color 0.12s'
-            }}
-            onMouseEnter={(e) => {
-              e.currentTarget.style.background = 'var(--bg-tertiary)'
-              e.currentTarget.style.color = 'var(--text-primary)'
-            }}
-            onMouseLeave={(e) => {
-              e.currentTarget.style.background = 'transparent'
-              e.currentTarget.style.color = 'var(--text-secondary)'
-            }}
-          >
-            {projectStore.name}
-          </button>
-        </div>
-
-        {/* Scrollable middle: every other toolbar option, between the
-            pinned project name (left) and the pinned window controls
-            (right). Scrolls horizontally instead of overflowing and
-            clipping/overlapping when the window is too narrow to fit
-            everything — e.g. tiled or resized small (GitHub issue #15). */}
-        <div style={{ display: 'flex', alignItems: 'center', flex: '1 1 auto', minWidth: 0, height: '100%' }}>
-          {/* Scroll hint gutters: fixed-width slots flanking the scroll
-              track (siblings, not overlays) so the chevron never sits on
-              top of a button's icon — it fades in/out in its own reserved
-              space instead. Each is a flex sibling of .app-toolbar-scroll,
-              not a child, so it can't be swept along by that div's own
-              horizontal scrolling. */}
-          <div
-            style={{
-              flexShrink: 0,
-              width: 36,
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              pointerEvents: 'none',
-              opacity: toolbarCanScrollLeft ? 1 : 0,
-              transition: 'opacity 0.15s ease'
-            }}
-          >
-            <Icon icon={faChevronsLeft} style={{ fontSize: 16 }} className="app-toolbar-scroll-hint" />
-          </div>
-          <div
-            ref={toolbarScrollRef}
-            className="app-toolbar-scroll"
-            style={{
-              display: 'flex',
-              flex: '1 1 auto',
-              minWidth: 0,
-              height: '100%',
-              overflowX: 'auto',
-              overflowY: 'hidden'
-            }}
-          >
-          {/* Inner wrapper: margin: 0 auto centers this group within the
-              scroll track whenever it's narrower than the available
-              space (the common case). If it's wider, auto margins
-              collapse to 0 — the group left-aligns and the outer div's
-              overflow-x takes over, so this never fights the #15 fix
-              above by clipping content out the left edge on narrow
-              windows. */}
-          <div className="app-toolbar-scroll-inner" style={{ display: 'flex', alignItems: 'center', gap: 10, margin: '0 auto' }}>
-          <div className="app-toolbar-pill" style={TOOLBAR_PILL_STYLE}>
-          {[
-            { icon: faSquareArrowRightEnter, label: t("Import"), action: () => handleImportDocument(), locks: true },
-            { icon: faBook, label: t("Codebook"), action: () => openCodebook() },
-            { icon: faNotebookPen, label: t("Logbook"), action: () => openLogbook() },
-            { icon: faTags, label: t("Tags"), action: () => setShowManageDocTags(true) }
-          ].map((item, idx) => {
-            const itemLocked = !!(item as { locks?: boolean }).locks && !!checkoutLockedBy
-            return [
-            idx > 0 ? <ToolbarDivider key={`${item.label}-divider`} /> : null,
-            <button
-              key={item.label}
-              className="app-toolbar-btn"
-              title={itemLocked ? checkoutLockedTitle(checkoutLockedBy!) : (item as { title?: string }).title ?? item.label}
-              onClick={item.action}
-              style={{
-                display: 'flex',
-                flexDirection: 'column',
-                alignItems: 'center',
-                gap: 3,
-                padding: '4px 12px',
-                border: 'none',
-                borderRadius: 'var(--radius-sm)',
-                background: 'transparent',
-                color: 'var(--text-secondary)',
-                cursor: 'pointer',
-                opacity: itemLocked ? 0.4 : 1,
-                lineHeight: 1,
-                transition: 'background 0.12s, color 0.12s'
-              }}
-              onMouseEnter={(e) => {
-                e.currentTarget.style.background = 'var(--bg-tertiary)'
-                e.currentTarget.style.color = 'var(--text-primary)'
-              }}
-              onMouseLeave={(e) => {
-                e.currentTarget.style.background = 'transparent'
-                e.currentTarget.style.color = 'var(--text-secondary)'
-              }}
-            >
-              <Icon icon={item.icon} style={{ fontSize: 20, ...(item as { iconStyle?: React.CSSProperties }).iconStyle }} />
-              <span className="toolbar-label" style={{ fontSize: 9, whiteSpace: 'nowrap', fontWeight: 400 }}>{item.label}</span>
-            </button>
-            ]
-          })}
-          </div>
-
-          {/* Merge gets its own pill, separate from the document-management
-              group above — it acts on the whole project (reconciling two
-              divergent copies), not a single document, so grouping it with
-              Import/Codebook/Logbook/Tags overstated how related it is to
-              them. */}
-          <div className="app-toolbar-pill" style={TOOLBAR_PILL_STYLE}>
-            <button
-              className="app-toolbar-btn"
-              title={t("Merge a project into this one")}
-              onClick={() => handleMergeProject()}
-              style={{
-                display: 'flex',
-                flexDirection: 'column',
-                alignItems: 'center',
-                gap: 3,
-                padding: '4px 12px',
-                border: 'none',
-                borderRadius: 'var(--radius-sm)',
-                background: 'transparent',
-                color: 'var(--text-secondary)',
-                cursor: 'pointer',
-                lineHeight: 1,
-                transition: 'background 0.12s, color 0.12s'
-              }}
-              onMouseEnter={(e) => {
-                e.currentTarget.style.background = 'var(--bg-tertiary)'
-                e.currentTarget.style.color = 'var(--text-primary)'
-              }}
-              onMouseLeave={(e) => {
-                e.currentTarget.style.background = 'transparent'
-                e.currentTarget.style.color = 'var(--text-secondary)'
-              }}
-            >
-              {/* git-merge flipped both ways (180°) — Magnolia's projects
-                  "merge" toward the currently-open project, the reverse
-                  direction of a git merge arrow, hence the flip. */}
-              <Icon icon={faGitMerge} style={{ fontSize: 20, transform: 'scale(-1, -1)' }} />
-              <span className="toolbar-label" style={{ fontSize: 9, whiteSpace: 'nowrap', fontWeight: 400 }}>{t("Merge")}</span>
-            </button>
-          </div>
-
-          <div className="app-toolbar-pill" style={TOOLBAR_PILL_STYLE}>
-          {/* Query Builder stays as its own top-level button — it's
-              the primary way users move between document inspection
-              and analysis, distinct enough from the seven analysis
-              tools that hiding it inside the popover would feel
-              wrong. */}
-          <button
-            className="app-toolbar-btn"
-            title={t("Query")}
-            onClick={() => openQueryBuilder()}
-            style={{
-              display: 'flex',
-              flexDirection: 'column',
-              alignItems: 'center',
-              gap: 3,
-              padding: '4px 12px',
-              border: 'none',
-              borderRadius: 'var(--radius-sm)',
-              background: 'transparent',
-              cursor: 'pointer',
-              lineHeight: 1,
-              transition: 'background 0.12s'
-            }}
-            onMouseEnter={(e) => {
-              e.currentTarget.style.background = 'var(--bg-tertiary)';
-              (e.currentTarget.querySelector('.toolbar-label') as HTMLElement).style.color = 'var(--text-primary)'
-            }}
-            onMouseLeave={(e) => {
-              e.currentTarget.style.background = 'transparent';
-              (e.currentTarget.querySelector('.toolbar-label') as HTMLElement).style.color = 'var(--text-secondary)'
-            }}
-          >
-            <Icon icon={faMagnifyingGlass} style={{ fontSize: 20 }} />
-            <span className="toolbar-label" style={{ fontSize: 9, whiteSpace: 'nowrap', fontWeight: 400, color: 'var(--text-secondary)', transition: 'color 0.12s' }}>{t("Query")}</span>
-          </button>
-
-          <ToolbarDivider />
-
-          {/* Seven analysis tools (Codes in Docs / Results in Docs /
-              Co-Occurrences / Code Frequencies / Code Orders / Word
-              Frequencies / Relationships) collapse behind one
-              "Analysis ▾" button that opens a tile-grid popover.
-              See AnalysisPopover for the popover UI. */}
-          <AnalysisPopover onSelect={(toolType) => openAnalysis(toolType)} />
-          {/* Lexical analyses ported from labiia_lex, behind their own button. */}
-          <AnalysisPopover
-            onSelect={(toolType) => openAnalysis(toolType)}
-            tools={LEXICAL_TESTS.map((d) => lexicalToolType(d.id))}
-            icon={faTextSearch}
-            label={t("Lexical")}
-            title={t("Lexical analyses")}
-          />
-          </div>
-
-          <div className="app-toolbar-pill" style={TOOLBAR_PILL_STYLE}>
-          {/* Studio: show/hide the workspace panels. The cross-platform
-              home for the native View menu's panel toggles — on
-              Windows/Linux the frameless window hides the menu bar, so
-              without this a closed panel could never be reopened. */}
-          <StudioPopover
-            panels={[
-              { id: 'documents', label: t("Documents"), visible: panelVisibility.documents },
-              { id: 'tags', label: t("Tags"), visible: panelVisibility.tags },
-              { id: 'codes', label: t("Codes"), visible: panelVisibility.codes },
-              { id: 'queries', label: t("Queries"), visible: !queryResultsClosed },
-              { id: 'memos', label: t("Memos"), visible: panelVisibility.memos },
-              { id: 'quotes', label: t("Quotes"), visible: panelVisibility.quotes },
-              { id: 'analyses', label: t("Analyses"), visible: panelVisibility.analyses },
-            ]}
-            onToggle={(id) => {
-              if (id === 'queries') setQueryResultsClosed((prev) => !prev)
-              else togglePanel(id as PanelId)
-            }}
-          />
-          <ToolbarDivider />
-          {/* Settings: opens the Preferences tab — the entry point the
-              Magnolia wordmark used to provide. Carries the update-available
-              nudge dot (jumps straight to Settings → Updates when set). */}
-          <button
-            className="app-toolbar-btn"
-            title={updateBadgeAvailable ? t("A new version is available — open Preferences → Updates") : t("Preferences")}
-            aria-label={updateBadgeAvailable ? t("Open Preferences — update available") : t("Open Preferences")}
-            onClick={() => {
-              if (updateBadgeAvailable) requestPreferencesCategory('updates')
-              useDocumentStore.getState().openToolTab(PREFERENCES_TAB_ID)
-            }}
-            style={{
-              position: 'relative',
-              display: 'flex',
-              flexDirection: 'column',
-              alignItems: 'center',
-              gap: 3,
-              padding: '4px 12px',
-              border: 'none',
-              borderRadius: 'var(--radius-sm)',
-              background: 'transparent',
-              color: 'var(--text-secondary)',
-              cursor: 'pointer',
-              lineHeight: 1,
-              transition: 'background 0.12s, color 0.12s'
-            }}
-            onMouseEnter={(e) => {
-              e.currentTarget.style.background = 'var(--bg-tertiary)'
-              e.currentTarget.style.color = 'var(--text-primary)'
-            }}
-            onMouseLeave={(e) => {
-              e.currentTarget.style.background = 'transparent'
-              e.currentTarget.style.color = 'var(--text-secondary)'
-            }}
-          >
-            <Icon icon={faGear} style={{ fontSize: 20 }} />
-            <span className="toolbar-label" style={{ fontSize: 9, whiteSpace: 'nowrap', fontWeight: 400 }}>{t("Preferences")}</span>
-            {updateBadgeAvailable && (
-              // Update-available nudge dot, anchored to the Settings button.
-              <span
-                aria-hidden
-                style={{
-                  position: 'absolute',
-                  top: 2,
-                  right: 2,
-                  width: 8,
-                  height: 8,
-                  borderRadius: '50%',
-                  background: 'var(--accent)',
-                  boxShadow: '0 0 0 2px var(--bg-secondary)',
-                  pointerEvents: 'none'
-                }}
-              />
-            )}
-          </button>
-          <ToolbarDivider />
-          {/* Help: bundles the Licence & Attributions dialog, the online
-              user manual, and a Donate link into one popover — see
-              HelpPopover for the popover UI. */}
-          <HelpPopover onShowLicence={() => setShowLicenceDialog(true)} />
-          </div>
-          </div>
-          </div>
-          <div
-            style={{
-              flexShrink: 0,
-              width: 36,
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              pointerEvents: 'none',
-              opacity: toolbarCanScrollRight ? 1 : 0,
-              transition: 'opacity 0.15s ease'
-            }}
-          >
-            <Icon icon={faChevronsRight} style={{ fontSize: 16 }} className="app-toolbar-scroll-hint" />
-          </div>
-        </div>
-
-        {/* Far right, pinned: Check Out / Check In, then window controls
-            (minimise/maximise/close) on Windows and Linux — native traffic
-            lights on macOS, where WindowControls renders nothing. Pinned —
-            flexShrink: 0 keeps these reachable at any window size, since
-            window controls are the only way to move, resize, or close the
-            frameless window (GitHub issue #15). */}
-        <div style={{ flexShrink: 0, display: 'flex', alignItems: 'center', height: '100%' }}>
+          <span className="titlebar-project-name">{projectStore.name}</span>
+          <span className="titlebar-project-state">
+            {!projectStore.filePath ? t("Not saved yet") : projectStore.isDirty ? t("Edited") : t("Saved")}
+          </span>
+        </button>
+        <div className="titlebar-drag" />
+        <div className="titlebar-right">
           <CheckOutButton />
           <WindowControls />
         </div>
       </div>
+
+      <Ribbon tabs={ribbonTabs} />
 
       <PanelGroup direction="vertical" className="app-main-panels" style={{ flex: 1 }}>
         <Panel defaultSize={queryResultsHidden ? 100 : 70} minSize={30}>
@@ -3051,6 +2845,8 @@ function App() {
         </Panel>
         )}
       </PanelGroup>
+
+      <StatusBar />
 
       <QuickCoding />
 
