@@ -377,9 +377,13 @@
 /* ---------- Welcome artwork ---------- */
 .welcome-art { display: block; width: 100%; height: 100vh; }
 .welcome-art-bg { fill: var(--shell-bg); }
-.welcome-art-edges line { stroke: var(--border-color); stroke-linecap: round; }
-:root[data-theme="windows"] .welcome-art-edges line { stroke: #C9CDD5; }
-.welcome-art-node { fill: var(--family); stroke: var(--shell-bg); stroke-width: 3; }
+.welcome-art-dot { fill: var(--border-color); }
+.welcome-art-halo { fill: color-mix(in srgb, var(--family) 9%, transparent); stroke: color-mix(in srgb, var(--family) 22%, transparent); stroke-width: 1; }
+.welcome-art-edge { stroke: color-mix(in srgb, var(--family) 55%, transparent); }
+.welcome-art-bridge { stroke: var(--text-muted); stroke-opacity: 0.45; stroke-dasharray: 3 4; }
+.welcome-art-ring { fill: none; stroke: color-mix(in srgb, var(--family) 30%, transparent); stroke-width: 4; }
+.welcome-art-node { fill: var(--family); stroke: var(--shell-bg); stroke-width: 2.5; }
+.welcome-art-shine { fill: #FFFFFF; opacity: 0.28; }
 .welcome-art-label { fill: var(--text-secondary); font-size: 11px; font-family: var(--font-family); paint-order: stroke; stroke: var(--shell-bg); stroke-width: 4px; stroke-linejoin: round; }
 .welcome-art-label-main { fill: var(--text-primary); font-size: 13px; font-weight: 600; }
 

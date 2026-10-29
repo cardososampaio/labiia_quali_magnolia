@@ -185,9 +185,7 @@ export function WelcomeScreen() {
             {' '}(UFPE)
           </span>
           <span style={{ fontSize: 11.5, color: 'var(--text-secondary)', textAlign: 'center' }}>
-            {t("Use labiia_quali at your own risk.")}
-            <br />
-            {t("Coded by Claude.")}
+            {t("Programmed with Claude. It may contain errors.")}
           </span>
         </div>
       </div>

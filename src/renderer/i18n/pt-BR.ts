@@ -1382,4 +1382,5 @@ export const ptBR: Record<string, string> = {
   "Loading…": "Carregando…",
   "Browse for a project…": "Procurar outro projeto…",
   "Open the Windows file picker": "Abre a janela de arquivos do Windows",
+  "Programmed with Claude. It may contain errors.": "Programado com Claude. Pode conter erros.",
 }
