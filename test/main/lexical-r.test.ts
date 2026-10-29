@@ -110,3 +110,14 @@ describe('running R', () => {
     expect(res).toEqual({ stats: true, pacoteQueNaoExiste123: false })
   }, 120_000)
 })
+
+describe('finding R as labiia_lex does', () => {
+  it('reads RSCRIPT_PATH and R_HOME, and looks in bin and bin/x64 of an R home', async () => {
+    const { environmentCandidates, rscriptsInHome } = await import('../../src/main/lexical/r-runtime')
+    const home = join('C:', 'R', 'R-4.5.0')
+    const env = { RSCRIPT_PATH: 'D:\R\bin\Rscript.exe', R_HOME: home } as NodeJS.ProcessEnv
+    expect(environmentCandidates(env)).toEqual(['D:\R\bin\Rscript.exe', ...rscriptsInHome(home)])
+    if (process.platform === 'win32') expect(rscriptsInHome(home)).toEqual([join(home, 'bin', 'Rscript.exe'), join(home, 'bin', 'x64', 'Rscript.exe')])
+    expect(environmentCandidates({} as NodeJS.ProcessEnv)).toEqual([])
+  })
+})

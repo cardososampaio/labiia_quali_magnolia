@@ -1,0 +1,21 @@
+# Pacotes CRAN dos testes estatísticos (gerado por scripts/write-r-packages.mjs)
+ape
+ca
+cluster
+fmsb
+ggplot2
+ggwordcloud
+igraph
+intergraph
+irlba
+jsonlite
+Matrix
+network
+png
+RColorBrewer
+slam
+sna
+syuzhet
+textometry
+topicmodels
+wordcloud

@@ -1,9 +1,9 @@
 /**
  * Finding R and preparing the environment the lexical analyses run it in.
  *
- * labiia_quali does not ship or install R: it uses the newest R (4.0 or
- * later) already on the computer, or the Rscript the user picked in
- * Preferences. CRAN packages go to a library of labiia_quali's own, so
+ * The app does not install R itself (the Windows installer offers to): it
+ * uses the newest R (4.0 or later) on the computer, or the Rscript the user
+ * picked in Preferences. CRAN packages go to a library of labiia_quali's own, so
  * installing them never changes the user's other R projects, and a new R
  * version (which needs packages rebuilt for it) gets a fresh library.
  */
@@ -66,15 +66,28 @@ function run(file: string, args: string[], timeoutMs: number): Promise<{ stdout:
   })
 }
 
-/** Rscript paths the Windows registry knows about (R's installer writes them). */
+/** Where Rscript sits inside an R home folder (64-bit builds of older R keep it in bin\x64). */
+export function rscriptsInHome(home: string): string[] {
+  return process.platform === 'win32' ? [join(home, 'bin', RSCRIPT), join(home, 'bin', 'x64', RSCRIPT)] : [join(home, 'bin', RSCRIPT)]
+}
+
+/** Rscript named by the environment: RSCRIPT_PATH (as labiia_lex reads it) or R's home in R_HOME. */
+export function environmentCandidates(env: NodeJS.ProcessEnv = process.env): string[] {
+  const out: string[] = []
+  for (const v of [env.LABIIA_RSCRIPT_PATH, env.RSCRIPT_PATH]) if (v?.trim()) out.push(v.trim())
+  if (env.R_HOME?.trim()) out.push(...rscriptsInHome(env.R_HOME.trim()))
+  return out
+}
+
+/** Rscript paths the Windows registry knows about (R's installer writes them, per machine or per user). */
 async function registryCandidates(): Promise<string[]> {
   if (process.platform !== 'win32') return []
   const out: string[] = []
   for (const hive of ['HKLM', 'HKCU']) {
-    for (const key of ['SOFTWARE\\R-core\\R64', 'SOFTWARE\\R-core\\R']) {
+    for (const key of ['SOFTWARE\\R-core\\R64', 'SOFTWARE\\R-core\\R', 'SOFTWARE\\WOW6432Node\\R-core\\R']) {
       const { stdout } = await run('reg', ['query', `${hive}\\${key}`, '/v', 'InstallPath'], 5000)
       const m = stdout.match(/InstallPath\s+REG_SZ\s+(.+)/)
-      if (m) out.push(join(m[1].trim(), 'bin', RSCRIPT))
+      if (m) out.push(...rscriptsInHome(m[1].trim()))
     }
   }
   return out
@@ -86,7 +99,7 @@ function folderCandidates(): string[] {
     const pf = [process.env['ProgramFiles'], process.env['ProgramW6432'], process.env['ProgramFiles(x86)']]
     for (const p of pf) if (p) roots.push(join(p, 'R'))
     if (process.env.LOCALAPPDATA) roots.push(join(process.env.LOCALAPPDATA, 'Programs', 'R'), join(process.env.LOCALAPPDATA, 'R'))
-    roots.push('C:\\R')
+    roots.push('C:\\R', 'C:\\tools\\R')
   } else {
     return ['/usr/local/bin/Rscript', '/usr/bin/Rscript', '/opt/homebrew/bin/Rscript',
       '/Library/Frameworks/R.framework/Resources/bin/Rscript']
@@ -95,7 +108,7 @@ function folderCandidates(): string[] {
   for (const root of roots) {
     if (!existsSync(root)) continue
     try {
-      for (const d of readdirSync(root)) out.push(join(root, d, 'bin', RSCRIPT))
+      for (const d of readdirSync(root)) out.push(...rscriptsInHome(join(root, d)))
     } catch { /* unreadable folder */ }
   }
   return out
@@ -164,8 +177,8 @@ export async function resolveR(refresh = false): Promise<RStatus> {
 
   const seen = new Set<string>()
   const candidates: string[] = []
-  const envHome = process.env.R_HOME ? [join(process.env.R_HOME, 'bin', RSCRIPT)] : []
-  for (const c of [...envHome, ...(await registryCandidates()), ...folderCandidates(), ...(await pathCandidates())]) {
+  // The same places labiia_lex looks; the newest R wins.
+  for (const c of [...environmentCandidates(), ...(await registryCandidates()), ...folderCandidates(), ...(await pathCandidates())]) {
     const key = c.toLowerCase()
     if (!seen.has(key)) { seen.add(key); candidates.push(c) }
   }

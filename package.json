@@ -22,7 +22,7 @@
     "test": "vitest run",
     "test:watch": "vitest",
     "package:mac": "npm run build && electron-builder --mac",
-    "package:win": "npm run build && electron-builder --win",
+    "package:win": "node scripts/write-r-packages.mjs && npm run build && electron-builder --win",
     "package:linux": "npm run build && electron-builder --linux",
     "licenses": "node scripts/build-third-party-licenses.mjs > THIRD-PARTY-LICENSES.txt",
     "icons": "bash scripts/build-icons.sh",
@@ -98,6 +98,16 @@
       {
         "from": "resources/lexical",
         "to": "lexical"
+      },
+      {
+        "from": "build/installer",
+        "to": "installer",
+        "filter": [
+          "r-setup.ps1",
+          "install_r_packages.R",
+          "r_runtime.json",
+          "r_packages.txt"
+        ]
       }
     ],
     "mac": {
@@ -170,7 +180,17 @@
       "perMachine": false,
       "allowToChangeInstallationDirectory": true,
       "createDesktopShortcut": true,
-      "createStartMenuShortcut": true
+      "createStartMenuShortcut": true,
+      "shortcutName": "labiia_quali",
+      "uninstallDisplayName": "labiia_quali",
+      "runAfterFinish": true,
+      "deleteAppDataOnUninstall": false,
+      "installerLanguages": [
+        "pt_BR"
+      ],
+      "language": "1046",
+      "license": "build/license.txt",
+      "include": "build/installer.nsh"
     },
     "portable": {
       "artifactName": "${productName}-win-portable-${arch}.${ext}"

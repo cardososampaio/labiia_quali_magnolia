@@ -119,8 +119,47 @@ npm install
 npm run dev
 ```
 
-Outros comandos: `npm test` (testes automáticos), `npm run build` (compila) e
-`npm run package:win` (gera o instalador do Windows em `dist/`).
+Outros comandos: `npm test` (testes automáticos) e `npm run build` (compila).
+
+## Gerar o instalador do Windows
+
+```bash
+npm run package:win
+```
+
+Gera `dist/labiia_quali-win-x64.exe`, um único arquivo que instala o
+labiia_quali no Windows 10/11 de qualquer pessoa, sem senha de administrador
+(em `%LOCALAPPDATA%\Programs\labiia_quali`), com atalhos, desinstalador e os
+arquivos `.qdpx` e `.qdc` associados ao programa. É o instalador do Magnolia
+(electron-builder, NSIS) com uma página a mais, "R para os testes
+estatísticos" (`build/installer.nsh` e os scripts em `build/installer/`):
+
+- o instalador procura o R nos mesmos lugares que o labiia_lex (variáveis
+  `RSCRIPT_PATH`/`R_HOME`, registro do Windows, `Program Files`,
+  `%LOCALAPPDATA%\Programs\R`, `C:\R`, `C:\tools\R`, PATH) e usa o mais novo;
+- com R 4.5 ou mais novo, oferece instalar já todos os pacotes CRAN dos
+  testes (a lista sai de `LEXICAL_R_PACKAGES`, a mesma que o programa usa);
+- sem R (ou só com um R mais antigo), explica que cinco testes precisam dele e
+  oferece baixar o R 4.6.1 do CRAN (SHA-256 conferido, `build/installer/r_runtime.json`),
+  instalá-lo só para o usuário e instalar os pacotes. Quem recusar fica com o
+  programa como antes: os testes em R avisam o que falta e o programa instala
+  os pacotes depois;
+- se o download ou algum pacote falhar, o programa fica instalado e o aviso
+  aponta o registro em `%LOCALAPPDATA%\labiia_quali\logs\instalador-r.log`.
+
+Para instalar sem telas: `labiia_quali-win-x64.exe /S /R=packages` (ou
+`/R=install-r`, `/R=skip`). `/SIMULARSEMR` faz o instalador agir como se não
+houvesse R, para testar esse caminho.
+
+O instalador não tem assinatura digital: na primeira vez, o Windows mostra "O
+Windows protegeu o computador"; clique em "Mais informações" e "Executar assim
+mesmo".
+
+Se o build parar com "Cannot create symbolic link" ao extrair o
+`winCodeSign`, extraia
+`https://github.com/electron-userland/electron-builder-binaries/releases/download/winCodeSign-2.6.0/winCodeSign-2.6.0.7z`
+com o 7-Zip em `%LOCALAPPDATA%\electron-builder\Cache\winCodeSign\winCodeSign-2.6.0`
+(os dois erros de arquivos do macOS podem ser ignorados) e rode de novo.
 
 ## Traduções
 
