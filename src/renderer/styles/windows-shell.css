@@ -24,6 +24,13 @@
   --family-lexical: #0F7B6C;
   --family-affect: #C2185B;
   --family-neutral: #5B6475;
+  /* Groups of the Analyses tab and of the Lexical analyses tab. */
+  --family-codes: #0E7490;
+  --family-results: #2E7D32;
+  --family-reports: #9A3412;
+  --family-explore: #0F7B6C;
+  --family-structure: #4F46E5;
+  --family-keywords: #C2185B;
 }
 
 /* ---------- Title bar ---------- */
@@ -239,6 +246,12 @@
 [data-family="lexical"]  { --family: var(--family-lexical); }
 [data-family="affect"]   { --family: var(--family-affect); }
 [data-family="neutral"]  { --family: var(--family-neutral); }
+[data-family="codes"]    { --family: var(--family-codes); }
+[data-family="results"]  { --family: var(--family-results); }
+[data-family="reports"]  { --family: var(--family-reports); }
+[data-family="explore"]  { --family: var(--family-explore); }
+[data-family="structure"] { --family: var(--family-structure); }
+[data-family="keywords"] { --family: var(--family-keywords); }
 
 /* The coloured tile: a soft top-light gradient over the family colour,
  * white glyph — the one bold element of the shell. */
@@ -269,6 +282,36 @@
   background: var(--danger);
   box-shadow: 0 0 0 2px var(--ribbon-bg);
 }
+
+/* Split button (Word's "Paste" style): icon = main action, label ▾ = menu. */
+.ribbon-split { display: flex; flex-direction: column; align-items: center; border-radius: 6px; border: 1px solid transparent; }
+.ribbon-split:hover { border-color: var(--border-color); }
+.ribbon-split .ribbon-split-main { padding-bottom: 2px; min-width: 58px; border-radius: 6px 6px 0 0; }
+.ribbon-split-more {
+  display: flex; align-items: center; gap: 2px; padding: 2px 6px 4px; border: none; border-radius: 0 0 6px 6px;
+  background: transparent; color: var(--text-primary); font: inherit; cursor: pointer; width: 100%; justify-content: center;
+}
+.ribbon-split-more:hover, .ribbon-split-more[aria-expanded="true"] { background: var(--bg-tertiary); }
+.ribbon-split-chevron { font-size: 11px; color: var(--text-muted); }
+.ribbon-menu {
+  position: fixed; z-index: 1000; width: 360px; max-height: 60vh; overflow-y: auto; padding: 6px;
+  background: var(--bg-panel); border: 1px solid var(--border-color); border-radius: 8px;
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.16), 0 2px 6px rgba(0, 0, 0, 0.08);
+  animation: start-menu-in 0.12s ease-out;
+}
+@media (prefers-reduced-motion: reduce) { .ribbon-menu { animation: none; } }
+.ribbon-menu-item {
+  display: flex; align-items: center; gap: 10px; width: 100%; padding: 6px 8px; border: none; border-radius: 6px;
+  background: transparent; color: var(--text-primary); font: inherit; text-align: left; cursor: pointer;
+}
+.ribbon-menu-item:hover, .ribbon-menu-item:focus-visible { background: var(--bg-tertiary); outline: none; }
+.ribbon-menu-separated { margin-top: 6px; position: relative; }
+.ribbon-menu-separated::before { content: ''; position: absolute; left: 4px; right: 4px; top: -4px; border-top: 1px solid var(--border-color); }
+.ribbon-menu-icon { flex-shrink: 0; font-size: 16px; color: var(--family-sources); }
+.ribbon-menu-text { display: flex; flex-direction: column; min-width: 0; }
+.ribbon-menu-label { font-size: 13px; font-weight: 600; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.ribbon-menu-hint { font-size: 11.5px; color: var(--text-muted); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.ribbon-menu-empty { padding: 8px; font-size: 12px; color: var(--text-muted); }
 
 /* ---------- Start menu ---------- */
 .start-menu {
@@ -339,6 +382,38 @@
 .welcome-art-node { fill: var(--family); stroke: var(--shell-bg); stroke-width: 3; }
 .welcome-art-label { fill: var(--text-secondary); font-size: 11px; font-family: var(--font-family); paint-order: stroke; stroke: var(--shell-bg); stroke-width: 4px; stroke-linejoin: round; }
 .welcome-art-label-main { fill: var(--text-primary); font-size: 13px; font-weight: 600; }
+
+/* ---------- Source tiles and code tags ---------- */
+/* Documents panel: a small coloured tile per kind of source. */
+.source-tile {
+  width: 18px; height: 18px; flex-shrink: 0; border-radius: 5px;
+  display: inline-flex; align-items: center; justify-content: center;
+  color: #FFFFFF; font-size: 11px;
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.22), rgba(255, 255, 255, 0) 65%), var(--tile);
+  box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.08);
+}
+.source-tile svg { width: 11px; height: 11px; stroke-width: 2.4; fill: none !important; }
+.source-tile[data-kind="pdf"]    { --tile: #C42B1C; }
+.source-tile[data-kind="word"]   { --tile: #185ABD; }
+.source-tile[data-kind="text"]   { --tile: #5B6475; }
+.source-tile[data-kind="image"]  { --tile: #2E7D32; }
+.source-tile[data-kind="audio"]  { --tile: #D46F0A; }
+.source-tile[data-kind="video"]  { --tile: #C2185B; }
+.source-tile[data-kind="survey"] { --tile: #7A3FD6; }
+.source-tile[data-kind="note"]   { --tile: #B8860B; }
+
+/* Codes: a rounded tag instead of a dot; a category (a code with
+ * sub-codes) shows a second tag behind it, a small stack. "span." outranks
+ * global.css's round .color-pip, which loads after this file. */
+span.color-pip {
+  width: 10px; height: 10px; border-radius: 3px; display: inline-block; flex-shrink: 0;
+  background-image: linear-gradient(180deg, rgba(255, 255, 255, 0.3), rgba(255, 255, 255, 0) 70%) !important;
+  box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.14);
+}
+span.color-pip-category {
+  width: 11px; height: 11px; transform: translate(-1px, 1px);
+  box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.14), 2.5px -2.5px 0 -0.5px color-mix(in srgb, var(--pip) 45%, var(--bg-panel));
+}
 
 /* ---------- Status bar ---------- */
 .status-bar {
@@ -440,6 +515,12 @@
   --family-lexical: #13917F;
   --family-affect: #D23A73;
   --family-neutral: #6B7488;
+  --family-codes: #138AA8;
+  --family-results: #3A9A3F;
+  --family-reports: #B8501F;
+  --family-explore: #13917F;
+  --family-structure: #6366F1;
+  --family-keywords: #D23A73;
 }
 
 /* Panels: white cards on the Mica chrome with a hairline edge and a
@@ -484,3 +565,46 @@
   letter-spacing: normal;
   text-transform: none;
 }
+
+/* ---------- Codebook import preview ---------- */
+.outline-dialog { width: min(720px, calc(100vw - 48px)); max-height: 86vh; display: flex; flex-direction: column; }
+.outline-dialog h2 { margin: 0; }
+.outline-file { margin: 2px 0 14px; font-size: 12px; color: var(--text-muted); }
+.outline-rules { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
+.outline-rule {
+  display: flex; flex-direction: column; align-items: flex-start; gap: 2px;
+  padding: 8px 10px; border: 1px solid var(--border-color); border-radius: 6px;
+  background: var(--bg-panel); color: var(--text-primary); font: inherit; text-align: left; cursor: pointer;
+}
+.outline-rule:hover { background: var(--bg-tertiary); }
+.outline-rule-on { border-color: var(--accent); box-shadow: inset 0 0 0 1px var(--accent); }
+.outline-rule-name { font-size: 13px; font-weight: 600; }
+.outline-rule-count { font-size: 11.5px; color: var(--text-muted); }
+.outline-hint { margin: 8px 0 0; font-size: 12px; color: var(--text-secondary); }
+.outline-note { margin: 8px 0 0; font-size: 12px; color: var(--text-muted); }
+.outline-empty { margin: 16px 0; padding: 16px; font-size: 13px; color: var(--text-secondary); background: var(--bg-tertiary); border-radius: 6px; }
+.outline-rows {
+  list-style: none; margin: 12px 0 0; padding: 4px 0; overflow-y: auto; flex: 1; min-height: 120px;
+  border: 1px solid var(--border-color); border-radius: 6px; background: var(--bg-panel);
+}
+.outline-row { display: flex; align-items: flex-start; gap: 8px; padding: 5px 8px; border-bottom: 1px solid var(--border-color); }
+.outline-row:last-child { border-bottom: none; }
+.outline-row-off .outline-text, .outline-row-off .outline-level { opacity: 0.4; text-decoration: line-through; }
+.outline-row input[type="checkbox"] { margin-top: 3px; }
+.outline-level { flex-shrink: 0; min-width: 74px; padding: 1px 6px; border-radius: 4px; font-size: 11px; font-weight: 600; text-align: center; }
+.outline-level-1 { background: color-mix(in srgb, var(--family-coding) 16%, transparent); color: var(--family-coding); }
+.outline-level-2 { background: color-mix(in srgb, var(--family-sources) 14%, transparent); color: var(--family-sources); }
+.outline-level-3 { background: color-mix(in srgb, var(--family-neutral) 14%, transparent); color: var(--family-neutral); }
+.outline-text { display: flex; flex-direction: column; flex: 1; min-width: 0; }
+.outline-name { font-size: 13px; color: var(--text-primary); }
+.outline-description { font-size: 11.5px; color: var(--text-muted); white-space: pre-line; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+.outline-move { display: flex; gap: 2px; flex-shrink: 0; }
+.outline-move button { padding: 0 6px; font-size: 12px; line-height: 20px; }
+.outline-footer { display: flex; align-items: center; gap: 8px; margin-top: 12px; }
+.outline-keep { display: flex; align-items: center; gap: 6px; font-size: 12.5px; color: var(--text-secondary); margin-right: auto; }
+.outline-summary { font-size: 12px; color: var(--text-muted); margin-right: 8px; }
+
+/* Folders in the Windows look are Explorer's yellow. The selectors outrank
+ * the colourful-icon palette in global.css, which loads after this file. */
+html:root[data-theme="windows"]:not([data-no-theme]) { --icon-folder: #C98A0A; --icon-folder-2: #F5C542; }
+html:root[data-theme="windows-dark"]:not([data-no-theme]) { --icon-folder: #E0A526; --icon-folder-2: #F8D56B; }

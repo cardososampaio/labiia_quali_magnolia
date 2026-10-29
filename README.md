@@ -111,6 +111,31 @@ Trechos sem texto (áreas de imagem ou de PDF) ficam de fora, com aviso.
 Os créditos dos dicionários, léxicos e scripts incluídos estão em
 [resources/lexical/README.md](resources/lexical/README.md).
 
+## Importar livro de códigos
+
+Em Livro de códigos → **Importar livro de códigos** entram arquivos REFI-QDA
+(`.qdc`) e livros de códigos escritos em Word (`.docx` e `.doc`), OpenDocument
+(`.odt`), RTF (`.rtf`) e Markdown (`.md`). Categorias são os códigos pais;
+códigos são os filhos, netos e assim por diante. Num documento, o programa
+reconhece três jeitos de escrever, um por documento:
+
+- **Títulos do Word**: Título 1 é categoria, Título 2 é código, Título 3 é
+  subcódigo (em Markdown, `#`, `##`, `###`);
+- **Negrito e número**: uma linha inteira em negrito que começa com número
+  ("1. Nível de reflexão") é categoria; as linhas numeradas sem negrito
+  ("0. nenhuma", "1. opinião") são os códigos dela;
+- **Numeração**: "1." é categoria, "1.1" é código, "1.1.1" é subcódigo, ou o
+  nível de uma lista numerada.
+
+O texto logo abaixo de um item vira a descrição dele; o que vem antes da
+primeira categoria é tratado como introdução e fica de fora, e um título único
+no topo é o nome do livro. O jeito que melhor explica o documento é escolhido
+sozinho, e nada entra no projeto antes da prévia: nela dá para trocar o jeito
+de leitura, desmarcar linhas, subir ou descer um item de nível e manter ou
+tirar os números dos nomes. O `.doc` é convertido antes pelo Word ou, sem ele,
+pelo LibreOffice; sem nenhum dos dois, o programa pede para salvá-lo como
+`.docx`. Tabelas dentro do documento não são lidas.
+
 ## Como rodar em desenvolvimento
 
 Requer [Node.js](https://nodejs.org/) 20 ou mais recente.

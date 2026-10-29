@@ -7,6 +7,7 @@ import { writeQdpx, EmptyProjectGuardError, createEmptyProjectFile } from './qdp
 import { readCheckoutMarker, writeCheckoutMarker, readEditorInfo } from './qdpx/checkout-marker'
 import { serializeCodebook } from './qdpx/codebook-serializer'
 import { deserializeCodebook } from './qdpx/codebook-deserializer'
+import { readCodebookDocument, CodebookDocumentError, CODEBOOK_DOCUMENT_EXTENSIONS } from './qdpx/codebook-document'
 import {
   setActiveProjectPath,
   noteActiveProjectPath,
@@ -741,11 +742,25 @@ export function registerIpcHandlers(): void {
   ipcMain.handle('import-codebook', async (event) => {
     const result = await showOpenDialog(event.sender, {
       title: t("Import Codebook"),
-      filters: [{ name: 'REFI-QDA Codebook', extensions: ['qdc'] }],
+      // A REFI-QDA codebook, or a codebook written in a text document whose
+      // headings, bold numbered lines or numbering give its categories and codes.
+      filters: [
+        { name: t('Codebooks'), extensions: ['qdc', ...CODEBOOK_DOCUMENT_EXTENSIONS] },
+        { name: 'REFI-QDA Codebook', extensions: ['qdc'] },
+        { name: t('Text documents'), extensions: CODEBOOK_DOCUMENT_EXTENSIONS }
+      ],
       properties: ['openFile']
     })
     if (result.canceled || result.filePaths.length === 0) return null
-    const xml = await readFile(result.filePaths[0], 'utf-8')
-    return deserializeCodebook(xml)
+    const path = result.filePaths[0]
+    if (path.toLowerCase().endsWith('.qdc')) {
+      return { kind: 'codes' as const, codes: deserializeCodebook(await readFile(path, 'utf-8')) }
+    }
+    try {
+      return { kind: 'outline' as const, fileName: basename(path), paragraphs: await readCodebookDocument(path) }
+    } catch (err) {
+      const message = err instanceof CodebookDocumentError ? err.message : t('This document could not be read: {{error}}', { error: err instanceof Error ? err.message : String(err) })
+      return { kind: 'error' as const, message }
+    }
   })
 }

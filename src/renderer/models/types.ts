@@ -616,7 +616,9 @@ export interface ElectronAPI {
     footerTemplate?: string
   ) => Promise<string | null>
   exportCodebook: (codes: Code[]) => Promise<string | null>
-  importCodebook: () => Promise<Code[] | null>
+  /** A .qdc gives codes directly; a text document gives its paragraphs for
+   *  the outline preview (CodebookOutlineDialog). */
+  importCodebook: () => Promise<CodebookImport | null>
   showNewQueryDialog: () => void
   onQueryFromBuilder: (callback: (query: Query, editSavedQueryGuid?: string, graphLayout?: any) => void) => () => void
   sendQueryToMain: (query: Query, editSavedQueryGuid?: string, graphLayout?: any) => void
@@ -960,3 +962,23 @@ declare global {
     api: ElectronAPI
   }
 }
+
+/** One paragraph of a codebook document (Word, OpenDocument, RTF or
+ *  Markdown) with the marks that can carry its hierarchy. See
+ *  utils/codebook-outline.ts for how they become categories and codes. */
+export interface OutlineParagraph {
+  text: string
+  /** 1–9 from the paragraph style, null for body text. */
+  headingLevel: number | null
+  /** Styled as the document's Title. */
+  isTitle: boolean
+  /** Every visible character of the line is bold. */
+  bold: boolean
+  /** 1-based level in a Word numbered/bulleted list, null when not in a list. */
+  listLevel: number | null
+}
+
+export type CodebookImport =
+  | { kind: 'codes'; codes: Code[] }
+  | { kind: 'outline'; fileName: string; paragraphs: OutlineParagraph[] }
+  | { kind: 'error'; message: string }

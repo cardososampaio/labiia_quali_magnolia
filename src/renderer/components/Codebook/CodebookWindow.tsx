@@ -7,6 +7,7 @@ import { exportPdfWithHeader, buildPdfDocument, escHtml } from '../../utils/pdf-
 import { modKey } from '../../utils/platform'
 import { useCodeColourPresets } from '../../utils/code-colours'
 import { t } from '../../i18n'
+import { useCodebookImport } from './CodebookOutlineDialog'
 
 function flattenCodes(codes: Code[]): Code[] {
   const result: Code[] = []
@@ -356,17 +357,14 @@ export function CodebookWindow() {
     await window.api.exportCodebook(codes)
   }, [codes])
 
-  const handleImportQdc = useCallback(async () => {
-    const imported = await window.api.importCodebook()
-    if (imported && imported.length > 0) {
-      setCodes((prev) => {
-        const existingGuids = new Set(flattenCodes(prev).map((c) => c.guid))
-        const newCodes = imported.filter((c) => !existingGuids.has(c.guid))
-        return [...prev, ...newCodes]
-      })
-      window.api.sendCodebookUpdate('merge-codes', imported)
-    }
-  }, [])
+  const { startImport: handleImportQdc, dialog: importDialog } = useCodebookImport((imported) => {
+    setCodes((prev) => {
+      const existingGuids = new Set(flattenCodes(prev).map((c) => c.guid))
+      const newCodes = imported.filter((c) => !existingGuids.has(c.guid))
+      return [...prev, ...newCodes]
+    })
+    window.api.sendCodebookUpdate('merge-codes', imported)
+  })
 
   const selectedCode = selectedCodeGuid ? findCode(selectedCodeGuid) : null
 
@@ -393,9 +391,9 @@ export function CodebookWindow() {
           className="secondary"
           style={{ fontSize: 11, padding: '3px 8px', WebkitAppRegion: 'no-drag' as any }}
           onClick={handleImportQdc}
-          title={t("Import .qdc")}
+          title={t("Import a codebook: REFI-QDA (.qdc), Word, OpenDocument, RTF or Markdown")}
         >
-          {t("Import QDC")}
+          {t("Import codebook")}
         </button>
         <button
           className="secondary"
@@ -455,6 +453,7 @@ export function CodebookWindow() {
           />
         )
       })()}
+      {importDialog}
     </div>
   )
 }

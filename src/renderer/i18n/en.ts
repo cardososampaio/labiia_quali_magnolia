@@ -2,7 +2,9 @@
  * English wording that differs from the English source text used as the
  * translation key. Document "tags" are shown as "characteristics" and tag
  * "categories" as "attributes", the terms researchers use for the facts that
- * describe a participant or source (gender, city, date). The code keeps the
+ * describe a participant or source (gender, city, date). Codebook categories
+ * (parent codes) have their own keys, since "Category" now reads "Attribute".
+ * The code keeps the
  * original names, so only the displayed text changes.
  */
 export const en: Record<string, string> = {
@@ -46,4 +48,7 @@ export const en: Record<string, string> = {
   "All documents assigned to a particular tag": "All documents assigned to a particular characteristic",
   "Choose documents, folders and tags from a list and let labiia_quali draw the selection": "Choose documents, folders and characteristics from a list and let labiia_quali draw the selection",
   "{{count}} tags": "{{count}} characteristics",
+  "Codebook category": "Category",
+  "{{count}} codebook category": "{{count}} category",
+  "{{count}} codebook categories": "{{count}} categories",
 }

@@ -1,4 +1,6 @@
 import { useState, useCallback, useRef, useMemo, useEffect } from 'react'
+import { describeImportErrors } from '../../utils/import-errors'
+import { SourceTypeTile, sourceTileKind } from './SourceTypeTile'
 import { Panel, PanelGroup, PanelResizeHandle } from 'react-resizable-panels'
 import { useDocumentStore, surveyEntityKey, parseSurveyEntityKey, type DocumentFolder } from '../../stores/document-store'
 import { useTagStore } from '../../stores/tag-store'
@@ -32,7 +34,7 @@ function iconForSource(source: { name: string; sourceType?: string }) {
   if (st === 'video') return faVideo
   if (st === 'image') return faImage
   if (st === 'note') return faStickyNote
-  return faFile
+  return faFileAlt
 }
 
 interface Props {
@@ -590,7 +592,7 @@ function DocItem({
           }}
         />
       )}
-      <Icon icon={iconForSource(source)} style={{ fontSize: 13, opacity: 0.75, flexShrink: 0, width: 16, textAlign: 'center', color: 'var(--text-muted)', ...tint(iconTintKindForSourceType(resolvedSourceType(source))) }} />
+      <SourceTypeTile kind={sourceTileKind(source.name, resolvedSourceType(source))} icon={iconForSource(source)} />
       <div style={{ flex: 1, minWidth: 0 }}>
         {editing ? (
           <input
@@ -942,7 +944,7 @@ function SurveyItem({
         {/* No chevron on the survey root — surveys are always
             expanded, so the survey icon aligns with peer DocItems
             at the same depth. */}
-        <Icon icon={SURVEY_ICON} style={{ fontSize: 14, opacity: 0.85, flexShrink: 0, width: 16, color: 'var(--text-muted)', ...tint('survey') }} />
+        <SourceTypeTile kind="survey" icon={SURVEY_ICON} />
         <div style={{ flex: 1, minWidth: 0 }}>
           {editing ? (
             <input
@@ -2584,7 +2586,7 @@ export function DocumentBrowser({ onImport, onSurveyImport, showManageDocTags, o
       }
     }
     if (errors.length > 0) {
-      window.alert(t("Could not import {{length}} file{{x1}}:\n\n{{x2}}", { length: errors.length, x1: errors.length > 1 ? 's' : '', x2: errors.join('\n') }))
+      window.alert(t("Could not import {{length}} file{{x1}}:\n\n{{x2}}", { length: errors.length, x1: errors.length > 1 ? 's' : '', x2: describeImportErrors(errors) }))
     }
   }, [addSource, onSurveyImport])
 

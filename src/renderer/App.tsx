@@ -1,4 +1,5 @@
 import { useEffect, useCallback, useState, useRef } from 'react'
+import { describeImportErrors } from './utils/import-errors'
 import { Panel, PanelGroup, PanelResizeHandle } from 'react-resizable-panels'
 import { DocumentBrowser } from './components/DocumentBrowser/DocumentBrowser'
 import { CodeBrowser, CodeEditDialog } from './components/CodeBrowser/CodeBrowser'
@@ -16,6 +17,8 @@ import {
   faGitMerge,
   faGear,
   faFolderPlus,
+  faFilePlus,
+  faFolderOpen,
   faSave,
   faUndo2,
   faRedo2,
@@ -101,9 +104,10 @@ import { MemosPane } from './components/Memos/MemosPane'
 import { QuotesPane } from './components/Quotes/QuotesPane'
 import { ANALYSIS_TOOL_ORDER } from './components/Toolbar/AnalysisPopover'
 import { MANUAL_URL, SPONSOR_URL } from './components/Toolbar/HelpPopover'
-import { Ribbon, type RibbonButtonDef, type RibbonTabDef } from './components/Toolbar/Ribbon'
+import { Ribbon, type RibbonButtonDef, type RibbonFamily, type RibbonMenuItem, type RibbonTabDef } from './components/Toolbar/Ribbon'
 import { StartMenu } from './components/Toolbar/StartMenu'
 import { StatusBar } from './components/StatusBar'
+import { useCodebookImport } from './components/Codebook/CodebookOutlineDialog'
 import { WindowControls } from './components/Toolbar/WindowControls'
 import type { Project, Query, CodeCondition, Code, TextSource, QDASet, LogbookInitData, AnalysisInitData, AnalysisToolType, PlainTextSelection, Memo, MemoEditInitData, SurveyCellScopeArgs } from './models/types'
 import { buildSurveyEntityLabels } from './utils/survey/survey-labels'
@@ -404,6 +408,8 @@ function App() {
   const checkoutLockedBy = useCheckoutLockedBy()
   // Opens a project file in this window; set by the open-recent-project listener.
   const openProjectAtPathRef = useRef<((path: string) => Promise<void>) | null>(null)
+  // Codebook import from the native menu: a .qdc goes straight in, a document opens the preview.
+  const { startImport: startCodebookImport, dialog: codebookImportDialog } = useCodebookImport((codes) => useCodeStore.getState().mergeCodes(codes))
   const canUndo = useUndoStore((s) => s.undoStack.length > 0)
   const canRedo = useUndoStore((s) => s.redoStack.length > 0)
   const checkoutLocked = !!checkoutLockedBy
@@ -1312,7 +1318,7 @@ function App() {
       addedDirect = true
     }
     if (errors.length > 0) {
-      window.alert(t("Could not import {{length}} file{{x1}}:\n\n{{x2}}", { length: errors.length, x1: errors.length > 1 ? 's' : '', x2: errors.join('\n') }))
+      window.alert(t("Could not import {{length}} file{{x1}}:\n\n{{x2}}", { length: errors.length, x1: errors.length > 1 ? 's' : '', x2: describeImportErrors(errors) }))
     }
     flushImportSave(addedDirect)
   }, [documentStore, queueSurveyImport, flushImportSave, checkoutLockedBy, setCheckoutConflict])
@@ -1362,7 +1368,7 @@ function App() {
       addedDirect = true
     }
     if (errors.length > 0) {
-      window.alert(t("Could not import {{length}} file{{x1}}:\n\n{{x2}}", { length: errors.length, x1: errors.length > 1 ? 's' : '', x2: errors.join('\n') }))
+      window.alert(t("Could not import {{length}} file{{x1}}:\n\n{{x2}}", { length: errors.length, x1: errors.length > 1 ? 's' : '', x2: describeImportErrors(errors) }))
     }
     flushImportSave(addedDirect)
   }, [documentStore, queueSurveyImport, flushImportSave, checkoutLockedBy, setCheckoutConflict])
@@ -1588,11 +1594,7 @@ function App() {
           window.api.exportCodebook(codeStore.codes)
           break
         case 'import-codebook':
-          window.api.importCodebook().then((imported) => {
-            if (imported && imported.length > 0) {
-              codeStore.mergeCodes(imported)
-            }
-          })
+          void startCodebookImport()
           break
         case 'analysis-code-cooccurrences':
           openAnalysis('code-cooccurrences')
@@ -2456,13 +2458,12 @@ function App() {
     await window.api.savePreferences({ ...prefs, interfaceScale: next })
   }, [])
   const lockedReason = checkoutLockedBy ? checkoutLockedTitle(checkoutLockedBy) : undefined
-  const analysisButton = (toolType: AnalysisToolType): RibbonButtonDef => {
+  const analysisButton = (family: RibbonFamily) => (toolType: AnalysisToolType): RibbonButtonDef => {
     const def = TOOL_REGISTRY[toolType]
-    return { id: toolType, label: def.label, title: def.description, icon: def.icon, family: 'analysis', onClick: () => openAnalysis(toolType) }
+    return { id: toolType, label: def.label, title: def.description, icon: def.icon, family, onClick: () => openAnalysis(toolType) }
   }
-  const lexicalButton = (id: LexicalTestId): RibbonButtonDef => {
+  const lexicalButton = (family: RibbonFamily) => (id: LexicalTestId): RibbonButtonDef => {
     const def = LEXICAL_TESTS.find((d) => d.id === id)!
-    const family = id === 'sentiment' || id === 'emotions' ? 'affect' : 'lexical'
     // Ribbon labels stay short: "CHD (Classificação …)" shows as "CHD", the full name in the tooltip.
     const label = def.label.split(' (')[0]
     return { id, label, title: `${def.label}: ${def.description}`, icon: def.icon, family, onClick: () => openAnalysis(lexicalToolType(id)) }
@@ -2480,6 +2481,25 @@ function App() {
         {
           label: t("Sources"),
           buttons: [
+            { id: 'new-project', label: t("New"), title: t("New project"), icon: faFilePlus, family: 'sources', onClick: () => handleNewProject() },
+            {
+              // Split button: the icon opens Windows' file picker, "Open ▾" lists recent projects.
+              id: 'open-project', label: t("Open"), title: t("Open a project (.qdpx)"), icon: faFolderOpen, family: 'sources',
+              onClick: () => handleOpenProject(),
+              menu: async () => {
+                const recent = ((await window.api.getRecentProjects()) ?? []).slice(0, 10)
+                const items: RibbonMenuItem[] = recent.map((p) => ({
+                  id: p.path,
+                  label: p.path.split(/[\\/]/).pop()?.replace(/\.qdpx$/i, '') || p.name,
+                  hint: p.path,
+                  icon: faFileAlt,
+                  onClick: () => void openProjectAtPathRef.current?.(p.path)
+                }))
+                if (!items.length) items.push({ id: 'none', label: t("No recent projects yet"), onClick: () => handleOpenProject() })
+                items.push({ id: 'browse', label: t("Browse for a project…"), hint: t("Open the Windows file picker"), icon: faFolderOpen, separated: true, onClick: () => handleOpenProject() })
+                return items
+              }
+            },
             { id: 'import', label: t("Import"), title: t("Import sources"), icon: faSquareArrowRightEnter, family: 'sources', disabledReason: lockedReason, onClick: () => handleImportDocument() },
             { id: 'folder', label: t("New folder"), icon: faFolderPlus, family: 'sources', disabledReason: lockedReason, onClick: () => { if (!checkoutLockedBy) documentStore.addFolder(t("New Folder")) } }
           ]
@@ -2504,18 +2524,18 @@ function App() {
       id: 'analyses',
       label: t("Analyses"),
       groups: [
-        { label: t("Codes"), buttons: (['codes-in-documents', 'framework-matrix', 'code-cooccurrences', 'code-orders', 'code-frequencies'] as AnalysisToolType[]).map(analysisButton) },
-        { label: t("Results and words"), buttons: (['results-in-documents', 'word-frequencies', 'relationship-map'] as AnalysisToolType[]).map(analysisButton) },
-        { label: t("Reports"), buttons: ANALYSIS_TOOL_ORDER.filter((tool) => tool === 'reports').map(analysisButton) }
+        { label: t("Codes"), buttons: (['codes-in-documents', 'framework-matrix', 'code-cooccurrences', 'code-orders', 'code-frequencies'] as AnalysisToolType[]).map(analysisButton('codes')) },
+        { label: t("Results and words"), buttons: (['results-in-documents', 'word-frequencies', 'relationship-map'] as AnalysisToolType[]).map(analysisButton('results')) },
+        { label: t("Reports"), buttons: ANALYSIS_TOOL_ORDER.filter((tool) => tool === 'reports').map(analysisButton('reports')) }
       ]
     },
     {
       id: 'lexical',
       label: t("Lexical analyses"),
       groups: [
-        { label: t("Exploration"), buttons: (['wordcloud', 'word-tree', 'bigrams', 'trigrams'] as LexicalTestId[]).map(lexicalButton) },
-        { label: t("Structure"), buttons: (['chd', 'similitude', 'thematic-map', 'lda'] as LexicalTestId[]).map(lexicalButton) },
-        { label: t("Keywords and affect"), buttons: (['yake', 'keyword-associations', 'sentiment', 'emotions'] as LexicalTestId[]).map(lexicalButton) }
+        { label: t("Exploration"), buttons: (['wordcloud', 'word-tree', 'bigrams', 'trigrams'] as LexicalTestId[]).map(lexicalButton('explore')) },
+        { label: t("Structure"), buttons: (['chd', 'similitude', 'thematic-map', 'lda'] as LexicalTestId[]).map(lexicalButton('structure')) },
+        { label: t("Keywords and affect"), buttons: (['yake', 'keyword-associations', 'sentiment', 'emotions'] as LexicalTestId[]).map(lexicalButton('keywords')) }
       ]
     },
     {
@@ -2847,6 +2867,8 @@ function App() {
       </PanelGroup>
 
       <StatusBar />
+
+      {codebookImportDialog}
 
       <QuickCoding />
 

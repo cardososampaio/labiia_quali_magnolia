@@ -385,8 +385,8 @@ function CodeTreeItem({
           style={{ width: 14, flexShrink: 0, display: 'inline-flex', alignItems: 'center', justifyContent: 'center' }}
         >
           <span
-            className="color-pip"
-            style={{ background: code.color || '#888' }}
+            className={code.children.length > 0 ? 'color-pip color-pip-category' : 'color-pip'}
+            style={{ background: code.color || '#888', ['--pip' as string]: code.color || '#888' }}
           />
         </span>
         {editing ? (

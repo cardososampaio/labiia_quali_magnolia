@@ -8,6 +8,7 @@ import { exportPdfWithHeader, buildPdfDocument, escHtml } from '../../utils/pdf-
 import { modKey } from '../../utils/platform'
 import { useCodeColourPresets } from '../../utils/code-colours'
 import { t } from '../../i18n'
+import { useCodebookImport } from './CodebookOutlineDialog'
 
 interface Props {
   onClose: () => void
@@ -332,13 +333,10 @@ export function CodebookDialog({ onClose }: Props) {
     await window.api.exportCodebook(codes)
   }, [codes])
 
-  const handleImportQdc = useCallback(async () => {
-    const imported = await window.api.importCodebook()
-    if (imported && imported.length > 0) {
-      mergeCodes(imported)
-      markDirty()
-    }
-  }, [mergeCodes, markDirty])
+  const { startImport: handleImportQdc, dialog: importDialog } = useCodebookImport((imported) => {
+    mergeCodes(imported)
+    markDirty()
+  })
 
   return (
     <div className="modal-overlay" onClick={onClose}>
@@ -356,9 +354,9 @@ export function CodebookDialog({ onClose }: Props) {
             className="secondary"
             style={{ fontSize: 11, padding: '3px 10px', marginRight: 4 }}
             onClick={handleImportQdc}
-            title={t("Import a REFI-QDA Codebook (.qdc) file")}
+            title={t("Import a codebook: REFI-QDA (.qdc), Word, OpenDocument, RTF or Markdown")}
           >
-            {t("Import QDC")}
+            {t("Import codebook")}
           </button>
           <button
             className="secondary"
@@ -414,6 +412,7 @@ export function CodebookDialog({ onClose }: Props) {
             />
           )
         })()}
+        {importDialog}
       </div>
     </div>
   )

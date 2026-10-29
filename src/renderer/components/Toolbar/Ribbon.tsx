@@ -5,15 +5,21 @@
  * affect), always the same colour, so the strip is colourful without
  * every button shouting its own hue.
  *
+ * A button with a menu is a split button, as Word's "Paste": the icon runs
+ * the main action, the label with ▾ opens a list of choices.
+ *
  * Double-clicking a tab (or Ctrl+F1) collapses the ribbon to its tab row;
  * the choice is remembered on this computer. While collapsed, a click on
  * a tab opens it temporarily, as Office does.
  */
 import { useEffect, useRef, useState } from 'react'
+import { createPortal } from 'react-dom'
 import { Icon, faChevronUp, faChevronDown, type IconComponent } from '../Icon'
 import { t } from '../../i18n'
 
 export type RibbonFamily = 'sources' | 'coding' | 'query' | 'analysis' | 'lexical' | 'affect' | 'neutral'
+  // Each group of the Analyses and Lexical analyses tabs has its own colour.
+  | 'codes' | 'results' | 'reports' | 'explore' | 'structure' | 'keywords'
 
 export interface RibbonButtonDef {
   id: string
@@ -29,6 +35,19 @@ export interface RibbonButtonDef {
   /** Small dot on the tile, e.g. "a new version is available". */
   badge?: boolean
   iconStyle?: React.CSSProperties
+  /** Makes a split button: the choices listed when the label is clicked,
+   *  loaded each time the list opens. */
+  menu?: () => Promise<RibbonMenuItem[]>
+}
+
+export interface RibbonMenuItem {
+  id: string
+  label: string
+  hint?: string
+  icon?: IconComponent
+  onClick: () => void
+  /** Starts a new section with a line above it. */
+  separated?: boolean
 }
 
 export interface RibbonGroupDef {
@@ -155,6 +174,7 @@ export function Ribbon({ tabs }: { tabs: RibbonTabDef[] }): JSX.Element {
 
 function RibbonButton({ def, onDone }: { def: RibbonButtonDef; onDone: () => void }): JSX.Element {
   const disabled = !!def.disabledReason
+  if (def.menu) return <RibbonSplitButton def={def} onDone={onDone} />
   return (
     <button
       type="button"
@@ -175,5 +195,86 @@ function RibbonButton({ def, onDone }: { def: RibbonButtonDef; onDone: () => voi
       </span>
       <span className="ribbon-label">{def.label}</span>
     </button>
+  )
+}
+
+function RibbonSplitButton({ def, onDone }: { def: RibbonButtonDef; onDone: () => void }): JSX.Element {
+  const [items, setItems] = useState<RibbonMenuItem[] | null>(null)
+  const [pos, setPos] = useState<{ left: number; top: number } | null>(null)
+  const anchorRef = useRef<HTMLDivElement>(null)
+  const menuRef = useRef<HTMLDivElement>(null)
+  const open = pos !== null
+
+  const close = (): void => { setPos(null); setItems(null) }
+  const toggle = async (): Promise<void> => {
+    if (open) { close(); return }
+    const r = anchorRef.current!.getBoundingClientRect()
+    // Below the button, kept inside the window.
+    setPos({ left: Math.max(8, Math.min(r.left, window.innerWidth - 368)), top: r.bottom + 4 })
+    setItems(await def.menu!())
+  }
+
+  useEffect(() => {
+    if (!open) return
+    const onDown = (e: MouseEvent): void => {
+      const target = e.target as Node
+      if (menuRef.current?.contains(target) || anchorRef.current?.contains(target)) return
+      close()
+    }
+    const onKey = (e: KeyboardEvent): void => { if (e.key === 'Escape') close() }
+    document.addEventListener('mousedown', onDown)
+    document.addEventListener('keydown', onKey)
+    requestAnimationFrame(() => menuRef.current?.querySelector<HTMLButtonElement>('button')?.focus())
+    return () => { document.removeEventListener('mousedown', onDown); document.removeEventListener('keydown', onKey) }
+  }, [open])
+
+  const choose = (item: RibbonMenuItem): void => { close(); item.onClick(); onDone() }
+
+  return (
+    <div ref={anchorRef} className="ribbon-split" data-family={def.family}>
+      <button
+        type="button"
+        className="ribbon-btn ribbon-split-main"
+        data-family={def.family}
+        title={def.title ?? def.label}
+        onClick={() => { def.onClick(); onDone() }}
+      >
+        <span className="ribbon-tile"><Icon icon={def.icon} style={def.iconStyle} /></span>
+      </button>
+      <button
+        type="button"
+        className="ribbon-split-more"
+        aria-haspopup="menu"
+        aria-expanded={open}
+        title={t("More options for {{name}}", { name: def.label })}
+        onClick={() => void toggle()}
+      >
+        <span className="ribbon-label">{def.label}</span>
+        <Icon icon={faChevronDown} className="ribbon-split-chevron" />
+      </button>
+      {open && createPortal(
+        <div ref={menuRef} className="ribbon-menu" role="menu" style={{ left: pos.left, top: pos.top }}>
+          {items === null ? (
+            <div className="ribbon-menu-empty">{t("Loading…")}</div>
+          ) : items.map((item) => (
+            <button
+              key={item.id}
+              type="button"
+              role="menuitem"
+              className={`ribbon-menu-item${item.separated ? ' ribbon-menu-separated' : ''}`}
+              title={item.hint}
+              onClick={() => choose(item)}
+            >
+              {item.icon && <Icon icon={item.icon} className="ribbon-menu-icon" />}
+              <span className="ribbon-menu-text">
+                <span className="ribbon-menu-label">{item.label}</span>
+                {item.hint && <span className="ribbon-menu-hint">{item.hint}</span>}
+              </span>
+            </button>
+          ))}
+        </div>,
+        document.body
+      )}
+    </div>
   )
 }
