@@ -8,8 +8,8 @@ porque o R precisa lê-los diretamente.
 |---|---|---|
 | `dictionaries/` | Dicionários de formas, lemas e classes gramaticais (`lexique_pt`, `lexique_en`, `lexique_sp`), expressões compostas e `key.cfg` (classes ativas e suplementares) | IRaMuTeQ, de Pierre Ratinaud (GPL). O dicionário português é a versão revisada usada pelo labiia_lex. O francês do IRaMuTeQ foi construído a partir do Lexique 3 (lexique.org). |
 | `stopwords/pt.txt`, `en.txt`, `es.txt` | Palavras vazias do Snowball, as mesmas que o pacote R `stopwords` entrega ao labiia_lex | Projeto Snowball (licença BSD) |
-| `stopwords/visual_*.txt`, `allow_*.txt` | Palavras retiradas dos gráficos e nuvens (palavras vazias, marcas de conversa como "né" e "aí") e palavras curtas mantidas ("ia", "sus") | labiia_lex (MIT), exportadas da sua política de stopwords para que o labiia_quali mostre as mesmas palavras |
-| `stopwords/lexicon_pt.txt` | Formas e lemas das classes suplementares do dicionário português do IRaMuTeQ (com e sem acento), que o labiia_lex tira dos bigramas e trigramas | Exportada da função `build_portuguese_stopwords_from_lexicon` do labiia_lex (MIT), sobre o dicionário do IRaMuTeQ (GPL) |
+| `stopwords/visual_*.txt`, `allow_*.txt` | Palavras retiradas dos gráficos e nuvens (palavras vazias, marcas de conversa como "né" e "aí") e palavras curtas mantidas ("ia", "sus") | labiia_lex (GPL-3.0 ou posterior), exportadas da sua política de stopwords para que o labiia_quali mostre as mesmas palavras |
+| `stopwords/lexicon_pt.txt` | Formas e lemas das classes suplementares do dicionário português do IRaMuTeQ (com e sem acento), que o labiia_lex tira dos bigramas e trigramas | Exportada da função `build_portuguese_stopwords_from_lexicon` do labiia_lex (GPL-3.0 ou posterior), sobre o dicionário do IRaMuTeQ (GPL) |
 | `lexicons/oplexicon.csv` | Léxico de polaridade do português (OpLexicon), usado no Sentimento | OpLexicon, de Souza, Vieira e colaboradores (PUCRS), na cópia distribuída com o labiia_lex |
 | `yake/` | Palavras vazias do YAKE (pt, en, es) | Biblioteca yake 0.7.3 (LGPL-3.0) |
 | `R/` | Scripts R dos testes | Adaptados do labiia_lex e do IRaMuTeQ |

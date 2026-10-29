@@ -200,7 +200,11 @@ O Magnolia é distribuído sob a [EUPL-1.2](LICENSE). Por ser uma obra derivada,
 o labiia_quali deve ser distribuído sob a EUPL-1.2 ou uma das licenças
 compatíveis listadas no anexo da EUPL, com o código-fonte disponível e
 mantendo os avisos de autoria e licença do Magnolia. A escolha final da
-licença de lançamento ainda está em aberto. Os recursos das análises léxicas
-incluem obras com licenças próprias (scripts e dicionários do IRaMuTeQ sob
-GPL, YAKE sob LGPL-3.0, OpLexicon), listadas em
-[resources/lexical/README.md](resources/lexical/README.md).
+licença de lançamento ainda está em aberto. As análises léxicas vêm do
+labiia_lex (GPL-3.0 ou posterior) e incluem obras com licenças próprias
+(scripts e dicionários do IRaMuTeQ sob GPL, YAKE sob LGPL-3.0, OpLexicon),
+listadas em [resources/lexical/README.md](resources/lexical/README.md). O
+léxico de emoções NRC, usado pelo pacote R syuzhet no teste Emoções, é livre
+para pesquisa e ensino; o uso comercial exige licença do National Research
+Council Canada. O R e os pacotes do CRAN não vão dentro do programa e têm
+cada um a sua licença (a lista está em Ajuda → Licença).
