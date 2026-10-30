@@ -30,6 +30,7 @@ import {
   faScale,
   faFileAlt
 } from './components/Icon'
+import { MANUAL_URL } from './components/Toolbar/HelpPopover'
 import { LicenceDialog } from './components/Licence/LicenceDialog'
 import { UpdateDialog, type UpdateAvailableInfo } from './components/Update/UpdateDialog'
 import { sourceTypeFromExtension } from './utils/format-registry'
@@ -2577,7 +2578,8 @@ function App() {
                 useDocumentStore.getState().openToolTab(PREFERENCES_TAB_ID)
               }
             },
-            { id: 'licence', label: t("Licence"), title: t("Licence & Attributions"), icon: faScale, family: 'neutral', onClick: () => setShowLicenceDialog(true) }
+            { id: 'licence', label: t("Licence"), title: t("Licence & Attributions"), icon: faScale, family: 'neutral', onClick: () => setShowLicenceDialog(true) },
+            { id: 'manual', label: t("Manual"), title: t("Open the labiia_quali user manual in your browser."), icon: faFileAlt, family: 'neutral', onClick: () => window.open(MANUAL_URL, '_blank') }
           ]
         }
       ]

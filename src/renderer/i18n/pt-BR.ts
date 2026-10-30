@@ -829,6 +829,7 @@ export const ptBR: Record<string, string> = {
   "Later": "Mais tarde",
   "Manual": "Manual",
   "Support Magnolia": "Apoiar o Magnolia",
+  "Open the labiia_quali user manual in your browser.": "Abre no navegador o manual do labiia_quali.",
   "Open the user manual of Magnolia, the software labiia_quali is based on, in your browser (in English).": "Abre no navegador o manual do Magnolia, programa em que o labiia_quali se baseia (em inglês).",
   "labiia_quali is based on Magnolia, free software created by Cale Davis. If it is useful to you, consider supporting the original project.": "O labiia_quali é baseado no Magnolia, software livre criado por Cale Davis. Se ele for útil para você, considere apoiar o projeto original.",
   "Based on Magnolia, by Cale Davis — support the original project": "Baseado no Magnolia, de Cale Davis — apoie o projeto original",
