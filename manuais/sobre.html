@@ -1,0 +1,408 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Sobre e créditos — Manual do labiia_quali</title>
+  <link rel="stylesheet" href="estilo.css">
+</head>
+<body>
+
+  <nav class="lateral" aria-label="Páginas do manual">
+    <div class="marca">
+      <strong>labiia_quali — Manual</strong>
+      <span>Versão 0.1.1 · Windows</span>
+    </div>
+    <ul>
+      <li><a href="index.html">Início</a></li>
+      <li><a href="instalacao.html">Instalação e R</a></li>
+      <li><a href="interface.html">Conhecendo a tela</a></li>
+      <li><a href="projetos.html">Projetos</a></li>
+      <li><a href="fontes.html">Documentos e fontes</a></li>
+      <li><a href="codificacao.html">Codificação</a></li>
+      <li><a href="livro-de-codigos.html">Livro de códigos</a></li>
+      <li><a href="analises.html">Consultas, análises e relatórios</a></li>
+      <li><a href="analises-lexicas.html">Análises léxicas</a></li>
+      <li><a href="problemas.html">Problemas comuns</a></li>
+      <li><a href="glossario.html">Glossário</a></li>
+      <li><a href="sobre.html" class="atual" aria-current="page">Sobre e créditos</a></li>
+    </ul>
+  </nav>
+
+  <main class="conteudo">
+    <div class="artigo">
+
+      <h1>Sobre e créditos</h1>
+      <p class="lead">O que é o labiia_quali, de onde ele vem, quem o fez, com que licença é distribuído e quais obras de terceiros ele usa.</p>
+
+      <h2>O que é o labiia_quali</h2>
+      <p>O labiia_quali é um programa para a análise de dados qualitativos. Com ele, você importa materiais de pesquisa, como entrevistas, grupos focais, documentos e respostas abertas de questionários. Depois, marca trechos com códigos, faz consultas e gera tabelas e relatórios.</p>
+      <p>O programa também reúne doze análises léxicas, que contam e comparam as palavras dos textos. Elas ajudam a explorar o material, mas não substituem a leitura nem a interpretação de quem pesquisa.</p>
+      <p>O labiia_quali funciona no Windows. Cada projeto fica num arquivo <code>.qdpx</code>, que segue o padrão REFI-QDA. Esse padrão é usado por vários programas de análise qualitativa para trocar projetos entre si.</p>
+
+      <h2>De onde ele vem</h2>
+      <p>O labiia_quali é baseado no <strong>Magnolia</strong>, um programa livre de análise qualitativa criado e mantido por Cale Davis. O Magnolia tem copyright © 2026 Cale Davis. Esta versão, em português do Brasil, foi construída a partir dele.</p>
+      <p>As análises léxicas vêm do <strong>labiia_lex</strong>, criado por Rafael Cardoso Sampaio. Por meio dele, elas também vêm do <strong>IRaMuTeQ</strong>, de Pierre Ratinaud, de onde saem os métodos de classificação e os dicionários de lematização.</p>
+
+      <h2>Quem fez</h2>
+      <p>Esta versão e as análises léxicas são de <strong>Rafael Cardoso Sampaio</strong> (UFPE, labiia_lab), com a colaboração de Anderson Henrique, Dalson Figueiredo, Ian Batista, Leonardo Nascimento e Nilton Sainz.</p>
+      <p>O programa foi escrito com a ajuda do <strong>Claude</strong>, um assistente de inteligência artificial da Anthropic. Por isso, ele pode conter erros. Se algum resultado parecer estranho, confira antes de usá-lo numa pesquisa, e verifique as análises com o seu próprio olhar sobre os dados.</p>
+
+      <h2>Licença</h2>
+      <p>O labiia_quali é distribuído sob a <strong>EUPL-1.2</strong>, sigla de <em>European Union Public Licence</em>, versão 1.2. É uma licença de software livre criada pela União Europeia. Em linguagem simples, ela permite que você:</p>
+      <ul>
+        <li>use o programa para qualquer finalidade, inclusive comercial;</li>
+        <li>estude como ele funciona;</li>
+        <li>copie e distribua o programa;</li>
+        <li>modifique o programa e distribua a versão modificada.</li>
+      </ul>
+      <p>Em troca, quem distribui uma versão modificada precisa:</p>
+      <ul>
+        <li>distribuí-la também sob a EUPL-1.2 ou sob uma licença compatível listada no próprio texto da EUPL;</li>
+        <li>disponibilizar o código-fonte dessa versão;</li>
+        <li>manter os avisos de autoria e de licença que já existem no programa.</li>
+      </ul>
+
+      <div class="cuidado">
+        <strong>Sem garantia</strong>
+        <p>A licença não traz garantia. O programa é oferecido como está, sem promessa de que funcione para o seu caso específico.</p>
+      </div>
+
+      <div class="dica">
+        <strong>Texto completo</strong>
+        <p>Para ler a licença inteira, vá em <strong>Ajuda &gt; Licença</strong>. A janela <strong>Licença e créditos</strong> tem o botão <strong>Ver o texto completo da licença</strong> e também mostra a lista completa de créditos.</p>
+      </div>
+
+      <h2>Créditos</h2>
+
+      <p>As tabelas abaixo listam as obras de terceiros usadas no programa. A coluna da direita mostra a licença de cada uma.</p>
+
+      <h3>Análises léxicas</h3>
+      <p>As análises léxicas vêm do labiia_lex e, por meio dele, do IRaMuTeQ. Os dicionários e léxicos abaixo acompanham o programa. Os métodos foram reimplementados a partir das publicações de cada autor.</p>
+
+      <div class="tabela">
+        <table>
+          <caption>Obras usadas nas análises léxicas</caption>
+          <thead>
+            <tr>
+              <th scope="col">Obra</th>
+              <th scope="col">Papel no labiia_quali</th>
+              <th scope="col">Licença</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>labiia_lex</td>
+              <td>As doze análises léxicas, seus parâmetros e figuras, de Rafael Cardoso Sampaio (UFPE, labiia_lab)</td>
+              <td>GPL-3.0+</td>
+            </tr>
+            <tr>
+              <td>IRaMuTeQ</td>
+              <td>Scripts do método Reinert (CHD), dicionários de lematização (pt, en, es) e expressões compostas, de Pierre Ratinaud</td>
+              <td>GPL</td>
+            </tr>
+            <tr>
+              <td>Snowball</td>
+              <td>Listas de palavras vazias (pt, en, es)</td>
+              <td>BSD-3-Clause</td>
+            </tr>
+            <tr>
+              <td>OpLexicon</td>
+              <td>Léxico de polaridade do português usado no Sentimento, de Marlo Souza e Renata Vieira (PUCRS)</td>
+              <td>acadêmica</td>
+            </tr>
+            <tr>
+              <td>NRC Emotion Lexicon</td>
+              <td>Léxico de emoções usado em Emoções (pelo syuzhet), de Saif M. Mohammad e Peter D. Turney</td>
+              <td>pesquisa</td>
+            </tr>
+            <tr>
+              <td>YAKE!</td>
+              <td>Método de extração de palavras-chave e suas palavras vazias, de Campos, Mangaravite, Pasquali, Jorge, Nunes e Jatowt (LIAAD / INESC TEC)</td>
+              <td>LGPL-3.0</td>
+            </tr>
+            <tr>
+              <td>LDAvis</td>
+              <td>Mapa de distância entre tópicos e relevância dos termos, de Carson Sievert e Kenneth Shirley (método)</td>
+              <td>MIT</td>
+            </tr>
+            <tr>
+              <td>bibliometrix</td>
+              <td>Eixos e rótulos do Mapa temático, de Massimo Aria e Corrado Cuccurullo (método)</td>
+              <td>GPL-3.0</td>
+            </tr>
+            <tr>
+              <td>Textometrica, Voyant Tools, Lexos</td>
+              <td>Conceitos conectados, árvore de palavras e ideias de n-gramas trazidos pelo labiia_lex (métodos)</td>
+              <td>—</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="cuidado">
+        <strong>Uso comercial do léxico NRC</strong>
+        <p>O léxico de emoções NRC é livre para pesquisa e ensino. Se você quiser usá-lo em um produto comercial, precisa de licença do National Research Council Canada.</p>
+      </div>
+
+      <h3>R e pacotes R</h3>
+      <p>Nuvem de palavras, CHD, Similitude, Emoções e LDA rodam em R, com os pacotes abaixo do CRAN. Eles não vêm dentro do programa: o instalador ou o próprio programa os baixa do CRAN, e cada um tem a sua licença.</p>
+
+      <div class="tabela">
+        <table>
+          <caption>R e pacotes usados pelos testes em R</caption>
+          <thead>
+            <tr>
+              <th scope="col">Obra</th>
+              <th scope="col">Papel no labiia_quali</th>
+              <th scope="col">Licença</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>R</td>
+              <td>Ambiente de computação estatística, do R Core Team</td>
+              <td>GPL-2 | GPL-3</td>
+            </tr>
+            <tr>
+              <td>ape</td>
+              <td>Dendrogramas da CHD</td>
+              <td>GPL-2 | GPL-3</td>
+            </tr>
+            <tr>
+              <td>ca</td>
+              <td>Análise de correspondência (AFC)</td>
+              <td>GPL</td>
+            </tr>
+            <tr>
+              <td>cluster</td>
+              <td>Estatísticas das classes da CHD</td>
+              <td>GPL-2+</td>
+            </tr>
+            <tr>
+              <td>fmsb</td>
+              <td>Gráfico radar das emoções</td>
+              <td>GPL-2+</td>
+            </tr>
+            <tr>
+              <td>ggwordcloud, ggplot2</td>
+              <td>Nuvem de palavras</td>
+              <td>GPL-3, MIT</td>
+            </tr>
+            <tr>
+              <td>wordcloud</td>
+              <td>Nuvens das classes da CHD e da similitude</td>
+              <td>LGPL-2.1</td>
+            </tr>
+            <tr>
+              <td>igraph</td>
+              <td>Grafos e disposições da similitude</td>
+              <td>GPL-2+</td>
+            </tr>
+            <tr>
+              <td>sna, intergraph, network</td>
+              <td>Desenho do grafo de similitude</td>
+              <td>GPL-2+, GPL-3</td>
+            </tr>
+            <tr>
+              <td>irlba</td>
+              <td>Decomposição de matrizes da CHD</td>
+              <td>GPL-3</td>
+            </tr>
+            <tr>
+              <td>Matrix</td>
+              <td>Matrizes esparsas da CHD</td>
+              <td>GPL-2+</td>
+            </tr>
+            <tr>
+              <td>slam</td>
+              <td>Matriz documento-termo do LDA</td>
+              <td>GPL-2</td>
+            </tr>
+            <tr>
+              <td>textometry</td>
+              <td>Especificidades da CHD (do software TXM)</td>
+              <td>GPL-3+</td>
+            </tr>
+            <tr>
+              <td>topicmodels</td>
+              <td>Modelos de tópicos LDA, de Bettina Grün e Kurt Hornik</td>
+              <td>GPL-2</td>
+            </tr>
+            <tr>
+              <td>syuzhet</td>
+              <td>Emoções com o léxico NRC, de Matthew Jockers</td>
+              <td>GPL-3</td>
+            </tr>
+            <tr>
+              <td>jsonlite</td>
+              <td>Troca de dados entre o R e o programa</td>
+              <td>MIT</td>
+            </tr>
+            <tr>
+              <td>png</td>
+              <td>Imagem da Nuvem de palavras</td>
+              <td>GPL-2 | GPL-3</td>
+            </tr>
+            <tr>
+              <td>RColorBrewer</td>
+              <td>Paletas de cores</td>
+              <td>Apache-2.0</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h3>Bibliotecas do programa</h3>
+      <p>Bibliotecas são peças de software prontas, usadas para construir o programa. Os textos completos de licença de cada uma acompanham o labiia_quali.</p>
+
+      <div class="tabela">
+        <table>
+          <caption>Bibliotecas incluídas no programa</caption>
+          <thead>
+            <tr>
+              <th scope="col">Obra</th>
+              <th scope="col">Papel no labiia_quali</th>
+              <th scope="col">Licença</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Electron</td>
+              <td>Ambiente de execução para desktop</td>
+              <td>MIT</td>
+            </tr>
+            <tr>
+              <td>React</td>
+              <td>Biblioteca da interface</td>
+              <td>MIT</td>
+            </tr>
+            <tr>
+              <td>TipTap</td>
+              <td>Editor de texto formatado para memos</td>
+              <td>MIT</td>
+            </tr>
+            <tr>
+              <td>PDF.js</td>
+              <td>Exibição de PDF</td>
+              <td>Apache-2.0</td>
+            </tr>
+            <tr>
+              <td>mammoth</td>
+              <td>Importação de documentos do Word (.docx)</td>
+              <td>BSD-2-Clause</td>
+            </tr>
+            <tr>
+              <td>rtf-parser, rtf-to-html</td>
+              <td>Importação de documentos RTF</td>
+              <td>ISC</td>
+            </tr>
+            <tr>
+              <td>heic-decode (libheif-js)</td>
+              <td>Leitura de imagens HEIC / HEIF</td>
+              <td>ISC, LGPL-3.0</td>
+            </tr>
+            <tr>
+              <td>utif</td>
+              <td>Leitura de imagens TIFF</td>
+              <td>MIT</td>
+            </tr>
+            <tr>
+              <td>pngjs</td>
+              <td>Leitura e gravação de imagens PNG</td>
+              <td>MIT</td>
+            </tr>
+            <tr>
+              <td>mp4box</td>
+              <td>Leitura de arquivos de vídeo</td>
+              <td>BSD-3-Clause</td>
+            </tr>
+            <tr>
+              <td>music-metadata</td>
+              <td>Metadados de áudio</td>
+              <td>MIT</td>
+            </tr>
+            <tr>
+              <td>SheetJS (xlsx)</td>
+              <td>Importação de questionários em planilha</td>
+              <td>Apache-2.0</td>
+            </tr>
+            <tr>
+              <td>JSZip</td>
+              <td>Leitura e gravação de projetos QDPX</td>
+              <td>MIT</td>
+            </tr>
+            <tr>
+              <td>yauzl</td>
+              <td>Leitura de arquivos de projeto grandes</td>
+              <td>MIT</td>
+            </tr>
+            <tr>
+              <td>fast-xml-parser</td>
+              <td>Leitura do XML de projetos QDPX e de livros de códigos</td>
+              <td>MIT</td>
+            </tr>
+            <tr>
+              <td>marked, tiptap-markdown</td>
+              <td>Exibição de Markdown</td>
+              <td>MIT</td>
+            </tr>
+            <tr>
+              <td>diff</td>
+              <td>Comparação das cópias de um projeto ao mesclar</td>
+              <td>BSD-3-Clause</td>
+            </tr>
+            <tr>
+              <td>uuid</td>
+              <td>Identificadores de códigos e fontes</td>
+              <td>MIT</td>
+            </tr>
+            <tr>
+              <td>react-resizable-panels</td>
+              <td>Painéis redimensionáveis</td>
+              <td>MIT</td>
+            </tr>
+            <tr>
+              <td>Zustand</td>
+              <td>Gerenciamento de estado</td>
+              <td>MIT</td>
+            </tr>
+            <tr>
+              <td>Lucide</td>
+              <td>Conjunto de ícones</td>
+              <td>ISC</td>
+            </tr>
+            <tr>
+              <td>electron-updater</td>
+              <td>Biblioteca de atualização</td>
+              <td>MIT</td>
+            </tr>
+            <tr>
+              <td>DejaVu Sans</td>
+              <td>Fonte das figuras das análises léxicas</td>
+              <td>Bitstream Vera</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="dica">
+        <strong>Todos os créditos</strong>
+        <p>A lista completa de atribuições está em <strong>Ajuda &gt; Licença</strong>, no botão <strong>Ver todos os créditos</strong>.</p>
+      </div>
+
+      <h2>Versão deste manual</h2>
+      <p>Este manual descreve a versão <strong>0.1.1</strong> do labiia_quali, para Windows.</p>
+
+      <nav class="navegacao-rodape" aria-label="Navegação entre páginas">
+        <a href="glossario.html" rel="prev">
+          <small>Anterior</small>
+          <span>Glossário</span>
+        </a>
+      </nav>
+
+    </div>
+  </main>
+
+</body>
+</html>

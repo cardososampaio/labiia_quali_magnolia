@@ -1,0 +1,605 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Conhecendo a tela — Manual do labiia_quali</title>
+  <link rel="stylesheet" href="estilo.css">
+</head>
+<body>
+
+  <nav class="lateral" aria-label="Páginas do manual">
+    <div class="marca">
+      <strong>labiia_quali — Manual</strong>
+      <span>Versão 0.1.1 · Windows</span>
+    </div>
+    <ul>
+      <li><a href="index.html">Início</a></li>
+      <li><a href="instalacao.html">Instalação e R</a></li>
+      <li><a href="interface.html" class="atual" aria-current="page">Conhecendo a tela</a></li>
+      <li><a href="projetos.html">Projetos</a></li>
+      <li><a href="fontes.html">Documentos e fontes</a></li>
+      <li><a href="codificacao.html">Codificação</a></li>
+      <li><a href="livro-de-codigos.html">Livro de códigos</a></li>
+      <li><a href="analises.html">Consultas, análises e relatórios</a></li>
+      <li><a href="analises-lexicas.html">Análises léxicas</a></li>
+      <li><a href="problemas.html">Problemas comuns</a></li>
+      <li><a href="glossario.html">Glossário</a></li>
+      <li><a href="sobre.html">Sobre e créditos</a></li>
+    </ul>
+  </nav>
+
+  <main class="conteudo">
+    <div class="artigo">
+
+      <h1>Conhecendo a tela</h1>
+      <p class="lead">Esta página percorre a janela do labiia_quali de cima para baixo: a barra de título, a faixa de opções com todas as abas, os painéis, a barra de status e as Preferências. No fim há a lista de atalhos de teclado.</p>
+
+      <h2>Tela de boas-vindas</h2>
+      <p>Quando nenhum projeto está aberto, o programa mostra a tela inicial. Ela tem três partes úteis:</p>
+
+      <ul>
+        <li><strong>Projetos recentes</strong>, na parte de cima à esquerda. Clique em um nome para abrir o projeto. Se a lista estiver vazia, aparece a mensagem <em>Ainda não há projetos recentes</em>. O botão <span class="botao-ui">Limpar</span> esvazia a lista (não apaga nenhum arquivo).</li>
+        <li><strong>Botões de ação</strong>, embaixo à esquerda: <span class="botao-ui f-fontes">Novo</span> cria um projeto novo; <span class="botao-ui f-fontes">Abrir…</span> escolhe um arquivo <code>.qdpx</code>; <span class="botao-ui">Sair</span> fecha o programa, depois de pedir confirmação.</li>
+        <li><strong>Créditos</strong>, também embaixo à esquerda, com o nome da versão. O lado direito da tela é só decoração.</li>
+      </ul>
+
+      <h2>A janela principal</h2>
+      <p>Com um projeto aberto, a janela tem quatro partes, de cima para baixo:</p>
+
+      <ol class="passos">
+        <li>
+          <strong>Barra de título</strong>
+          <p>Botão Iniciar, botões rápidos, nome do projeto e controles da janela.</p>
+        </li>
+        <li>
+          <strong>Faixa de opções</strong>
+          <p>Abas com botões grandes, como no Office. Cada aba reúne botões por assunto.</p>
+        </li>
+        <li>
+          <strong>Área principal</strong>
+          <p>Painéis com as listas (documentos, códigos e outros) e, no centro, a área onde o documento aparece.</p>
+        </li>
+        <li>
+          <strong>Barra de status</strong>
+          <p>Rodapé com o estado do projeto e as contagens.</p>
+        </li>
+      </ol>
+
+      <h2>Barra de título</h2>
+      <p>A barra de título fica no alto da janela. Da esquerda para a direita:</p>
+
+      <div class="tabela">
+        <table>
+          <caption>Elementos da barra de título</caption>
+          <thead>
+            <tr>
+              <th scope="col">Elemento</th>
+              <th scope="col">O que faz</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><strong>Iniciar</strong> (ícone do programa)</td>
+              <td>Abre o menu Iniciar, descrito logo abaixo.</td>
+            </tr>
+            <tr>
+              <td><strong>Salvar</strong> (disquete)</td>
+              <td>Grava o projeto. Atalho: <kbd>Ctrl</kbd> + <kbd>S</kbd>.</td>
+            </tr>
+            <tr>
+              <td><strong>Desfazer</strong> (seta curva)</td>
+              <td>Desfaz a última alteração. Fica apagado quando não há o que desfazer. Atalho: <kbd>Ctrl</kbd> + <kbd>Z</kbd>.</td>
+            </tr>
+            <tr>
+              <td><strong>Refazer</strong></td>
+              <td>Refaz o que foi desfeito. Atalho: <kbd>Ctrl</kbd> + <kbd>Shift</kbd> + <kbd>Z</kbd>.</td>
+            </tr>
+            <tr>
+              <td><strong>Nome do projeto</strong>, com o estado embaixo</td>
+              <td>Mostra o nome e o estado: <em>Ainda não salvo</em>, <em>Editado</em> (há alterações não gravadas) ou <em>Salvo</em>. Clicar nele abre as informações do projeto.</td>
+            </tr>
+            <tr>
+              <td><strong>Bloqueado</strong> (botão vermelho)</td>
+              <td>Aparece só quando outra pessoa está com o projeto. Clicar nele abre o aviso de conflito (veja a página <a href="projetos.html">Projetos</a>).</td>
+            </tr>
+            <tr>
+              <td><strong>Minimizar</strong>, <strong>Maximizar</strong> / <strong>Restaurar</strong>, <strong>Fechar</strong></td>
+              <td>Controles comuns da janela. Fechar o programa pede confirmação.</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h3>Botão Iniciar</h3>
+      <p>Clique no ícone do programa, no canto esquerdo, ou pressione <kbd>Alt</kbd> + <kbd>Home</kbd>. Para fechar o menu sem escolher nada, use <kbd>Esc</kbd> ou clique fora dele.</p>
+
+      <div class="tabela">
+        <table>
+          <caption>Itens do menu Iniciar</caption>
+          <thead>
+            <tr>
+              <th scope="col">Item</th>
+              <th scope="col">O que faz</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><span class="botao-ui f-fontes">Novo projeto</span></td>
+              <td>Cria um projeto vazio, com um arquivo novo.</td>
+            </tr>
+            <tr>
+              <td><span class="botao-ui f-fontes">Abrir projeto…</span></td>
+              <td>Abre um arquivo <code>.qdpx</code> pela janela de arquivos do Windows.</td>
+            </tr>
+            <tr>
+              <td><span class="botao-ui f-fontes">Salvar como…</span></td>
+              <td>Grava uma cópia do projeto com outro nome. Daí em diante, você trabalha na cópia.</td>
+            </tr>
+            <tr>
+              <td><span class="botao-ui f-fontes">Importar fontes…</span></td>
+              <td>Abre a escolha de arquivos para importar documentos. Fica desabilitado quando outra pessoa está com o projeto.</td>
+            </tr>
+            <tr>
+              <td><span class="botao-ui f-fontes">Mesclar projetos…</span></td>
+              <td>Traz para o seu projeto o trabalho de outra cópia do mesmo projeto. Esta é a única entrada para mesclar; veja <a href="projetos.html#mesclar">Projetos</a>.</td>
+            </tr>
+            <tr>
+              <td><strong>Projetos recentes</strong> (lista)</td>
+              <td>Até 8 projetos abertos por último. Clique para abrir. Se a lista estiver vazia: <em>Os projetos que você abrir aparecem aqui.</em></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h3>Informações do projeto</h3>
+      <p>Clique no nome do projeto, na barra de título, para abrir a janela <strong>Detalhes do projeto</strong>:</p>
+      <ul>
+        <li><strong>Nome do projeto</strong> e <strong>Descrição</strong>: campos que você pode editar.</li>
+        <li><strong>Arquivo</strong> (caminho do arquivo, ou <em>Não salvo</em>) e <strong>Tamanho do arquivo</strong>: só leitura.</li>
+        <li><strong>Documentos</strong> e <strong>Códigos</strong>: contagens do projeto, só leitura.</li>
+      </ul>
+      <p>O botão <span class="botao-ui">Concluído</span> fecha a janela.</p>
+
+      <h2>Faixa de opções</h2>
+      <p>A faixa de opções é a fileira de abas logo abaixo da barra de título. Cada aba mostra grupos de botões com um nome em cima. Ao clicar num botão, a ação começa na hora. Alguns botões abrem uma janela para você escolher algo antes.</p>
+
+      <p>As cores dos botões seguem a família da ação, como explicado em <a href="index.html#como-ler">Como ler este manual</a>. Um botão esmaecido, com o motivo na dica (o aviso que aparece ao passar o mouse), está indisponível no momento. Ao clicar nele, o programa explica o motivo.</p>
+
+      <h3>Recolher a faixa</h3>
+      <p>Para ganhar espaço na tela, você pode recolher a faixa. Para isso, use qualquer um destes caminhos:</p>
+      <ul>
+        <li>dê <strong>duplo clique</strong> em uma das abas;</li>
+        <li>pressione <kbd>Ctrl</kbd> + <kbd>F1</kbd>;</li>
+        <li>clique na seta no fim da linha de abas.</li>
+      </ul>
+      <p>Com a faixa recolhida, clicar numa aba mostra o conteúdo dela. Ele some quando você clica em outro lugar. Use as setas <kbd>←</kbd> e <kbd>→</kbd> para trocar de aba com o teclado. A escolha (recolhida ou não) e a última aba aberta ficam salvas neste computador.</p>
+
+      <h3>Aba Início</h3>
+      <div class="tabela">
+        <table>
+          <caption>Botões da aba Início</caption>
+          <thead>
+            <tr>
+              <th scope="col">Grupo</th>
+              <th scope="col">Botão</th>
+              <th scope="col">O que faz</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td rowspan="4"><strong>Fontes</strong></td>
+              <td><span class="botao-ui f-fontes">Novo</span></td>
+              <td>Cria um projeto novo. O programa pede o lugar e o nome do arquivo.</td>
+            </tr>
+            <tr>
+              <td><span class="botao-ui f-fontes">Abrir</span> ▾</td>
+              <td>O ícone abre a janela de arquivos para escolher um projeto. O ▾ abre uma lista com os projetos recentes (até 10) e, no fim, <em>Procurar outro projeto…</em>.</td>
+            </tr>
+            <tr>
+              <td><span class="botao-ui f-fontes">Importar</span></td>
+              <td>Importa documentos para o projeto (veja <a href="fontes.html">Documentos e fontes</a>). Fica bloqueado quando outra pessoa está com o projeto.</td>
+            </tr>
+            <tr>
+              <td><span class="botao-ui f-fontes">Nova pasta</span></td>
+              <td>Cria uma pasta na lista de documentos, com o nome inicial <em>Nova pasta</em>, para você organizar os documentos.</td>
+            </tr>
+            <tr>
+              <td rowspan="3"><strong>Codificação</strong></td>
+              <td><span class="botao-ui f-codificacao">Livro de códigos</span></td>
+              <td>Abre a lista de códigos (veja <a href="livro-de-codigos.html">Livro de códigos</a>).</td>
+            </tr>
+            <tr>
+              <td><span class="botao-ui f-codificacao">Características</span></td>
+              <td>Abre a janela <em>Gerenciar características dos documentos</em>, onde você cria os atributos e as características dos documentos.</td>
+            </tr>
+            <tr>
+              <td><span class="botao-ui f-codificacao">Diário de bordo</span></td>
+              <td>Abre o diário de bordo, um lugar para anotar o andamento da pesquisa.</td>
+            </tr>
+            <tr>
+              <td><strong>Consulta</strong></td>
+              <td><span class="botao-ui f-consultas">Consulta</span></td>
+              <td>Abre o Construtor de consultas, para buscar trechos por código ou por texto (veja <a href="analises.html">Consultas, análises e relatórios</a>).</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h3>Aba Análises</h3>
+      <p>Todas as análises desta aba abrem um resultado em uma aba da área principal. Para guardar o resultado, use o botão <em>Salvar análise</em> na própria aba dele.</p>
+      <div class="tabela">
+        <table>
+          <caption>Botões da aba Análises</caption>
+          <thead>
+            <tr>
+              <th scope="col">Grupo</th>
+              <th scope="col">Botão</th>
+              <th scope="col">O que mostra</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td rowspan="5"><strong>Códigos</strong></td>
+              <td><span class="botao-ui f-analises">Códigos nos documentos</span></td>
+              <td>Quais documentos têm quais códigos.</td>
+            </tr>
+            <tr>
+              <td><span class="botao-ui f-analises">Matriz de síntese</span></td>
+              <td>Um quadro com cada código em cada documento, para resumir o material.</td>
+            </tr>
+            <tr>
+              <td><span class="botao-ui f-analises">Coocorrência de códigos</span></td>
+              <td>Quais códigos aparecem sobrepostos, ou no mesmo trecho.</td>
+            </tr>
+            <tr>
+              <td><span class="botao-ui f-analises">Ordem dos códigos</span></td>
+              <td>A ordem em que os códigos aparecem em cada documento.</td>
+            </tr>
+            <tr>
+              <td><span class="botao-ui f-analises">Frequência de códigos</span></td>
+              <td>Quanto de cada documento é coberto por cada código.</td>
+            </tr>
+            <tr>
+              <td rowspan="3"><strong>Resultados e palavras</strong></td>
+              <td><span class="botao-ui f-analises">Resultados nos documentos</span></td>
+              <td>Quais documentos têm quais resultados de consulta.</td>
+            </tr>
+            <tr>
+              <td><span class="botao-ui f-analises">Frequência de palavras</span></td>
+              <td>As palavras que mais aparecem nos documentos.</td>
+            </tr>
+            <tr>
+              <td><span class="botao-ui f-analises">Relações</span></td>
+              <td>Um mapa de relações entre os elementos do projeto. Pode ser salvo com o botão <em>Salvar mapa de relações</em>.</td>
+            </tr>
+            <tr>
+              <td><strong>Relatórios</strong></td>
+              <td><span class="botao-ui f-analises">Relatórios</span></td>
+              <td>Reúne resultados num relatório que você exporta em PDF.</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h3>Aba Análises léxicas</h3>
+      <p>Esta aba tem as análises de palavras do texto. Os nomes abaixo são os dos botões; o nome completo e a descrição aparecem na dica de cada um. As que dependem do R vêm marcadas com <em>(usa R)</em>; a instalação dele está em <a href="instalacao.html">Instalação e R</a>. Para o que cada análise faz e como ler o resultado, veja <a href="analises-lexicas.html">Análises léxicas</a>.</p>
+
+      <div class="tabela">
+        <table>
+          <caption>Botões da aba Análises léxicas</caption>
+          <thead>
+            <tr>
+              <th scope="col">Grupo</th>
+              <th scope="col">Botão</th>
+              <th scope="col">O que mostra</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td rowspan="4"><strong>Exploração</strong></td>
+              <td><span class="botao-ui f-lexicas">Nuvem de palavras</span> (usa R)</td>
+              <td>As palavras mais frequentes, com tamanho proporcional à frequência.</td>
+            </tr>
+            <tr>
+              <td><span class="botao-ui f-lexicas">Word Tree</span></td>
+              <td>O que vem antes e depois de uma palavra escolhida.</td>
+            </tr>
+            <tr>
+              <td><span class="botao-ui f-lexicas">Bigramas</span></td>
+              <td>A rede de pares de palavras que aparecem lado a lado.</td>
+            </tr>
+            <tr>
+              <td><span class="botao-ui f-lexicas">Trigramas</span></td>
+              <td>A rede de sequências de três palavras.</td>
+            </tr>
+            <tr>
+              <td rowspan="4"><strong>Estrutura</strong></td>
+              <td><span class="botao-ui f-lexicas">CHD</span> (usa R)</td>
+              <td>Classificação do texto em classes de segmentos, pelo método Reinert.</td>
+            </tr>
+            <tr>
+              <td><span class="botao-ui f-lexicas">Similitude</span> (usa R)</td>
+              <td>Grafo das palavras que aparecem juntas nos mesmos segmentos.</td>
+            </tr>
+            <tr>
+              <td><span class="botao-ui f-lexicas">Mapa temático</span></td>
+              <td>Comunidades de palavras, posicionadas por centralidade e densidade.</td>
+            </tr>
+            <tr>
+              <td><span class="botao-ui f-lexicas">Tópicos LDA</span> (usa R)</td>
+              <td>Tópicos latentes do conjunto de documentos, pelo modelo LDA.</td>
+            </tr>
+            <tr>
+              <td rowspan="4"><strong>Palavras-chave e afeto</strong></td>
+              <td><span class="botao-ui f-afeto">YAKE</span></td>
+              <td>Expressões-chave de uma a três palavras, ordenadas pelo YAKE.</td>
+            </tr>
+            <tr>
+              <td><span class="botao-ui f-afeto">Associações de palavras-chave</span></td>
+              <td>Palavras mais associadas às palavras-chave que você escolher.</td>
+            </tr>
+            <tr>
+              <td><span class="botao-ui f-afeto">Sentimento</span></td>
+              <td>Palavras positivas e negativas em cada documento.</td>
+            </tr>
+            <tr>
+              <td><span class="botao-ui f-afeto">Emoções</span> (usa R)</td>
+              <td>Oito emoções e duas polaridades, a partir de um léxico de emoções.</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h3>Aba Exibir</h3>
+      <p>Esta aba controla o que aparece na tela. Os botões de <strong>Painéis</strong> ligam e desligam cada painel: o botão fica marcado enquanto o painel está visível.</p>
+      <ul>
+        <li><strong>Modo escuro</strong> / <strong>Modo claro</strong>: troca entre o tema claro e o escuro da família atual. Cada tema tem uma versão clara e uma escura, por exemplo Windows e Windows escuro.</li>
+        <li><strong>Aumentar</strong> / <strong>Diminuir</strong>: aumenta ou diminui o tamanho da interface, em passos de 100%, 125%, 150% e 200%.</li>
+      </ul>
+
+      <h3>Aba Ajuda</h3>
+      <div class="tabela">
+        <table>
+          <caption>Botões da aba Ajuda</caption>
+          <thead>
+            <tr>
+              <th scope="col">Botão</th>
+              <th scope="col">O que faz</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><span class="botao-ui">Preferências</span></td>
+              <td>Abre as Preferências em uma aba do programa. Veja a seção <a href="#preferencias">Preferências</a>, mais abaixo.</td>
+            </tr>
+            <tr>
+              <td><span class="botao-ui">Licença</span></td>
+              <td>Abre <em>Licença e créditos</em>, com a licença do programa (EUPL-1.2) e os créditos das bibliotecas e dos léxicos usados.</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h2>Painéis principais</h2>
+      <p>Os painéis são as listas e as áreas que aparecem ao redor do documento. Você pode ligar e desligar cada um pela aba <strong>Exibir</strong>, no grupo Painéis, ou fechá-lo pelo próprio botão de fechar no painel.</p>
+
+      <div class="tabela">
+        <table>
+          <caption>Painéis do labiia_quali</caption>
+          <thead>
+            <tr>
+              <th scope="col">Painel</th>
+              <th scope="col">Onde aparece</th>
+              <th scope="col">Ao abrir o programa</th>
+              <th scope="col">O que mostra</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><strong>Documentos</strong></td>
+              <td>Coluna da esquerda, em cima</td>
+              <td>Visível</td>
+              <td>A lista de documentos e pastas do projeto. Você importa e organiza os documentos aqui.</td>
+            </tr>
+            <tr>
+              <td><strong>Características</strong></td>
+              <td>Dentro do painel Documentos</td>
+              <td>Oculto</td>
+              <td>As características dos documentos (por exemplo, dados de cada participante) e os atributos que as agrupam.</td>
+            </tr>
+            <tr>
+              <td><strong>Códigos</strong></td>
+              <td>Coluna da esquerda, embaixo</td>
+              <td>Visível</td>
+              <td>A lista de códigos do livro de códigos. Você cria e aplica códigos aqui.</td>
+            </tr>
+            <tr>
+              <td><strong>Consultas</strong></td>
+              <td>Embaixo da área principal</td>
+              <td>Fechado</td>
+              <td>Os resultados das consultas que você salvou ou rodou.</td>
+            </tr>
+            <tr>
+              <td><strong>Memos</strong></td>
+              <td>Coluna da direita</td>
+              <td>Oculto</td>
+              <td>Os memos do projeto: anotações escritas sobre documentos, trechos ou ideias.</td>
+            </tr>
+            <tr>
+              <td><strong>Citações</strong></td>
+              <td>Coluna da direita</td>
+              <td>Oculto</td>
+              <td>Os trechos guardados com <em>Adicionar como citação</em>, para usar depois, por exemplo num texto.</td>
+            </tr>
+            <tr>
+              <td><strong>Análises</strong></td>
+              <td>Coluna da direita</td>
+              <td>Oculto</td>
+              <td>As análises salvas com o botão <em>Salvar análise</em>, para reabrir depois.</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <p>No centro da tela fica a <strong>área de visualização</strong>. É nela que o documento aberto aparece, e onde as análises e outras telas também abrem, em abas. Para procurar uma palavra no documento aberto, pressione <kbd>Ctrl</kbd> + <kbd>F</kbd>.</p>
+
+      <h2>Barra de status</h2>
+      <p>O rodapé da janela mostra três informações, da esquerda para a direita:</p>
+
+      <div class="tabela">
+        <table>
+          <caption>O que aparece na barra de status</caption>
+          <thead>
+            <tr>
+              <th scope="col">Informação</th>
+              <th scope="col">Significado</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><em>Ainda não salvo</em>, <em>Editado</em> ou <em>Salvo</em> (com ícone de lápis ou de marca)</td>
+              <td>Estado da gravação. <em>Editado</em> quer dizer que há alterações ainda não gravadas.</td>
+            </tr>
+            <tr>
+              <td><em>N fonte</em> / <em>N fontes</em></td>
+              <td>Quantos materiais de pesquisa estão no projeto.</td>
+            </tr>
+            <tr>
+              <td><em>N código</em> / <em>N códigos</em></td>
+              <td>Quantos códigos existem no projeto, contando os subcódigos.</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h2 id="preferencias">Preferências</h2>
+      <p>Abra as Preferências pelo botão <span class="botao-ui">Preferências</span>, na aba Ajuda. Elas abrem numa aba do programa, com as categorias à esquerda e as opções à direita. Cada opção é gravada assim que você muda. O botão <span class="botao-ui">Fechar</span>, no alto, fecha a aba.</p>
+
+      <h3>Geral</h3>
+      <ul>
+        <li><strong>Idioma</strong>: Português (Brasil) ou English. A troca vale só na próxima vez que o programa abrir.</li>
+        <li><strong>Seu nome</strong>: o nome usado para mostrar quem alterou o projeto, no bloqueio e na mesclagem.</li>
+      </ul>
+
+      <h3>Aparência</h3>
+      <p><strong>Tema</strong>, com nove opções (o padrão é Windows):</p>
+
+      <div class="tabela">
+        <table>
+          <caption>Temas disponíveis</caption>
+          <thead>
+            <tr>
+              <th scope="col">Família</th>
+              <th scope="col">Claro</th>
+              <th scope="col">Escuro</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Windows (padrão)</td>
+              <td>Windows</td>
+              <td>Windows escuro</td>
+            </tr>
+            <tr>
+              <td>Magnolia</td>
+              <td>Magnolia</td>
+              <td>Magnolia escuro</td>
+            </tr>
+            <tr>
+              <td>Granola</td>
+              <td>Granola</td>
+              <td>Granola escuro</td>
+            </tr>
+            <tr>
+              <td>Limpo</td>
+              <td>Limpo</td>
+              <td>Limpo escuro</td>
+            </tr>
+            <tr>
+              <td>Alto contraste</td>
+              <td colspan="2">Uma única opção, com cores de maior contraste para facilitar a leitura.</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <ul>
+        <li><strong>Escala da interface</strong>: 100%, 125%, 150% ou 200%. Use um valor maior se as letras estiverem pequenas.</li>
+      </ul>
+
+      <div class="dica">
+        <strong>Dica</strong>
+        <p>Os botões <span class="botao-ui">Modo escuro</span> e <span class="botao-ui">Aumentar</span> / <span class="botao-ui">Diminuir</span>, na aba Exibir, mudam o tema e o tamanho na hora, sem abrir as Preferências.</p>
+      </div>
+
+      <h3>Reprodução de mídia</h3>
+      <p>Usada para áudio e vídeo importados. Para cada ação, clique no campo e pressione a tecla que quer usar:</p>
+      <ul>
+        <li><strong>Reproduzir / Pausar</strong>: padrão <kbd>F5</kbd>.</li>
+        <li><strong>Voltar</strong>: padrão <kbd>F6</kbd>.</li>
+        <li><strong>Avançar</strong>: padrão <kbd>F7</kbd>.</li>
+        <li><strong>Segundos ao voltar</strong> e <strong>Segundos ao avançar</strong>: de 1 a 60 segundos (padrão 5).</li>
+        <li><strong>Velocidade padrão de reprodução</strong>: 0.5x, 0.75x, 1x, 1.25x, 1.5x ou 2x (padrão 1x).</li>
+      </ul>
+
+      <h3>Tamanho do papel</h3>
+      <p>Define o papel dos PDFs exportados: documentos codificados, resultados de consultas, livros de códigos, diário de bordo e resumos de questionários. As opções são A4 (padrão), A3, A5, Letter, Legal e Tabloid.</p>
+
+      <h3>R</h3>
+      <p>Mostra o R em uso, a pasta dos pacotes e os pacotes instalados, além dos botões para encontrar, indicar ou instalar o R. Todo o passo a passo está em <a href="instalacao.html#se-o-r-faltar">Instalação e R</a>.</p>
+
+      <h3>Atualizações</h3>
+      <p>Mostra a versão instalada e o botão <span class="botao-ui">Verificar atualizações</span>. Novas versões são instaladas por cima da anterior, como um programa comum.</p>
+
+      <h3>Sobre o labiia_quali</h3>
+      <p>Texto sobre o programa, a licença EUPL-1.2 e a origem no Magnolia.</p>
+
+      <h2>Atalhos de teclado</h2>
+      <p>Os atalhos com <kbd>Ctrl</kbd> funcionam em quase todo o programa. Quando o cursor está num campo de texto, essas teclas agem sobre o texto que você está digitando.</p>
+
+      <div class="tabela">
+        <table>
+          <caption>Atalhos do labiia_quali</caption>
+          <thead>
+            <tr>
+              <th scope="col">Atalho</th>
+              <th scope="col">O que faz</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr><td><kbd>Ctrl</kbd> + <kbd>S</kbd></td><td>Salvar o projeto.</td></tr>
+            <tr><td><kbd>Ctrl</kbd> + <kbd>Shift</kbd> + <kbd>S</kbd></td><td>Salvar como… (uma cópia com outro nome).</td></tr>
+            <tr><td><kbd>Ctrl</kbd> + <kbd>O</kbd></td><td>Abrir projeto (<code>.qdpx</code>).</td></tr>
+            <tr><td><kbd>Ctrl</kbd> + <kbd>N</kbd></td><td>Novo código.</td></tr>
+            <tr><td><kbd>Ctrl</kbd> + <kbd>I</kbd></td><td>Importar documento.</td></tr>
+            <tr><td><kbd>Ctrl</kbd> + <kbd>Z</kbd></td><td>Desfazer.</td></tr>
+            <tr><td><kbd>Ctrl</kbd> + <kbd>Shift</kbd> + <kbd>Z</kbd></td><td>Refazer.</td></tr>
+            <tr><td><kbd>Ctrl</kbd> + <kbd>A</kbd></td><td>Seleciona todos os documentos, se o painel Documentos estiver ativo, ou todos os códigos, se o painel Códigos estiver ativo. Dentro de um campo de texto, seleciona o texto.</td></tr>
+            <tr><td><kbd>Ctrl</kbd> + <kbd>F</kbd></td><td>Localizar no documento aberto.</td></tr>
+            <tr><td><kbd>Ctrl</kbd> + <kbd>F1</kbd></td><td>Recolher ou mostrar a faixa de opções.</td></tr>
+            <tr><td><kbd>Alt</kbd> + <kbd>Home</kbd></td><td>Abrir ou fechar o menu Iniciar.</td></tr>
+            <tr><td><kbd>Esc</kbd></td><td>Fecha o menu Iniciar e as listas suspensas da faixa de opções.</td></tr>
+            <tr><td><kbd>←</kbd> / <kbd>→</kbd></td><td>Trocam de aba na faixa de opções, com o foco na linha de abas.</td></tr>
+            <tr><td><kbd>Ctrl</kbd> + número</td><td>Aplica o código que tem esse número como atalho. Os códigos numerados são definidos no livro de códigos.</td></tr>
+            <tr><td><kbd>F5</kbd> / <kbd>F6</kbd> / <kbd>F7</kbd></td><td>Reproduzir ou pausar, voltar e avançar a mídia. São as teclas padrão, que você pode mudar em Preferências.</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <nav class="navegacao-rodape" aria-label="Navegação entre páginas">
+        <a href="instalacao.html" rel="prev">
+          <small>Anterior</small>
+          <span>Instalação e R</span>
+        </a>
+        <a href="projetos.html" rel="next">
+          <small>Próxima</small>
+          <span>Projetos</span>
+        </a>
+      </nav>
+
+    </div>
+  </main>
+
+</body>
+</html>

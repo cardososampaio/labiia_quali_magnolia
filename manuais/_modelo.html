@@ -1,0 +1,165 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <!-- Título da aba: troque pelo título da página, seguido de " · labiia_quali — Manual" -->
+  <title>[exemplo] Título da página · labiia_quali — Manual</title>
+  <link rel="stylesheet" href="estilo.css">
+</head>
+<body>
+
+  <!-- NAVEGAÇÃO LATERAL (igual em todas as páginas).
+       Na página atual, o link recebe class="atual" e aria-current="page".
+       Este modelo está marcado como "Início"; em outras páginas, mova o atual. -->
+  <nav class="lateral" aria-label="Páginas do manual">
+    <div class="marca">
+      <strong>labiia_quali — Manual</strong>
+      <span>Versão 0.1.1 · Windows</span>
+    </div>
+    <ul>
+      <li><a href="index.html" class="atual" aria-current="page">Início</a></li>
+      <li><a href="instalacao.html">Instalação e R</a></li>
+      <li><a href="interface.html">Conhecendo a tela</a></li>
+      <li><a href="projetos.html">Projetos</a></li>
+      <li><a href="fontes.html">Documentos e fontes</a></li>
+      <li><a href="codificacao.html">Codificação</a></li>
+      <li><a href="livro-de-codigos.html">Livro de códigos</a></li>
+      <li><a href="analises.html">Consultas, análises e relatórios</a></li>
+      <li><a href="analises-lexicas.html">Análises léxicas</a></li>
+      <li><a href="problemas.html">Problemas comuns</a></li>
+      <li><a href="glossario.html">Glossário</a></li>
+      <li><a href="sobre.html">Sobre e créditos</a></li>
+    </ul>
+  </nav>
+
+  <main class="conteudo">
+    <div class="artigo">
+
+      <!-- TÍTULO DA PÁGINA: um único h1, logo no início, seguido de um parágrafo de introdução (class="lead"). -->
+      <h1>[exemplo] Título da página</h1>
+      <p class="lead">[exemplo] Um parágrafo curto explicando, em linguagem simples, para que serve esta página.</p>
+
+      <!-- CONTEÚDO: seções com h2 e, se precisar, h3. Abaixo, um exemplo de cada componente. -->
+
+      <h2>[exemplo] Passo a passo</h2>
+      <p>[exemplo] Texto de apresentação do procedimento.</p>
+
+      <ol class="passos">
+        <li>
+          <strong>[exemplo] Abra o projeto</strong>
+          <p>[exemplo] Clique em <span class="botao-ui f-fontes">Abrir</span> na aba Início.</p>
+        </li>
+        <li>
+          <strong>[exemplo] Escolha o documento</strong>
+          <p>[exemplo] Selecione o arquivo na janela que se abre e confirme.</p>
+        </li>
+        <li>
+          <strong>[exemplo] Confira o resultado</strong>
+          <p>[exemplo] O documento aparece na lista de fontes.</p>
+        </li>
+      </ol>
+
+      <h2>[exemplo] Avisos</h2>
+
+      <div class="dica">
+        <strong>[exemplo] Dica</strong>
+        <p>[exemplo] Uma sugestão que ajuda, mas não é obrigatória.</p>
+      </div>
+
+      <div class="cuidado">
+        <strong>[exemplo] Cuidado</strong>
+        <p>[exemplo] Algo que pode mudar o resultado se for feito de outro jeito.</p>
+      </div>
+
+      <div class="atencao">
+        <strong>[exemplo] Atenção</strong>
+        <p>[exemplo] Algo que pode causar perda de dados ou erro grave.</p>
+      </div>
+
+      <h2>[exemplo] Tabela</h2>
+      <div class="tabela">
+        <table>
+          <caption>[exemplo] Legenda da tabela</caption>
+          <thead>
+            <tr>
+              <th scope="col">[exemplo] Coluna A</th>
+              <th scope="col">[exemplo] Coluna B</th>
+              <th scope="col">[exemplo] Coluna C</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>[exemplo] Linha 1</td>
+              <td>[exemplo] Valor</td>
+              <td>[exemplo] Descrição</td>
+            </tr>
+            <tr>
+              <td>[exemplo] Linha 2</td>
+              <td>[exemplo] Valor</td>
+              <td>[exemplo] Descrição</td>
+            </tr>
+            <tr>
+              <td>[exemplo] Linha 3</td>
+              <td>[exemplo] Valor</td>
+              <td>[exemplo] Descrição</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h2>[exemplo] Teclas e atalhos</h2>
+      <p>[exemplo] Para salvar, pressione <kbd>Ctrl</kbd> + <kbd>S</kbd>.</p>
+
+      <h2>[exemplo] Nomes de botões</h2>
+      <p>[exemplo] Cada família de ações tem sua cor. Exemplos com os nomes de botões do programa:</p>
+      <p>
+        <span class="botao-ui f-fontes">Importar</span>
+        <span class="botao-ui f-codificacao">Novo código</span>
+        <span class="botao-ui f-consultas">Consultar</span>
+        <span class="botao-ui f-analises">Comparar grupos</span>
+        <span class="botao-ui f-lexicas">Nuvem de palavras</span>
+        <span class="botao-ui f-afeto">Analisar afeto</span>
+      </p>
+
+      <h2>[exemplo] Caminhos e próximos passos</h2>
+      <p>[exemplo] Veja também a seção <a href="problemas.html">Problemas comuns</a>. Um trecho de código fica assim: <code>Arquivo &gt; Salvar</code>.</p>
+
+      <h3>[exemplo] Subseção</h3>
+      <p>[exemplo] Use h3 apenas para dividir uma seção grande.</p>
+
+      <!-- Para a página inicial: uma grade de cartões de links (usar só em index.html). -->
+      <h2>[exemplo] Grade de cartões</h2>
+      <div class="cartoes">
+        <a class="cartao f-fontes" href="fontes.html">
+          <strong>[exemplo] Documentos e fontes</strong>
+          <span>[exemplo] Como trazer textos para o projeto.</span>
+        </a>
+        <a class="cartao f-codificacao" href="codificacao.html">
+          <strong>[exemplo] Codificação</strong>
+          <span>[exemplo] Como marcar trechos com códigos.</span>
+        </a>
+        <a class="cartao f-consultas" href="analises.html">
+          <strong>[exemplo] Consultas e análises</strong>
+          <span>[exemplo] Como buscar e gerar relatórios.</span>
+        </a>
+      </div>
+
+      <!-- RODAPÉ DE NAVEGAÇÃO: links Anterior e Próxima no fim da página.
+           Na primeira página, deixe só o link "Próxima"; na última, só o "Anterior". -->
+      <nav class="navegacao-rodape" aria-label="Navegação entre páginas">
+        <a href="index.html" rel="prev">
+          <small>Anterior</small>
+          <span>Início</span>
+        </a>
+        <a href="instalacao.html" rel="next">
+          <small>Próxima</small>
+          <span>Instalação e R</span>
+        </a>
+      </nav>
+
+    </div>
+  </main>
+
+</body>
+</html>

@@ -1,0 +1,940 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Análises léxicas — Manual do labiia_quali</title>
+  <link rel="stylesheet" href="estilo.css">
+</head>
+<body>
+
+  <nav class="lateral" aria-label="Páginas do manual">
+    <div class="marca">
+      <strong>labiia_quali — Manual</strong>
+      <span>Versão 0.1.1 · Windows</span>
+    </div>
+    <ul>
+      <li><a href="index.html">Início</a></li>
+      <li><a href="instalacao.html">Instalação e R</a></li>
+      <li><a href="interface.html">Conhecendo a tela</a></li>
+      <li><a href="projetos.html">Projetos</a></li>
+      <li><a href="fontes.html">Documentos e fontes</a></li>
+      <li><a href="codificacao.html">Codificação</a></li>
+      <li><a href="livro-de-codigos.html">Livro de códigos</a></li>
+      <li><a href="analises.html">Consultas, análises e relatórios</a></li>
+      <li><a href="analises-lexicas.html" class="atual" aria-current="page">Análises léxicas</a></li>
+      <li><a href="problemas.html">Problemas comuns</a></li>
+      <li><a href="glossario.html">Glossário</a></li>
+      <li><a href="sobre.html">Sobre e créditos</a></li>
+    </ul>
+  </nav>
+
+  <main class="conteudo">
+    <div class="artigo">
+
+      <h1>Análises léxicas</h1>
+      <p class="lead">Análises léxicas olham para as palavras dos seus textos: quais aparecem mais, quais andam juntas e como os textos se agrupam pelo vocabulário. Elas são uma leitura de conjunto que complementa a codificação. Não substituem a leitura dos trechos.</p>
+
+      <div class="cuidado">
+        <strong>Antes de começar</strong>
+        <p>Cinco análises precisam do R, um programa gratuito de estatística que precisa estar instalado no seu computador. As outras rodam dentro do próprio labiia_quali. Confira a seção <a href="#r">Quais análises precisam do R</a> e, se preciso, a página <a href="instalacao.html">Instalação e R</a>.</p>
+        <p>Escolha o <strong>idioma do corpus</strong> antes de executar qualquer análise. Ele define como as palavras são reconhecidas.</p>
+      </div>
+
+      <h2>O que é análise léxica</h2>
+      <p>Análise léxica é o estudo do vocabulário de um conjunto de textos por meio de contagens e comparações. Em vez de ler cada texto de uma vez, você deixa o programa contar as palavras e mostrar padrões. Ela responde perguntas como: quais palavras aparecem mais? Quais palavras costumam aparecer juntas no mesmo trecho? Que grupos de textos falam de um jeito parecido?</p>
+      <p>A análise léxica complementa a codificação. Na codificação, você lê e escolhe os trechos que importam e os marca com códigos. Esse trabalho depende do seu olhar a cada trecho. A análise léxica olha para o conjunto de uma vez e pode mostrar padrões que passam despercebidos na leitura, como um vocabulário que aparece só em um grupo de entrevistas. Por isso os dois caminhos se completam: a análise pode sugerir temas que você depois confere lendo os trechos, e os próprios trechos codificados podem formar o corpus da análise (veja <a href="#corpus">Como o corpus é montado</a>).</p>
+
+      <div class="dica">
+        <strong>Dica</strong>
+        <p>Trate cada resultado como uma pista. Uma palavra muito frequente mostra o que se fala, não o que se pensa sobre o assunto. A interpretação é sempre sua, e ela fica mais forte quando você volta aos trechos para conferir.</p>
+      </div>
+
+      <h2>De onde vêm estas análises</h2>
+      <p>As análises léxicas do labiia_quali vêm do labiia_lex, um programa que reúne métodos de análise de texto. Por sua vez, muitos desses métodos vêm do IRaMuTeQ, um software conhecido por pesquisadores de ciências humanas e sociais. A classificação de segmentos conhecida como CHD segue o método de Reinert, usado pelo IRaMuTeQ. Outros métodos foram acrescentados depois, como o Mapa temático, o YAKE e o léxico de emoções.</p>
+      <p>Os métodos foram refeitos dentro do labiia_quali a partir das publicações de cada um. Os nomes dos autores e as licenças estão na página <a href="sobre.html">Sobre e créditos</a>.</p>
+
+      <h2 id="r">Quais análises precisam do R</h2>
+      <p>O R é um ambiente gratuito de estatística. Cinco análises desenham seus resultados com ele: Nuvem de palavras, CHD, Similitude, Tópicos LDA e Emoções. As demais rodam dentro do programa e não exigem nada além dele.</p>
+
+      <div class="tabela">
+        <table>
+          <caption>Quais análises usam o R</caption>
+          <thead>
+            <tr>
+              <th scope="col">Análise</th>
+              <th scope="col">Grupo na faixa</th>
+              <th scope="col">Precisa do R?</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr><td>Nuvem de palavras</td><td>Exploração</td><td>Sim</td></tr>
+            <tr><td>Word Tree</td><td>Exploração</td><td>Não</td></tr>
+            <tr><td>Bigramas</td><td>Exploração</td><td>Não</td></tr>
+            <tr><td>Trigramas</td><td>Exploração</td><td>Não</td></tr>
+            <tr><td>CHD</td><td>Estrutura</td><td>Sim</td></tr>
+            <tr><td>Similitude</td><td>Estrutura</td><td>Sim</td></tr>
+            <tr><td>Mapa temático</td><td>Estrutura</td><td>Não</td></tr>
+            <tr><td>Tópicos LDA</td><td>Estrutura</td><td>Sim</td></tr>
+            <tr><td>YAKE</td><td>Palavras-chave e afeto</td><td>Não</td></tr>
+            <tr><td>Associações de palavras-chave</td><td>Palavras-chave e afeto</td><td>Não</td></tr>
+            <tr><td>Sentimento</td><td>Palavras-chave e afeto</td><td>Não</td></tr>
+            <tr><td>Emoções</td><td>Palavras-chave e afeto</td><td>Sim</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <p>Ao abrir um teste que usa o R, a aba mostra o painel <strong>R para as análises léxicas</strong>. Ele informa qual R está em uso, de onde ele veio e quais pacotes (bibliotecas do R) estão prontos. Quando algo falta, o botão <span class="botao-ui f-lexicas">Executar</span> fica desabilitado até o problema ser resolvido.</p>
+
+      <h3>Se o R ou um pacote faltar</h3>
+
+      <p><strong>Se o R não for encontrado.</strong> O painel diz que o R não foi encontrado neste computador e que os testes que usam o R precisam do R 4.0 ou mais novo. Você tem três caminhos:</p>
+      <ul>
+        <li>Clique em <span class="botao-ui f-lexicas">Baixar o R</span> para abrir a página oficial do R, no CRAN. Instale e depois clique em <span class="botao-ui f-lexicas">Procurar de novo</span>.</li>
+        <li>Se o R já está instalado, mas em outra pasta, clique em <span class="botao-ui f-lexicas">Indicar onde está o R…</span> e escolha o local.</li>
+        <li>Se você tem mais de um R, clique em <span class="botao-ui f-lexicas">Escolher o Rscript…</span> para indicar qual deve ser usado. O labiia_quali usa o R mais novo instalado, a menos que você escolha outro.</li>
+      </ul>
+
+      <p><strong>Se o R for antigo demais.</strong> Aparece a mensagem "Este R é antigo demais. As análises léxicas precisam do R 4.0 ou mais novo." Instale uma versão mais nova e procure de novo.</p>
+
+      <p><strong>Se um pacote faltar.</strong> O painel lista os pacotes que faltam. Para instalá-los:</p>
+
+      <ol class="passos">
+        <li>
+          <strong>Abra o painel do R</strong>
+          <p>Na aba do teste, veja a lista de pacotes que faltam em <strong>R para as análises léxicas</strong>.</p>
+        </li>
+        <li>
+          <strong>Clique em Instalar pacotes que faltam</strong>
+          <p>Clique em <span class="botao-ui f-lexicas">Instalar pacotes que faltam</span>.</p>
+        </li>
+        <li>
+          <strong>Confirme</strong>
+          <p>O programa avisa que vai baixar os pacotes do CRAN. A instalação precisa de internet e pode levar vários minutos. Os pacotes ficam em uma pasta do labiia_quali e não mexem em outros projetos de R que você tenha.</p>
+        </li>
+        <li>
+          <strong>Espere e confira</strong>
+          <p>Quando terminar, o botão <span class="botao-ui f-lexicas">Executar</span> fica habilitado. Se a instalação falhar, a mensagem pede para verificar a conexão com a internet. Tente de novo depois.</p>
+        </li>
+      </ol>
+
+      <div class="cuidado">
+        <strong>Cuidado com o tempo do R</strong>
+        <p>Cada análise que usa o R tem um tempo máximo. Se ele for ultrapassado, o R é interrompido e aparece a mensagem "O R passou do tempo limite e foi interrompido. Tente com menos documentos ou palavras." Os limites são: 10 minutos para Nuvem de palavras, Similitude e Emoções; 15 minutos para CHD e Tópicos LDA.</p>
+      </div>
+
+      <h2 id="corpus">Como o corpus é montado</h2>
+      <p>O <strong>corpus</strong> é o conjunto de textos que a análise lê. Você escolhe os documentos, e o programa prepara esse material antes de contar qualquer palavra. Esta seção explica cada etapa, para que você saiba exatamente o que está sendo contado.</p>
+
+      <h3>Origem: documentos ou trechos codificados</h3>
+      <p>No campo <strong>Analisar</strong>, você escolhe a unidade de texto:</p>
+      <ul>
+        <li><strong>Documentos</strong> (padrão). Cada documento escolhido vira um texto.</li>
+        <li><strong>Códigos</strong>. Cada trecho codificado dos documentos escolhidos, marcado com um dos códigos que você selecionou, vira um texto. O trecho recebe o nome "documento · código", e continua ligado ao documento de origem.</li>
+      </ul>
+      <p>Para escolher os códigos, clique em <span class="botao-ui f-lexicas">Escolher códigos…</span>. Os códigos escolhidos aparecem como fichas, e cada uma tem um botão × para tirar o código da lista. A opção <strong>Incluir subcódigos</strong> vem marcada: assim, ao escolher um código-pai, entram também os trechos dos seus subcódigos.</p>
+
+      <div class="dica">
+        <strong>Dica</strong>
+        <p>Use o modo Códigos para comparar o que se disse sobre um tema específico. Por exemplo, escolha só o código "Participação" e rode uma Nuvem de palavras: a figura mostra o vocabulário usado nos trechos sobre esse tema, e não no documento inteiro.</p>
+      </div>
+
+      <p>Alguns materiais não entram por não terem texto:</p>
+      <ul>
+        <li><strong>Imagens e arquivos vazios</strong> são deixados de fora. O painel de seleção avisa e lista até cinco nomes.</li>
+        <li><strong>Trechos em área de imagem ou de PDF</strong> também ficam de fora, com aviso na execução.</li>
+        <li><strong>Questionários</strong>: entram apenas as respostas abertas. Perguntas fechadas e cabeçalhos não são texto corrido e ficam de fora.</li>
+      </ul>
+
+      <p>Ao selecionar documentos, o painel mostra "N documentos · cerca de M palavras". O número de palavras é só uma estimativa para você se orientar. A contagem final sai depois da preparação do corpus.</p>
+
+      <h3>Segmentos de cerca de 40 palavras</h3>
+      <p>Muitos métodos comparam trechos curtos, e não textos longos. Por isso, o programa corta cada texto em <strong>segmentos</strong> de cerca de 40 palavras. Quando possível, o corte cai no fim de uma frase. Um texto curto pode virar um único segmento; um texto longo vira vários.</p>
+      <p>Só as palavras com conteúdo contam para as 40. As palavras vazias, como artigos e preposições, continuam no segmento, mas os testes não as leem. Os segmentos são a base da CHD, da Similitude e do Mapa temático.</p>
+
+      <h3>Idioma do corpus</h3>
+      <p>Escolha o idioma em <strong>Idioma do corpus</strong>: <strong>Português</strong> (padrão), <strong>Inglês</strong> ou <strong>Espanhol</strong>. O idioma define três coisas: o dicionário que reconhece as formas das palavras, a lista de palavras vazias e o léxico de emoções. O programa não traduz nada. Os textos precisam estar no idioma escolhido.</p>
+      <p>Em inglês e espanhol, a busca no dicionário ignora acentos. Em português, ela é exata.</p>
+
+      <div class="cuidado">
+        <strong>Escolha o idioma antes de executar</strong>
+        <p>Com o idioma errado, muitas palavras não são reconhecidas e as formas não são agrupadas corretamente. Se você mudar o idioma depois de ter um resultado, o painel passa a mostrar o aviso "Os documentos ou parâmetros mudaram depois deste resultado. Execute de novo para atualizar". Clique em <span class="botao-ui f-lexicas">Executar de novo</span>.</p>
+        <p>O <strong>Sentimento</strong> só funciona com o idioma em português. Veja a seção sobre a análise.</p>
+      </div>
+
+      <h3>Lematização: juntar as formas de uma mesma palavra</h3>
+      <p>Lematizar é trocar cada palavra pela sua forma de dicionário, chamada <strong>lema</strong>. "Falou", "falando" e "falam" viram "falar". Com <strong>Usar lemas</strong> ligado (padrão), o programa conta essas formas juntas, em vez de tratá-las como palavras diferentes. Assim, a frequência de um conceito não se divide entre suas flexões.</p>
+      <p>Cada palavra também recebe uma classe gramatical, como nome, verbo, adjetivo ou advérbio. As palavras de classes com conteúdo (nomes, verbos, adjetivos, advérbios e palavras que o programa não reconhece) são as <strong>formas ativas</strong>. Artigos, pronomes, preposições, conjunções e números são suplementares: continuam no texto, mas não entram quando a opção <strong>Só formas ativas</strong> está ligada, que é o padrão.</p>
+      <p>Algumas palavras são sempre suplementares, mesmo sendo nomes ou verbos: as palavras vazias e algumas palavras de citação bibliográfica, como "et", "al", "doi", "http", "acesso" e "pdf".</p>
+
+      <div class="cuidado">
+        <strong>A CHD sempre usa lemas</strong>
+        <p>Na CHD, a tela não tem a opção Usar lemas. Ela trabalha sempre com lemas e formas ativas.</p>
+      </div>
+
+      <h3>Palavras vazias</h3>
+      <p>Palavras vazias são palavras de função, como "de", "que", "a" e "para", que aparecem em quase todo texto e pouco dizem sobre o assunto. O programa traz uma lista de palavras vazias para cada idioma. As análises que contam só formas ativas não leem essas palavras.</p>
+      <p>Se você ver uma palavra vazia aparecer em um resultado, confira se a opção <strong>Só formas ativas</strong> está ligada. Ela só fica desligada quando você a desmarca de propósito.</p>
+
+      <h3>Expressões compostas</h3>
+      <p>Algumas expressões funcionam como um conceito só, como "a contrário de" ou "políticas públicas". O programa traz uma lista de expressões compostas para cada idioma. Quando encontra uma delas no texto, junta as palavras com um traço de sublinhado antes da análise. Assim, a expressão conta como uma única palavra. Se um conceito do seu tema não estiver na lista, ele continua separado em palavras.</p>
+
+      <h3>Variáveis estreladas</h3>
+      <p>Cada documento pode ter informações sobre quem é ou de onde vem: sexo, região, rodada, data etc. Essas informações são as <strong>características</strong> e os <strong>atributos</strong> que você já cadastrou no projeto. Na análise, elas viram <strong>variáveis estreladas</strong>, que começam com asterisco, e servem para comparar grupos.</p>
+      <p>O nome de cada variável é formado pelo nome do atributo, seguido do valor da característica. Por exemplo, o atributo "Gênero" com a característica "Feminino" vira <code>*genero_feminino</code>. Quando uma característica não pertence a nenhum atributo, a variável começa com <code>*caracteristica_</code>. Além disso, a pasta do documento vira <code>*pasta_</code> seguido do nome da pasta. Os nomes são simplificados: sem acento, sem espaço, sem pontuação e em letras minúsculas. Um atributo "Data da entrevista" com o valor "15/03/2024" vira <code>*datadaentrevista_15032024</code>.</p>
+      <p>Em modo Códigos, cada trecho ganha uma variável <code>*codigo_</code> para cada código aplicado a ele. Um trecho com dois códigos recebe as duas variáveis.</p>
+
+      <p>As variáveis servem para três coisas:</p>
+      <ul>
+        <li>Na <strong>CHD</strong>, a tabela <strong>Variáveis por classe</strong> mostra quais características aparecem mais em cada classe de texto.</li>
+        <li>Na <strong>CHD</strong>, a análise fatorial mostra também a posição das variáveis entre as classes.</li>
+        <li>Quando um atributo é do tipo <strong>data</strong>, a data do documento alimenta a <strong>linha do tempo</strong> do Sentimento e dos Tópicos LDA. Documentos sem data ficam de fora da linha do tempo, mas continuam na análise.</li>
+      </ul>
+
+      <div class="cuidado">
+        <strong>Variáveis com poucos documentos</strong>
+        <p>Uma característica que aparece em só dois ou três documentos gera uma comparação frágil. Antes de tirar conclusões de uma variável, confira quantos documentos fazem parte dela.</p>
+      </div>
+
+      <h3>Ordem dos documentos</h3>
+      <p>Os textos são ordenados pelo nome do documento, sem diferenciar maiúsculas e minúsculas. Não importa a ordem em que você importou os arquivos. A CHD, os Tópicos LDA, o Mapa temático e o YAKE podem mudar um pouco conforme essa ordem. Se a ordem dos documentos for importante para você, dê aos arquivos nomes com números na frente, como "01_entrevista" e "02_entrevista".</p>
+
+      <h2>Como rodar uma análise</h2>
+      <p>Os passos abaixo valem para todos os testes. Os detalhes de cada um estão nas seções de análise.</p>
+
+      <ol class="passos">
+        <li>
+          <strong>Abra a aba Análises léxicas</strong>
+          <p>Clique na aba <span class="botao-ui f-lexicas">Análises léxicas</span> da faixa de opções. Os testes aparecem em três grupos: Exploração, Estrutura e Palavras-chave e afeto.</p>
+        </li>
+        <li>
+          <strong>Escolha o teste</strong>
+          <p>Clique no botão do teste, por exemplo <span class="botao-ui f-lexicas">Nuvem de palavras</span>. Cada teste abre a sua própria aba.</p>
+        </li>
+        <li>
+          <strong>Selecione os documentos</strong>
+          <p>Clique em <span class="botao-ui f-lexicas">Selecionar documentos</span> e marque o que vai entrar. Você pode filtrar por fontes, características, atributos, pastas e tipo de arquivo.</p>
+        </li>
+        <li>
+          <strong>Escolha a unidade</strong>
+          <p>Em <strong>Analisar</strong>, deixe <strong>Documentos</strong> ou escolha <strong>Códigos</strong> e, se quiser, escolha os códigos.</p>
+        </li>
+        <li>
+          <strong>Confirme o idioma</strong>
+          <p>Em <strong>Idioma do corpus</strong>, escolha Português, Inglês ou Espanhol. Faça isso antes de executar.</p>
+        </li>
+        <li>
+          <strong>Ajuste os parâmetros, se precisar</strong>
+          <p>Os valores padrão já servem para começar. Os parâmetros principais aparecem na tela. Os que estão em <strong>Mais parâmetros</strong> ficam recolhidos. Para voltar tudo ao padrão, clique em <span class="botao-ui f-lexicas">Restaurar padrões</span>.</p>
+        </li>
+        <li>
+          <strong>Confira o painel do R</strong>
+          <p>Nos testes que usam o R, veja se o painel <strong>R para as análises léxicas</strong> mostra tudo pronto. Se não mostrar, siga as orientações da seção <a href="#r">Quais análises precisam do R</a>.</p>
+        </li>
+        <li>
+          <strong>Execute</strong>
+          <p>Clique em <span class="botao-ui f-lexicas">Executar</span>. Enquanto roda, o programa mostra o que está fazendo: "Iniciando o teste…", "Preparando o corpus", "Desenhando o resultado no R…" ou "Executando o teste…". Você pode parar com <span class="botao-ui f-lexicas">Cancelar</span>.</p>
+        </li>
+        <li>
+          <strong>Salve a análise</strong>
+          <p>Clique em <span class="botao-ui f-lexicas">Salvar análise</span> e dê um nome. A análise passa a aparecer na lista de análises salvas, com o resultado junto. Se você mudar algo depois, clique em <span class="botao-ui f-lexicas">Atualizar análise</span>. Para desfazer as mudanças e voltar à última versão salva, clique em <span class="botao-ui f-lexicas">Descartar alterações</span>.</p>
+        </li>
+      </ol>
+
+      <div class="dica">
+        <strong>Dica</strong>
+        <p>A primeira execução com um conjunto de documentos pode demorar alguns minutos, porque o programa prepara o corpus. O corpus preparado fica guardado. Nas próximas execuções com os mesmos documentos e a mesma configuração, a preparação é imediata.</p>
+      </div>
+
+      <div class="cuidado">
+        <strong>Erros e detalhes técnicos</strong>
+        <p>Quando algo dá errado, o programa mostra uma mensagem em linguagem simples, com sugestão do que fazer. Se o problema veio do R, aparece também o botão <strong>Detalhes do R</strong>, com o texto técnico. Guarde esse texto se pedir ajuda.</p>
+      </div>
+
+      <h2>Como ler o painel de resultado</h2>
+      <p>Depois da execução, o resultado aparece abaixo dos parâmetros, com a data e a hora em que foi gerado. O painel segue esta ordem: primeiro o resumo do corpus, depois as figuras e por último as tabelas.</p>
+
+      <h3>O resumo do corpus</h3>
+      <p>O resumo traz cinco números. Eles dizem o tamanho do material que foi lido.</p>
+      <div class="tabela">
+        <table>
+          <caption>Números do resumo do corpus</caption>
+          <thead>
+            <tr>
+              <th scope="col">Número</th>
+              <th scope="col">O que significa</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr><td>Textos</td><td>Quantos textos entraram: documentos ou trechos codificados, conforme o modo escolhido.</td></tr>
+            <tr><td>Segmentos de texto</td><td>Quantos pedaços de cerca de 40 palavras foram criados a partir dos textos.</td></tr>
+            <tr><td>Ocorrências</td><td>Quantas vezes palavras foram lidas no total, contando cada repetição.</td></tr>
+            <tr><td>Formas</td><td>Quantas palavras diferentes aparecem.</td></tr>
+            <tr><td>Hápax</td><td>Quantas palavras aparecem uma única vez no corpus.</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h3>Zoom e movimento das figuras</h3>
+      <p>As figuras podem ser grandes. Por padrão, a figura aparece em <span class="botao-ui f-lexicas">Ajustar à tela</span>, com a imagem inteira visível. Para ampliar ou reduzir:</p>
+      <ul>
+        <li>Use os botões <strong>−</strong> e <strong>+</strong>. Cada clique passa para o próximo tamanho, em passos de 10% até 500%.</li>
+        <li>Clique em <span class="botao-ui f-lexicas">100%</span> para ver a figura no tamanho real.</li>
+        <li>Segure <kbd>Ctrl</kbd> e role a roda do mouse para ampliar e reduzir.</li>
+        <li>Quando a figura ampliada passa da área visível, <strong>arraste com o mouse</strong> (ou com o botão do meio) para ver outras partes. Só é possível arrastar quando a figura não cabe inteira na tela.</li>
+      </ul>
+      <p>Depois de arrastar, o programa não reage ao clique seguinte sobre a figura. Assim, você não altera nada sem querer ao soltar o mouse.</p>
+
+      <h3>Exportar figuras e tabelas</h3>
+      <p>Cada tipo de resultado tem seu formato de exportação:</p>
+      <div class="tabela">
+        <table>
+          <caption>Formatos de exportação</caption>
+          <thead>
+            <tr>
+              <th scope="col">Tipo de resultado</th>
+              <th scope="col">Botão</th>
+              <th scope="col">Observação</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr><td>Figuras desenhadas pelo programa (redes, árvores, barras, mapas, linha do tempo, dendrograma)</td><td><span class="botao-ui f-lexicas">Exportar PNG</span> e <span class="botao-ui f-lexicas">Exportar SVG</span></td><td>O SVG leva a fonte junto, para o texto não mudar ao abrir em outro computador.</td></tr>
+            <tr><td>Imagens do R (nuvem, similitude, emoções, Tópicos LDA e dendrograma e análise fatorial da CHD)</td><td><span class="botao-ui f-lexicas">Exportar PNG</span></td><td>Exporta a imagem como o R a desenhou.</td></tr>
+            <tr><td>Tabelas</td><td><span class="botao-ui f-lexicas">Exportar CSV</span></td><td>Usa ponto e vírgula como separador. A tela mostra só 30 linhas; o arquivo traz todas.</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="cuidado">
+        <strong>Arquivos que não têm botão de exportação</strong>
+        <p>Alguns arquivos de apoio da análise, como a versão do corpus colorida por classe e a tabela de segmentos por classe, ficam guardados junto com a análise salva, dentro do projeto. A aba não oferece botão para exportá-los. Para os resultados exportáveis, use os botões descritos acima.</p>
+      </div>
+
+      <h2>Exploração</h2>
+      <p>As análises deste grupo mostram o vocabulário de forma direta: o que aparece, em que ordem e junto de quê. São um bom ponto de partida para qualquer corpus.</p>
+
+      <h3><span class="botao-ui f-lexicas">Nuvem de palavras</span></h3>
+      <h4>Para que serve</h4>
+      <p>Mostra as palavras mais frequentes do corpus em forma de nuvem. Quanto mais vezes a palavra aparece, maior ela fica. Esta análise usa o R.</p>
+      <h4>Quando usar</h4>
+      <p>No começo da pesquisa, para conhecer o vocabulário geral. Também serve para ilustrar um relatório com uma imagem rápida, desde que você acompanhe a figura com a tabela de frequências.</p>
+      <h4>Como ler o resultado</h4>
+      <p>A figura mostra as palavras da nuvem. A tabela que acompanha o resultado lista cada palavra com a sua frequência. Para citar um número no texto, use a tabela, e não o tamanho da palavra na figura. As cores e a posição das palavras são apenas estéticas.</p>
+      <h4>Parâmetros principais</h4>
+      <div class="tabela">
+        <table>
+          <caption>Parâmetros da Nuvem de palavras</caption>
+          <thead>
+            <tr>
+              <th scope="col">Nome na tela</th>
+              <th scope="col">Padrão</th>
+              <th scope="col">Efeito</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr><td>Máximo de palavras</td><td>100</td><td>Quantas palavras entram na nuvem (de 10 a 2000).</td></tr>
+            <tr><td>Frequência mínima</td><td>3</td><td>A palavra precisa aparecer pelo menos essas vezes para entrar (de 1 a 1000).</td></tr>
+            <tr><td>Esquema de cores</td><td>Dark2</td><td>Paleta de cores usada nas palavras: Dark2, Set1, Set2, Paired ou Pastel1.</td></tr>
+            <tr><td>Formato da nuvem</td><td>Quadrado</td><td>Contorno geral da nuvem: quadrado, cardioide, losango, dois tipos de triângulo, pentágono ou estrela.</td></tr>
+            <tr><td>Excentricidade (em Mais parâmetros)</td><td>Média (0,65)</td><td>Quão alongada a nuvem fica: baixa, média ou alta.</td></tr>
+            <tr><td>Usar lemas (em Mais parâmetros)</td><td>Ligado</td><td>Junta as flexões de uma palavra sob a forma de dicionário.</td></tr>
+            <tr><td>Só formas ativas (em Mais parâmetros)</td><td>Ligado</td><td>Conta só nomes, verbos, adjetivos, advérbios e palavras desconhecidas.</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <h4>Cuidados de interpretação</h4>
+      <div class="cuidado">
+        <strong>Cuidados</strong>
+        <ul>
+          <li>A nuvem mostra frequência, não sentido. Uma palavra grande pode ser apenas muito repetida, e não necessariamente importante para a sua pergunta.</li>
+          <li>Termos gerais do próprio assunto costumam dominar a figura. Eles mostram o tema da pesquisa, não um achado. Leia a tabela para ver o restante do vocabulário.</li>
+          <li>A nuvem não mostra relações entre palavras nem diferenças entre grupos. Para isso, veja a Similitude ou a CHD.</li>
+        </ul>
+      </div>
+
+      <h3><span class="botao-ui f-lexicas">Word Tree</span></h3>
+      <h4>Para que serve</h4>
+      <p>Mostra, em forma de árvore, as palavras que vêm antes e depois de uma palavra central. As colunas à esquerda mostram o que vem antes; as da direita, o que vem depois. Cada ramo é uma sequência de palavras que se repete no corpus. Esta análise não usa o R.</p>
+      <h4>Quando usar</h4>
+      <p>Para ver como uma palavra é usada na prática: em que expressões ela aparece e quais palavras costumam acompanhá-la. Por exemplo, para descobrir o que as pessoas dizem antes e depois da palavra "escola".</p>
+      <h4>Como ler o resultado</h4>
+      <p>Comece pela palavra central e siga os ramos. Ramos com mais repetições são as sequências mais usadas. A tabela <strong>Ramos</strong> lista cada ramo com a sua frequência, o que facilita comparar. Se a palavra central não for informada, o programa usa a palavra mais frequente do corpus.</p>
+      <h4>Parâmetros principais</h4>
+      <div class="tabela">
+        <table>
+          <caption>Parâmetros da Word Tree</caption>
+          <thead>
+            <tr>
+              <th scope="col">Nome na tela</th>
+              <th scope="col">Padrão</th>
+              <th scope="col">Efeito</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr><td>Palavra</td><td>Vazio (a mais frequente)</td><td>A palavra central da árvore. Escreva como ela aparece no dicionário, por exemplo "escola" e não "escolas".</td></tr>
+            <tr><td>Profundidade</td><td>4 (de 1 a 8)</td><td>Quantas palavras a árvore mostra para cada lado da palavra central.</td></tr>
+            <tr><td>Máximo de ramos</td><td>120 (de 20 a 500)</td><td>Quantos ramos entram na árvore.</td></tr>
+            <tr><td>Frequência mínima do ramo</td><td>2 (de 1 a 100)</td><td>Ramos repetidos menos vezes que isso são deixados de fora.</td></tr>
+            <tr><td>Frequência mínima (em Mais parâmetros)</td><td>3 (de 1 a 1000)</td><td>Palavras pouco frequentes do corpus são deixadas de fora antes de montar a árvore.</td></tr>
+            <tr><td>Usar lemas (em Mais parâmetros)</td><td>Ligado</td><td>Agrupa as flexões de uma palavra.</td></tr>
+            <tr><td>Só formas ativas (em Mais parâmetros)</td><td>Ligado</td><td>Usa só as palavras com conteúdo nos ramos.</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <h4>Cuidados de interpretação</h4>
+      <div class="cuidado">
+        <strong>Cuidados</strong>
+        <ul>
+          <li>A árvore mostra sequências exatas de palavras. Uma variação de escrita pode aparecer em outro ramo, por isso o uso de lemas ajuda.</li>
+          <li>Se aparecer a mensagem de que a palavra não aparece nos segmentos, confira a grafia, diminua a frequência mínima ou desmarque Só formas ativas.</li>
+          <li>Se os ramos ficarem abaixo da frequência mínima do ramo, escolha outra palavra ou diminua esse valor.</li>
+        </ul>
+      </div>
+
+      <h3><span class="botao-ui f-lexicas">Bigramas</span></h3>
+      <h4>Para que serve</h4>
+      <p>Mostra pares de palavras que aparecem uma logo depois da outra, em forma de rede. Cada ligação é um par, e a rede mostra quais palavras se combinam com mais outras. Esta análise não usa o R.</p>
+      <h4>Quando usar</h4>
+      <p>Para descobrir expressões que se repetem no corpus, como "saúde mental" ou "política pública", e para conferir se um par de palavras faz sentido como expressão.</p>
+      <h4>Como ler o resultado</h4>
+      <p>Cada ligação é um par de palavras, e o número mostra quantas vezes ele aparece. Palavras com muitas ligações são as que mais se combinam com outras. A tabela <strong>Bigramas</strong> lista os pares com as frequências, em ordem.</p>
+      <h4>Parâmetros principais</h4>
+      <div class="tabela">
+        <table>
+          <caption>Parâmetros dos Bigramas</caption>
+          <thead>
+            <tr>
+              <th scope="col">Nome na tela</th>
+              <th scope="col">Padrão</th>
+              <th scope="col">Efeito</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr><td>Frequência mínima do par</td><td>2 (de 1 a 1000)</td><td>O par precisa aparecer pelo menos essas vezes para entrar na rede.</td></tr>
+            <tr><td>Máximo de ligações</td><td>120 (de 10 a 1000)</td><td>Quantas ligações a rede mostra. Mais ligações deixam a figura mais densa.</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <h4>Cuidados de interpretação</h4>
+      <div class="cuidado">
+        <strong>Cuidados</strong>
+        <ul>
+          <li>Frequência alta não garante uma expressão fixa. Pares como "de que" ou "em que" são comuns em qualquer texto. Confira o sentido nos trechos antes de tratar um par como conceito.</li>
+          <li>Os pares não atravessam o limite de um segmento. Uma palavra no fim de um segmento não se liga à primeira palavra do segmento seguinte.</li>
+        </ul>
+      </div>
+
+      <h3><span class="botao-ui f-lexicas">Trigramas</span></h3>
+      <h4>Para que serve</h4>
+      <p>É a mesma ideia dos Bigramas, mas com sequências de três palavras consecutivas. Esta análise não usa o R.</p>
+      <h4>Quando usar</h4>
+      <p>Para encontrar expressões mais longas, como "a contrário de" ou "quem tem direito a". Trigramas mostram expressões mais específicas do que os pares.</p>
+      <h4>Como ler o resultado</h4>
+      <p>A rede liga as palavras das sequências mais repetidas, e a tabela <strong>Trigramas</strong> lista cada sequência com a frequência. Uma sequência de três palavras só aparece se for repetida; por isso, em corpus pequeno, a tabela pode sair vazia ou com poucas linhas.</p>
+      <h4>Parâmetros principais</h4>
+      <div class="tabela">
+        <table>
+          <caption>Parâmetros dos Trigramas</caption>
+          <thead>
+            <tr>
+              <th scope="col">Nome na tela</th>
+              <th scope="col">Padrão</th>
+              <th scope="col">Efeito</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr><td>Frequência mínima da sequência</td><td>2 (de 1 a 1000)</td><td>A sequência precisa aparecer pelo menos essas vezes para entrar na rede.</td></tr>
+            <tr><td>Máximo de ligações</td><td>120 (de 10 a 1000)</td><td>Quantas ligações a rede mostra.</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <h4>Cuidados de interpretação</h4>
+      <div class="cuidado">
+        <strong>Cuidados</strong>
+        <ul>
+          <li>Trigramas são raros em corpus pequeno. Se a figura sair vazia, use mais documentos ou leve a análise para os Bigramas.</li>
+          <li>Uma sequência repetida não é, por si só, uma expressão com sentido técnico. Confirme nos trechos.</li>
+        </ul>
+      </div>
+
+      <h2>Estrutura</h2>
+      <p>As análises deste grupo procuram a organização do material: grupos de trechos, redes de palavras e temas. Elas exigem mais texto para funcionar bem e merecem mais cuidado na leitura.</p>
+
+      <h3><span class="botao-ui f-lexicas">CHD</span> (Classificação Hierárquica Descendente, método Reinert)</h3>
+      <h4>Para que serve</h4>
+      <p>Divide os segmentos de texto em <strong>classes</strong>: grupos de trechos que usam um vocabulário parecido. Cada classe costuma sugerir um tema, e a análise mostra quais palavras a definem. O método foi proposto por Reinert e é o mesmo usado pelo IRaMuTeQ. Esta análise usa o R.</p>
+      <h4>Quando usar</h4>
+      <p>Para descobrir os grandes blocos de discurso de um corpus, como os temas que aparecem nas entrevistas. Também é útil quando você tem atributos cadastrados e quer ver quais grupos de pessoas falam de cada jeito.</p>
+      <h4>Como ler o resultado</h4>
+      <ul>
+        <li><strong>Classes.</strong> A tabela mostra quantos segmentos cada classe reúne, em relação ao total do corpus.</li>
+        <li><strong>Dendrograma.</strong> É a figura em forma de árvore que mostra como as classes foram divididas. Classes unidas mais embaixo na árvore são mais parecidas entre si.</li>
+        <li><strong>Perfis das classes.</strong> Para cada classe, a tabela lista as palavras mais características, com o <strong>qui-quadrado</strong> (Qui²). Quanto maior o Qui², mais a palavra está ligada àquela classe. Um valor acima de 3,84 costuma indicar associação com p menor que 0,05, o que quer dizer que a associação dificilmente vem do acaso.</li>
+        <li><strong>Antiperfis.</strong> São as palavras que aparecem pouco ou nada em cada classe. Ajudam a entender o que a classe não é.</li>
+        <li><strong>Segmentos típicos.</strong> São os trechos reais que melhor representam cada classe. Esta é a evidência mais forte para dar nome a uma classe. Leia esses trechos antes de decidir o que a classe significa.</li>
+        <li><strong>Análise fatorial de correspondência (AFC).</strong> É uma figura que dispõe as classes e as palavras em um plano. Quanto mais próximas duas classes, mais parecido é o vocabulário delas.</li>
+        <li><strong>Variáveis por classe.</strong> Aparece quando há atributos ou características nos documentos. A tabela mostra quais variáveis estão concentradas em cada classe.</li>
+        <li><strong>Robustez.</strong> Aparece quando a opção Teste de robustez está ligada. Veja a seção de parâmetros abaixo.</li>
+      </ul>
+
+      <h4>Parâmetros principais</h4>
+      <div class="tabela">
+        <table>
+          <caption>Parâmetros da CHD</caption>
+          <thead>
+            <tr>
+              <th scope="col">Nome na tela</th>
+              <th scope="col">Padrão</th>
+              <th scope="col">Efeito</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr><td>Número de classes terminais (fase 1)</td><td>5 (de 2 a 10)</td><td>Quantas classes finais a análise deve produzir. Mais classes dividem o corpus em grupos menores.</td></tr>
+            <tr><td>Frequência mínima</td><td>3 (mínimo 3)</td><td>A palavra precisa aparecer pelo menos essas vezes para ser usada na classificação.</td></tr>
+            <tr><td>Classificação</td><td>Simples sobre segmentos de texto</td><td>Simples sobre segmentos de texto: cada segmento entra em uma classe. Simples sobre textos: classifica os textos inteiros. Dupla sobre segmentos de texto: usa dois tamanhos de segmento, para uma divisão mais detalhada.</td></tr>
+            <tr><td>Tamanho do segmento 1 (dupla) (em Mais parâmetros)</td><td>12 (de 4 a 100)</td><td>Tamanho do primeiro segmento no modo Dupla.</td></tr>
+            <tr><td>Tamanho do segmento 2 (dupla) (em Mais parâmetros)</td><td>14 (de 4 a 100)</td><td>Tamanho do segundo segmento no modo Dupla.</td></tr>
+            <tr><td>Mínimo de segmentos por classe (em Mais parâmetros)</td><td>0 (automático)</td><td>Classes menores que esse número são desfeitas. Com 0, o programa decide sozinho.</td></tr>
+            <tr><td>Máximo de formas ativas (em Mais parâmetros)</td><td>20000 (de 100 a 100000)</td><td>Quantas palavras ativas a análise considera.</td></tr>
+            <tr><td>Preto e branco (em Mais parâmetros)</td><td>Desligado</td><td>Desenha as figuras em tons de cinza, útil para impressão.</td></tr>
+            <tr><td>Teste de robustez (em Mais parâmetros)</td><td>Desligado</td><td>Repete a classificação com outros valores de classes e de frequência, e mede o quanto os resultados coincidem. Deixa a análise mais lenta.</td></tr>
+            <tr><td>Nomes das classes (em Mais parâmetros)</td><td>Vazio</td><td>Dê um nome a cada classe, separados por vírgula. Os nomes só são usados se houver um nome para cada classe.</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="dica">
+        <strong>Dica sobre o teste de robustez</strong>
+        <p>Ele mede a concordância entre classificações com o índice de Rand ajustado. Um valor perto de 1 mostra que as classificações coincidem muito. Um valor perto de 0 mostra uma concordância parecida com a que surgiria pelo acaso. Use o teste quando for relatar um resultado, para mostrar que ele se sustenta.</p>
+      </div>
+
+      <h4>Cuidados de interpretação</h4>
+      <div class="cuidado">
+        <strong>Cuidados</strong>
+        <ul>
+          <li><strong>Não há número certo de classes.</strong> Teste valores próximos (por exemplo, 4, 5 e 6) e veja quais classes se mantêm. Escolha o que faz sentido e se sustenta na leitura dos segmentos típicos.</li>
+          <li><strong>Nomear uma classe é interpretação sua.</strong> Justifique o nome com trechos reais, e não só com a lista de palavras.</li>
+          <li><strong>Confira quantos segmentos entraram nas classes.</strong> Se uma parte grande do corpus ficou de fora, o resultado representa só uma parte do material.</li>
+          <li><strong>Corpus pequeno dá erro ou resultado instável.</strong> Se faltarem segmentos ou palavras ativas, a mensagem sugere mais documentos ou menos frequência mínima.</li>
+          <li><strong>A ordem das classes pode mudar</strong> entre execuções. Compare as classes pelo conteúdo, e não pelo número.</li>
+          <li><strong>Ao relatar</strong>, informe a classificação escolhida, o número de classes pedido e obtido, a frequência mínima e o número de segmentos classificados.</li>
+        </ul>
+      </div>
+
+      <h3><span class="botao-ui f-lexicas">Similitude</span></h3>
+      <h4>Para que serve</h4>
+      <p>Desenha uma rede de palavras que aparecem juntas nos mesmos segmentos. Cada palavra é um ponto, e cada linha indica que duas palavras aparecem juntas com frequência. A análise também identifica grupos de palavras mais ligadas entre si, chamados comunidades. Esta análise usa o R.</p>
+      <h4>Quando usar</h4>
+      <p>Para ver a estrutura de um discurso: quais palavras sustentam o assunto, em torno de quais se organizam os subtemas e quais ficam mais isoladas.</p>
+      <h4>Como ler o resultado</h4>
+      <ul>
+        <li><strong>Palavras e ligações.</strong> Uma ligação indica coocorrência, ou seja, que as duas palavras aparecem no mesmo trecho com frequência.</li>
+        <li><strong>Árvore máxima.</strong> Quando ligada, a figura mostra só as ligações mais fortes que conectam todas as palavras. Assim, a figura fica mais limpa.</li>
+        <li><strong>Comunidades e halos.</strong> As comunidades são grupos de palavras mais ligadas entre si do que com o resto. Com o halo ligado, cada comunidade ganha uma cor em volta.</li>
+        <li><strong>Posição.</strong> A distância entre duas palavras no desenho não tem significado estatístico. O que importa são as ligações: quem está ligado a quem.</li>
+      </ul>
+
+      <h4>Parâmetros principais</h4>
+      <div class="tabela">
+        <table>
+          <caption>Parâmetros da Similitude</caption>
+          <thead>
+            <tr>
+              <th scope="col">Nome na tela</th>
+              <th scope="col">Padrão</th>
+              <th scope="col">Efeito</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr><td>Máximo de palavras</td><td>200 (de 10 a 300)</td><td>Quantas palavras aparecem na rede. Com corpus grande, reduza para deixar a figura legível.</td></tr>
+            <tr><td>Frequência mínima</td><td>3 (de 1 a 1000)</td><td>Palavras pouco frequentes ficam de fora da rede.</td></tr>
+            <tr><td>Índice</td><td>Coocorrência</td><td>Como a força da ligação é medida. A opção padrão conta os segmentos em que as duas palavras aparecem juntas. Outros índices, como Jaccard e Dice, corrigem pela frequência de cada palavra.</td></tr>
+            <tr><td>Comunidades coloridas</td><td>Desligado</td><td>Desligado: as palavras ficam pretas, como no IRaMuTeQ. As comunidades são calculadas do mesmo jeito; a cor é só visual.</td></tr>
+            <tr><td>Halo</td><td>Desligado</td><td>Ligado: mostra uma área colorida em volta de cada comunidade.</td></tr>
+            <tr><td>Disposição (em Mais parâmetros)</td><td>Fruchterman-Reingold (sna)</td><td>Como as palavras são espalhadas no desenho. Muda a aparência, não os números.</td></tr>
+            <tr><td>Árvore máxima (em Mais parâmetros)</td><td>Ligado</td><td>Mostra só as ligações mais fortes que conectam a rede.</td></tr>
+            <tr><td>Usar lemas (em Mais parâmetros)</td><td>Ligado</td><td>Agrupa as flexões de uma palavra.</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h4>Cuidados de interpretação</h4>
+      <div class="cuidado">
+        <strong>Cuidados</strong>
+        <ul>
+          <li>Uma ligação mostra que as palavras aparecem juntas, não que uma causa a outra.</li>
+          <li>Uma palavra no centro da rede é a que mais se liga às outras. Isso não quer dizer que ela seja a mais importante para o seu argumento.</li>
+          <li>Ao relatar, informe o índice usado. Índices diferentes podem destacar palavras diferentes.</li>
+        </ul>
+      </div>
+
+      <h3><span class="botao-ui f-lexicas">Mapa temático</span></h3>
+      <h4>Para que serve</h4>
+      <p>Agrupa as palavras em <strong>temas</strong>, que são comunidades de palavras ligadas entre si, e mostra os temas em um diagrama. O diagrama compara os temas por dois eixos: quanto cada tema se conecta com os outros e quão coeso ele é por dentro. Esta análise segue o método de Aria e Cuccurullo e não usa o R.</p>
+      <h4>Quando usar</h4>
+      <p>Para ter um mapa geral dos temas de um corpus e da posição relativa de cada um. Ele é útil para comparar dois corpora diferentes, desde que os parâmetros sejam os mesmos nos dois.</p>
+      <h4>Como ler o resultado</h4>
+      <p>O resultado tem três partes:</p>
+      <ul>
+        <li><strong>Rede de expressões.</strong> Mostra as palavras ligadas entre si, com as cores indicando o tema de cada uma.</li>
+        <li><strong>Mapa estratégico.</strong> Cada bolha é um tema. O eixo horizontal é a <strong>centralidade</strong>: quanto o tema se conecta a outros temas. O eixo vertical é a <strong>densidade</strong>: quão coeso o tema é por dentro. O tamanho da bolha mostra a frequência do tema.</li>
+        <li><strong>Tabelas.</strong> <em>Temas</em> lista as palavras de cada tema. <em>Documentos por tema</em> mostra em quais documentos cada tema aparece. <em>Segmentos representativos</em> traz trechos reais de cada tema.</li>
+      </ul>
+
+      <p>Os temas do mapa caem em quatro áreas:</p>
+      <div class="tabela">
+        <table>
+          <caption>Áreas do mapa estratégico</caption>
+          <thead>
+            <tr>
+              <th scope="col">Área</th>
+              <th scope="col">Centralidade</th>
+              <th scope="col">Densidade</th>
+              <th scope="col">Como ler</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr><td>Temas motores</td><td>Alta</td><td>Alta</td><td>Temas centrais e bem desenvolvidos. Costumam organizar o discurso.</td></tr>
+            <tr><td>Temas básicos</td><td>Alta</td><td>Baixa</td><td>Temas centrais, mas pouco desenvolvidos por dentro. Funcionam como base geral.</td></tr>
+            <tr><td>Temas especializados</td><td>Baixa</td><td>Alta</td><td>Temas bem desenvolvidos, mas pouco ligados aos outros. Tratam de assuntos mais específicos.</td></tr>
+            <tr><td>Temas periféricos</td><td>Baixa</td><td>Baixa</td><td>Temas pouco centrais e pouco desenvolvidos. Podem ser assuntos marginais ou ainda incipientes.</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="cuidado">
+        <strong>O mapa mostra um momento</strong>
+        <p>O mapa não diz se um tema está crescendo ou perdendo força. Para afirmar isso, compare dois períodos, cada um com o seu mapa e os mesmos parâmetros. Um tema periférico nem sempre é sem importância: pode ser justamente o assunto que a sua pesquisa quer destacar.</p>
+      </div>
+
+      <h4>Parâmetros principais</h4>
+      <div class="tabela">
+        <table>
+          <caption>Parâmetros do Mapa temático</caption>
+          <thead>
+            <tr>
+              <th scope="col">Nome na tela</th>
+              <th scope="col">Padrão</th>
+              <th scope="col">Efeito</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr><td>Máximo de palavras na rede</td><td>120 (de 20 a 500)</td><td>Quantas palavras entram na rede antes de formar os temas.</td></tr>
+            <tr><td>Máximo de ligações</td><td>160 (de 20 a 2000)</td><td>Quantas ligações a rede mostra.</td></tr>
+            <tr><td>Frequência mínima</td><td>2 (de 1 a 1000)</td><td>Palavras pouco frequentes ficam de fora.</td></tr>
+            <tr><td>Mínimo de coocorrências (em Mais parâmetros)</td><td>2 (de 1 a 100)</td><td>Quantas vezes duas palavras precisam aparecer juntas para formar uma ligação.</td></tr>
+            <tr><td>Máximo de termos (em Mais parâmetros)</td><td>300 (de 50 a 5000)</td><td>Quantos termos o programa considera no total.</td></tr>
+            <tr><td>Resolução das comunidades (em Mais parâmetros)</td><td>0,5 (de 0,1 a 3)</td><td>Valores menores juntam mais palavras em cada tema, e valores maiores criam mais temas menores.</td></tr>
+            <tr><td>Palavras no nome de cada tema (em Mais parâmetros)</td><td>2 (de 1 a 3)</td><td>Quantas palavras usar para nomear cada tema.</td></tr>
+            <tr><td>Frequência mínima do tema (por 1.000 segmentos) (em Mais parâmetros)</td><td>5 (de 0 a 100)</td><td>Temas cujas palavras aparecem menos que isso, por mil segmentos, são deixados de fora.</td></tr>
+            <tr><td>Usar lemas (em Mais parâmetros)</td><td>Ligado</td><td>Agrupa as flexões de uma palavra.</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h4>Cuidados de interpretação</h4>
+      <div class="cuidado">
+        <strong>Cuidados</strong>
+        <ul>
+          <li>O número de temas depende da resolução. Ao relatar, informe o valor usado.</li>
+          <li>O nome de cada tema é formado pelas palavras mais fortes do grupo. Ele é um rótulo de partida; a interpretação é sua e precisa de trechos que a sustentem.</li>
+          <li>A ordem dos documentos pode alterar o resultado.</li>
+        </ul>
+      </div>
+
+      <h3><span class="botao-ui f-lexicas">Tópicos LDA</span></h3>
+      <h4>Para que serve</h4>
+      <p>Procura um número de <strong>tópicos</strong> escolhido por você. Cada tópico é uma lista de palavras que tendem a aparecer juntas, e cada documento é uma mistura desses tópicos, em proporções diferentes. O método se chama LDA (alocação latente de Dirichlet). Esta análise usa o R.</p>
+      <h4>Quando usar</h4>
+      <p>Para ver quais assuntos aparecem no corpus e em que proporção cada documento os combina, sem definir as categorias antes. Funciona melhor com muitos documentos.</p>
+      <h4>Como ler o resultado</h4>
+      <ul>
+        <li><strong>Distribuição dos tópicos.</strong> Mostra quanto de cada tópico existe no corpus como um todo.</li>
+        <li><strong>Termos principais por tópico.</strong> São as palavras mais prováveis em cada tópico. Use-as para pensar no nome do tópico, e confira com os textos antes de decidir.</li>
+        <li><strong>Mapa de calor documento por tópico.</strong> Cada linha é um documento e cada coluna é um tópico. Cores mais fortes indicam que o tópico tem mais peso naquele documento. A tabela <em>Tópicos por documento</em> traz os mesmos valores em números.</li>
+        <li><strong>Mapa entre tópicos.</strong> Mostra os tópicos como pontos em um plano. Pontos mais próximos têm vocabulário mais parecido. Aparece quando há dois ou mais tópicos.</li>
+        <li><strong>Linha do tempo.</strong> Aparece quando os documentos têm data. Mostra como a proporção dos tópicos muda com o tempo.</li>
+      </ul>
+
+      <h4>Parâmetros principais</h4>
+      <div class="tabela">
+        <table>
+          <caption>Parâmetros dos Tópicos LDA</caption>
+          <thead>
+            <tr>
+              <th scope="col">Nome na tela</th>
+              <th scope="col">Padrão</th>
+              <th scope="col">Efeito</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr><td>Número de tópicos</td><td>6 (de 2 a 50)</td><td>Quantos tópicos o modelo deve encontrar. É a escolha mais importante desta análise.</td></tr>
+            <tr><td>Método</td><td>VEM</td><td>Forma de estimar o modelo: VEM ou Gibbs. VEM é o padrão e costuma ser mais rápido.</td></tr>
+            <tr><td>Frequência mínima</td><td>2 (de 1 a 1000)</td><td>Palavras pouco frequentes ficam de fora.</td></tr>
+            <tr><td>Máximo de termos</td><td>2000 (de 100 a 20000)</td><td>Quantas palavras, no máximo, entram no modelo.</td></tr>
+            <tr><td>Sugerir o número de tópicos</td><td>Desligado</td><td>Testa vários números de tópicos, entre o menor e o maior indicados em Mais parâmetros, e guarda uma tabela de comparação. O modelo final continua usando o número que você escolheu.</td></tr>
+            <tr><td>Semente (em Mais parâmetros)</td><td>42</td><td>Fixa o sorteio inicial. Com a mesma semente e os mesmos dados, o resultado se repete.</td></tr>
+            <tr><td>Iterações (em Mais parâmetros)</td><td>500</td><td>Quantas rodadas de ajuste o modelo faz (método VEM). Mais rodadas demoram mais.</td></tr>
+            <tr><td>Aquecimento (Gibbs), Iterações (Gibbs) e Intervalo de amostragem (Gibbs) (em Mais parâmetros)</td><td>1000, 1000 e 100</td><td>Ajustes do método Gibbs, usados só quando ele está selecionado.</td></tr>
+            <tr><td>Menor número de tópicos testado e Maior número de tópicos testado (em Mais parâmetros)</td><td>2 e 12</td><td>Faixa de números testada quando Sugerir o número de tópicos está ligado.</td></tr>
+            <tr><td>Usar lemas (em Mais parâmetros)</td><td>Ligado</td><td>Agrupa as flexões de uma palavra.</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h4>Cuidados de interpretação</h4>
+      <div class="cuidado">
+        <strong>Cuidados</strong>
+        <ul>
+          <li>O resultado muda com o número de tópicos, com a semente e com o próprio corpus. Teste alguns valores (por exemplo, 4, 6 e 8) e veja qual conjunto faz mais sentido para o seu material.</li>
+          <li>Para repetir um resultado, mantenha a semente. Mude a semente para ver se os tópicos se sustentam.</li>
+          <li>Nomear um tópico é interpretação. Justifique o nome com as palavras principais e com trechos dos documentos que mais o representam.</li>
+          <li>Com corpus pequeno, o modelo pode dar erro ou produzir tópicos instáveis. Ele precisa de pelo menos dois documentos e dois termos.</li>
+          <li>Sem datas nos documentos, não há linha do tempo.</li>
+        </ul>
+      </div>
+
+      <h2>Palavras-chave e afeto</h2>
+      <p>Este grupo reúne análises que destacam termos importantes, associações entre palavras e o tom ou as emoções presentes nos textos. As duas últimas, Sentimento e Emoções, são as que pedem mais cautela, porque leem palavras isoladas e não captam ironia nem negação.</p>
+
+      <h3><span class="botao-ui f-lexicas">YAKE</span> (palavras-chave)</h3>
+      <h4>Para que serve</h4>
+      <p>Lista as expressões mais importantes do corpus, com uma, duas ou três palavras. O método YAKE calcula a importância de cada expressão pela forma como as palavras aparecem no texto, sem usar um dicionário de temas nem treinamento prévio. Esta análise não usa o R.</p>
+      <h4>Quando usar</h4>
+      <p>Para ter um resumo rápido dos termos de um conjunto de textos, ou para sugerir palavras-chave de um material que você vai apresentar em um artigo ou relatório.</p>
+      <h4>Como ler o resultado</h4>
+      <p>A tabela traz as expressões em ordem de relevância, da mais para a menos relevante. Ela mostra a expressão, o escore YAKE, a relevância, a frequência e o número de segmentos em que a expressão aparece.</p>
+      <div class="cuidado">
+        <strong>Atenção ao escore</strong>
+        <p>No YAKE, o escore vai no sentido contrário ao que parece: <strong>quanto menor o escore, mais relevante é a expressão</strong>.</p>
+      </div>
+
+      <h4>Parâmetros principais</h4>
+      <div class="tabela">
+        <table>
+          <caption>Parâmetros do YAKE</caption>
+          <thead>
+            <tr>
+              <th scope="col">Nome na tela</th>
+              <th scope="col">Padrão</th>
+              <th scope="col">Efeito</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr><td>Número de expressões</td><td>50 (de 5 a 500)</td><td>Quantas expressões aparecem no resultado.</td></tr>
+            <tr><td>Menor expressão (palavras)</td><td>1 (de 1 a 3)</td><td>Tamanho mínimo, em palavras, das expressões listadas.</td></tr>
+            <tr><td>Maior expressão (palavras)</td><td>3 (de 1 a 3)</td><td>Tamanho máximo, em palavras, das expressões listadas.</td></tr>
+            <tr><td>Frequência mínima (em Mais parâmetros)</td><td>1 (de 1 a 100)</td><td>A expressão precisa aparecer pelo menos essas vezes.</td></tr>
+            <tr><td>Limite de duplicação (em Mais parâmetros)</td><td>0,9 (de 0,1 a 1)</td><td>Expressões parecidas demais com outra melhor colocada saem da lista. Um valor menor remove mais repetições.</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h4>Cuidados de interpretação</h4>
+      <div class="cuidado">
+        <strong>Cuidados</strong>
+        <ul>
+          <li>Expressões de duas ou três palavras costumam dizer mais do que uma palavra isolada. Use-as como ponto de partida.</li>
+          <li>Textos muito curtos dão palavras-chave pouco confiáveis.</li>
+          <li>O YAKE não compara grupos. Para comparar, use Associações de palavras-chave ou a CHD.</li>
+        </ul>
+      </div>
+
+      <h3><span class="botao-ui f-lexicas">Associações de palavras-chave</span></h3>
+      <h4>Para que serve</h4>
+      <p>Para cada palavra-chave que você escolhe, mostra as palavras que aparecem junto dela com mais frequência do que o acaso explicaria. Esse cálculo usa a log-verossimilhança (G²), uma medida estatística de associação. Esta análise não usa o R.</p>
+      <h4>Quando usar</h4>
+      <p>Para entender o contexto de um conceito: com quais palavras ele costuma aparecer e como elas se organizam.</p>
+      <h4>Como ler o resultado</h4>
+      <ul>
+        <li><strong>Gráfico de barras.</strong> Mostra as palavras associadas a cada palavra-chave. Quanto maior a barra, mais forte a associação.</li>
+        <li><strong>Gráfico radial.</strong> A palavra-chave fica no centro e as palavras associadas em volta. Quanto mais perto do centro, mais forte a associação.</li>
+        <li><strong>Tabela Associações.</strong> Traz a posição de cada palavra, a log-verossimilhança, o número de segmentos em que as duas aparecem juntas e a porcentagem dos segmentos da palavra-chave em que isso acontece. Um G² acima de 3,84 costuma indicar p menor que 0,05, e acima de 10,83, p menor que 0,001.</li>
+        <li><strong>Tabela Exemplos.</strong> Traz até dois trechos para cada par de palavras. Leia-os para confirmar o sentido da associação.</li>
+      </ul>
+
+      <h4>Parâmetros principais</h4>
+      <div class="tabela">
+        <table>
+          <caption>Parâmetros das Associações de palavras-chave</caption>
+          <thead>
+            <tr>
+              <th scope="col">Nome na tela</th>
+              <th scope="col">Padrão</th>
+              <th scope="col">Efeito</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr><td>Palavras-chave</td><td>Vazio (as 4 mais frequentes)</td><td>As palavras que serão analisadas. Escreva até seis, separadas por vírgula, na forma de dicionário ("dado" em vez de "dados").</td></tr>
+            <tr><td>Associações por palavra-chave</td><td>12 (de 3 a 50)</td><td>Quantas palavras associadas mostrar para cada palavra-chave.</td></tr>
+            <tr><td>Mínimo de coocorrências</td><td>3 (de 1 a 100)</td><td>Quantas vezes as duas palavras precisam aparecer juntas para contar como associação.</td></tr>
+            <tr><td>Frequência mínima (em Mais parâmetros)</td><td>2 (de 1 a 1000)</td><td>Palavras pouco frequentes ficam de fora.</td></tr>
+            <tr><td>Usar lemas (em Mais parâmetros)</td><td>Ligado</td><td>Agrupa as flexões de uma palavra.</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h4>Cuidados de interpretação</h4>
+      <div class="cuidado">
+        <strong>Cuidados</strong>
+        <ul>
+          <li>Associação não é causa, nem concordância. Duas palavras que andam juntas podem estar em frases de crítica, de elogio ou de dúvida.</li>
+          <li>Palavras-chave raras no corpus geram poucas associações confiáveis.</li>
+          <li>Se nenhuma das palavras-chave estiver no vocabulário, o programa mostra quais foram pedidas. Confira a grafia e a forma de dicionário.</li>
+        </ul>
+      </div>
+
+      <h3><span class="botao-ui f-afeto">Sentimento</span></h3>
+      <h4>Para que serve</h4>
+      <p>Conta as palavras positivas, negativas e neutras de cada documento, com base no OpLexicon, um léxico (lista de palavras com tom já definido) do português. Ao final, mostra a distribuição geral. Esta análise não usa o R.</p>
+      <div class="cuidado">
+        <strong>Só funciona em português</strong>
+        <p>O Sentimento usa um léxico do português. Se o idioma do corpus for Inglês ou Espanhol, o teste para e mostra a mensagem "O Sentimento usa o OpLexicon, um léxico do português. Escolha português como idioma do corpus." Escolha Português antes de executar.</p>
+      </div>
+      <h4>Quando usar</h4>
+      <p>Para ter um indicador geral do tom de um conjunto de textos em português, por exemplo para comparar entrevistas de duas rodadas, desde que os documentos tenham data, porque então a linha do tempo mostra a evolução.</p>
+      <h4>Como ler o resultado</h4>
+      <ul>
+        <li><strong>Gráfico de distribuição.</strong> Mostra quantas vezes palavras positivas, negativas e neutras aparecem no corpus. A contagem é de palavras, e não de documentos.</li>
+        <li><strong>Tabela Distribuição.</strong> Traz os mesmos números em forma de tabela.</li>
+        <li><strong>Tabela Palavras com polaridade.</strong> Lista as palavras mais contadas e a polaridade que o léxico atribui a cada uma. Leia essa tabela antes de tirar conclusões: ela mostra exatamente o que pesou no resultado.</li>
+        <li><strong>Linha do tempo.</strong> Aparece quando os documentos têm data. Mostra como o tom muda ao longo do tempo.</li>
+      </ul>
+
+      <h4>Parâmetros principais</h4>
+      <div class="tabela">
+        <table>
+          <caption>Parâmetros do Sentimento</caption>
+          <thead>
+            <tr>
+              <th scope="col">Nome na tela</th>
+              <th scope="col">Padrão</th>
+              <th scope="col">Efeito</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr><td>Palavras listadas</td><td>25 (de 10 a 200)</td><td>Quantas palavras aparecem na tabela Palavras com polaridade.</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h4>Cuidados de interpretação</h4>
+      <div class="cuidado">
+        <strong>Cuidados</strong>
+        <ul>
+          <li>A análise não entende negação nem ironia. Em "não gostei", por exemplo, a palavra "gostei" pode ser contada como positiva.</li>
+          <li>Para emoções específicas, como medo ou raiva, use a análise Emoções.</li>
+          <li>Confira sempre a tabela de palavras. Uma palavra que pesa muito e não tem o sentido esperado no seu contexto pode distorcer o resultado.</li>
+        </ul>
+      </div>
+
+      <h3><span class="botao-ui f-afeto">Emoções</span></h3>
+      <h4>Para que serve</h4>
+      <p>Conta palavras ligadas a oito emoções básicas (raiva, antecipação, nojo, medo, alegria, tristeza, surpresa e confiança) e a duas polaridades (positiva e negativa). Usa o léxico NRC, de Mohammad e Turney. Esta análise usa o R e não tem parâmetros próprios.</p>
+      <h4>Quando usar</h4>
+      <p>Para ver o perfil emocional do discurso: se um conjunto de textos tem mais medo do que confiança, por exemplo, ou se a alegria aparece mais em um grupo do que em outro.</p>
+      <h4>Como ler o resultado</h4>
+      <ul>
+        <li><strong>Gráfico de barras.</strong> Mostra a contagem de cada uma das oito emoções.</li>
+        <li><strong>Radar.</strong> Mostra o formato geral do perfil das emoções, o que facilita comparar a visão de conjunto de dois grupos.</li>
+        <li><strong>Gráfico de polaridade.</strong> Mostra o equilíbrio entre palavras positivas e negativas.</li>
+        <li><strong>Tabela Emoções.</strong> Traz os números de cada emoção.</li>
+      </ul>
+      <p>Compare <strong>proporções</strong>, e não contagens absolutas. Um texto longo tem mais palavras e, por isso, mais contagens.</p>
+
+      <div class="dica">
+        <strong>Dica</strong>
+        <p>O idioma escolhido em <strong>Idioma do corpus</strong> define qual versão do léxico NRC é usada: português, inglês ou espanhol.</p>
+      </div>
+
+      <h4>Cuidados de interpretação</h4>
+      <div class="cuidado">
+        <strong>Cuidados</strong>
+        <ul>
+          <li>A análise conta palavras isoladas. Ela não capta ironia nem negação, como em "não é bom".</li>
+          <li>Palavras técnicas podem receber uma emoção que não é a do contexto. Por exemplo, "risco" pode ser contada como medo. Confira no resultado quais palavras pesaram.</li>
+          <li>O léxico NRC é livre para pesquisa e ensino. Se você pretende usá-lo com fins comerciais, precisa de uma licença do National Research Council Canada.</li>
+        </ul>
+      </div>
+
+      <h2>Qual análise usar para qual pergunta de pesquisa</h2>
+      <p>Use este quadro como ponto de partida. Quase sempre vale combinar duas ou mais análises e ler os trechos antes de concluir.</p>
+
+      <div class="tabela">
+        <table>
+          <caption>Perguntas de pesquisa e análises indicadas</caption>
+          <thead>
+            <tr>
+              <th scope="col">Pergunta de pesquisa</th>
+              <th scope="col">Análises indicadas</th>
+              <th scope="col">Por quê</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr><td>Quais palavras mais aparecem no meu corpus?</td><td>Nuvem de palavras, Bigramas</td><td>Dão uma visão geral do vocabulário.</td></tr>
+            <tr><td>Em que contexto uma palavra aparece?</td><td>Word Tree, Associações de palavras-chave</td><td>A Word Tree mostra o que vem antes e depois; as Associações mostram com quais palavras ela se junta, e a tabela Exemplos traz trechos.</td></tr>
+            <tr><td>Quais expressões se repetem e merecem atenção?</td><td>Bigramas, Trigramas, YAKE</td><td>Pares e sequências repetidas, além de expressões-chave.</td></tr>
+            <tr><td>Quais são os grandes blocos de discurso?</td><td>CHD</td><td>Agrupa os segmentos por vocabulário parecido e mostra trechos típicos de cada classe.</td></tr>
+            <tr><td>Como as palavras se organizam em subtemas?</td><td>Similitude</td><td>Mostra a rede de coocorrências e os grupos de palavras mais ligadas.</td></tr>
+            <tr><td>Quais temas aparecem e quais são centrais?</td><td>Mapa temático</td><td>Mostra os temas e os classifica em motores, básicos, especializados e periféricos.</td></tr>
+            <tr><td>Quais assuntos os documentos misturam?</td><td>Tópicos LDA</td><td>Mostra cada documento como uma mistura de tópicos, em proporções.</td></tr>
+            <tr><td>Grupos diferentes falam de forma diferente?</td><td>CHD com variáveis (tabela Variáveis por classe); repita as análises acima só com os documentos de cada grupo</td><td>Compara a presença de cada característica nas classes e permite comparar grupos separadamente.</td></tr>
+            <tr><td>Qual é o tom geral dos textos?</td><td>Sentimento</td><td>Conta palavras positivas, negativas e neutras (só em português).</td></tr>
+            <tr><td>Quais emoções aparecem nos textos?</td><td>Emoções</td><td>Mostra o perfil das oito emoções e a polaridade.</td></tr>
+            <tr><td>Como o tom ou os temas mudam ao longo do tempo?</td><td>Sentimento e Tópicos LDA, com linha do tempo</td><td>A linha do tempo depende de atributos do tipo data nos documentos.</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h2>Cuidados gerais</h2>
+      <p>Estes cuidados valem para todas as análises léxicas.</p>
+
+      <div class="cuidado">
+        <strong>Sentimento só em português</strong>
+        <p>Em inglês ou espanhol, o Sentimento não roda. Use a análise Emoções, que tem léxicos para os três idiomas.</p>
+      </div>
+
+      <div class="cuidado">
+        <strong>Léxico NRC</strong>
+        <p>O léxico de emoções usado pela análise Emoções é livre para pesquisa e ensino. O uso comercial exige licença do National Research Council Canada.</p>
+      </div>
+
+      <div class="cuidado">
+        <strong>A ordem dos documentos influencia alguns resultados</strong>
+        <p>A CHD, os Tópicos LDA, o Mapa temático e o YAKE dependem da ordem dos textos, que é a ordem alfabética do nome. Se a ordem importar para a sua leitura, use números no início dos nomes dos arquivos.</p>
+      </div>
+
+      <div class="cuidado">
+        <strong>Corpus pequeno dá resultados instáveis</strong>
+        <p>Com poucos documentos, uma pequena mudança de parâmetro pode mudar bastante o resultado, e algumas análises (CHD, Tópicos LDA e Mapa temático) podem dar erro. Quando possível, use um corpus mais amplo e confirme a leitura nos trechos.</p>
+      </div>
+
+      <div class="cuidado">
+        <strong>Idioma e resultados</strong>
+        <p>Um idioma errado faz o programa reconhecer mal as palavras. Confirme o idioma antes de cada análise nova.</p>
+      </div>
+
+      <h3>Ao relatar uma análise</h3>
+      <p>Para que outra pessoa consiga entender e repetir o seu resultado, informe:</p>
+      <ul>
+        <li>o idioma do corpus, o número de documentos (ou de trechos codificados) e o número de segmentos;</li>
+        <li>os parâmetros que você mudou em relação ao padrão, especialmente número de classes ou de tópicos, resolução, índice e frequência mínima;</li>
+        <li>o que foi excluído (documentos sem texto, por exemplo) e, na CHD, quantas classes foram pedidas e quantas foram obtidas.</li>
+      </ul>
+
+      <nav class="navegacao-rodape" aria-label="Navegação entre páginas">
+        <a href="analises.html" rel="prev">
+          <small>Anterior</small>
+          <span>Consultas, análises e relatórios</span>
+        </a>
+        <a href="problemas.html" rel="next">
+          <small>Próxima</small>
+          <span>Problemas comuns</span>
+        </a>
+      </nav>
+
+    </div>
+  </main>
+
+</body>
+</html>

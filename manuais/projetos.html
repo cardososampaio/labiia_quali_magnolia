@@ -1,0 +1,295 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Projetos — Manual do labiia_quali</title>
+  <link rel="stylesheet" href="estilo.css">
+</head>
+<body>
+
+  <nav class="lateral" aria-label="Páginas do manual">
+    <div class="marca">
+      <strong>labiia_quali — Manual</strong>
+      <span>Versão 0.1.1 · Windows</span>
+    </div>
+    <ul>
+      <li><a href="index.html">Início</a></li>
+      <li><a href="instalacao.html">Instalação e R</a></li>
+      <li><a href="interface.html">Conhecendo a tela</a></li>
+      <li><a href="projetos.html" class="atual" aria-current="page">Projetos</a></li>
+      <li><a href="fontes.html">Documentos e fontes</a></li>
+      <li><a href="codificacao.html">Codificação</a></li>
+      <li><a href="livro-de-codigos.html">Livro de códigos</a></li>
+      <li><a href="analises.html">Consultas, análises e relatórios</a></li>
+      <li><a href="analises-lexicas.html">Análises léxicas</a></li>
+      <li><a href="problemas.html">Problemas comuns</a></li>
+      <li><a href="glossario.html">Glossário</a></li>
+      <li><a href="sobre.html">Sobre e créditos</a></li>
+    </ul>
+  </nav>
+
+  <main class="conteudo">
+    <div class="artigo">
+
+      <h1>Projetos</h1>
+      <p class="lead">Um projeto é o arquivo onde o labiia_quali guarda tudo o que você faz numa pesquisa: documentos, códigos, codificações, memos, consultas e análises salvas. Esta página mostra como criar, abrir, gravar e fechar esse arquivo, como trocar projetos com outros programas e como trabalhar em equipe.</p>
+
+      <h2>O arquivo do projeto</h2>
+      <p>Cada projeto é um único arquivo com a extensão <code>.qdpx</code>. Dentro dele ficam os documentos importados (textos, PDFs, áudios, vídeos e imagens), a lista de códigos, as codificações, os memos, as citações, as consultas e as análises salvas.</p>
+      <p>O formato <code>.qdpx</code> segue o padrão <strong>REFI-QDA</strong>, de troca de projetos de análise qualitativa, aceito por programas como NVivo, ATLAS.ti e MAXQDA. Veja a seção <a href="#outros-programas">Trocar projetos com outros programas</a>.</p>
+
+      <div class="dica">
+        <strong>Dica</strong>
+        <p>O arquivo é o projeto: se ele se perder, o trabalho se perde junto. Guarde cópias de segurança em outro lugar, como outro disco ou uma pasta sincronizada na nuvem.</p>
+      </div>
+
+      <p>Um livro de códigos também pode ser importado de um arquivo <code>.qdc</code>, o padrão REFI-QDA para livros de códigos. Isso ajuda a reaproveitar os mesmos códigos em outro projeto. Veja <a href="livro-de-codigos.html">Livro de códigos</a>.</p>
+
+      <h2>Criar um projeto</h2>
+      <p>Um projeto novo começa vazio. Você escolhe onde ele será gravado e como se chama o arquivo.</p>
+
+      <ol class="passos">
+        <li>
+          <strong>Clique em <span class="botao-ui f-fontes">Novo</span></strong>
+          <p>Está na aba Início, no grupo Fontes. Também funciona pelo menu Iniciar, com <span class="botao-ui f-fontes">Novo projeto</span>, ou pelo botão <span class="botao-ui f-fontes">Novo</span> da tela de boas-vindas.</p>
+        </li>
+        <li>
+          <strong>Escolha o lugar e o nome do arquivo</strong>
+          <p>Na janela <em>Criar novo projeto</em>, escolha a pasta e digite o nome. O programa sugere um nome para você trocar.</p>
+        </li>
+        <li>
+          <strong>Confirme</strong>
+          <p>O arquivo <code>.qdpx</code> vazio é criado no disco na hora. O nome do projeto aparece na barra de título, com o estado <em>Salvo</em>.</p>
+        </li>
+      </ol>
+
+      <div class="cuidado">
+        <strong>Cuidado</strong>
+        <p>Se você tinha outro projeto aberto com alterações, o programa salva esse projeto antes de trocar pelo novo.</p>
+      </div>
+
+      <h2>Abrir um projeto</h2>
+      <p>Há quatro jeitos de abrir um projeto existente:</p>
+
+      <ul>
+        <li>pressione <kbd>Ctrl</kbd> + <kbd>O</kbd>;</li>
+        <li>clique em <span class="botao-ui f-fontes">Abrir</span> na aba Início, no grupo Fontes;</li>
+        <li>no menu Iniciar, escolha <span class="botao-ui f-fontes">Abrir projeto…</span>;</li>
+        <li>na tela de boas-vindas, clique em um dos <strong>projetos recentes</strong> ou em <span class="botao-ui f-fontes">Abrir…</span>.</li>
+      </ul>
+
+      <h3>Os projetos recentes</h3>
+      <p>O programa lembra dos últimos projetos que você abriu, com o nome e o caminho do arquivo. Há três lugares para vê-los:</p>
+
+      <div class="tabela">
+        <table>
+          <caption>Onde aparecem os projetos recentes</caption>
+          <thead>
+            <tr>
+              <th scope="col">Onde</th>
+              <th scope="col">Quantos aparecem</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Tela de boas-vindas</td>
+              <td>Todos os guardados (até 10). Há o botão <span class="botao-ui">Limpar</span>, que esvazia a lista.</td>
+            </tr>
+            <tr>
+              <td>Seta ▾ do botão <span class="botao-ui f-fontes">Abrir</span></td>
+              <td>Até 10, com a opção <em>Procurar outro projeto…</em> no fim.</td>
+            </tr>
+            <tr>
+              <td>Menu Iniciar</td>
+              <td>Até 8.</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <p>Um arquivo que foi apagado ou movido sai da lista sozinho. Se você mudou um projeto de pasta, abra-o de novo pelo <em>Procurar outro projeto…</em> para ele voltar a aparecer nos recentes.</p>
+
+      <p>Ao abrir, o programa verifica se outra pessoa está com o projeto bloqueado. Se estiver, leia a seção <a href="#equipe">Trabalho em equipe</a>.</p>
+
+      <h2>Salvar</h2>
+      <p>O labiia_quali salva o seu trabalho de três formas: manual, automática e como cópia.</p>
+
+      <h3>Salvar manualmente</h3>
+      <p>Pressione <kbd>Ctrl</kbd> + <kbd>S</kbd> ou clique no botão <strong>Salvar</strong> (ícone de disquete) na barra de título. O projeto é gravado no mesmo arquivo.</p>
+      <p>Se o projeto ainda não tem arquivo, o programa abre a janela <em>Salvar projeto QDPX</em>, para você escolher onde gravar.</p>
+
+      <h3>Salvar automaticamente</h3>
+      <p>Depois de uma alteração, o programa grava sozinho cerca de <strong>2 segundos</strong> depois. Na barra de título, o estado muda de <em>Editado</em> para <em>Salvo</em>.</p>
+
+      <div class="cuidado">
+        <strong>Cuidado</strong>
+        <p>O salvamento automático não funciona em dois casos: quando o projeto ainda não tem arquivo (use <kbd>Ctrl</kbd> + <kbd>S</kbd> para escolher o lugar) e quando outra pessoa está com o projeto bloqueado.</p>
+      </div>
+
+      <h3>Salvar como…</h3>
+      <p>Use <kbd>Ctrl</kbd> + <kbd>Shift</kbd> + <kbd>S</kbd> ou o item <span class="botao-ui f-fontes">Salvar como…</span> do menu Iniciar para gravar uma <strong>cópia</strong> com outro nome. A partir daí, você trabalha na cópia, e o arquivo original fica como estava.</p>
+
+      <div class="dica">
+        <strong>Dica</strong>
+        <p>Antes de uma mudança grande, como uma nova rodada de codificação ou uma mesclagem, use Salvar como… e dê um nome com a data. Assim você tem um ponto para voltar.</p>
+      </div>
+
+      <h3>Proteções do programa</h3>
+      <ul>
+        <li><strong>Projeto que foi assumido por outra pessoa:</strong> se alguém pegou o projeto depois que você o abriu, o programa recusa a gravação e mostra o aviso de bloqueio. Assim o trabalho dela não é sobrescrito sem você ver.</li>
+        <li><strong>Projeto vazio:</strong> o programa não grava um projeto vazio por cima de um arquivo que já tinha dados.</li>
+      </ul>
+
+      <h2>Fechar o programa</h2>
+      <p>Ao fechar a janela (com o X, com <kbd>Alt</kbd> + <kbd>F4</kbd>, ou pelo botão Sair da tela inicial), o programa pergunta:</p>
+
+      <p><strong>Fechar o labiia_quali?</strong><br>
+      O projeto é salvo automaticamente antes de fechar.</p>
+
+      <ul>
+        <li><span class="botao-ui">Sim</span>: grava o que estiver pendente e fecha.</li>
+        <li><span class="botao-ui">Cancelar</span>: volta para o programa. Este é o botão padrão, para evitar fechamento por engano.</li>
+      </ul>
+
+      <p>O programa não pergunta quando o Windows está desligando ou reiniciando, nem quando está fechando para instalar uma nova versão.</p>
+
+      <h2 id="outros-programas">Trocar projetos com outros programas</h2>
+      <p>Como o formato <code>.qdpx</code> segue o padrão REFI-QDA, a troca de projetos é possível com programas de análise qualitativa que aceitam esse padrão, como o NVivo, o ATLAS.ti e o MAXQDA. O resultado depende de cada programa, por isso confira a troca.</p>
+
+      <p>Também dá para ir na direção contrária. O labiia_quali grava o projeto no mesmo padrão: use <span class="botao-ui f-fontes">Salvar como…</span> para gravar uma cópia <code>.qdpx</code> e abra essa cópia no outro programa.</p>
+
+      <h3>Trazer um projeto de outro programa</h3>
+      <ol class="passos">
+        <li>
+          <strong>Exporte o projeto no outro programa</strong>
+          <p>Use a opção de exportação em formato REFI-QDA (<code>.qdpx</code>) do programa de origem. Consulte o manual dele para ver como fazer.</p>
+        </li>
+        <li>
+          <strong>Abra o arquivo <code>.qdpx</code> aqui</strong>
+          <p>Use <kbd>Ctrl</kbd> + <kbd>O</kbd> ou o botão <span class="botao-ui f-fontes">Abrir</span>.</p>
+        </li>
+        <li>
+          <strong>Confira o projeto</strong>
+          <p>Veja se documentos, códigos e codificações chegaram como você esperava, antes de continuar o trabalho.</p>
+        </li>
+      </ol>
+
+      <div class="atencao">
+        <strong>Atenção</strong>
+        <p>O arquivo nativo do NVivo (<code>.nvp</code>) não abre direto no labiia_quali. Exporte o projeto do NVivo no formato REFI-QDA (<code>.qdpx</code>) e abra esse arquivo.</p>
+      </div>
+
+      <div class="cuidado">
+        <strong>Cuidado</strong>
+        <p>Não existe garantia de que todos os detalhes de um programa passem para outro. Por isso, confira o resultado da troca. Guarde o projeto original, sem alterações, como cópia de segurança.</p>
+      </div>
+
+      <h2 id="equipe">Trabalho em equipe</h2>
+      <p>Quando mais de uma pessoa trabalha no mesmo projeto, cada uma tem uma cópia do arquivo. O labiia_quali controla quem está com o projeto. Não há um botão de "retirar" ou "devolver": o controle é automático.</p>
+
+      <h3>Como funciona</h3>
+      <ul>
+        <li><strong>Seu nome:</strong> o programa pede o seu nome na primeira abertura. Ele aparece para os colegas e fica gravado no projeto quando você é a última pessoa a editá-lo. Você pode mudá-lo em Preferências, na categoria Geral.</li>
+        <li><strong>Reserva automática:</strong> quando você começa a alterar um projeto salvo, o programa o marca como seu. É o que se chama de <em>check-out</em>: a pessoa "pega" o projeto para editar.</li>
+        <li><strong>Projeto em uso:</strong> se outra pessoa está com o projeto, aparece o botão vermelho <span class="botao-ui">Bloqueado</span> na barra de título.</li>
+      </ul>
+
+      <h3>O que aparece quando o projeto está bloqueado</h3>
+      <p>Clique em <span class="botao-ui">Bloqueado</span> para ver quem está com o projeto e desde quando. A janela é <strong>Este projeto está em uso</strong>, com estas opções:</p>
+
+      <div class="tabela">
+        <table>
+          <caption>Opções quando o projeto está em uso por outra pessoa</caption>
+          <thead>
+            <tr>
+              <th scope="col">Botão</th>
+              <th scope="col">O que acontece</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><span class="botao-ui">Cancelar</span></td>
+              <td>Você fica só em modo de leitura. Pode ver o projeto, mas não altera nada.</td>
+            </tr>
+            <tr>
+              <td><span class="botao-ui">Criar uma cópia</span></td>
+              <td>Você trabalha numa cópia separada. Depois, pode trazer as alterações para o projeto principal com a mesclagem.</td>
+            </tr>
+            <tr>
+              <td><span class="botao-ui">Assumir o controle mesmo assim</span></td>
+              <td>Você passa a ser o responsável pelo projeto. Use só quando a outra pessoa já parou de trabalhar: se ela ainda estiver editando, as alterações de vocês podem se sobrepor.</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="atencao">
+        <strong>Atenção</strong>
+        <p>Se as duas pessoas salvarem ao mesmo tempo, uma pode sobrescrever o trabalho da outra. Combine com a equipe antes de usar essa opção.</p>
+      </div>
+
+      <p>Com o projeto bloqueado, as ações que alteram o projeto (importar, criar código, criar pasta, aplicar código) ficam indisponíveis. Ao tentar uma delas, o programa explica o motivo.</p>
+
+      <h2 id="mesclar">Mesclar projetos</h2>
+      <p>Mesclar é trazer para o seu projeto as diferenças de outra cópia do mesmo projeto. Use quando um colega trabalhou numa cópia enquanto você trabalhava na sua. O programa compara as duas e mostra cada diferença para você escolher o que entra.</p>
+
+      <p>A entrada para a mesclagem é somente <span class="botao-ui f-fontes">Mesclar projetos…</span>, no menu Iniciar.</p>
+
+      <ol class="passos">
+        <li>
+          <strong>Abra o menu Iniciar e escolha Mesclar projetos…</strong>
+          <p>Clique no botão Iniciar, no canto da barra de título, ou pressione <kbd>Alt</kbd> + <kbd>Home</kbd>.</p>
+        </li>
+        <li>
+          <strong>Escolha o outro arquivo</strong>
+          <p>Selecione o arquivo <code>.qdpx</code> da outra cópia, o que tem o trabalho do colega.</p>
+        </li>
+        <li>
+          <strong>Espere a comparação</strong>
+          <p>Aparece a aba <em>Mesclar projeto</em>, com o título <em>Comparando com</em> o nome do arquivo. Enquanto compara, o programa mostra <em>Comparando projetos…</em>. Se a outra cópia tiver uma última edição registrada, aparece o nome de quem editou por último.</p>
+        </li>
+        <li>
+          <strong>Leia as seções da lista lateral</strong>
+          <p>As diferenças estão separadas por assunto: <strong>Documentos</strong>, <strong>Texto dos documentos</strong>, <strong>Codificações</strong>, <strong>Códigos</strong>, <strong>Características</strong>, <strong>Atributos</strong>, <strong>Memos</strong>, <strong>Citações</strong>, <strong>Diário de bordo</strong>, <strong>Consultas salvas</strong>, <strong>Pastas</strong> e <strong>Análises salvas</strong>. Clique em cada uma para ver as diferenças.</p>
+        </li>
+        <li>
+          <strong>Escolha o que entra</strong>
+          <p>Dentro de cada seção, as diferenças aparecem em grupos: <strong>Só no meu</strong> (ou <strong>Suas alterações não salvas</strong>, quando o projeto estava bloqueado), <strong>Só em</strong> seguido do nome da outra pessoa (por exemplo, <strong>Só em Ana</strong>), e <strong>Diferente</strong>. Uma mudança de nome aparece como <strong>Renomeado</strong>. Marque a caixa de cada diferença que você quer aceitar. Use <span class="botao-ui">Selecionar tudo</span> ou <span class="botao-ui">Desmarcar tudo</span> para agilizar.</p>
+        </li>
+        <li>
+          <strong>Aplique</strong>
+          <p>Clique em <span class="botao-ui">Continuar</span> (ou em <em>Aplicar N alteração(ões) aprovada(s)</em>). Para sair sem mudar nada, clique em <span class="botao-ui">Cancelar</span>.</p>
+        </li>
+        <li>
+          <strong>Salve</strong>
+          <p>Aparece <strong>Mesclagem aplicada</strong>, com o número de alterações feitas. As mudanças estão no projeto, mas ainda não no arquivo. Clique em <span class="botao-ui f-fontes">Salvar</span> para gravar.</p>
+        </li>
+      </ol>
+
+      <div class="dica">
+        <strong>Dica</strong>
+        <p>Se você assumiu um projeto que estava bloqueado, a mesclagem abre sozinha, para você conciliar as alterações.</p>
+      </div>
+
+      <div class="cuidado">
+        <strong>Cuidado</strong>
+        <p>Antes de mesclar, use <span class="botao-ui f-fontes">Salvar como…</span> para guardar uma cópia do seu projeto. Se a mesclagem não ficar como você quer, a cópia permite voltar atrás.</p>
+      </div>
+
+      <nav class="navegacao-rodape" aria-label="Navegação entre páginas">
+        <a href="interface.html" rel="prev">
+          <small>Anterior</small>
+          <span>Conhecendo a tela</span>
+        </a>
+        <a href="fontes.html" rel="next">
+          <small>Próxima</small>
+          <span>Documentos e fontes</span>
+        </a>
+      </nav>
+
+    </div>
+  </main>
+
+</body>
+</html>

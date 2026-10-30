@@ -1,0 +1,209 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Início — Manual do labiia_quali</title>
+  <link rel="stylesheet" href="estilo.css">
+</head>
+<body>
+
+  <nav class="lateral" aria-label="Páginas do manual">
+    <div class="marca">
+      <strong>labiia_quali — Manual</strong>
+      <span>Versão 0.1.1 · Windows</span>
+    </div>
+    <ul>
+      <li><a href="index.html" class="atual" aria-current="page">Início</a></li>
+      <li><a href="instalacao.html">Instalação e R</a></li>
+      <li><a href="interface.html">Conhecendo a tela</a></li>
+      <li><a href="projetos.html">Projetos</a></li>
+      <li><a href="fontes.html">Documentos e fontes</a></li>
+      <li><a href="codificacao.html">Codificação</a></li>
+      <li><a href="livro-de-codigos.html">Livro de códigos</a></li>
+      <li><a href="analises.html">Consultas, análises e relatórios</a></li>
+      <li><a href="analises-lexicas.html">Análises léxicas</a></li>
+      <li><a href="problemas.html">Problemas comuns</a></li>
+      <li><a href="glossario.html">Glossário</a></li>
+      <li><a href="sobre.html">Sobre e créditos</a></li>
+    </ul>
+  </nav>
+
+  <main class="conteudo">
+    <div class="artigo">
+
+      <h1>Manual do labiia_quali</h1>
+      <p class="lead">Este manual ensina a usar o labiia_quali para organizar e analisar materiais de pesquisa qualitativa: entrevistas, grupos focais, documentos, imagens e gravações. Comece por aqui se é a primeira vez que você usa o programa.</p>
+
+      <h2>O que é o labiia_quali</h2>
+      <p>O labiia_quali é um programa para <strong>análise de dados qualitativos assistida por computador</strong>. Ele não analisa o material no seu lugar. Ele ajuda você a reunir os documentos da pesquisa, marcar trechos com <strong>códigos</strong> (palavras ou rótulos que dizem do que trata cada trecho), buscar esses trechos e comparar o que aparece em cada grupo de documentos.</p>
+      <p>Além disso, o programa traz <strong>análises léxicas</strong>, que olham para as palavras do texto como dados: nuvens de palavras, classificações de segmentos, redes de coocorrência, tópicos e análises de emoções. Essas análises foram trazidas do labiia_lex, programa de análise lexical de texto.</p>
+      <p>O labiia_quali é baseado no Magnolia, programa de Cale Davis. A versão em português, com as análises léxicas, foi desenvolvida por Rafael Sampaio, na UFPE. Os créditos completos estão na página <a href="sobre.html">Sobre e créditos</a>.</p>
+
+      <h2>Para quem é</h2>
+      <p>O programa foi pensado para pesquisadores e estudantes de humanas e ciências sociais que trabalham com texto, fala e imagem e não programam. Você não precisa saber estatística nem programação para usar a maior parte das funções. As análises léxicas que usam o R pedem uma instalação extra, descrita em <a href="instalacao.html">Instalação e R</a>.</p>
+
+      <h2>Caminho rápido: do primeiro projeto à primeira análise</h2>
+      <p>Estes seis passos cobrem o trabalho básico. Cada um tem uma página própria, com mais detalhes.</p>
+
+      <ol class="passos">
+        <li>
+          <strong><a href="projetos.html">Criar o projeto</a></strong>
+          <p>Escolha onde o arquivo do projeto será gravado e dê um nome a ele. O projeto guarda tudo: documentos, códigos e resultados.</p>
+        </li>
+        <li>
+          <strong><a href="fontes.html">Importar os documentos</a></strong>
+          <p>Traga textos, PDFs, áudios, vídeos e imagens da pesquisa para dentro do projeto. Eles passam a ser as suas fontes.</p>
+        </li>
+        <li>
+          <strong><a href="livro-de-codigos.html">Criar os códigos</a></strong>
+          <p>Monte o livro de códigos: a lista dos rótulos que você vai usar para classificar os trechos.</p>
+        </li>
+        <li>
+          <strong><a href="codificacao.html">Codificar os trechos</a></strong>
+          <p>Selecione um trecho do documento e aplique um ou mais códigos a ele. É aqui que o trabalho de leitura analítica acontece.</p>
+        </li>
+        <li>
+          <strong><a href="analises.html">Consultar e analisar</a></strong>
+          <p>Monte consultas por código ou por texto, veja quais documentos têm quais códigos e rode as análises da aba Análises.</p>
+        </li>
+        <li>
+          <strong><a href="analises.html">Exportar os resultados</a></strong>
+          <p>Reúna o que interessa num relatório em PDF e guarde o projeto em um arquivo que você pode copiar ou levar para outro computador.</p>
+        </li>
+      </ol>
+
+      <h2>Mapa do manual</h2>
+      <p>Cada cartão abre uma página. Você pode ler na ordem ou pular direto para o assunto de que precisa.</p>
+
+      <div class="cartoes">
+        <a class="cartao" href="instalacao.html">
+          <strong>Instalação e R</strong>
+          <span>Requisitos, o instalador, a etapa do R e a primeira abertura.</span>
+        </a>
+        <a class="cartao" href="interface.html">
+          <strong>Conhecendo a tela</strong>
+          <span>Cada parte da janela, as abas da faixa de opções e as Preferências.</span>
+        </a>
+        <a class="cartao f-fontes" href="projetos.html">
+          <strong>Projetos</strong>
+          <span>Criar, abrir, salvar, trabalhar em equipe e mesclar projetos.</span>
+        </a>
+        <a class="cartao f-fontes" href="fontes.html">
+          <strong>Documentos e fontes</strong>
+          <span>Como importar textos, PDFs, áudios, vídeos e imagens.</span>
+        </a>
+        <a class="cartao f-codificacao" href="codificacao.html">
+          <strong>Codificação</strong>
+          <span>Como marcar trechos com códigos e rever o que já foi codificado.</span>
+        </a>
+        <a class="cartao f-codificacao" href="livro-de-codigos.html">
+          <strong>Livro de códigos</strong>
+          <span>Como criar, organizar e importar os códigos da pesquisa.</span>
+        </a>
+        <a class="cartao f-analises" href="analises.html">
+          <strong>Consultas, análises e relatórios</strong>
+          <span>Como buscar trechos, comparar documentos e gerar relatórios.</span>
+        </a>
+        <a class="cartao f-lexicas" href="analises-lexicas.html">
+          <strong>Análises léxicas</strong>
+          <span>O que faz cada uma das análises de palavras e como ler os resultados.</span>
+        </a>
+        <a class="cartao" href="problemas.html">
+          <strong>Problemas comuns</strong>
+          <span>Mensagens que aparecem com frequência e o que fazer diante delas.</span>
+        </a>
+        <a class="cartao" href="glossario.html">
+          <strong>Glossário</strong>
+          <span>O sentido dos termos de método e dos nomes usados no programa.</span>
+        </a>
+        <a class="cartao f-afeto" href="sobre.html">
+          <strong>Sobre e créditos</strong>
+          <span>Quem criou o programa, a licença e as bibliotecas usadas.</span>
+        </a>
+      </div>
+
+      <h2 id="como-ler">Como ler este manual</h2>
+      <p>Algumas convenções se repetem em todas as páginas:</p>
+
+      <ul>
+        <li><strong>Nomes de botões e de telas</strong> aparecem como são escritos no programa, em português, com a cor da família de ações do botão. Exemplo: <span class="botao-ui f-fontes">Importar</span> e <span class="botao-ui f-codificacao">Livro de códigos</span>.</li>
+        <li><strong>Teclas</strong> aparecem assim: <kbd>Ctrl</kbd> + <kbd>S</kbd> significa segurar Ctrl e apertar S ao mesmo tempo.</li>
+        <li><strong>Caminhos de menu</strong> seguem a ordem dos cliques. Exemplo: Iniciar → Mesclar projetos…</li>
+        <li><strong>Passos numerados</strong> devem ser feitos na ordem indicada.</li>
+      </ul>
+
+      <p>As cores dos botões seguem a faixa de opções do programa:</p>
+
+      <div class="tabela">
+        <table>
+          <caption>Famílias de ações e suas cores</caption>
+          <thead>
+            <tr>
+              <th scope="col">Cor</th>
+              <th scope="col">Família</th>
+              <th scope="col">Exemplos de botões</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><span class="botao-ui f-fontes">Fontes</span></td>
+              <td>Entrar com material no projeto</td>
+              <td>Novo, Abrir, Importar, Nova pasta</td>
+            </tr>
+            <tr>
+              <td><span class="botao-ui f-codificacao">Codificação</span></td>
+              <td>Trabalhar com códigos</td>
+              <td>Livro de códigos, Características, Diário de bordo</td>
+            </tr>
+            <tr>
+              <td><span class="botao-ui f-consultas">Consulta</span></td>
+              <td>Buscar trechos</td>
+              <td>Consulta</td>
+            </tr>
+            <tr>
+              <td><span class="botao-ui f-analises">Análises</span></td>
+              <td>Comparar e resumir o que foi codificado</td>
+              <td>Códigos nos documentos, Matriz de síntese, Relatórios</td>
+            </tr>
+            <tr>
+              <td><span class="botao-ui f-lexicas">Análises léxicas</span></td>
+              <td>Analisar as palavras do texto</td>
+              <td>Nuvem de palavras, CHD, Tópicos LDA</td>
+            </tr>
+            <tr>
+              <td><span class="botao-ui f-afeto">Palavras-chave e afeto</span></td>
+              <td>Análises de afeto e de palavras-chave</td>
+              <td>YAKE, Sentimento, Emoções</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="dica">
+        <strong>Dica</strong>
+        <p>Botões sem cor (como Salvar, Desfazer e Preferências) são ações gerais do programa.</p>
+      </div>
+
+      <div class="cuidado">
+        <strong>Cuidado</strong>
+        <p>Os nomes deste manual são os da versão 0.1.1. Se a tela do seu programa estiver com outro nome, veja se o idioma está em Português (Brasil), em Preferências.</p>
+      </div>
+
+      <div class="atencao">
+        <strong>Atenção</strong>
+        <p>Antes de mexer em um projeto importante, faça uma cópia dele com Salvar como… Assim você tem um ponto de volta caso algo dê errado.</p>
+      </div>
+
+      <nav class="navegacao-rodape" aria-label="Navegação entre páginas">
+        <a href="instalacao.html" rel="next">
+          <small>Próxima</small>
+          <span>Instalação e R</span>
+        </a>
+      </nav>
+
+    </div>
+  </main>
+
+</body>
+</html>

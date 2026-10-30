@@ -1,0 +1,375 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Problemas comuns — Manual do labiia_quali</title>
+  <link rel="stylesheet" href="estilo.css">
+</head>
+<body>
+
+  <nav class="lateral" aria-label="Páginas do manual">
+    <div class="marca">
+      <strong>labiia_quali — Manual</strong>
+      <span>Versão 0.1.1 · Windows</span>
+    </div>
+    <ul>
+      <li><a href="index.html">Início</a></li>
+      <li><a href="instalacao.html">Instalação e R</a></li>
+      <li><a href="interface.html">Conhecendo a tela</a></li>
+      <li><a href="projetos.html">Projetos</a></li>
+      <li><a href="fontes.html">Documentos e fontes</a></li>
+      <li><a href="codificacao.html">Codificação</a></li>
+      <li><a href="livro-de-codigos.html">Livro de códigos</a></li>
+      <li><a href="analises.html">Consultas, análises e relatórios</a></li>
+      <li><a href="analises-lexicas.html">Análises léxicas</a></li>
+      <li><a href="problemas.html" class="atual" aria-current="page">Problemas comuns</a></li>
+      <li><a href="glossario.html">Glossário</a></li>
+      <li><a href="sobre.html">Sobre e créditos</a></li>
+    </ul>
+  </nav>
+
+  <main class="conteudo">
+    <div class="artigo">
+
+      <h1>Problemas comuns</h1>
+      <p class="lead">Respostas curtas para as dúvidas que mais aparecem. Cada item diz o que costuma causar o problema e o que fazer. Clique na pergunta para ver a resposta.</p>
+
+      <div class="dica">
+        <strong>Antes de tudo</strong>
+        <p>Se a mensagem na tela não estiver no quadro abaixo, anote o texto exato e o que você estava fazendo logo antes. Isso ajuda a achar a causa mais depressa.</p>
+      </div>
+
+      <h2>Instalação e R</h2>
+
+      <p>Algumas análises léxicas usam o R, um programa gratuito de estatística. São cinco: Nuvem de palavras, CHD, Similitude, Emoções e Tópicos LDA. As outras análises léxicas e todo o restante do programa funcionam sem o R.</p>
+
+      <div class="faq">
+        <details>
+          <summary>O Windows disse que “protegeu o computador” ao abrir o instalador. Posso continuar?</summary>
+          <p><strong>Causa.</strong> O instalador do labiia_quali não tem assinatura digital, então o Windows desconfia dele por padrão.</p>
+          <p><strong>Solução.</strong> Clique em <strong>Mais informações</strong> e depois em <strong>Executar assim mesmo</strong>. Faça isso apenas com um arquivo que veio de uma fonte em que você confia.</p>
+        </details>
+
+        <details>
+          <summary>O botão <span class="botao-ui f-lexicas">Executar</span> das análises léxicas está desligado e aparece “R não foi encontrado neste computador”.</summary>
+          <p><strong>Causa.</strong> O programa não achou o R instalado, ou o R é mais antigo que a versão 4.0.</p>
+          <p><strong>Solução.</strong></p>
+          <ol class="passos">
+            <li>
+              <strong>Se você não tem o R</strong>
+              <p>No painel de R da aba, clique em <span class="botao-ui f-lexicas">Baixar o R</span>. O site oficial do R abre no navegador. Instale a versão mais recente. Ao instalar o labiia_quali, o instalador também pode oferecer o R para você.</p>
+            </li>
+            <li>
+              <strong>Se você já tem o R</strong>
+              <p>Clique em <span class="botao-ui f-lexicas">Procurar de novo</span>. Se o programa continuar sem achar, clique em <span class="botao-ui f-lexicas">Indicar onde está o R…</span> e aponte o arquivo <code>Rscript.exe</code>, que fica dentro da pasta do R.</p>
+            </li>
+          </ol>
+        </details>
+
+        <details>
+          <summary>O programa diz que faltam pacotes do R, e o botão <span class="botao-ui f-lexicas">Executar</span> continua desligado.</summary>
+          <p><strong>Causa.</strong> Pacotes são pequenas peças extras que o R usa. Os testes precisam de alguns deles, e eles ainda não foram instalados na pasta do labiia_quali.</p>
+          <p><strong>Solução.</strong> No painel de R, clique em <span class="botao-ui f-lexicas">Instalar pacotes que faltam</span> e confirme. A instalação precisa de internet e pode levar alguns minutos. Os pacotes ficam numa pasta própria do labiia_quali, dentro de <code>AppData\Local\labiia_quali\R\library</code>, sem mexer nos outros R que você tenha.</p>
+          <div class="cuidado">
+            <strong>Se der “Não foi possível instalar”</strong>
+            <p>Confira a conexão com a internet e tente de novo. Se a internet estiver boa e o erro continuar, veja o texto em <strong>Detalhes do R</strong>, que é mais técnico, e leve essa mensagem a quem cuida do seu computador.</p>
+          </div>
+        </details>
+
+        <details>
+          <summary>Instalei o R, mas o programa continua dizendo que não o encontrou.</summary>
+          <p><strong>Causa.</strong> Duas possibilidades: a versão instalada é antiga, ou o R ficou numa pasta que o programa não procurou.</p>
+          <p><strong>Solução.</strong> No painel de R, leia a frase de versão. Se ela disser que o R é antigo demais, instale a versão 4.0 ou mais recente. Se a versão estiver certa, use <span class="botao-ui f-lexicas">Indicar onde está o R…</span> e aponte o <code>Rscript.exe</code>.</p>
+        </details>
+
+        <details>
+          <summary>A instalação do R falhou durante a instalação do labiia_quali.</summary>
+          <p><strong>Causa.</strong> Pode ter havido falha no download do R, na conexão ou na instalação de algum pacote.</p>
+          <p><strong>Solução.</strong> O labiia_quali continua instalado e funciona. Para ver o que aconteceu, abra o arquivo <code>AppData\Local\labiia_quali\logs\instalador-r.log</code>. Depois, instale o R pelo site oficial e use o painel de R do programa para instalar os pacotes que faltam.</p>
+        </details>
+
+        <details>
+          <summary>Não quero instalar o R agora. Posso usar o programa assim mesmo?</summary>
+          <p><strong>Sim.</strong> Você consegue importar documentos, codificar, fazer consultas, análises e relatórios, além das análises léxicas que não usam o R (Word Tree, Bigramas, Trigramas, YAKE, Associações de palavras-chave, Sentimento e Mapa temático). Os cinco testes que usam o R ficam desligados até você instalá-lo.</p>
+        </details>
+      </div>
+
+      <h2>Importar documentos</h2>
+
+      <div class="faq">
+        <details>
+          <summary>O Windows não deixou o labiia_quali abrir os arquivos, e a importação falhou com “acesso negado”.</summary>
+          <p><strong>Causa.</strong> É quase sempre o antivírus. Alguns antivírus, como o Avast, protegem arquivos em pastas como a Área de Trabalho e Documentos contra programas desconhecidos. Nesse caso, o programa mostra a mensagem “O Windows não deixou o labiia_quali abrir estes arquivos”.</p>
+          <p><strong>Solução.</strong> Você tem duas saídas:</p>
+          <ol class="passos">
+            <li>
+              <strong>Liberar o programa no antivírus</strong>
+              <p>No Avast, abra <strong>Proteção</strong> e veja o <strong>Escudo de dados confidenciais</strong> e o <strong>Escudo contra ransomware</strong>. Permita o labiia_quali nessas proteções, ou adicione o programa à lista de exceções. Outros antivírus têm recursos parecidos, com nomes diferentes.</p>
+            </li>
+            <li>
+              <strong>Copiar os arquivos para outra pasta</strong>
+              <p>Copie os arquivos para uma pasta fora da Área de Trabalho e de Documentos, por exemplo uma pasta criada só para a pesquisa, e importe de novo.</p>
+            </li>
+          </ol>
+        </details>
+
+        <details>
+          <summary>Tentei importar um arquivo <code>.doc</code> antigo e apareceu uma mensagem em inglês dizendo que ele não é suportado.</summary>
+          <p><strong>Causa.</strong> O formato <code>.doc</code> é da versão antiga do Word, e o labiia_quali não o lê na importação de documentos. Ele aceita o formato atual, <code>.docx</code>. Nesta versão, a mensagem sai em inglês.</p>
+          <p><strong>Solução.</strong> Abra o arquivo no Word, vá em <strong>Arquivo &gt; Salvar como</strong>, escolha o tipo <strong>Documento do Word (.docx)</strong>, salve e importe o novo arquivo.</p>
+          <div class="dica">
+            <strong>Exceção útil</strong>
+            <p>Para importar um livro de códigos, o <code>.doc</code> funciona. O programa o converte pelo Word ou pelo LibreOffice, se algum deles estiver instalado. Sem nenhum dos dois, salve como <code>.docx</code>.</p>
+          </div>
+        </details>
+
+        <details>
+          <summary>Arrastei uma pasta, ou um arquivo sem extensão, e nada entrou. Apareceram mensagens em inglês.</summary>
+          <p><strong>Causa.</strong> O programa não importa pastas nem arquivos sem extensão. As mensagens são <em>“Folders can’t be imported”</em> e <em>“Files without an extension can’t be imported”</em>.</p>
+          <p><strong>Solução.</strong> Abra a pasta e arraste os arquivos que estão dentro dela. Confira se o nome do arquivo termina em uma extensão aceita, como <code>.txt</code>, <code>.pdf</code>, <code>.docx</code>, <code>.rtf</code>, <code>.odt</code> ou <code>.md</code>.</p>
+        </details>
+
+        <details>
+          <summary>Aparece a mensagem dizendo que o labiia_quali não importa arquivos com aquela extensão.</summary>
+          <p><strong>Causa.</strong> O formato do arquivo não é um dos aceitos para documentos.</p>
+          <p><strong>Solução.</strong> Abra o arquivo no programa de origem e salve em um formato aceito, como <code>.docx</code>, <code>.pdf</code> ou <code>.txt</code>. Depois importe o novo arquivo.</p>
+        </details>
+
+        <details>
+          <summary>Um PDF ou uma imagem aparece como “Arquivo PDF indisponível” ou “Arquivo de imagem indisponível”.</summary>
+          <p><strong>Causa.</strong> O conteúdo desse documento não ficou gravado dentro do projeto. Sem ele, o programa só consegue mostrar o documento se você fornecer o arquivo original outra vez.</p>
+          <p><strong>Solução.</strong> Clique no aviso <strong>Reimportar…</strong> e escolha o arquivo original, ou use o item <strong>Reimportar documento</strong>. O documento volta a aparecer com o mesmo nome.</p>
+        </details>
+
+        <details>
+          <summary>Encontrei um erro de digitação num texto importado e não consigo corrigi-lo no programa.</summary>
+          <p><strong>Causa.</strong> Textos importados (TXT, Markdown, PDF, Word e questionários) não podem ser editados dentro do programa. Só as notas e as transcrições de áudio e vídeo podem ser editadas.</p>
+          <p><strong>Solução.</strong> Corrija o arquivo original, salve e importe de novo. Se o documento já tiver codificações, confira depois se elas continuam nos lugares certos.</p>
+        </details>
+
+        <details>
+          <summary>Quero que o programa transcreva meu áudio automaticamente.</summary>
+          <p><strong>Causa.</strong> O labiia_quali não tem reconhecimento automático de fala. A transcrição é feita por você.</p>
+          <p><strong>Solução.</strong> Abra o áudio ou o vídeo, escolha o <strong>Modo de transcrição</strong> e digite. Cada linha nova recebe automaticamente o momento em que o player está. Se você já tem uma transcrição feita em outro programa, use o botão <strong>Importar</strong> dentro do modo de transcrição. Ele aceita arquivos <code>.txt</code>, <code>.md</code>, <code>.srt</code>, <code>.vtt</code> e <code>.html</code> (formato do noScribe).</p>
+        </details>
+      </div>
+
+      <h2>Codificação</h2>
+
+      <div class="faq">
+        <details>
+          <summary>Selecionei um trecho e o balão <span class="botao-ui f-codificacao">Aplicar código</span> não apareceu.</summary>
+          <p><strong>Causa.</strong> O balão só aparece logo depois que você solta o mouse. Se você demorou ou clicou em outro lugar, ele some.</p>
+          <p><strong>Solução.</strong> Selecione o trecho de novo. Se preferir, clique com o botão direito sobre a seleção e escolha <strong>Aplicar código</strong> (a lista traz os códigos que têm atalho), ou arraste um código da lista até o trecho selecionado.</p>
+          <div class="dica">
+            <strong>Atalho</strong>
+            <p>Para aplicar um código com uma tecla, clique com o botão direito no código, na lista de códigos, e defina um atalho numérico. Depois, selecione o trecho e pressione <kbd>Ctrl</kbd> + o número.</p>
+          </div>
+        </details>
+
+        <details>
+          <summary>Não consigo codificar uma resposta do questionário.</summary>
+          <p><strong>Causa.</strong> Só as respostas abertas, de texto livre, podem receber códigos. Respostas de escolha, números e dados de identificação não podem.</p>
+          <p><strong>Solução.</strong> Codifique apenas as respostas abertas. Para comparar as escolhas, use as análises e a visão da pergunta.</p>
+        </details>
+
+        <details>
+          <summary>Apaguei um código e os trechos marcados com ele passaram a aparecer como “Desconhecido”.</summary>
+          <p><strong>Causa.</strong> Em <strong>Excluir</strong>, o código e todos os seus subcódigos saem da lista, sem pedir confirmação. Os trechos que tinham esses códigos continuam marcados nos documentos, mas sem um código válido.</p>
+          <p><strong>Solução.</strong></p>
+          <ol class="passos">
+            <li>
+              <strong>Se foi agora há pouco</strong>
+              <p>Pressione <kbd>Ctrl</kbd> + <kbd>Z</kbd>. A exclusão do código é desfeita.</p>
+            </li>
+            <li>
+              <strong>Se já não der para desfazer</strong>
+              <p>Abra o documento, clique com o botão direito na marca <strong>Desconhecido</strong> e escolha <strong>Remover código</strong>. Repita para cada trecho que ficou sem código.</p>
+            </li>
+          </ol>
+        </details>
+
+        <details>
+          <summary>Juntei dois códigos com <strong>Mesclar</strong> e os subcódigos do primeiro sumiram.</summary>
+          <p><strong>Causa.</strong> Ao mesclar, o código de origem sai da lista junto com os seus subcódigos. Os trechos desses subcódigos continuam marcados, mas sem código válido.</p>
+          <p><strong>Solução.</strong> Antes de mesclar, arraste os subcódigos para outro código ou para a área vazia do painel, que os leva para o nível de cima. Se você já mesclou, pressione <kbd>Ctrl</kbd> + <kbd>Z</kbd> logo em seguida.</p>
+          <div class="cuidado">
+            <strong>Sobre a confirmação ao mesclar</strong>
+            <p>A janela de confirmação diz que a mesclagem não pode ser desfeita, mas o <kbd>Ctrl</kbd> + <kbd>Z</kbd> costuma desfazê-la. Não conte com isso depois de muitas outras mudanças, e faça uma cópia do projeto antes de mesclar muitos códigos.</p>
+          </div>
+        </details>
+
+        <details>
+          <summary>Depois de mesclar, um mesmo trecho apareceu com o mesmo código duas vezes.</summary>
+          <p><strong>Causa.</strong> Ao mesclar, o programa passa as marcações do código de origem para o de destino, mas não confere se o trecho já tinha o de destino.</p>
+          <p><strong>Solução.</strong> Clique com o botão direito sobre a marca repetida e escolha <strong>Remover código</strong>. Isso tira uma das duas marcas do trecho.</p>
+        </details>
+
+        <details>
+          <summary>Dei duplo clique num código e, em vez de renomeá-lo, abriu uma lista de trechos.</summary>
+          <p><strong>Causa.</strong> O duplo clique, na lista de códigos, abre todos os trechos codificados com aquele código, na janela de resultados.</p>
+          <p><strong>Solução.</strong> Para mudar o nome, clique com o botão direito no código e escolha <strong>Renomear</strong> (edita na própria linha) ou <strong>Editar código</strong> (abre uma caixa com nome, cor, descrição e atalho).</p>
+        </details>
+
+        <details>
+          <summary>Não consigo mexer nos códigos e aparece um aviso de que alguém está trabalhando no arquivo.</summary>
+          <p><strong>Causa.</strong> O projeto está com outra pessoa, e o labiia_quali bloqueia as mudanças para evitar perda de trabalho. Veja a resposta “O projeto aparece como Bloqueado” na seção <a href="#projetos-bloqueado">Projetos e arquivos</a>.</p>
+        </details>
+      </div>
+
+      <h2>Análises léxicas</h2>
+
+      <div class="faq">
+        <details>
+          <summary>O resultado tem palavras estranhas, ou as palavras aparecem cortadas e sem sentido.</summary>
+          <p><strong>Causa.</strong> O idioma escolhido na aba não é o idioma do texto. A lematização (que reduz cada palavra à forma do dicionário) e a lista de palavras vazias seguem o idioma escolhido, então um texto em português analisado como inglês sai errado.</p>
+          <p><strong>Solução.</strong> Confira o campo <strong>Idioma do corpus</strong>, escolha o idioma certo e clique em <span class="botao-ui f-lexicas">Executar de novo</span>. Não é preciso importar os documentos outra vez.</p>
+          <div class="dica">
+            <strong>Linhas de cabeçalho</strong>
+            <p>Uma linha que começa com <code>****</code> (no texto) ou <code>-*</code> (no tema) é tratada como cabeçalho do formato IRaMuTeQ. Ela fica fora da análise, e o corte recomeça depois dela.</p>
+          </div>
+        </details>
+
+        <details>
+          <summary>O Sentimento não roda, ou aparece a mensagem de que ele usa um léxico em português.</summary>
+          <p><strong>Causa.</strong> O Sentimento usa o OpLexicon, um léxico de palavras positivas e negativas feito para o português. Em inglês e em espanhol, o teste não funciona.</p>
+          <p><strong>Solução.</strong> Escolha <strong>Português</strong> como idioma do corpus e execute de novo.</p>
+        </details>
+
+        <details>
+          <summary>A CHD, o LDA ou o Mapa temático dão erro dizendo que o corpus é pequeno.</summary>
+          <p><strong>Causa.</strong> Há poucos segmentos ou poucas palavras para o número de classes, tópicos ou temas que você pediu, com a frequência mínima escolhida.</p>
+          <p><strong>Solução.</strong> Use mais documentos, ou diminua a <strong>Frequência mínima</strong>, ou diminua o número de classes (na CHD) ou de tópicos (no LDA). A própria mensagem de erro sugere o ajuste.</p>
+        </details>
+
+        <details>
+          <summary>O R parou e apareceu “O R passou do tempo limite”.</summary>
+          <p><strong>Causa.</strong> Cada teste em R tem um limite de tempo: 10 minutos na Nuvem de palavras, na Similitude e nas Emoções, e 15 minutos na CHD e no LDA. Corpora grandes ou parâmetros pesados passam desse limite.</p>
+          <p><strong>Solução.</strong> Rode com menos documentos ou com menos palavras (diminua o número de palavras mostradas ou o de formas ativas da CHD).</p>
+        </details>
+
+        <details>
+          <summary>A primeira execução demorou muito, e a segunda foi rápida.</summary>
+          <p><strong>Causa.</strong> Na primeira vez, o programa prepara o corpus: corta os textos em segmentos e lematiza as palavras. Esse preparo fica guardado em um cache, então, com os mesmos documentos e configurações, a segunda execução começa direto.</p>
+          <p><strong>Solução.</strong> Nada a fazer. Com muitos documentos, a primeira preparação pode levar alguns minutos.</p>
+        </details>
+
+        <details>
+          <summary>Apareceu um aviso dizendo que o resultado está desatualizado.</summary>
+          <p><strong>Causa.</strong> Você mudou os documentos, o idioma ou algum parâmetro depois de rodar a análise.</p>
+          <p><strong>Solução.</strong> Clique em <span class="botao-ui f-lexicas">Executar de novo</span>.</p>
+        </details>
+
+        <details>
+          <summary>Um documento não entrou na análise.</summary>
+          <p><strong>Causa.</strong> Documentos sem texto, como imagens e PDFs digitalizados sem texto reconhecível, ficam de fora. O programa mostra um aviso com até cinco nomes.</p>
+          <p><strong>Solução.</strong> Para entrar na análise, o documento precisa ter texto. Se o texto estiver numa imagem, transcreva-o antes e importe a transcrição.</p>
+        </details>
+
+        <details>
+          <summary>Renomeei um documento e o resultado da CHD, do LDA ou do Mapa temático mudou.</summary>
+          <p><strong>Causa.</strong> Esses testes, e também o YAKE, leem os documentos em ordem alfabética de nome. Mudar o nome muda a ordem e, com ela, o resultado.</p>
+          <p><strong>Solução.</strong> Mantenha os nomes estáveis durante a pesquisa. Se precisar renomear, rode a análise de novo para ter um resultado atualizado.</p>
+        </details>
+
+        <details>
+          <summary>A Word Tree diz que a palavra não existe no corpus.</summary>
+          <p><strong>Causa.</strong> A palavra escrita não aparece no corpus, ou aparece menos vezes que a <strong>Frequência mínima</strong> pedida. Também pode ser que nenhum ramo passe do mínimo de frequência do ramo.</p>
+          <p><strong>Solução.</strong> Confira a grafia. Se você deixar o campo <strong>Palavra</strong> vazio, a ferramenta escolhe a palavra mais frequente. Em <strong>Mais parâmetros</strong>, diminua a frequência mínima.</p>
+        </details>
+
+        <details>
+          <summary>A CHD não encontrou classes estáveis.</summary>
+          <p><strong>Causa.</strong> Com essa combinação de classes, frequência mínima e corpus, o programa não consegue dividir os segmentos de modo estável.</p>
+          <p><strong>Solução.</strong> Diminua o número de classes ou a frequência mínima, ou acrescente documentos.</p>
+        </details>
+      </div>
+
+      <h2>Projetos e arquivos</h2>
+
+      <div class="faq">
+        <details id="projetos-bloqueado">
+          <summary>O projeto aparece com o botão <span class="botao-ui">Bloqueado</span>.</summary>
+          <p><strong>Causa.</strong> Outra pessoa está com o projeto aberto e alterando. A reserva é automática: ao fazer a primeira mudança num projeto salvo, o programa reserva o arquivo para quem está editando. O botão mostra quem está com o projeto e desde quando.</p>
+          <p><strong>Solução.</strong> Clique no botão <strong>Bloqueado</strong> e escolha uma das opções:</p>
+          <ul>
+            <li><strong>Cancelar</strong>: o projeto fica só para leitura. Você pode consultar, mas não mudar nada.</li>
+            <li><strong>Criar uma cópia</strong>: você trabalha numa cópia ao lado do original. Depois, use <strong>Iniciar &gt; Mesclar projetos…</strong> para trazer o seu trabalho de volta.</li>
+            <li><strong>Assumir o controle mesmo assim</strong>: use só quando a outra pessoa já parou de trabalhar. Se as duas pessoas mexeram no mesmo ponto, algumas alterações podem se sobrepor.</li>
+          </ul>
+          <div class="dica">
+            <strong>Seu nome</strong>
+            <p>Para que os colegas vejam quem está com o projeto, o programa usa o nome que você informou. Confira em <strong>Ajuda &gt; Preferências &gt; Geral &gt; Seu nome</strong>.</p>
+          </div>
+        </details>
+
+        <details>
+          <summary>O programa recusou salvar e mostrou um aviso sobre um projeto vazio.</summary>
+          <p><strong>Causa.</strong> Por proteção, o labiia_quali não grava um projeto vazio por cima de um arquivo que já tinha conteúdo. Isso evita perder o trabalho por acidente.</p>
+          <p><strong>Solução.</strong> Confira se o projeto aberto é o certo. Se você abriu um arquivo vazio por engano, feche o programa, abra o arquivo correto pelo botão <strong>Abrir</strong> ou pelos projetos recentes, e continue o trabalho a partir dele.</p>
+        </details>
+
+        <details>
+          <summary>Não sei se meu trabalho foi salvo antes de eu fechar o programa.</summary>
+          <p><strong>Causa.</strong> Não houve falha. O labiia_quali salva sozinho cerca de 2 segundos depois de cada alteração.</p>
+          <p><strong>Solução.</strong> Olhe a barra de título, que mostra <strong>Salvo</strong> quando tudo está gravado. Ao fechar, o programa pergunta <em>“Fechar o labiia_quali?”</em> e grava o que estiver pendente antes de sair.</p>
+        </details>
+
+        <details>
+          <summary>Removi um documento sem querer. O programa não pediu confirmação.</summary>
+          <p><strong>Causa.</strong> Em <strong>Remover documento</strong>, o documento sai do projeto na hora, sem janela de confirmação.</p>
+          <p><strong>Solução.</strong> Pressione <kbd>Ctrl</kbd> + <kbd>Z</kbd> logo em seguida. O documento volta com o texto, as codificações e as citações que tinha. Os memos ligados a ele, porém, não voltam. Excluir uma nota funciona do mesmo jeito.</p>
+          <div class="cuidado">
+            <strong>Não espere muito</strong>
+            <p>O Ctrl+Z desfaz a última mudança, e o histórico tem um limite de passos. Quanto mais você mexer no projeto depois, mais difícil fica voltar atrás.</p>
+          </div>
+        </details>
+
+        <details>
+          <summary>Abri um projeto do NVivo (arquivo <code>.nvp</code>) e nada aconteceu.</summary>
+          <p><strong>Causa.</strong> O arquivo <code>.nvp</code> é o formato próprio do NVivo. O labiia_quali lê projetos no padrão de troca REFI-QDA, que usa a extensão <code>.qdpx</code>.</p>
+          <p><strong>Solução.</strong> No NVivo, exporte o projeto no formato REFI-QDA (<code>.qdpx</code>), se a sua versão do programa oferecer essa opção. Depois, abra o arquivo <code>.qdpx</code> aqui, pelo botão <strong>Abrir</strong>.</p>
+        </details>
+
+        <details>
+          <summary>Abri um projeto no MAXQDA ou no ATLAS.ti e faltaram atributos, pastas ou consultas.</summary>
+          <p><strong>Causa.</strong> Atributos e valores, pastas, consultas e análises salvas são guardados em arquivos próprios do labiia_quali. Os outros programas não leem esses arquivos.</p>
+          <p><strong>Solução.</strong> Use o labiia_quali para continuar o trabalho. Para levar tabelas para outro lugar, exporte em CSV, e para levar relatórios, exporte em PDF.</p>
+        </details>
+
+        <details>
+          <summary>Não encontro a opção de mesclar projetos.</summary>
+          <p><strong>Causa.</strong> A opção fica só no botão <strong>Iniciar</strong>, no canto superior esquerdo.</p>
+          <p><strong>Solução.</strong> Clique em <strong>Iniciar &gt; Mesclar projetos…</strong>, escolha o outro arquivo <code>.qdpx</code> e revise as diferenças antes de aplicar.</p>
+        </details>
+
+        <details>
+          <summary>Os projetos recentes sumiram da lista.</summary>
+          <p><strong>Causa.</strong> O programa tira da lista os arquivos que não existem mais no lugar anterior, por exemplo porque foram movidos ou apagados.</p>
+          <p><strong>Solução.</strong> Clique em <strong>Abrir</strong> e escolha <strong>Procurar outro projeto…</strong>, para localizar o arquivo na nova pasta.</p>
+        </details>
+
+        <details>
+          <summary>Desinstalei o labiia_quali e agora tenho medo de ter perdido os meus projetos.</summary>
+          <p><strong>Causa.</strong> Não houve perda. Os projetos são arquivos <code>.qdpx</code> que você salvou em alguma pasta. Desinstalar o programa não apaga os dados dele.</p>
+          <p><strong>Solução.</strong> Nada a fazer. Basta abrir o arquivo <code>.qdpx</code> numa nova instalação.</p>
+        </details>
+      </div>
+
+      <nav class="navegacao-rodape" aria-label="Navegação entre páginas">
+        <a href="analises-lexicas.html" rel="prev">
+          <small>Anterior</small>
+          <span>Análises léxicas</span>
+        </a>
+        <a href="glossario.html" rel="next">
+          <small>Próxima</small>
+          <span>Glossário</span>
+        </a>
+      </nav>
+
+    </div>
+  </main>
+
+</body>
+</html>

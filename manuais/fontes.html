@@ -1,0 +1,509 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Documentos e fontes — Manual do labiia_quali</title>
+  <link rel="stylesheet" href="estilo.css">
+</head>
+<body>
+
+  <nav class="lateral" aria-label="Páginas do manual">
+    <div class="marca">
+      <strong>labiia_quali — Manual</strong>
+      <span>Versão 0.1.1 · Windows</span>
+    </div>
+    <ul>
+      <li><a href="index.html">Início</a></li>
+      <li><a href="instalacao.html">Instalação e R</a></li>
+      <li><a href="interface.html">Conhecendo a tela</a></li>
+      <li><a href="projetos.html">Projetos</a></li>
+      <li><a href="fontes.html" class="atual" aria-current="page">Documentos e fontes</a></li>
+      <li><a href="codificacao.html">Codificação</a></li>
+      <li><a href="livro-de-codigos.html">Livro de códigos</a></li>
+      <li><a href="analises.html">Consultas, análises e relatórios</a></li>
+      <li><a href="analises-lexicas.html">Análises léxicas</a></li>
+      <li><a href="problemas.html">Problemas comuns</a></li>
+      <li><a href="glossario.html">Glossário</a></li>
+      <li><a href="sobre.html">Sobre e créditos</a></li>
+    </ul>
+  </nav>
+
+  <main class="conteudo">
+    <div class="artigo">
+
+      <h1>Documentos e fontes</h1>
+      <p class="lead">Fonte é qualquer material que você traz para a pesquisa: um texto de entrevista, um PDF, uma foto, um áudio, um vídeo ou uma planilha de questionário. Esta página explica quais arquivos entram, como importá-los, como organizá-los no painel <strong>Documentos</strong> e como ler cada tipo.</p>
+
+      <h2>O que é uma fonte</h2>
+      <p>Quando você importa um arquivo, o labiia_quali guarda uma cópia dele dentro do projeto. Por isso, depois de importado, o documento faz parte do seu projeto (arquivo <code>.qdpx</code>) e não depende mais da pasta de origem. Você pode mexer ou apagar o arquivo original sem perder a fonte.</p>
+      <p>Cada fonte aparece no painel <strong>Documentos</strong>, na lateral da tela. É ali que você organiza, abre e lê o material. A codificação, isto é, marcar trechos com códigos, é tratada em <a href="codificacao.html">Codificação</a>.</p>
+
+      <h2>Tipos de arquivo aceitos</h2>
+      <p>O programa aceita os tipos abaixo. Quando um tipo é convertido na importação, a tabela diz o que você vê depois.</p>
+
+      <div class="tabela">
+        <table>
+          <caption>Tipos de fonte aceitos e o que acontece com cada um</caption>
+          <thead>
+            <tr>
+              <th scope="col">Tipo</th>
+              <th scope="col">Extensões</th>
+              <th scope="col">O que você vê no programa</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Texto simples</td>
+              <td><code>.txt</code></td>
+              <td>O texto aparece para leitura e seleção de trechos.</td>
+            </tr>
+            <tr>
+              <td>Markdown</td>
+              <td><code>.md</code>, <code>.markdown</code></td>
+              <td>Texto com a formatação mostrada, para leitura e seleção.</td>
+            </tr>
+            <tr>
+              <td>PDF</td>
+              <td><code>.pdf</code></td>
+              <td>Páginas com rolagem, zoom e dois modos de seleção.</td>
+            </tr>
+            <tr>
+              <td>Word</td>
+              <td><code>.docx</code></td>
+              <td>Convertido para PDF na importação e lido como PDF.</td>
+            </tr>
+            <tr>
+              <td>RTF</td>
+              <td><code>.rtf</code></td>
+              <td>Convertido para PDF na importação e lido como PDF.</td>
+            </tr>
+            <tr>
+              <td>OpenDocument (LibreOffice, BrOffice)</td>
+              <td><code>.odt</code></td>
+              <td>Convertido para PDF na importação e lido como PDF.</td>
+            </tr>
+            <tr>
+              <td>Questionário</td>
+              <td><code>.csv</code>, <code>.xlsx</code></td>
+              <td>Vira um questionário, com respondentes e perguntas. Em <code>.xlsx</code>, só a primeira planilha é lida.</td>
+            </tr>
+            <tr>
+              <td>Imagem</td>
+              <td><code>.jpg</code>, <code>.jpeg</code>, <code>.png</code>, <code>.gif</code>, <code>.webp</code></td>
+              <td>A imagem aparece com zoom e seleção de região.</td>
+            </tr>
+            <tr>
+              <td>Imagem convertida</td>
+              <td><code>.tif</code>, <code>.tiff</code>, <code>.heic</code>, <code>.heif</code></td>
+              <td>Convertida para PNG na importação. Você passa a ver a versão PNG.</td>
+            </tr>
+            <tr>
+              <td>Áudio</td>
+              <td><code>.wav</code>, <code>.mp3</code>, <code>.ogg</code>, <code>.flac</code>, <code>.m4a</code>, <code>.aac</code></td>
+              <td>Player com controles e área de transcrição.</td>
+            </tr>
+            <tr>
+              <td>Vídeo</td>
+              <td><code>.mp4</code>, <code>.mov</code>, <code>.avi</code></td>
+              <td>Player com o vídeo acima da área de transcrição.</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="cuidado">
+        <strong>Word antigo (.doc) não entra</strong>
+        <p>Arquivos <code>.doc</code> do Word antigo não entram. O programa avisa que não conseguiu abrir o arquivo e pede para salvá-lo como <code>.docx</code>. Abra o arquivo no Word ou no LibreOffice, use <strong>Salvar como</strong> e escolha o formato <code>.docx</code>. Depois importe a versão nova.</p>
+      </div>
+
+      <div class="dica">
+        <strong>Pastas e arquivos sem extensão</strong>
+        <p>Você não pode importar uma pasta inteira. Abra a pasta e arraste os arquivos de dentro dela. Arquivos sem extensão também são recusados. Se o tipo não for aceito, o programa avisa com a frase <em>O labiia_quali não importa arquivos .ext</em>, trocando <em>ext</em> pela extensão do arquivo.</p>
+      </div>
+
+      <h2>Importar fontes</h2>
+      <p>Você pode importar quantos arquivos quiser de uma vez. Há três caminhos, todos com o mesmo resultado:</p>
+      <ul>
+        <li>Botão <span class="botao-ui f-fontes">+</span> no cabeçalho do painel <strong>Documentos</strong> (a dica do botão mostra <em>Importar fontes</em>).</li>
+        <li>Aba <strong>Início</strong> e botão <span class="botao-ui f-fontes">Importar</span>.</li>
+        <li>Menu <strong>Iniciar</strong> e opção <strong>Importar fontes…</strong>. Também existe <strong>Arquivo</strong> &gt; <strong>Importar documento…</strong>.</li>
+      </ul>
+
+      <ol class="passos">
+        <li>
+          <strong>Abra um projeto</strong>
+          <p>A importação só funciona com um projeto aberto. Se a tela estiver vazia, comece por <em>Projetos</em>.</p>
+        </li>
+        <li>
+          <strong>Escolha a forma de importar</strong>
+          <p>Clique em <span class="botao-ui f-fontes">+</span> no painel <strong>Documentos</strong> ou use um dos caminhos da lista acima.</p>
+        </li>
+        <li>
+          <strong>Selecione os arquivos</strong>
+          <p>Na janela <strong>Importar documento</strong>, use <kbd>Ctrl</kbd> + clique para escolher arquivos separados, ou <kbd>Shift</kbd> + clique para escolher um intervalo. Depois clique em <strong>Abrir</strong>.</p>
+        </li>
+        <li>
+          <strong>Confira a lista</strong>
+          <p>Os arquivos aparecem no painel <strong>Documentos</strong>, cada um com a cor do seu tipo. Se algum arquivo não entrar, aparece a mensagem <em>Não foi possível importar N arquivo(s)</em>, com o nome de cada um e o motivo.</p>
+        </li>
+      </ol>
+
+      <h3>Arrastar arquivos do Explorador</h3>
+      <p>Você também pode arrastar arquivos da pasta do Windows (Explorador de Arquivos) direto para o painel <strong>Documentos</strong>:</p>
+      <ul>
+        <li>Se soltar sobre uma <strong>pasta</strong> da lista, os arquivos entram nela.</li>
+        <li>Se soltar sobre a <strong>área vazia</strong> do painel, os arquivos entram na raiz (o nível mais alto da lista).</li>
+      </ul>
+
+      <h2>Organizar no painel Documentos</h2>
+      <p>O painel é uma lista com pastas e documentos. Você pode criar a organização que quiser, por exemplo uma pasta para cada grupo de entrevistas.</p>
+
+      <h3>Pastas e cadernos</h3>
+      <ul>
+        <li><span class="botao-ui f-fontes">Criar nova pasta</span> (ícone de pasta com +) cria uma pasta. Use o menu da pasta para criar uma subpasta.</li>
+        <li><span class="botao-ui f-fontes">Criar caderno</span> (ícone de caderno com lápis) cria um caderno. O caderno guarda apenas <strong>notas</strong> escritas no programa. Veja <a href="#notas">Notas e memos</a>.</li>
+        <li>Clique numa pasta para abrir ou fechar. A seta à esquerda mostra se ela está aberta.</li>
+      </ul>
+
+      <h3>Buscar</h3>
+      <p>Clique na lupa <span class="botao-ui f-fontes">Filtrar documentos</span> para abrir o campo de busca. A busca procura pelo <strong>nome</strong> de documentos e pastas, sem diferenciar maiúsculas de minúsculas. Pastas que contêm um resultado continuam visíveis, com aparência mais clara. A busca não procura dentro do texto nem nas características. Para fechar a busca, pressione <kbd>Esc</kbd> ou clique no X.</p>
+
+      <h3>Renomear, mover e reordenar</h3>
+      <ol class="passos">
+        <li>
+          <strong>Renomear</strong>
+          <p>Clique com o botão direito no item e escolha <strong>Renomear</strong>. O nome vira um campo na própria linha. Pressione <kbd>Enter</kbd> para salvar ou <kbd>Esc</kbd> para cancelar. Um nome vazio não é salvo.</p>
+        </li>
+        <li>
+          <strong>Mover para uma pasta</strong>
+          <p>Arraste o documento sobre a pasta de destino. Também é possível clicar com o botão direito e escolher <strong>Mover para pasta</strong>. Para levar algo de volta à raiz, use <strong>Mover para a raiz</strong>.</p>
+        </li>
+        <li>
+          <strong>Mover várias fontes de uma vez</strong>
+          <p>Selecione várias com <kbd>Ctrl</kbd> + clique (escolhe ou desfaz uma) ou <kbd>Shift</kbd> + clique (escolhe um intervalo). Depois arraste o grupo para a pasta.</p>
+        </li>
+        <li>
+          <strong>Reordenar</strong>
+          <p>Arraste o documento para cima ou para baixo, numa linha que aparece entre os itens. Pastas também podem ser arrastadas para dentro de outra pasta.</p>
+        </li>
+      </ol>
+
+      <h3>Remover fontes e pastas</h3>
+      <p>Clique com o botão direito em um ou mais documentos e escolha <strong>Remover documento</strong> (ou <strong>Remover N documentos</strong>). Para apagar uma pasta, escolha <strong>Excluir pasta</strong>.</p>
+
+      <div class="atencao">
+        <strong>Remover documento não pede confirmação</strong>
+        <p>Ao escolher <strong>Remover documento</strong>, o documento sai do projeto na hora, sem janela de confirmação. Os memos e as citações ligados a ele também são apagados. Não há desfazer nesta ação. Antes de remover, confira a seleção. Se estiver em dúvida, copie o arquivo original para outro lugar antes.</p>
+      </div>
+
+      <div class="dica">
+        <strong>Excluir pasta não apaga os documentos</strong>
+        <p>Quando você exclui uma pasta, os documentos que estavam dentro dela voltam para a raiz. Só a pasta some. Pastas com notas (cadernos) pedem confirmação antes de apagar as notas.</p>
+      </div>
+
+      <h3>Ícones coloridos por tipo</h3>
+      <p>Cada item tem uma cor que mostra o tipo. Assim você vê o tipo sem abrir o documento.</p>
+
+      <div class="tabela">
+        <table>
+          <caption>Cores dos ícones no painel Documentos</caption>
+          <thead>
+            <tr>
+              <th scope="col">Cor</th>
+              <th scope="col">Tipo</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr><td>Vermelho</td><td>PDF</td></tr>
+            <tr><td>Azul</td><td>Word, RTF e OpenDocument</td></tr>
+            <tr><td>Cinza-ardósia</td><td>Texto simples e Markdown</td></tr>
+            <tr><td>Verde</td><td>Imagem</td></tr>
+            <tr><td>Laranja</td><td>Áudio</td></tr>
+            <tr><td>Rosa</td><td>Vídeo</td></tr>
+            <tr><td>Violeta</td><td>Questionário</td></tr>
+            <tr><td>Âmbar</td><td>Nota</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <p>Um documento com características mostra um pequeno chip com o número delas. Passe o mouse sobre o chip para ver os nomes. Clique nele para abrir o menu de características do documento.</p>
+
+      <h2>Ler cada tipo</h2>
+      <p>Para abrir um documento, dê <strong>duplo clique</strong> nele. Ele abre numa aba na área principal. Você também pode clicar com o botão direito e escolher <strong>Exibir</strong>. Abas podem ser fechadas com o X.</p>
+
+      <h3>Texto, Markdown, Word, RTF e OpenDocument</h3>
+      <p>O texto aparece para leitura. Para marcar um trecho, selecione-o com o mouse. Aparece o balão <span class="botao-ui f-codificacao">Aplicar código</span>, e você também pode clicar com o botão direito na seleção para adicionar um memo ou uma citação.</p>
+      <div class="cuidado">
+        <strong>O texto importado não se edita</strong>
+        <p>O texto de uma fonte importada é só para leitura. Se precisar corrigir o arquivo, faça a correção no arquivo original, remova a fonte e importe a versão corrigida. As notas, que você escreve no programa, podem ser editadas normalmente.</p>
+      </div>
+
+      <h3>PDF</h3>
+      <p>O PDF mostra as páginas, com rolagem. Na barra no topo, há dois modos de seleção:</p>
+      <ul>
+        <li><strong>Seleção de texto</strong> (padrão): você seleciona palavras e frases com o mouse, como num texto comum.</li>
+        <li><strong>Seleção de área</strong>: você desenha um retângulo sobre a página. Use quando o trecho é uma tabela, uma figura ou uma área do desenho da página.</li>
+      </ul>
+      <p>Para ampliar ou reduzir, use os botões <strong>Aumentar zoom</strong>, <strong>Diminuir zoom</strong>, <strong>Voltar para 100%</strong> e <strong>Ajustar à tela</strong>. Enquanto o arquivo carrega, aparece a mensagem <em>Carregando PDF...</em>. Se o arquivo original tiver sumido do projeto, aparece <em>Arquivo PDF indisponível</em>.</p>
+
+      <h3>Imagens</h3>
+      <p>A imagem abre com o mesmo zoom do PDF. Para marcar uma parte, clique e arraste o mouse para desenhar um retângulo sobre ela. Esse retângulo é a região selecionada, e pode receber códigos e memos. Se o arquivo tiver sumido, aparece <em>Arquivo de imagem indisponível</em>.</p>
+
+      <h3>Áudio e vídeo</h3>
+      <p>O áudio mostra uma forma de onda e um player com estes controles:</p>
+      <ul>
+        <li><strong>Reproduzir</strong> e <strong>Pausar</strong>.</li>
+        <li><strong>Voltar</strong> e <strong>Avançar</strong>. Segure o botão para repetir o movimento.</li>
+        <li>Controle de volume e botão de <strong>mudo</strong>.</li>
+      </ul>
+      <p>O vídeo tem os mesmos controles, com a imagem acima da área de texto da transcrição. Se um vídeo <code>.mov</code> ou <code>.avi</code> não tocar, converta-o para <code>.mp4</code> e importe de novo.</p>
+
+      <h2 id="transcricao">Transcrever áudio e vídeo</h2>
+
+      <div class="atencao">
+        <strong>A transcrição é manual</strong>
+        <p>O labiia_quali <strong>não</strong> transcreve a fala sozinho. Ele não reconhece as palavras do áudio. Quem escreve o texto é você (ou alguém da equipe). O programa ajuda a escrever: ele grava o instante do áudio em que cada linha começa.</p>
+      </div>
+
+      <p>Para que serve: transcrever é passar a fala para texto escrito, para poder ler, codificar e buscar. Um texto transcrito também pode ser importado, se você já tiver a transcrição em outro programa.</p>
+
+      <h3>Escrever a transcrição</h3>
+      <ol class="passos">
+        <li>
+          <strong>Abra o áudio ou o vídeo</strong>
+          <p>Dê duplo clique no documento no painel <strong>Documentos</strong>.</p>
+        </li>
+        <li>
+          <strong>Mude para o modo de transcrição</strong>
+          <p>Clique na aba <strong>Modo de transcrição</strong> (ou em <em>Mudar para o modo de transcrição</em>). A área de texto aparece.</p>
+        </li>
+        <li>
+          <strong>Digite a fala</strong>
+          <p>Clique na área de texto e escreva. A cada <kbd>Enter</kbd>, a nova linha recebe automaticamente o instante em que o áudio está tocando. Por isso, toque o áudio, pause quando precisar e continue escrevendo.</p>
+        </li>
+        <li>
+          <strong>Volte e ouça de novo</strong>
+          <p>Use <strong>Voltar</strong>, <strong>Avançar</strong> e <strong>Reproduzir</strong> para ouvir de novo um trecho difícil.</p>
+        </li>
+        <li>
+          <strong>Passe para a codificação</strong>
+          <p>Quando terminar, clique na aba <strong>Modo de codificação</strong>. Ali aparece uma trilha de tempo acima do texto. Clicar numa linha leva o player até aquele instante.</p>
+        </li>
+      </ol>
+
+      <div class="cuidado">
+        <strong>No modo de transcrição, a codificação fica bloqueada</strong>
+        <p>Enquanto você está transcrevendo, a mensagem <em>Digite para transcrever. A codificação fica bloqueada.</em> aparece. Para codificar, mude para o <strong>Modo de codificação</strong>.</p>
+      </div>
+
+      <h3>Importar uma transcrição pronta</h3>
+      <p>Se você já tem a transcrição em arquivo, pode importá-la no modo de transcrição, pelo botão de importar (ou em <strong>Arquivo</strong> &gt; <strong>Importar transcrição</strong>). Formatos aceitos:</p>
+
+      <div class="tabela">
+        <table>
+          <caption>Formatos de transcrição que podem ser importados</caption>
+          <thead>
+            <tr>
+              <th scope="col">Formato</th>
+              <th scope="col">O que entra</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><code>.txt</code></td>
+              <td>O texto, sem tempos.</td>
+            </tr>
+            <tr>
+              <td><code>.md</code></td>
+              <td>O texto em Markdown, sem tempos.</td>
+            </tr>
+            <tr>
+              <td><code>.srt</code> e <code>.vtt</code></td>
+              <td>Legendas: o texto limpo, com o tempo de cada linha.</td>
+            </tr>
+            <tr>
+              <td><code>.html</code></td>
+              <td>Transcrição exportada pelo noScribe: texto com o tempo de cada linha. As informações do cabeçalho viram um memo do documento, com o título <em>Notas da transcrição importada</em>.</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <p>Ao importar, o programa pode perguntar se você quer codificar automaticamente as falas de cada pessoa. Aceite só se a transcrição indicar quem está falando com clareza.</p>
+
+      <h3>Exportar a transcrição</h3>
+      <p>Para levar o texto para outro programa, use <strong>Exportar transcrição</strong> e escolha <strong>Exportar como TXT</strong>, <strong>Exportar como Markdown</strong> ou <strong>Exportar como PDF</strong>.</p>
+
+      <h2>Questionários (CSV e XLSX)</h2>
+      <p>Um questionário é uma planilha em que cada pessoa que respondeu ocupa uma linha. Ao importar, o programa separa as pessoas e as perguntas, para você analisar cada resposta.</p>
+
+      <h3>Importar</h3>
+      <ol class="passos">
+        <li>
+          <strong>Escolha o arquivo</strong>
+          <p>Use o mesmo botão <span class="botao-ui f-fontes">+</span> ou arraste o arquivo <code>.csv</code> ou <code>.xlsx</code> para o painel.</p>
+        </li>
+        <li>
+          <strong>Confira o formato</strong>
+          <p>A janela <strong>Importar questionário</strong> reconhece sozinha três formatos: <strong>SurveyMonkey</strong>, <strong>Microsoft Forms</strong> e <strong>Genérico</strong> (uma linha de cabeçalho). Se a detecção não tiver certeza, a janela pede que você confirme. Você também pode trocar o formato ali.</p>
+        </li>
+        <li>
+          <strong>Ajuste os tipos de pergunta</strong>
+          <p>Cada coluna de resposta vira uma pergunta com um tipo. Clique no tipo para trocá-lo antes de importar.</p>
+        </li>
+        <li>
+          <strong>Importe</strong>
+          <p>Se você escolheu vários arquivos, cada questionário abre numa janela, um depois do outro.</p>
+        </li>
+      </ol>
+
+      <h3>Como as colunas viram dados</h3>
+      <ul>
+        <li><strong>Cada linha</strong> da planilha é um <strong>respondente</strong>. Se houver colunas de nome, o programa usa o primeiro e o último nome. Se não houver, cria o nome <em>Respondente N</em>.</li>
+        <li><strong>Colunas de identificação</strong> (como ID, data de início, e-mail e nome) identificam quem respondeu. Elas não viram perguntas.</li>
+        <li><strong>Cada coluna de resposta</strong> vira uma <strong>pergunta</strong>.</li>
+      </ul>
+
+      <h3>Tipos de pergunta</h3>
+      <div class="tabela">
+        <table>
+          <caption>Tipos de pergunta e como são reconhecidos</caption>
+          <thead>
+            <tr>
+              <th scope="col">Tipo</th>
+              <th scope="col">O que é</th>
+              <th scope="col">Pode receber códigos?</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Aberta</td>
+              <td>Texto livre. Respostas longas ou com muitos valores diferentes caem aqui.</td>
+              <td>Sim</td>
+            </tr>
+            <tr>
+              <td>Escolha única</td>
+              <td>Uma opção entre várias. Respostas curtas e repetidas caem aqui.</td>
+              <td>Não</td>
+            </tr>
+            <tr>
+              <td>Múltipla escolha</td>
+              <td>Várias colunas que formam uma só pergunta, em que a pessoa marca mais de uma opção.</td>
+              <td>Não</td>
+            </tr>
+            <tr>
+              <td>Numérica</td>
+              <td>Números, como idade ou renda.</td>
+              <td>Não</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="dica">
+        <strong>Só respostas abertas recebem códigos</strong>
+        <p>A codificação é feita nas respostas abertas. Respostas de escolha, respostas numéricas e os dados de identificação não recebem códigos. Para ver o resultado das escolhas, use o <strong>Resumo do questionário</strong>, que é explicado abaixo.</p>
+      </div>
+
+      <h3>Navegar pelo questionário</h3>
+      <ul>
+        <li>Na árvore, o questionário tem ícone violeta e dois grupos: <strong>Respondentes (N)</strong> e <strong>Perguntas (M)</strong>.</li>
+        <li><strong>Clique no questionário</strong> para abrir o <strong>Resumo do questionário</strong>. Ele mostra a distribuição das respostas e, para perguntas numéricas, valores como a mediana. O botão <strong>Exportar PDF</strong> gera um arquivo do resumo.</li>
+        <li><strong>Clique em um respondente</strong> para ver as respostas dele. Clique em <strong>Mostrar respostas →</strong> para abrir a lista completa.</li>
+        <li><strong>Clique em uma pergunta</strong> para ver a distribuição das respostas dela.</li>
+        <li>Para escolher vários respondentes ou perguntas, use <kbd>Ctrl</kbd> + clique. Assim você aplica uma característica a todos de uma vez.</li>
+      </ul>
+
+      <h2>Atributos e características</h2>
+      <p>Atributos e características são formas de classificar as fontes e as pessoas do questionário. Eles não mudam o texto. Servem para você separar e comparar grupos depois.</p>
+
+      <ul>
+        <li><strong>Atributo</strong> é o tipo de informação que você quer registrar, a pergunta de classificação. Exemplos: Gênero, País, Cidade.</li>
+        <li><strong>Característica</strong> é o <em>valor</em> que você aplica. Exemplos: Feminino, Masculino, Brasil.</li>
+      </ul>
+
+      <h3>Exemplo</h3>
+      <p>Você tem 20 entrevistas e quer separar as mulheres dos homens nas análises:</p>
+      <ol class="passos">
+        <li>
+          <strong>Crie o atributo <em>Gênero</em></strong>
+          <p>Escolha o tipo <strong>Lista</strong>, que mostra opções fixas. Em <strong>Editar opções da lista</strong>, digite as opções separadas por vírgula, por exemplo <em>Feminino, Masculino</em>.</p>
+        </li>
+        <li>
+          <strong>Crie as características dentro do atributo</strong>
+          <p>As características <em>Feminino</em> e <em>Masculino</em> ficam dentro do atributo <em>Gênero</em>. Assim você tem a característica <strong>Gênero: Feminino</strong>.</p>
+        </li>
+        <li>
+          <strong>Aplique a característica à entrevista</strong>
+          <p>Clique com o botão direito na entrevista e escolha <strong>Editar características…</strong>. Ou arraste a característica <em>Feminino</em> sobre a entrevista. Você pode fazer o mesmo com um respondente de questionário.</p>
+        </li>
+      </ol>
+
+      <p>Para criar e organizar atributos e características, use <strong>Documentos</strong> &gt; <strong>Gerenciar características dos documentos</strong>. Ali, o botão <strong>Adicionar atributo</strong> cria um atributo novo.</p>
+
+      <h3>Tipos de atributo</h3>
+      <div class="tabela">
+        <table>
+          <caption>Tipos de atributo</caption>
+          <thead>
+            <tr>
+              <th scope="col">Tipo</th>
+              <th scope="col">Uso</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr><td>Texto</td><td>Qualquer texto curto, como o nome de uma cidade.</td></tr>
+            <tr><td>Data</td><td>Datas, usadas para linhas do tempo na análise. Formatos aceitos: dd/mm/aaaa, mm/aaaa e aaaa.</td></tr>
+            <tr><td>Numérica</td><td>Números, como idade.</td></tr>
+            <tr><td>Lista</td><td>Opções fixas, como Feminino e Masculino.</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="dica">
+        <strong>Característica sem atributo</strong>
+        <p>Você pode criar uma característica sem colocá-la em nenhum atributo, como <em>Entrevistado</em>. Ela aparece como <em>Sem atributo</em>.</p>
+      </div>
+
+      <p>Para saber como usar características ao codificar trechos, veja <a href="codificacao.html">Codificação</a>.</p>
+
+      <h2 id="notas">Notas e memos</h2>
+      <p>Além das fontes importadas, o painel aceita dois tipos de texto escrito por você:</p>
+      <ul>
+        <li><strong>Notas</strong> são textos que você escreve no programa. Ficam em um <strong>caderno</strong>. Clique no <span class="botao-ui f-fontes">+</span> do caderno (ou clique com o botão direito e escolha <strong>Nova nota</strong>) para criar uma. A nota tem título e pode ser editada. Ao renomear, o prefixo com data e hora continua no nome.</li>
+        <li><strong>Memos</strong> são anotações que você liga a uma fonte ou a um trecho. Para o documento inteiro, use o botão <strong>Adicionar memo</strong> no cabeçalho do documento. Para um trecho, selecione o texto, clique com o botão direito e escolha <strong>Adicionar memo à seleção</strong>. Os memos aparecem no painel <strong>Memos</strong>.</li>
+      </ul>
+      <div class="cuidado">
+        <strong>Documentos não ficam dentro de cadernos</strong>
+        <p>O caderno aceita apenas notas. Para organizar fontes importadas, use pastas.</p>
+      </div>
+
+      <h2>Se o antivírus bloquear os arquivos</h2>
+      <div class="atencao">
+        <strong>Antivírus (Avast e outros) pode bloquear a importação</strong>
+        <p>Alguns antivírus protegem arquivos de pastas como a <strong>Área de Trabalho</strong> e <strong>Documentos</strong>. Quando isso acontece, o Windows não deixa o labiia_quali ler os arquivos, e aparece esta mensagem:</p>
+        <p><em>O Windows não deixou o labiia_quali abrir estes arquivos. Em geral é o antivírus protegendo documentos de pastas como a Área de Trabalho ou Documentos (no Avast: Proteção → Escudo de dados confidenciais ou Escudo contra ransomware). Permita o labiia_quali no antivírus, ou copie os arquivos para outra pasta, e importe de novo.</em></p>
+        <p>Você tem duas saídas:</p>
+        <ol>
+          <li><strong>Liberar o programa no antivírus.</strong> No Avast, abra <strong>Proteção</strong> e procure o escudo citado na mensagem (os nomes das opções podem mudar conforme a versão). Permita o labiia_quali nesse escudo. Depois, importe os arquivos de novo.</li>
+          <li><strong>Copiar os arquivos para outra pasta.</strong> Copie os arquivos para uma pasta fora da Área de Trabalho e de Documentos, por exemplo uma pasta de projeto como <code>C:\Pesquisa</code>. Importe a partir dessa pasta.</li>
+        </ol>
+      </div>
+
+      <nav class="navegacao-rodape" aria-label="Navegação entre páginas">
+        <a href="projetos.html" rel="prev">
+          <small>Anterior</small>
+          <span>Projetos</span>
+        </a>
+        <a href="codificacao.html" rel="next">
+          <small>Próxima</small>
+          <span>Codificação</span>
+        </a>
+      </nav>
+
+    </div>
+  </main>
+
+</body>
+</html>

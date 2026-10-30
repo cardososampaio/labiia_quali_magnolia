@@ -1,0 +1,630 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Codificação — Manual do labiia_quali</title>
+  <link rel="stylesheet" href="estilo.css">
+</head>
+<body>
+
+  <nav class="lateral" aria-label="Páginas do manual">
+    <div class="marca">
+      <strong>labiia_quali — Manual</strong>
+      <span>Versão 0.1.1 · Windows</span>
+    </div>
+    <ul>
+      <li><a href="index.html">Início</a></li>
+      <li><a href="instalacao.html">Instalação e R</a></li>
+      <li><a href="interface.html">Conhecendo a tela</a></li>
+      <li><a href="projetos.html">Projetos</a></li>
+      <li><a href="fontes.html">Documentos e fontes</a></li>
+      <li><a href="codificacao.html" class="atual" aria-current="page">Codificação</a></li>
+      <li><a href="livro-de-codigos.html">Livro de códigos</a></li>
+      <li><a href="analises.html">Consultas, análises e relatórios</a></li>
+      <li><a href="analises-lexicas.html">Análises léxicas</a></li>
+      <li><a href="problemas.html">Problemas comuns</a></li>
+      <li><a href="glossario.html">Glossário</a></li>
+      <li><a href="sobre.html">Sobre e créditos</a></li>
+    </ul>
+  </nav>
+
+  <main class="conteudo">
+    <div class="artigo">
+
+      <h1>Codificação</h1>
+      <p class="lead">Codificar é marcar os trechos do seu material com nomes que representam ideias, temas ou situações. Esta página mostra como criar os códigos, organizá-los, aplicá-los aos documentos e corrigi-los quando for preciso.</p>
+
+      <h2>O que é codificar</h2>
+      <p>Imagine que você leu dez entrevistas e quer reunir todas as falas em que as pessoas comentam o salário. Em vez de procurar uma a uma, você cria um código chamado <strong>Salário</strong> e o aplica a cada trecho relevante. Depois, com um clique, o programa mostra todos esses trechos, de todos os documentos, reunidos.</p>
+      <p>Pense nos códigos como papéis adesivos coloridos: você cola um deles em cada trecho que trata daquele assunto. A diferença é que os códigos ficam organizados numa lista, podem ser buscados e comparados, e o texto original nunca muda.</p>
+
+      <div class="tabela">
+        <table>
+          <caption>Os termos que aparecem nesta página</caption>
+          <thead>
+            <tr>
+              <th scope="col">Termo</th>
+              <th scope="col">O que significa</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Código</td>
+              <td>Um nome que representa uma ideia ou tema. Pode ter subcódigos, que são códigos dentro dele.</td>
+            </tr>
+            <tr>
+              <td>Trecho codificado</td>
+              <td>Uma parte do material (uma frase, uma área de imagem, um intervalo de vídeo) à qual você aplicou um código. Também chamado de codificação.</td>
+            </tr>
+            <tr>
+              <td>Um trecho, vários códigos</td>
+              <td>Um mesmo trecho pode receber mais de um código. Isso é normal e costuma ser útil.</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h2>Criar um código</h2>
+      <ol class="passos">
+        <li>
+          <strong>Abra o painel Códigos</strong>
+          <p>O painel fica ao lado da tela, com a lista de códigos do projeto.</p>
+        </li>
+        <li>
+          <strong>Clique no botão + do painel</strong>
+          <p>Também funciona o <span class="botao-ui f-codificacao">Novo código</span> do menu Códigos, ou <kbd>Ctrl</kbd> + <kbd>N</kbd>.</p>
+        </li>
+        <li>
+          <strong>Preencha a janela Novo código</strong>
+          <p>Digite o <strong>nome do código</strong>. Escolha a <strong>cor</strong>. Se quiser, escreva uma <strong>descrição</strong> que explique o que cabe no código. Opcionalmente, defina um <strong>atalho</strong> de teclado (um número de 0 a 9).</p>
+        </li>
+        <li>
+          <strong>Clique em Criar</strong>
+          <p>O código aparece na lista. Sem nome, nada é salvo.</p>
+        </li>
+      </ol>
+
+      <div class="dica">
+        <strong>Dica</strong>
+        <p>Escreva a descrição logo ao criar o código. Daqui a três meses, ela vai lembrar o critério que você usou, e isso faz diferença quando você codifica muitos documentos.</p>
+      </div>
+
+      <h2>Subcódigos e hierarquia</h2>
+      <p>Códigos podem ter subcódigos, e subcódigos podem ter outros subcódigos. Por exemplo, o código <em>Trabalho</em> pode ter os subcódigos <em>Salário</em> e <em>Carga horária</em>. Isso deixa o livro de códigos mais fácil de ler e permite buscar tudo sobre <em>Trabalho</em> de uma vez.</p>
+
+      <h3>Criar um subcódigo</h3>
+      <ol class="passos">
+        <li>
+          <strong>Clique com o botão direito no código pai</strong>
+          <p>O menu de contexto se abre.</p>
+        </li>
+        <li>
+          <strong>Escolha Adicionar subcódigo</strong>
+          <p>Digite o nome e confirme. O subcódigo recebe a cor do pai.</p>
+        </li>
+      </ol>
+
+      <h3>Mover um código arrastando</h3>
+      <p>Clique num código, mantenha o botão do mouse pressionado e arraste-o sobre outro código. O lugar onde você solta define o que acontece:</p>
+      <div class="tabela">
+        <table>
+          <caption>Onde soltar o código</caption>
+          <thead>
+            <tr>
+              <th scope="col">Onde você solta</th>
+              <th scope="col">O que acontece</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Terço de cima da linha do outro código</td>
+              <td>O código entra antes dele, no mesmo nível.</td>
+            </tr>
+            <tr>
+              <td>Meio da linha do outro código</td>
+              <td>O código vira subcódigo dele.</td>
+            </tr>
+            <tr>
+              <td>Terço de baixo da linha do outro código</td>
+              <td>O código entra depois dele, no mesmo nível.</td>
+            </tr>
+            <tr>
+              <td>Área vazia do painel</td>
+              <td>O código volta para o nível principal.</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <p>Você também pode usar <strong>Mover para o nível principal</strong> no menu do botão direito. Para recolher ou expandir os subcódigos de um código, clique na setinha ao lado dele.</p>
+      <div class="cuidado">
+        <strong>Cuidado</strong>
+        <p>Não é possível mover um código para dentro de um dos seus próprios subcódigos. O programa não aceita essa operação.</p>
+      </div>
+
+      <h2>Cores</h2>
+      <p>Clique na bolinha colorida ao lado do código, ou escolha <strong>Mudar cor</strong> no menu do botão direito. Escolha uma cor da paleta ou use a opção <strong>Personalizada</strong> para outra cor.</p>
+      <p>Os subcódigos criados dentro de um código herdam a cor do pai, o que ajuda a enxergar os grupos de um relance. Na importação de um livro de códigos feito em documento, cada código-pai recebe uma cor, e os códigos dentro dele usam a mesma cor.</p>
+
+      <h2>Atalhos com números (codificação rápida)</h2>
+      <p>Um código pode ter um atalho de teclado, um número de 0 a 9. Com ele, você aplica o código a um trecho de texto em um único toque.</p>
+      <ol class="passos">
+        <li>
+          <strong>Defina o atalho</strong>
+          <p>Ao criar ou editar o código, preencha o campo <strong>Atalho de teclado para codificação rápida</strong>.</p>
+        </li>
+        <li>
+          <strong>Selecione o trecho de texto</strong>
+          <p>Com o mouse, marque a parte que quer codificar.</p>
+        </li>
+        <li>
+          <strong>Pressione Ctrl + o número</strong>
+          <p>Por exemplo, <kbd>Ctrl</kbd> + <kbd>3</kbd> aplica o código que tem o atalho 3.</p>
+        </li>
+      </ol>
+      <div class="cuidado">
+        <strong>Cuidado</strong>
+        <p>Cada número pertence a um só código. Se você der o número 3 a outro código, o atalho sai do primeiro sem nenhum aviso. Para ver quais atalhos estão em uso, confira a janela de cada código ou o livro de códigos.</p>
+      </div>
+      <p>Se o código não tiver atalho, o menu do botão direito avisa: <em>Nenhum atalho definido</em>.</p>
+
+      <h2>Aplicar um código</h2>
+      <p>Em quase todos os casos, a regra é a mesma: primeiro você seleciona o trecho, depois aplica o código. Há três caminhos principais.</p>
+
+      <h3>Pela barra de codificação rápida</h3>
+      <ol class="passos">
+        <li>
+          <strong>Selecione o trecho</strong>
+          <p>Arraste o mouse sobre o texto, a área da imagem ou do PDF.</p>
+        </li>
+        <li>
+          <strong>Clique no balão Aplicar código</strong>
+          <p>O balão aparece logo depois que você solta o mouse, perto da seleção. Se ele já tiver sumido, selecione de novo.</p>
+        </li>
+        <li>
+          <strong>Digite parte do nome e aperte Enter</strong>
+          <p>Enter aplica o primeiro resultado da busca. As setas do teclado escolhem outro.</p>
+        </li>
+      </ol>
+      <p>A barra tem outros botões, listados abaixo.</p>
+
+      <div class="tabela">
+        <table>
+          <caption>Botões da barra de codificação rápida</caption>
+          <thead>
+            <tr>
+              <th scope="col">Botão</th>
+              <th scope="col">O que faz</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><span class="botao-ui f-codificacao">Codificar em…</span></td>
+              <td>Abre a lista de todos os códigos, com os usados recentemente e a árvore completa.</td>
+            </tr>
+            <tr>
+              <td><span class="botao-ui f-codificacao">Último</span></td>
+              <td>Aplica o último código que você usou.</td>
+            </tr>
+            <tr>
+              <td><span class="botao-ui f-codificacao">Novo</span></td>
+              <td>Cria um código com o nome que você digitou e o aplica ao trecho.</td>
+            </tr>
+            <tr>
+              <td><span class="botao-ui f-codificacao">Novo in vivo</span></td>
+              <td>Cria um código cujo nome é o próprio trecho selecionado.</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="dica">
+        <strong>O que é “in vivo”?</strong>
+        <p>Em análise qualitativa, código <em>in vivo</em> é aquele cujo nome vem das palavras exatas do participante, sem que você as reescreva. Use-o quando quiser preservar a fala original como nome do código. Quando já existir um código com o mesmo nome no mesmo nível, a barra usa esse código em vez de criar outro.</p>
+      </div>
+
+      <h3>Arrastando o código para o texto</h3>
+      <p>Selecione primeiro o trecho. Depois, arraste um código do painel até a seleção. Se você tiver marcado vários códigos no painel, todos são arrastados juntos. Se nada estiver selecionado, o programa avisa: <em>Selecione um trecho primeiro e depois arraste um código para ele</em>.</p>
+
+      <h3>Pelo menu do botão direito</h3>
+      <ul>
+        <li>Com o trecho selecionado, clique com o botão direito e escolha <strong>Aplicar código</strong>. A lista mostra os códigos que têm atalho.</li>
+        <li>Na mesma seleção, <strong>Novo código</strong> cria um código e já o aplica ao trecho.</li>
+        <li>Com a seleção ativa, <strong>Adicionar como citação</strong> guarda o trecho como citação (veja a seção de memos e citações).</li>
+      </ul>
+
+      <h3>Em vários resultados de uma consulta</h3>
+      <p>Em uma janela de resultados de consulta, clique com o botão direito e escolha <strong>Aplicar um código a todos os resultados</strong>. Você pode criar um código novo (<strong>Novo código…</strong>) ou escolher um já existente (<strong>Códigos existentes…</strong>). Isso é útil para codificar de uma vez tudo o que uma busca encontrou.</p>
+
+      <h3>O que pode ser codificado</h3>
+      <div class="tabela">
+        <table>
+          <caption>Como codificar cada tipo de material</caption>
+          <thead>
+            <tr>
+              <th scope="col">Tipo de material</th>
+              <th scope="col">Como codificar</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Texto e nota (de caderno)</td>
+              <td>Selecione palavras, frases ou parágrafos.</td>
+            </tr>
+            <tr>
+              <td>PDF</td>
+              <td>Selecione o texto, ou desenhe uma área da página, conforme o visualizador.</td>
+            </tr>
+            <tr>
+              <td>Imagem</td>
+              <td>Desenhe uma região da imagem e aplique o código a ela.</td>
+            </tr>
+            <tr>
+              <td>Áudio e vídeo</td>
+              <td>Solte o código numa faixa de tempo da trilha de códigos ou selecione linhas da transcrição.</td>
+            </tr>
+            <tr>
+              <td>Questionário</td>
+              <td>Apenas as respostas abertas das perguntas.</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h3>Regras que valem sempre</h3>
+      <ul>
+        <li>Se você aplicar o mesmo código ao mesmo trecho de novo, o programa não duplica a codificação.</li>
+        <li>Um trecho pode ter vários códigos. Cada um aparece como uma marca separada.</li>
+        <li>Na margem do documento, cada codificação aparece como um colchete na cor do código, com o nome dele. Memos e citações têm ícones próprios ao lado.</li>
+      </ul>
+
+      <h2>Ver e conferir codificações</h2>
+      <ul>
+        <li><strong>Número ao lado do código:</strong> mostra quantas vezes ele foi aplicado em todos os documentos.</li>
+        <li><strong>Duplo clique no código:</strong> abre, na janela de resultados de consulta, todos os trechos codificados com ele. Atenção: o duplo clique não edita o código. Para editar, use o menu do botão direito.</li>
+        <li><strong>Mostrar em todos os documentos</strong> ou <strong>Mostrar no documento ativo</strong> (botão direito no código): cria uma consulta com esse código, para você ver o resultado com mais opções.</li>
+      </ul>
+
+      <h2>Remover uma codificação</h2>
+      <p>Para tirar um código de um trecho, clique com o botão direito sobre a marca dele no texto e escolha <strong>Remover código</strong>. Se o trecho tiver mais de um código, o programa lista todos para você escolher. Quando sai o último código do trecho, o próprio trecho codificado desaparece.</p>
+      <div class="dica">
+        <strong>Remover não é excluir</strong>
+        <p>Tirar um código de um trecho não apaga o código do projeto. Ele continua no painel e pode ser aplicado de novo.</p>
+      </div>
+
+      <h2>Atalhos úteis</h2>
+      <div class="tabela">
+        <table>
+          <caption>Teclas que ajudam na codificação</caption>
+          <thead>
+            <tr>
+              <th scope="col">Teclas</th>
+              <th scope="col">O que faz</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><kbd>Ctrl</kbd> + <kbd>N</kbd></td>
+              <td>Cria um novo código.</td>
+            </tr>
+            <tr>
+              <td><kbd>Ctrl</kbd> + <kbd>0</kbd> a <kbd>9</kbd></td>
+              <td>Aplica ao trecho selecionado o código que tem esse atalho.</td>
+            </tr>
+            <tr>
+              <td><kbd>Ctrl</kbd> + <kbd>Z</kbd></td>
+              <td>Desfaz a última mudança.</td>
+            </tr>
+            <tr>
+              <td><kbd>Ctrl</kbd> + <kbd>Shift</kbd> + <kbd>Z</kbd></td>
+              <td>Refaz a mudança desfeita.</td>
+            </tr>
+            <tr>
+              <td><kbd>Enter</kbd></td>
+              <td>Confirma o nome ao renomear; na barra de codificação rápida, aplica o primeiro resultado.</td>
+            </tr>
+            <tr>
+              <td><kbd>Esc</kbd></td>
+              <td>Fecha a barra de codificação rápida e cancela a renomeação.</td>
+            </tr>
+            <tr>
+              <td><kbd>Shift</kbd> + clique</td>
+              <td>No painel Códigos, seleciona um intervalo de códigos.</td>
+            </tr>
+            <tr>
+              <td><kbd>Ctrl</kbd> + clique</td>
+              <td>No painel Códigos, marca ou desmarca um código, sem perder os outros.</td>
+            </tr>
+            <tr>
+              <td><kbd>Ctrl</kbd> + <kbd>A</kbd></td>
+              <td>Com o foco no painel Códigos, seleciona todos os códigos visíveis.</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h2>Renomear, editar, mesclar e excluir</h2>
+      <p>Há quatro maneiras de mudar um código depois de criado. Elas não são equivalentes, então vale conhecer cada uma.</p>
+
+      <div class="tabela">
+        <table>
+          <caption>Ações sobre um código existente</caption>
+          <thead>
+            <tr>
+              <th scope="col">Ação</th>
+              <th scope="col">Como fazer</th>
+              <th scope="col">Quando usar</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Renomear</td>
+              <td>Botão direito &gt; Renomear. O nome vira campo de texto na própria linha.</td>
+              <td>Quando você só quer trocar o nome.</td>
+            </tr>
+            <tr>
+              <td>Editar código</td>
+              <td>Botão direito &gt; Editar código. Abre uma caixa com nome, cor, descrição e atalho.</td>
+              <td>Quando quer mudar mais de um campo de uma vez.</td>
+            </tr>
+            <tr>
+              <td>Mesclar</td>
+              <td>Arraste um código sobre outro e solte na pílula Mesclar.</td>
+              <td>Quando dois códigos são, na verdade, o mesmo.</td>
+            </tr>
+            <tr>
+              <td>Excluir</td>
+              <td>Botão direito &gt; Excluir.</td>
+              <td>Quando o código não deve existir no projeto.</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h3>Mesclar dois códigos</h3>
+      <p>Mesclar faz todas as codificações de um código passarem para outro. Use quando, por exemplo, você tiver criado <em>Salário</em> e <em>Salario mensal</em> para a mesma ideia.</p>
+      <ol class="passos">
+        <li>
+          <strong>Arraste o código que vai desaparecer</strong>
+          <p>Arraste-o sobre o código que vai ficar.</p>
+        </li>
+        <li>
+          <strong>Solte na pílula Mesclar</strong>
+          <p>Ela aparece à direita da linha de destino.</p>
+        </li>
+        <li>
+          <strong>Confirme</strong>
+          <p>A caixa pergunta “Mesclar X em Y?” e informa quantos trechos serão recodificados. Clique em Mesclar para concluir.</p>
+        </li>
+      </ol>
+      <div class="cuidado">
+        <strong>Antes de mesclar</strong>
+        <ul>
+          <li><strong>Os subcódigos do código que sai também saem do painel.</strong> Antes de mesclar, mova os subcódigos que quer manter para outro lugar.</li>
+          <li><strong>O programa não verifica se o trecho já tinha o código de destino.</strong> Por isso, um trecho que tinha os dois códigos pode ficar com o de destino duas vezes. Confira depois com a busca.</li>
+          <li>A caixa diz que a mesclagem não pode ser desfeita, mas o Ctrl + Z também a desfaz. Salve o projeto antes, para ter um ponto de volta seguro.</li>
+        </ul>
+      </div>
+
+      <h3>Excluir um código</h3>
+      <p>Botão direito no código &gt; <strong>Excluir</strong>. Ele sai do painel, junto com todos os seus subcódigos.</p>
+      <div class="atencao">
+        <strong>Atenção</strong>
+        <p>Excluir <strong>não pede confirmação</strong>. As codificações desse código continuam nos documentos, mas aparecem como <em>Desconhecido</em>, porque o código já não existe. Se você excluiu sem querer, use logo o Ctrl + Z. Para tirar a codificação de um trecho específico, use Remover código. Para trocar um código por outro, prefira Mesclar.</p>
+      </div>
+
+      <h3>Filtrar a lista</h3>
+      <p>Clique na lupa no cabeçalho do painel Códigos e digite parte do nome. A lista mostra só os códigos que correspondem, com os códigos pais aparecendo esmaecidos para você ver a hierarquia. Pressione Esc para fechar a busca.</p>
+
+      <h2>Atributos e Características</h2>
+      <p>Códigos marcam <strong>trechos</strong>. Atributos e características descrevem <strong>documentos inteiros</strong>: quem é a pessoa entrevistada, em que cidade ela mora, em que data foi feita a entrevista, em que grupo ela estava. Essas informações servem para filtrar e comparar os documentos depois.</p>
+      <ul>
+        <li><strong>Característica:</strong> uma marca que você aplica a um documento. Exemplos: <em>Entrevista</em>, <em>Grupo A</em>.</li>
+        <li><strong>Atributo:</strong> um grupo de características que tem um tipo. Exemplo: <em>Escolaridade</em>.</li>
+        <li><strong>Características sem atributo:</strong> ficam no grupo <em>Sem atributo</em>, sem tipo definido.</li>
+      </ul>
+
+      <h3>Os quatro tipos de atributo</h3>
+      <div class="tabela">
+        <table>
+          <caption>Tipos de atributo</caption>
+          <thead>
+            <tr>
+              <th scope="col">Tipo</th>
+              <th scope="col">O que guarda</th>
+              <th scope="col">Exemplo</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Texto</td>
+              <td>Qualquer texto que você digitar.</td>
+              <td>Cidade: <em>Belo Horizonte</em></td>
+            </tr>
+            <tr>
+              <td>Data</td>
+              <td>Uma data nos formatos dd/mm/aaaa, mm/aaaa ou aaaa.</td>
+              <td>Data da entrevista: <em>03/2024</em></td>
+            </tr>
+            <tr>
+              <td>Numérica</td>
+              <td>Somente números.</td>
+              <td>Idade: <em>34</em></td>
+            </tr>
+            <tr>
+              <td>Lista</td>
+              <td>Uma lista fixa de opções que você define.</td>
+              <td>Escolaridade: <em>Fundamental, Médio, Superior</em></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h3>Criar um atributo</h3>
+      <ol class="passos">
+        <li>
+          <strong>Abra o gerenciador</strong>
+          <p>No grupo Codificação da barra, clique em <span class="botao-ui f-codificacao">Características</span>. Também funciona pelo menu Documentos &gt; Gerenciar características dos documentos.</p>
+        </li>
+        <li>
+          <strong>Clique em Adicionar atributo</strong>
+          <p>Digite o nome, por exemplo <em>Escolaridade</em>, e escolha o tipo.</p>
+        </li>
+        <li>
+          <strong>Defina os valores</strong>
+          <p>Para o tipo <strong>Lista</strong>, digite as opções separadas por vírgula, por exemplo <em>Fundamental, Médio, Superior</em>. Depois, se precisar mudar, use <span class="botao-ui f-codificacao">Editar opções da lista</span> (uma opção por linha). Para os outros tipos, digite cada valor no campo <em>Adicionar valor</em> dentro do atributo e pressione Enter.</p>
+        </li>
+        <li>
+          <strong>Clique em Adicionar</strong>
+          <p>O atributo aparece na lista. Clicar no nome dele, depois, permite renomear.</p>
+        </li>
+      </ol>
+
+      <h3>Aplicar a documentos</h3>
+      <ol class="passos">
+        <li>
+          <strong>Escolha o documento</strong>
+          <p>Clique com o botão direito no documento e escolha <strong>Editar características…</strong>, ou arraste a característica até o documento na lista de documentos. Você também pode arrastá-la até uma pasta, e todos os documentos da pasta a recebem.</p>
+        </li>
+        <li>
+          <strong>Marque as caixas</strong>
+          <p>Ligue ou desligue cada característica. Com vários documentos selecionados, a mudança vale para todos.</p>
+        </li>
+      </ol>
+      <p>A característica fica ligada ao documento. Para removê-la só daquele documento, desmarque a caixa dela. Atributos e características também podem ser aplicados a respondentes e perguntas de questionários.</p>
+
+      <div class="dica">
+        <strong>Exemplo prático: Escolaridade</strong>
+        <p>Crie o atributo <em>Escolaridade</em> com o tipo Lista e as opções <em>Fundamental, Médio, Superior</em>. Na entrevista da participante 07, marque a característica <em>Superior</em>. Depois, use <strong>Selecionar documentos com esta característica</strong> sobre <em>Superior</em>: o programa seleciona todas as entrevistas de pessoas com ensino superior, pronto para você consultar só esse grupo.</p>
+      </div>
+
+      <div class="cuidado">
+        <strong>Cuidados ao excluir</strong>
+        <ul>
+          <li><strong>Excluir um atributo</strong> apaga também as características dele e as ligações com os documentos. Não há confirmação.</li>
+          <li><strong>Excluir uma característica</strong> remove só a ligação com os documentos. Os documentos continuam no projeto.</li>
+          <li><strong>Excluir uma pasta</strong> que tem notas pede confirmação e avisa que os códigos, citações e memos dessas notas também serão excluídos.</li>
+        </ul>
+      </div>
+
+      <h2>Memos</h2>
+      <p>Um memo é uma anotação sua: uma interpretação, uma dúvida, uma ideia para a análise. Ele fica guardado no projeto, junto aos dados, e não aparece no texto do documento. Escreva memos com frequência; eles são a parte do trabalho que mostra como você chegou às conclusões.</p>
+
+      <div class="tabela">
+        <table>
+          <caption>Tipos de memo</caption>
+          <thead>
+            <tr>
+              <th scope="col">Tipo</th>
+              <th scope="col">Como criar</th>
+              <th scope="col">Fica ligado a</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Memo do projeto</td>
+              <td>Painel Memos &gt; + &gt; Memo do projeto.</td>
+              <td>Nada específico; é uma anotação geral.</td>
+            </tr>
+            <tr>
+              <td>Memo de documento</td>
+              <td>Painel Memos &gt; + &gt; Memo de documento (com um documento aberto).</td>
+              <td>O documento aberto.</td>
+            </tr>
+            <tr>
+              <td>Memo de seleção</td>
+              <td>Selecione um trecho, clique com o botão direito e escolha Adicionar memo à seleção.</td>
+              <td>O trecho selecionado.</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <ul>
+        <li><strong>Editar:</strong> dê duplo clique no memo, ou escolha Editar memo. Ele abre numa janela própria, com título, texto formatado e o botão Salvar e fechar.</li>
+        <li><strong>Excluir:</strong> o programa pede confirmação.</li>
+        <li><strong>Soltar o vínculo:</strong> se você arrastar um memo de documento ou de seleção para Memos do projeto, ele deixa de estar ligado ao documento. O programa pede confirmação.</li>
+      </ul>
+      <div class="atencao">
+        <strong>Atenção</strong>
+        <p>Ctrl + Z não desfaz memos. Excluir um memo é definitivo.</p>
+      </div>
+
+      <h2>Citações</h2>
+      <p>Uma citação é um trecho que você quer destacar, por exemplo uma fala forte ou exemplar. Selecione o trecho, clique com o botão direito e escolha <strong>Adicionar como citação</strong>. Ela aparece na margem com um ícone próprio. Citações não são códigos: para classificar o trecho por tema, aplique também um código.</p>
+
+      <h2>Diário de bordo</h2>
+      <p>O diário de bordo é um caderno para registrar o processo da pesquisa: decisões, mudanças de critério, dúvidas, reuniões com orientador. Ele não fica ligado a documentos nem a códigos, e serve para você contar, depois, como a análise foi feita.</p>
+      <ol class="passos">
+        <li>
+          <strong>Abra o diário</strong>
+          <p>Use o botão Diário de bordo no grupo Codificação, ou o menu Códigos.</p>
+        </li>
+        <li>
+          <strong>Clique em + Entrada</strong>
+          <p>Digite o título e escreva o conteúdo. A entrada mais recente aparece primeiro na lista.</p>
+        </li>
+        <li>
+          <strong>Edite quando quiser</strong>
+          <p>Um clique mostra a entrada. Duplo clique a edita. No botão direito, você também encontra Editar entrada e Excluir entrada.</p>
+        </li>
+        <li>
+          <strong>Exporte, se precisar</strong>
+          <p>O botão Exportar PDF gera o diário inteiro em PDF.</p>
+        </li>
+      </ol>
+      <div class="atencao">
+        <strong>Atenção</strong>
+        <p>O diário não entra no Ctrl + Z. Excluir uma entrada pede confirmação, e ela não pode ser recuperada depois disso.</p>
+      </div>
+
+      <h2>Desfazer e refazer</h2>
+      <p>Ctrl + Z desfaz a última mudança, e Ctrl + Shift + Z refaz. Os mesmos comandos estão nos botões Desfazer e Refazer da barra de título.</p>
+      <ul>
+        <li>O programa guarda até 50 passos. Mudanças seguidas, feitas em menos de meio segundo, contam como um passo só.</li>
+        <li><strong>Desfaz:</strong> documentos e seus trechos, codificações, códigos (criar, renomear, mover, mesclar e excluir), atributos e características, consultas e citações.</li>
+        <li><strong>Não desfaz:</strong> memos e o diário de bordo.</li>
+        <li>Dentro de um campo de texto, como o nome de um código ou a descrição, o Ctrl + Z age sobre o próprio campo, da forma usual.</li>
+      </ul>
+      <div class="cuidado">
+        <strong>Cuidado</strong>
+        <p>Se você fez uma mudança importante e depois outras, desfazer volta uma de cada vez. Não conte com o Ctrl + Z para recuperar algo que você escreveu em memos ou no diário.</p>
+      </div>
+
+      <h2>Quando o projeto está com outra pessoa</h2>
+      <p>Em um projeto compartilhado, o programa reserva o projeto automaticamente para quem faz a primeira alteração. Para isso, é preciso ter seu nome configurado em Preferências &gt; Seu nome. Se você ainda não configurou, o programa pergunta na primeira vez.</p>
+      <p>Se outra pessoa estiver com o projeto, aparece o botão vermelho <strong>Bloqueado</strong> na barra de título. Ao tentar criar, excluir, renomear, mesclar, mover códigos ou aplicá-los ao texto, o programa mostra um aviso com três opções:</p>
+      <ul>
+        <li><strong>Assumir o controle mesmo assim:</strong> use só se a outra pessoa já parou de trabalhar nele.</li>
+        <li><strong>Criar uma cópia:</strong> cria um arquivo ao lado do original, para você trabalhar sem perder nada. Depois, use a ferramenta de mesclagem de projetos para juntar as duas versões.</li>
+        <li><strong>Cancelar:</strong> o projeto fica só para leitura.</li>
+      </ul>
+
+      <div class="dica">
+        <strong>Boas práticas</strong>
+        <ul>
+          <li>Comece com poucos códigos amplos e vá dividindo-os em subcódigos conforme o material exige.</li>
+          <li>Escreva a descrição de cada código, com o critério de entrada.</li>
+          <li>Salve o projeto antes de mesclar ou excluir códigos.</li>
+          <li>Use memos para registrar a interpretação, e não só a classificação.</li>
+        </ul>
+      </div>
+
+      <p>Para importar um livro de códigos pronto, de um arquivo <code>.qdc</code> ou de um documento de texto, veja a página <a href="livro-de-codigos.html">Livro de códigos</a>.</p>
+
+      <nav class="navegacao-rodape" aria-label="Navegação entre páginas">
+        <a href="fontes.html" rel="prev">
+          <small>Anterior</small>
+          <span>Documentos e fontes</span>
+        </a>
+        <a href="livro-de-codigos.html" rel="next">
+          <small>Próxima</small>
+          <span>Livro de códigos</span>
+        </a>
+      </nav>
+
+    </div>
+  </main>
+
+</body>
+</html>

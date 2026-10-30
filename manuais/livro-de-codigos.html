@@ -1,0 +1,436 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Livro de códigos — Manual do labiia_quali</title>
+  <link rel="stylesheet" href="estilo.css">
+</head>
+<body>
+
+  <nav class="lateral" aria-label="Páginas do manual">
+    <div class="marca">
+      <strong>labiia_quali — Manual</strong>
+      <span>Versão 0.1.1 · Windows</span>
+    </div>
+    <ul>
+      <li><a href="index.html">Início</a></li>
+      <li><a href="instalacao.html">Instalação e R</a></li>
+      <li><a href="interface.html">Conhecendo a tela</a></li>
+      <li><a href="projetos.html">Projetos</a></li>
+      <li><a href="fontes.html">Documentos e fontes</a></li>
+      <li><a href="codificacao.html">Codificação</a></li>
+      <li><a href="livro-de-codigos.html" class="atual" aria-current="page">Livro de códigos</a></li>
+      <li><a href="analises.html">Consultas, análises e relatórios</a></li>
+      <li><a href="analises-lexicas.html">Análises léxicas</a></li>
+      <li><a href="problemas.html">Problemas comuns</a></li>
+      <li><a href="glossario.html">Glossário</a></li>
+      <li><a href="sobre.html">Sobre e créditos</a></li>
+    </ul>
+  </nav>
+
+  <main class="conteudo">
+    <div class="artigo">
+
+      <h1>Livro de códigos</h1>
+      <p class="lead">O livro de códigos é a lista completa dos códigos do projeto, com nome, cor, descrição e atalho. Esta página mostra como consultá-lo, como trocar códigos com outros programas e como montar o livro a partir de um documento de texto que você já tenha escrito.</p>
+
+      <h2>O que é o livro de códigos</h2>
+      <p>Em uma pesquisa qualitativa, o livro de códigos é o dicionário da análise: ele diz o que cada código significa e onde ele se encaixa na hierarquia. Ele pode servir a três finalidades:</p>
+      <ul>
+        <li><strong>Consultar e revisar</strong> as definições dos códigos, na janela Livro de códigos.</li>
+        <li><strong>Levar a outro projeto ou programa</strong>, por meio de um arquivo <code>.qdc</code>, que segue o padrão REFI-QDA.</li>
+        <li><strong>Começar de um roteiro pronto</strong>, importando um livro de códigos que você escreveu antes num documento Word, OpenDocument, RTF ou Markdown.</li>
+      </ul>
+
+      <h2>A janela Livro de códigos</h2>
+      <p>Para abrir, use o botão <span class="botao-ui f-codificacao">Livro de códigos</span> no grupo Codificação da barra, ou o menu Códigos &gt; Livro de códigos. A janela abre separada da janela principal.</p>
+      <p>Ela tem duas partes. À esquerda, a lista de todos os códigos, com a hierarquia. À direita, os detalhes do código selecionado. No topo, aparecem o título, a quantidade de códigos e os botões de importar e exportar.</p>
+
+      <h3>Editar um código</h3>
+      <ol class="passos">
+        <li>
+          <strong>Selecione o código</strong>
+          <p>Um clique mostra os detalhes à direita.</p>
+        </li>
+        <li>
+          <strong>Dê duplo clique para editar</strong>
+          <p>Abre a janela Editar código.</p>
+        </li>
+        <li>
+          <strong>Altere os campos e clique em Salvar</strong>
+          <p>As mudanças vão para o projeto principal.</p>
+        </li>
+      </ol>
+
+      <div class="tabela">
+        <table>
+          <caption>Campos de um código</caption>
+          <thead>
+            <tr>
+              <th scope="col">Campo</th>
+              <th scope="col">O que é</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Nome</td>
+              <td>O nome do código, como aparece no painel Códigos e nas consultas.</td>
+            </tr>
+            <tr>
+              <td>Cor</td>
+              <td>A cor do código nas margens do texto. Escolha uma cor da paleta ou use Personalizada.</td>
+            </tr>
+            <tr>
+              <td>Descrição</td>
+              <td>Um texto com formatação que explica o critério de uso do código. Quem tem descrição mostra um ícone de memo na lista.</td>
+            </tr>
+            <tr>
+              <td>Atalho</td>
+              <td>Um número de 0 a 9 para aplicar o código com Ctrl + número, como explicado na página <a href="codificacao.html">Codificação</a>.</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="cuidado">
+        <strong>A janela só edita</strong>
+        <p>Pela janela Livro de códigos você altera nome, cor, descrição e atalho. Para criar, excluir, mover ou mesclar códigos, use o painel Códigos. Se você fez mudanças no painel enquanto a janela estava aberta, feche e abra a janela de novo para vê-las.</p>
+      </div>
+
+      <h2>Exportar o livro de códigos</h2>
+      <p>O livro pode sair do projeto de três formas:</p>
+      <div class="tabela">
+        <table>
+          <caption>Formas de exportar</caption>
+          <thead>
+            <tr>
+              <th scope="col">Botão</th>
+              <th scope="col">Onde está</th>
+              <th scope="col">O que gera</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><span class="botao-ui f-codificacao">Exportar QDC</span></td>
+              <td>Janela Livro de códigos, ou menu Códigos &gt; Exportar livro de códigos (.qdc)…</td>
+              <td>Um arquivo <code>.qdc</code> (REFI-QDA), com a hierarquia, os nomes, as cores e as descrições.</td>
+            </tr>
+            <tr>
+              <td><span class="botao-ui f-codificacao">Exportar PDF</span></td>
+              <td>Janela Livro de códigos</td>
+              <td>Um relatório em PDF da árvore de códigos, com a descrição de cada um.</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="atencao">
+        <strong>Os atalhos não vão para o arquivo .qdc</strong>
+        <p>O atalho de teclado (0 a 9) de cada código não é gravado no arquivo <code>.qdc</code>. Se você importar o arquivo em outro lugar, precisará definir os atalhos de novo.</p>
+      </div>
+
+      <h2>Importar um arquivo .qdc</h2>
+      <p>Um arquivo <code>.qdc</code> pode ter sido exportado deste programa ou de outro que siga o padrão REFI-QDA.</p>
+      <ol class="passos">
+        <li>
+          <strong>Clique em Importar livro de códigos</strong>
+          <p>Está na janela Livro de códigos, ou em Códigos &gt; Importar livro de códigos (.qdc)… no menu.</p>
+        </li>
+        <li>
+          <strong>Escolha o arquivo .qdc</strong>
+          <p>Os códigos entram direto. Não há prévia para arquivos <code>.qdc</code>.</p>
+        </li>
+      </ol>
+      <p>Três regras ajudam a entender o resultado:</p>
+      <ul>
+        <li>Códigos que já existem no projeto, reconhecidos pelo identificador interno, não entram de novo. Assim, reimportar o mesmo arquivo não duplica tudo.</li>
+        <li>Os códigos novos entram <strong>no fim da lista principal</strong>, no nível de cima. Eles não são colocados dentro de códigos que já existem.</li>
+        <li>O programa não compara nomes. Um código com nome igual a outro existente, mas de origem diferente, entra como um código separado. Veja a seção <em>Nomes repetidos</em> abaixo.</li>
+      </ul>
+
+      <h2>Importar de um documento de texto</h2>
+      <p>Se você já escreveu o seu livro de códigos num arquivo de texto, pode importá-lo sem recriar nada. São aceitos estes formatos:</p>
+      <ul>
+        <li>Word: <code>.docx</code> e <code>.doc</code> (formato antigo)</li>
+        <li>OpenDocument: <code>.odt</code> (LibreOffice e outros)</li>
+        <li>Rich Text: <code>.rtf</code></li>
+        <li>Markdown: <code>.md</code></li>
+      </ul>
+      <div class="dica">
+        <strong>Sobre o formato .doc</strong>
+        <p>O formato antigo do Word é convertido antes da leitura, usando o próprio Word ou o LibreOffice, se algum deles estiver instalado. Se nenhum estiver, abra o arquivo no Word ou no LibreOffice, salve como <code>.docx</code> e importe esse arquivo.</p>
+      </div>
+
+      <h3>Passo a passo</h3>
+      <ol class="passos">
+        <li>
+          <strong>Escolha o arquivo</strong>
+          <p>Clique em Importar livro de códigos e selecione o documento.</p>
+        </li>
+        <li>
+          <strong>Confira a prévia</strong>
+          <p>Abre uma janela com as categorias e os códigos encontrados. Nada entra no projeto antes de você clicar em Importar.</p>
+        </li>
+        <li>
+          <strong>Escolha a leitura certa</strong>
+          <p>O programa já escolhe uma leitura. Se não for a que você quer, clique em outra das três (veja abaixo).</p>
+        </li>
+        <li>
+          <strong>Ajuste as linhas</strong>
+          <p>Desmarque o que não deve entrar, mude níveis com as setas e decida se os números ficam nos nomes.</p>
+        </li>
+        <li>
+          <strong>Clique em Importar</strong>
+          <p>Os códigos entram no projeto, cada categoria com uma cor, e os códigos dela com a mesma cor.</p>
+        </li>
+      </ol>
+
+      <h3>Como o programa reconhece a estrutura</h3>
+      <p>O programa lê o documento de um de três jeitos. Cada jeito é uma <em>regra de leitura</em>, e você vê as três nos botões no topo da prévia. Um documento é lido por uma regra só: não misture formas diferentes no mesmo arquivo.</p>
+
+      <h4>Jeito 1: Títulos do Word</h4>
+      <p>É o mais seguro. Você marca cada linha com um estilo de título: <strong>Título 1</strong> para categoria, <strong>Título 2</strong> para código e <strong>Título 3</strong> para subcódigo. O programa reconhece o estilo, não o tamanho da letra, então use sempre a lista de estilos do Word.</p>
+      <div class="tabela">
+        <table>
+          <caption>Exemplo de documento lido por títulos</caption>
+          <thead>
+            <tr>
+              <th scope="col">Como a linha está escrita</th>
+              <th scope="col">Estilo no Word</th>
+              <th scope="col">O que vira no programa</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Nível de reflexão</td>
+              <td>Título 1</td>
+              <td>Categoria</td>
+            </tr>
+            <tr>
+              <td>Quanto o participante reflete sobre a própria prática.</td>
+              <td>Texto normal</td>
+              <td>Descrição da categoria</td>
+            </tr>
+            <tr>
+              <td>nenhuma</td>
+              <td>Título 2</td>
+              <td>Código dentro da categoria</td>
+            </tr>
+            <tr>
+              <td>opinião</td>
+              <td>Título 2</td>
+              <td>Código</td>
+            </tr>
+            <tr>
+              <td>Expressa só opinião, sem justificar.</td>
+              <td>Texto normal</td>
+              <td>Descrição do código “opinião”</td>
+            </tr>
+            <tr>
+              <td>Tema</td>
+              <td>Título 1</td>
+              <td>Nova categoria</td>
+            </tr>
+            <tr>
+              <td>avaliação</td>
+              <td>Título 2</td>
+              <td>Código</td>
+            </tr>
+            <tr>
+              <td>Subtema da avaliação</td>
+              <td>Título 3</td>
+              <td>Subcódigo de “avaliação”</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <p>Em Markdown, a mesma estrutura usa <code>#</code> para categoria, <code>##</code> para código e <code>###</code> para subcódigo.</p>
+
+      <h4>Jeito 2: Negrito e número</h4>
+      <p>Aqui a estrutura vem do número e do negrito. Uma <strong>linha inteira em negrito que começa com número</strong> é categoria, por exemplo <strong>1. Nível de reflexão</strong>. As linhas numeradas que <em>não</em> estão em negrito são os códigos dessa categoria, por exemplo <code>0. nenhuma</code> e <code>1. opinião</code>.</p>
+      <p>Esta regra só funciona se houver pelo menos uma categoria em negrito com número. Sem ela, o documento é lido pela regra de numeração.</p>
+      <div class="tabela">
+        <table>
+          <caption>Exemplo de documento lido por negrito e número</caption>
+          <thead>
+            <tr>
+              <th scope="col">Como a linha está escrita</th>
+              <th scope="col">Formatação</th>
+              <th scope="col">O que vira no programa</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><strong>1. Nível de reflexão</strong></td>
+              <td>Linha inteira em negrito</td>
+              <td>Categoria</td>
+            </tr>
+            <tr>
+              <td>Quanto o participante reflete sobre a própria prática.</td>
+              <td>Texto normal</td>
+              <td>Descrição da categoria</td>
+            </tr>
+            <tr>
+              <td>0. nenhuma</td>
+              <td>Número, sem negrito</td>
+              <td>Código</td>
+            </tr>
+            <tr>
+              <td>1. opinião</td>
+              <td>Número, sem negrito</td>
+              <td>Código</td>
+            </tr>
+            <tr>
+              <td><strong>2. Tema</strong></td>
+              <td>Linha inteira em negrito</td>
+              <td>Nova categoria</td>
+            </tr>
+            <tr>
+              <td>1. avaliação</td>
+              <td>Número, sem negrito</td>
+              <td>Código</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h4>Jeito 3: Numeração</h4>
+      <p>A própria numeração mostra o nível. <code>1.</code> é categoria, <code>1.1</code> é código e <code>1.1.1</code> é subcódigo. Se o seu documento usar uma lista numerada do Word com vários níveis, o nível da lista também serve.</p>
+      <div class="tabela">
+        <table>
+          <caption>Exemplo de documento lido por numeração</caption>
+          <thead>
+            <tr>
+              <th scope="col">Como a linha está escrita</th>
+              <th scope="col">O que vira no programa</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>1. Nível de reflexão</td>
+              <td>Categoria</td>
+            </tr>
+            <tr>
+              <td>Descrição da categoria.</td>
+              <td>Descrição da categoria</td>
+            </tr>
+            <tr>
+              <td>1.1 nenhuma</td>
+              <td>Código</td>
+            </tr>
+            <tr>
+              <td>1.2 opinião</td>
+              <td>Código</td>
+            </tr>
+            <tr>
+              <td>1.2.1 opinião política</td>
+              <td>Subcódigo de “opinião”</td>
+            </tr>
+            <tr>
+              <td>2. Tema</td>
+              <td>Categoria</td>
+            </tr>
+            <tr>
+              <td>2.1 avaliação</td>
+              <td>Código</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h3>Qual leitura o programa escolhe</h3>
+      <p>Ao abrir a prévia, o programa testa as três regras e escolhe a que melhor explica o documento: aquela que monta categorias e códigos e encontra mais itens. Em caso de empate, vale a ordem Títulos do Word, Negrito e número, Numeração. A leitura escolhida aparece marcada com a palavra <em>detectado</em>, e o botão mostra quantos itens ela encontrou.</p>
+      <p>Você pode trocar a regra clicando em outro botão. A lista muda na hora, e nada é importado até você confirmar.</p>
+
+      <h3>Texto abaixo de um item vira descrição</h3>
+      <p>Parágrafos comuns logo abaixo de uma categoria ou de um código viram a <strong>descrição</strong> dele. Se houver mais de um parágrafo, todos entram juntos, separados por quebra de linha. A descrição é exibida na prévia e fica no código depois da importação.</p>
+
+      <h3>A prévia, parte por parte</h3>
+      <div class="tabela">
+        <table>
+          <caption>O que cada parte da prévia faz</caption>
+          <thead>
+            <tr>
+              <th scope="col">Parte</th>
+              <th scope="col">Para que serve</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Botões de regra (Títulos do Word, Negrito e número, Numeração)</td>
+              <td>Trocam a leitura do documento. Mostram quantos itens cada uma encontrou.</td>
+            </tr>
+            <tr>
+              <td>Aviso de nome e introdução</td>
+              <td>Um título único no topo é tratado como nome do livro e não é importado. Parágrafos antes da primeira categoria também ficam de fora, e a prévia avisa quantos são.</td>
+            </tr>
+            <tr>
+              <td>Caixa de cada linha</td>
+              <td>Desmarque para deixar o item de fora. Os itens seguintes se ligam ao item de nível acima que ficou.</td>
+            </tr>
+            <tr>
+              <td>Tipo de cada linha (Categoria, Código, Subcódigo)</td>
+              <td>Mostra o nível que o programa atribuiu. Muda quando você move a linha com as setas.</td>
+            </tr>
+            <tr>
+              <td>Setas ← e →</td>
+              <td>← sobe a linha um nível. → desce um nível. Uma linha não pode ficar mais de um nível abaixo da linha de cima.</td>
+            </tr>
+            <tr>
+              <td>Manter os números nos nomes</td>
+              <td>Quando marcado, o nome conserva o número, como “1. opinião”. Quando desmarcado, o nome fica só com o texto.</td>
+            </tr>
+            <tr>
+              <td>Rodapé (contagem, Cancelar, Importar)</td>
+              <td>Mostra quantas categorias e códigos serão criados. Importar fica desligado se nenhuma linha estiver marcada.</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h2>Dicas para preparar o documento</h2>
+      <ul>
+        <li><strong>Use estilos de título do Word.</strong> É a forma mais segura. Evite só deixar a letra maior ou em negrito.</li>
+        <li><strong>Escolha uma forma e mantenha.</strong> Não misture títulos, negrito e números no mesmo documento.</li>
+        <li><strong>Não pule níveis.</strong> Um código deve vir logo depois de uma categoria, e um subcódigo logo depois de um código.</li>
+        <li><strong>Cuidado com o título geral.</strong> Se a primeira linha for um título e as demais forem títulos menores, ela vira o nome do livro e não é importada. Se a primeira categoria precisa entrar, deixe um título geral acima dela.</li>
+        <li><strong>Coloque a apresentação antes da primeira categoria.</strong> Tudo o que vier antes dela fica de fora, então é um bom lugar para uma introdução ao livro.</li>
+        <li><strong>Escreva a descrição em parágrafos comuns</strong> logo abaixo do item, sem marcadores.</li>
+        <li><strong>Números com ponto ou parêntese.</strong> Números de 1 a 3 dígitos são reconhecidos. Um ano no começo de frase, como “2024 foi…”, não é tratado como número.</li>
+        <li><strong>Prefira .docx.</strong> Salve o arquivo como .docx antes de importar, sobretudo se ele veio de um formato antigo.</li>
+        <li><strong>Faça a prévia antes de importar.</strong> Confira a contagem de categorias e códigos e os níveis. Corrigir na prévia é mais fácil do que apagar depois.</li>
+      </ul>
+
+      <h2>Nomes repetidos</h2>
+      <p>O programa <strong>não verifica nomes repetidos</strong> ao importar um documento nem um arquivo <code>.qdc</code> que tenha códigos novos. Isso tem três consequências:</p>
+      <ul>
+        <li>Se o projeto já tem um código <em>Tema</em> e você importa outro <em>Tema</em>, passam a existir dois.</li>
+        <li>Importar o mesmo documento duas vezes cria todos os códigos em dobro, porque cada importação gera códigos novos.</li>
+        <li>Dois códigos com o mesmo nome em categorias diferentes são códigos separados. Isso pode ser intencional, por exemplo um código <em>Outros</em> em cada categoria.</li>
+      </ul>
+      <div class="cuidado">
+        <strong>O que fazer</strong>
+        <p>Antes de importar, procure no painel Códigos usando o filtro da lupa. Se a importação criou duplicatas, mescle uma no outra (arraste um código sobre o outro e solte na pílula Mesclar). Se o código duplicado não tiver codificações, pode excluí-lo. Veja a página <a href="codificacao.html">Codificação</a> para as diferenças entre mesclar e excluir.</p>
+      </div>
+      <div class="dica">
+        <strong>Diferença importante</strong>
+        <p>Só a barra de codificação rápida reaproveita um código de mesmo nome no mesmo nível. Na importação, isso não acontece.</p>
+      </div>
+
+      <nav class="navegacao-rodape" aria-label="Navegação entre páginas">
+        <a href="codificacao.html" rel="prev">
+          <small>Anterior</small>
+          <span>Codificação</span>
+        </a>
+        <a href="analises.html" rel="next">
+          <small>Próxima</small>
+          <span>Consultas, análises e relatórios</span>
+        </a>
+      </nav>
+
+    </div>
+  </main>
+
+</body>
+</html>

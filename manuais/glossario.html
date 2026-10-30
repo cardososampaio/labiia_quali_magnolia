@@ -1,0 +1,338 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Glossário — Manual do labiia_quali</title>
+  <link rel="stylesheet" href="estilo.css">
+</head>
+<body>
+
+  <nav class="lateral" aria-label="Páginas do manual">
+    <div class="marca">
+      <strong>labiia_quali — Manual</strong>
+      <span>Versão 0.1.1 · Windows</span>
+    </div>
+    <ul>
+      <li><a href="index.html">Início</a></li>
+      <li><a href="instalacao.html">Instalação e R</a></li>
+      <li><a href="interface.html">Conhecendo a tela</a></li>
+      <li><a href="projetos.html">Projetos</a></li>
+      <li><a href="fontes.html">Documentos e fontes</a></li>
+      <li><a href="codificacao.html">Codificação</a></li>
+      <li><a href="livro-de-codigos.html">Livro de códigos</a></li>
+      <li><a href="analises.html">Consultas, análises e relatórios</a></li>
+      <li><a href="analises-lexicas.html">Análises léxicas</a></li>
+      <li><a href="problemas.html">Problemas comuns</a></li>
+      <li><a href="glossario.html" class="atual" aria-current="page">Glossário</a></li>
+      <li><a href="sobre.html">Sobre e créditos</a></li>
+    </ul>
+  </nav>
+
+  <main class="conteudo">
+    <div class="artigo">
+
+      <h1>Glossário</h1>
+      <p class="lead">Os termos que aparecem no labiia_quali, em ordem alfabética. Cada definição é curta, e o link no fim leva à página em que o termo é explicado com mais calma.</p>
+
+      <div class="dica">
+        <strong>Dois nomes que mudaram</strong>
+        <p>No programa, <strong>Atributo</strong> é o grupo de características, e <strong>Característica</strong> é a informação que você aplica a documentos. Num livro de códigos importado de um documento, as categorias viram códigos-pais e os códigos viram filhos.</p>
+      </div>
+
+      <dl class="glossario">
+
+        <dt>AFC (análise fatorial de correspondência)</dt>
+        <dd>
+          <p>Gráfico em que palavras e classes aparecem no mesmo plano. Itens próximos costumam aparecer nos mesmos segmentos de texto. Na CHD, ajuda a ver quais palavras definem cada classe.</p>
+          <p>Veja em <a href="analises-lexicas.html">Análises léxicas</a>.</p>
+        </dd>
+
+        <dt>Árvore de palavras</dt>
+        <dd>
+          <p>Ferramenta que mostra as palavras que vêm antes e depois de uma palavra escolhida, organizadas em ramos. Os ramos mostram as sequências que se repetem no texto.</p>
+          <p>Veja em <a href="analises-lexicas.html">Análises léxicas</a>.</p>
+        </dd>
+
+        <dt>Atributo</dt>
+        <dd>
+          <p>Grupo que reúne características de um mesmo tipo, como <em>País</em>. Pode ser de texto, data, número ou lista de opções.</p>
+          <p>Veja em <a href="codificacao.html">Codificação</a>.</p>
+        </dd>
+
+        <dt>Bigrama</dt>
+        <dd>
+          <p>Par de palavras que aparecem uma logo depois da outra, como “saúde pública”. A ferramenta Bigramas mostra os pares mais frequentes em forma de rede.</p>
+          <p>Veja em <a href="analises-lexicas.html">Análises léxicas</a>.</p>
+        </dd>
+
+        <dt>Característica</dt>
+        <dd>
+          <p>Informação que você aplica a documentos, respondentes ou perguntas de questionário. Um documento pode ter várias. Se a característica pertence a um atributo, ela aparece com o nome do atributo e o valor, como <em>País:Brasil</em>.</p>
+          <p>Veja em <a href="codificacao.html">Codificação</a>.</p>
+        </dd>
+
+        <dt>CHD (método Reinert)</dt>
+        <dd>
+          <p>Classificação hierárquica descendente. Divide os segmentos de texto em grupos chamados classes, de acordo com o vocabulário. É o método usado pelo IRaMuTeQ, e o teste aparece como <em>CHD</em> na aba.</p>
+          <p>Veja em <a href="analises-lexicas.html">Análises léxicas</a>.</p>
+        </dd>
+
+        <dt>Check-out (reserva do projeto)</dt>
+        <dd>
+          <p>Reserva automática do projeto para quem está editando. Quando outra pessoa está com o arquivo, o botão aparece como <strong>Bloqueado</strong>. Você pode ler, criar uma cópia ou assumir o controle.</p>
+          <p>Veja em <a href="projetos.html">Projetos</a>.</p>
+        </dd>
+
+        <dt>Citação</dt>
+        <dd>
+          <p>Trecho marcado para aparecer no painel de citações e nos relatórios. Não é um código, e pode existir sem nenhum código aplicado.</p>
+          <p>Veja em <a href="codificacao.html">Codificação</a>.</p>
+        </dd>
+
+        <dt>Classe</dt>
+        <dd>
+          <p>Grupo de segmentos de texto com vocabulário parecido, gerado pela CHD. Cada classe tem palavras características, que ajudam você a dar um nome ao grupo.</p>
+          <p>Veja em <a href="analises-lexicas.html">Análises léxicas</a>.</p>
+        </dd>
+
+        <dt>Codificar</dt>
+        <dd>
+          <p>Aplicar um código a um trecho. Você seleciona o trecho e escolhe o código no balão <em>Aplicar código</em>, ou arrasta o código até a seleção.</p>
+          <p>Veja em <a href="codificacao.html">Codificação</a>.</p>
+        </dd>
+
+        <dt>Código</dt>
+        <dd>
+          <p>Rótulo que você dá a um trecho para reunir ideias ou temas, como “medo do futuro”. Os códigos ficam numa árvore, na qual cada um pode ter subcódigos.</p>
+          <p>Veja em <a href="codificacao.html">Codificação</a>.</p>
+        </dd>
+
+        <dt>Consulta</dt>
+        <dd>
+          <p>Busca que combina códigos, palavras e operadores (E, OU, NÃO e OU EXCLUSIVO) para encontrar trechos. Os resultados aparecem num painel próprio e podem ser salvos e reexecutados.</p>
+          <p>Veja em <a href="analises.html">Consultas, análises e relatórios</a>.</p>
+        </dd>
+
+        <dt>Coocorrência</dt>
+        <dd>
+          <p>Quando duas coisas aparecem juntas. Nas análises de códigos, a coocorrência conta os trechos em que dois códigos coincidem ou se sobrepõem. Nas análises léxicas, mostra as palavras que aparecem nos mesmos segmentos de texto.</p>
+          <p>Veja em <a href="analises.html">Consultas, análises e relatórios</a> e em <a href="analises-lexicas.html">Análises léxicas</a>.</p>
+        </dd>
+
+        <dt>Corpus</dt>
+        <dd>
+          <p>Conjunto de textos que você analisa de uma vez. Pode ser um grupo de documentos ou os trechos codificados com certos códigos.</p>
+          <p>Veja em <a href="analises-lexicas.html">Análises léxicas</a>.</p>
+        </dd>
+
+        <dt>Diário de bordo</dt>
+        <dd>
+          <p>Caderno de registros do projeto, com entradas que têm título e texto. Fica separado dos documentos e dos códigos, e as suas mudanças não entram no Ctrl+Z.</p>
+          <p>Veja em <a href="codificacao.html">Codificação</a>.</p>
+        </dd>
+
+        <dt>Documento</dt>
+        <dd>
+          <p>Qualquer material de pesquisa importado para o projeto: texto, PDF, imagem, áudio, vídeo ou questionário.</p>
+          <p>Veja em <a href="fontes.html">Documentos e fontes</a>.</p>
+        </dd>
+
+        <dt>Expressão composta</dt>
+        <dd>
+          <p>Sequência de duas ou três palavras que funciona como um conceito só, como “saúde pública”. Antes da análise, o programa une as palavras com um sublinhado, para tratá-las como uma unidade.</p>
+          <p>Veja em <a href="analises-lexicas.html">Análises léxicas</a>.</p>
+        </dd>
+
+        <dt>LDA (tópicos)</dt>
+        <dd>
+          <p>Método que procura temas, chamados tópicos, em um conjunto de textos. Cada tópico é uma lista de palavras, e cada documento é uma mistura de tópicos. Quem escolhe o número de tópicos é você.</p>
+          <p>Veja em <a href="analises-lexicas.html">Análises léxicas</a>.</p>
+        </dd>
+
+        <dt>Lema</dt>
+        <dd>
+          <p>Forma básica de uma palavra, a que aparece no dicionário. “Falou”, “falando” e “falaram” têm o mesmo lema, “falar”.</p>
+          <p>Veja em <a href="analises-lexicas.html">Análises léxicas</a>.</p>
+        </dd>
+
+        <dt>Lematização</dt>
+        <dd>
+          <p>Troca de cada palavra pelo seu lema, para juntar as formas de uma mesma palavra. Com a opção <em>Usar lemas</em> ligada, a contagem já é feita sobre os lemas.</p>
+          <p>Veja em <a href="analises-lexicas.html">Análises léxicas</a>.</p>
+        </dd>
+
+        <dt>Léxico</dt>
+        <dd>
+          <p>Lista de palavras que já vêm com uma informação, como positiva ou negativa, ou uma emoção. O Sentimento e as Emoções usam, cada um, o seu léxico.</p>
+          <p>Veja em <a href="analises-lexicas.html">Análises léxicas</a>.</p>
+        </dd>
+
+        <dt>Livro de códigos</dt>
+        <dd>
+          <p>Lista completa dos códigos do projeto, com a hierarquia, as cores e as descrições. Abre numa janela própria, e pode ser importado e exportado.</p>
+          <p>Veja em <a href="livro-de-codigos.html">Livro de códigos</a>.</p>
+        </dd>
+
+        <dt>Mapa temático</dt>
+        <dd>
+          <p>Análise que agrupa expressões em temas e mostra, num diagrama, o quanto cada tema é central e o quanto é coeso por dentro.</p>
+          <p>Veja em <a href="analises-lexicas.html">Análises léxicas</a>.</p>
+        </dd>
+
+        <dt>Matriz de síntese</dt>
+        <dd>
+          <p>Tabela em que as linhas são documentos, pessoas ou perguntas, e as colunas são códigos. Em cada célula, você escreve um resumo de como aquele código aparece naquela linha.</p>
+          <p>Veja em <a href="analises.html">Consultas, análises e relatórios</a>.</p>
+        </dd>
+
+        <dt>Memo (memorando)</dt>
+        <dd>
+          <p>Texto de anotação para registrar ideias, dúvidas e decisões. Pode estar ligado ao projeto, a um documento, a um trecho ou a uma análise.</p>
+          <p>Veja em <a href="codificacao.html">Codificação</a>.</p>
+        </dd>
+
+        <dt>Mesclar</dt>
+        <dd>
+          <p>Juntar. Em códigos, as marcas de um código passam para outro, e o primeiro sai da lista. Em projetos, as alterações de outra cópia são trazidas para o seu arquivo.</p>
+          <p>Veja em <a href="codificacao.html">Codificação</a> e em <a href="projetos.html">Projetos</a>.</p>
+        </dd>
+
+        <dt>N-grama</dt>
+        <dd>
+          <p>Sequência de n palavras que aparecem uma após a outra no texto. Quando n é 2, temos um bigrama. Quando n é 3, temos um trigrama.</p>
+          <p>Veja em <a href="analises-lexicas.html">Análises léxicas</a>.</p>
+        </dd>
+
+        <dt>Nota</dt>
+        <dd>
+          <p>Texto escrito dentro do próprio programa, guardado num caderno. Diferente de um documento importado, a nota pode ser editada.</p>
+          <p>Veja em <a href="fontes.html">Documentos e fontes</a>.</p>
+        </dd>
+
+        <dt>NRC</dt>
+        <dd>
+          <p>Léxico de emoções, criado por Saif Mohammad e Peter Turney, que associa palavras a oito emoções e a duas polaridades. É usado pelo teste Emoções. O uso livre vale para pesquisa e ensino; o uso comercial exige licença do National Research Council Canada.</p>
+          <p>Veja em <a href="analises-lexicas.html">Análises léxicas</a>.</p>
+        </dd>
+
+        <dt>Palavra vazia</dt>
+        <dd>
+          <p>Palavra de função, como “de”, “a” ou “que”. Ela aparece muito e pouco diz sobre o conteúdo, então as análises a deixam de fora. Na Frequência de palavras, a lista de palavras excluídas pode ser editada.</p>
+          <p>Veja em <a href="analises-lexicas.html">Análises léxicas</a>.</p>
+        </dd>
+
+        <dt>Polaridade</dt>
+        <dd>
+          <p>Indicação de que uma palavra ou um texto é positivo ou negativo. O Sentimento conta as palavras positivas e negativas de cada documento.</p>
+          <p>Veja em <a href="analises-lexicas.html">Análises léxicas</a>.</p>
+        </dd>
+
+        <dt>.qdc</dt>
+        <dd>
+          <p>Extensão do arquivo de livro de códigos, no padrão REFI-QDA. Serve para levar a lista de códigos de um projeto para outro.</p>
+          <p>Veja em <a href="livro-de-codigos.html">Livro de códigos</a>.</p>
+        </dd>
+
+        <dt>.qdpx</dt>
+        <dd>
+          <p>Extensão do arquivo do projeto, no padrão REFI-QDA. Guarda os documentos, os códigos, as codificações, os memos e as análises salvas.</p>
+          <p>Veja em <a href="projetos.html">Projetos</a>.</p>
+        </dd>
+
+        <dt>Questionário</dt>
+        <dd>
+          <p>Planilha de respostas, em CSV ou XLSX. Cada linha vira um respondente, e cada coluna de resposta vira uma pergunta. Só as respostas abertas podem ser codificadas.</p>
+          <p>Veja em <a href="fontes.html">Documentos e fontes</a>.</p>
+        </dd>
+
+        <dt>Qui-quadrado</dt>
+        <dd>
+          <p>Medida estatística que indica o quanto uma palavra está ligada a uma classe da CHD. Quanto maior o valor, mais a palavra caracteriza a classe.</p>
+          <p>Veja em <a href="analises-lexicas.html">Análises léxicas</a>.</p>
+        </dd>
+
+        <dt>REFI-QDA</dt>
+        <dd>
+          <p>Padrão aberto para trocar projetos de análise qualitativa entre programas. O labiia_quali lê e grava os arquivos <code>.qdpx</code> e <code>.qdc</code> nesse padrão.</p>
+          <p>Veja em <a href="projetos.html">Projetos</a>.</p>
+        </dd>
+
+        <dt>Relatório</dt>
+        <dd>
+          <p>Documento PDF que reúne, na ordem que você escolher, seções de texto, tabelas de análises, consultas, memos e citações.</p>
+          <p>Veja em <a href="analises.html">Consultas, análises e relatórios</a>.</p>
+        </dd>
+
+        <dt>Segmento de texto</dt>
+        <dd>
+          <p>Pedaço de texto com cerca de 40 palavras, cortado de preferência no fim de uma frase. As análises léxicas trabalham com segmentos, e não com o documento inteiro.</p>
+          <p>Veja em <a href="analises-lexicas.html">Análises léxicas</a>.</p>
+        </dd>
+
+        <dt>Sentimento</dt>
+        <dd>
+          <p>Teste que conta palavras positivas e negativas em cada documento, com base no léxico OpLexicon. Funciona apenas com corpus em português.</p>
+          <p>Veja em <a href="analises-lexicas.html">Análises léxicas</a>.</p>
+        </dd>
+
+        <dt>Similitude</dt>
+        <dd>
+          <p>Rede de palavras que aparecem juntas nos mesmos segmentos. As ligações mais fortes definem o desenho, e os grupos de palavras muito ligadas entre si formam comunidades.</p>
+          <p>Veja em <a href="analises-lexicas.html">Análises léxicas</a>.</p>
+        </dd>
+
+        <dt>Subcódigo</dt>
+        <dd>
+          <p>Código dentro de outro código, usado para detalhar um tema. Por exemplo, “medo” pode ter os subcódigos “medo do desemprego” e “medo da doença”.</p>
+          <p>Veja em <a href="codificacao.html">Codificação</a>.</p>
+        </dd>
+
+        <dt>Transcrição</dt>
+        <dd>
+          <p>Texto escrito a partir de um áudio ou vídeo, com o momento de cada linha. No labiia_quali, você digita a transcrição ou importa uma que já foi feita.</p>
+          <p>Veja em <a href="fontes.html">Documentos e fontes</a>.</p>
+        </dd>
+
+        <dt>Trecho</dt>
+        <dd>
+          <p>Parte do documento que você seleciona para codificar. Pode ser um trecho de texto, uma área de PDF ou de imagem, um intervalo de tempo de áudio ou vídeo, ou uma resposta aberta de questionário.</p>
+          <p>Veja em <a href="codificacao.html">Codificação</a>.</p>
+        </dd>
+
+        <dt>Trigrama</dt>
+        <dd>
+          <p>Sequência de três palavras seguidas, como “política de saúde”. Quanto mais longa a sequência, mais rara tende a ser em corpus pequeno.</p>
+          <p>Veja em <a href="analises-lexicas.html">Análises léxicas</a>.</p>
+        </dd>
+
+        <dt>Variável estrelada</dt>
+        <dd>
+          <p>Informação sobre um documento, escrita com asterisco no formato do IRaMuTeQ, como <code>*sexo_feminino</code>. Ela vem das características, das pastas e dos códigos, e permite comparar grupos nas análises.</p>
+          <p>Veja em <a href="analises-lexicas.html">Análises léxicas</a>.</p>
+        </dd>
+
+        <dt>YAKE</dt>
+        <dd>
+          <p>Método que extrai palavras-chave e expressões de cada documento, sem precisar de um dicionário de temas. Quanto menor o escore YAKE, mais relevante é a expressão.</p>
+          <p>Veja em <a href="analises-lexicas.html">Análises léxicas</a>.</p>
+        </dd>
+
+      </dl>
+
+      <nav class="navegacao-rodape" aria-label="Navegação entre páginas">
+        <a href="problemas.html" rel="prev">
+          <small>Anterior</small>
+          <span>Problemas comuns</span>
+        </a>
+        <a href="sobre.html" rel="next">
+          <small>Próxima</small>
+          <span>Sobre e créditos</span>
+        </a>
+      </nav>
+
+    </div>
+  </main>
+
+</body>
+</html>

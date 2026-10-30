@@ -1,0 +1,603 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Consultas, análises e relatórios — Manual do labiia_quali</title>
+  <link rel="stylesheet" href="estilo.css">
+</head>
+<body>
+
+  <nav class="lateral" aria-label="Páginas do manual">
+    <div class="marca">
+      <strong>labiia_quali — Manual</strong>
+      <span>Versão 0.1.1 · Windows</span>
+    </div>
+    <ul>
+      <li><a href="index.html">Início</a></li>
+      <li><a href="instalacao.html">Instalação e R</a></li>
+      <li><a href="interface.html">Conhecendo a tela</a></li>
+      <li><a href="projetos.html">Projetos</a></li>
+      <li><a href="fontes.html">Documentos e fontes</a></li>
+      <li><a href="codificacao.html">Codificação</a></li>
+      <li><a href="livro-de-codigos.html">Livro de códigos</a></li>
+      <li><a href="analises.html" class="atual" aria-current="page">Consultas, análises e relatórios</a></li>
+      <li><a href="analises-lexicas.html">Análises léxicas</a></li>
+      <li><a href="problemas.html">Problemas comuns</a></li>
+      <li><a href="glossario.html">Glossário</a></li>
+      <li><a href="sobre.html">Sobre e créditos</a></li>
+    </ul>
+  </nav>
+
+  <main class="conteudo">
+    <div class="artigo">
+
+      <h1>Consultas, análises e relatórios</h1>
+      <p class="lead">Depois de codificar, você faz perguntas aos seus dados. A <strong>Consulta</strong> encontra os trechos que você procura. A aba <strong>Análises</strong> conta, compara e cruza códigos e documentos. Os <strong>Relatórios</strong> juntam tudo num PDF. Esta página mostra o que cada ferramenta faz, como ler o resultado e o que sai em cada formato.</p>
+
+      <div class="dica">
+        <strong>Termos desta página</strong>
+        <p><strong>Trecho codificado</strong> é a parte do material (uma frase, um intervalo de áudio, uma área de imagem) que você marcou com um código. <strong>Consulta</strong> é uma busca feita sobre os trechos codificados e sobre o texto dos documentos. <strong>Análise</strong> é uma tabela ou um gráfico gerado a partir dos dados do projeto.</p>
+      </div>
+
+      <h2>Consultas</h2>
+
+      <p>Use a Consulta quando a pergunta for do tipo <em>&ldquo;onde aparece&hellip;&rdquo;</em>, <em>&ldquo;quais trechos têm o código X e também o código Y&rdquo;</em> ou <em>&ldquo;quais trechos mencionam a palavra Z&rdquo;</em>. Ela não faz contagens. Para contar, use as análises.</p>
+
+      <h3>Como abrir</h3>
+
+      <ol class="passos">
+        <li>
+          <strong>Clique em Consulta</strong>
+          <p>Na aba <span class="botao-ui f-consultas">Início</span>, no grupo Consulta, clique em <span class="botao-ui f-consultas">Consulta</span>. Abre o <strong>Construtor de consultas</strong> numa nova aba chamada Consulta.</p>
+        </li>
+        <li>
+          <strong>Escolha os documentos</strong>
+          <p>Na parte <strong>Selecionar documentos</strong>, defina onde a busca vai acontecer. Sem mudanças, a busca usa todos os documentos. O indicador mostra <em>Todos os documentos</em> ou <em>Filtrado</em>.</p>
+        </li>
+        <li>
+          <strong>Monte o conteúdo da busca</strong>
+          <p>Na parte <strong>Selecionar conteúdo</strong>, arraste códigos para a área de trabalho, adicione entradas com <span class="botao-ui f-consultas">+ Adicionar entrada</span> e ligue os elementos ao <strong>Resultado</strong>.</p>
+        </li>
+        <li>
+          <strong>Veja os resultados ao vivo</strong>
+          <p>A cada mudança, o painel <strong>Consultas</strong> é atualizado. Ele abre sozinho quando você executa uma consulta.</p>
+        </li>
+        <li>
+          <strong>Salve, se for usar de novo</strong>
+          <p>Clique em <span class="botao-ui f-consultas">Salvar consulta</span> e dê um nome. Depois de salva, o botão muda para <span class="botao-ui f-consultas">Atualizar consulta</span> quando você fizer alterações.</p>
+        </li>
+      </ol>
+
+      <h3>Selecionar documentos</h3>
+
+      <p>Essa parte também usa um pequeno desenho de nós. Você arrasta ou adiciona fontes de documentos e liga cada uma ao <strong>Resultado</strong>. Só entram na busca os documentos que chegam ao Resultado. Se nada estiver ligado, a tela avisa: <em>&ldquo;Nenhum documento selecionado. Conecte os elementos ao Resultado.&rdquo;</em></p>
+
+      <div class="tabela">
+        <table>
+          <caption>Fontes de documentos que você pode usar na seleção</caption>
+          <thead>
+            <tr>
+              <th scope="col">Entrada</th>
+              <th scope="col">Escolhe</th>
+              <th scope="col">Exemplo</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><strong>Documentos</strong></td>
+              <td>Os documentos que você arrastar do painel Documentos para a área &ldquo;Solte documentos aqui&rdquo;.</td>
+              <td>Entrevista 03 e Entrevista 07.</td>
+            </tr>
+            <tr>
+              <td><strong>Característica</strong></td>
+              <td>Os documentos que têm uma característica.</td>
+              <td>Os documentos marcados como &ldquo;Grupo focal&rdquo;.</td>
+            </tr>
+            <tr>
+              <td><strong>Tipo</strong></td>
+              <td>Os documentos pelo tipo do arquivo: texto, PDF, áudio, vídeo, imagem ou questionário.</td>
+              <td>Só os áudios.</td>
+            </tr>
+            <tr>
+              <td><strong>Pasta</strong></td>
+              <td>Os documentos dentro da pasta, incluindo as subpastas.</td>
+              <td>A pasta &ldquo;Entrevistas 2025&rdquo;.</td>
+            </tr>
+            <tr>
+              <td><strong>Todos os documentos</strong></td>
+              <td>Todo o projeto.</td>
+              <td>Para uma busca em todo o corpus.</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <p>Quando há duas ou mais entradas, o operador entre elas decide quais documentos passam:</p>
+
+      <div class="tabela">
+        <table>
+          <caption>Como combinar duas entradas de documentos</caption>
+          <thead>
+            <tr>
+              <th scope="col">Operação</th>
+              <th scope="col">Quais documentos ficam</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><strong>União (1 + 2)</strong></td>
+              <td>Os documentos de qualquer uma das entradas.</td>
+            </tr>
+            <tr>
+              <td><strong>Interseção (1 ∩ 2)</strong></td>
+              <td>Só os documentos que estão nas duas entradas.</td>
+            </tr>
+            <tr>
+              <td><strong>Diferença (1 − 2)</strong></td>
+              <td>Os documentos da entrada 1 que não estão na entrada 2.</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <p>Se a característica usar um atributo de data ou de número, aparecem os modos <strong>É</strong>, <strong>Entre</strong> e <strong>Fora do intervalo</strong>. Assim você filtra, por exemplo, as entrevistas feitas entre duas datas.</p>
+
+      <h3>Selecionar conteúdo</h3>
+
+      <p>Aqui você escreve a busca em si. Cada peça é um nó, e você liga os nós entre si até o <strong>Resultado</strong>.</p>
+
+      <div class="tabela">
+        <table>
+          <caption>Peças que você pode colocar na busca</caption>
+          <thead>
+            <tr>
+              <th scope="col">Peça</th>
+              <th scope="col">O que faz</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><strong>Código</strong></td>
+              <td>Encontra os trechos com esse código. Marque <strong>E subcódigos</strong> para incluir também os trechos dos códigos filhos.</td>
+            </tr>
+            <tr>
+              <td><strong>Qualquer código</strong></td>
+              <td>Encontra qualquer trecho que tenha algum código. Útil para revisar tudo o que você já codificou.</td>
+            </tr>
+            <tr>
+              <td><strong>Texto</strong></td>
+              <td>Procura uma palavra ou expressão no texto dos documentos. Há duas opções: <strong>Diferenciar maiúsculas</strong> (sem ela, a busca ignora maiúsculas e minúsculas) e <strong>Palavra inteira</strong> (a palavra precisa aparecer sozinha, e não como parte de outra).</td>
+            </tr>
+            <tr>
+              <td><strong>Operador lógico</strong></td>
+              <td>Combina entradas com <strong>E</strong>, <strong>OU</strong>, <strong>NÃO</strong> ou <strong>OU EXCLUSIVO</strong>. Veja a tabela abaixo.</td>
+            </tr>
+            <tr>
+              <td><strong>Operador espacial</strong></td>
+              <td>Compara a posição dos trechos no texto: se um se sobrepõe a outro, se está dentro dele, e assim por diante.</td>
+            </tr>
+            <tr>
+              <td><strong>Resultado</strong></td>
+              <td>A saída final da busca. Tudo o que você quer ver precisa estar ligado a ele.</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h4>Operadores, com um exemplo de pesquisa para cada</h4>
+
+      <p>Os operadores lógicos avaliam cada trecho separadamente. Os espaciais comparam trechos entre si pela posição no texto. Os exemplos usam um corpus de entrevistas com professores.</p>
+
+      <div class="tabela">
+        <table>
+          <caption>Operadores da consulta</caption>
+          <thead>
+            <tr>
+              <th scope="col">Operador</th>
+              <th scope="col">O que encontra</th>
+              <th scope="col">Exemplo de pesquisa</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><strong>E</strong></td>
+              <td>Trechos que atendem a todas as entradas. Um trecho precisa ter os dois códigos ao mesmo tempo.</td>
+              <td>Código <em>Saúde mental</em> <strong>E</strong> código <em>Carga horária</em>: falas em que o professor liga saúde e jornada.</td>
+            </tr>
+            <tr>
+              <td><strong>OU</strong></td>
+              <td>Trechos que atendem a pelo menos uma entrada.</td>
+              <td>Código <em>Ansiedade</em> <strong>OU</strong> código <em>Insônia</em>: todos os trechos marcados com um ou com outro.</td>
+            </tr>
+            <tr>
+              <td><strong>NÃO</strong></td>
+              <td>Trechos que não atendem à entrada. Usado dentro de outra combinação.</td>
+              <td>Código <em>Carga horária</em> <strong>E</strong> <strong>NÃO</strong> <em>Lazer</em>: jornada longa sem menção a lazer.</td>
+            </tr>
+            <tr>
+              <td><strong>OU EXCLUSIVO</strong></td>
+              <td>Exatamente uma das duas entradas, nunca as duas.</td>
+              <td>Código <em>Licença</em> <strong>OU EXCLUSIVO</strong> código <em>Afastamento</em>: trechos que citam um dos dois, mas não os dois juntos.</td>
+            </tr>
+            <tr>
+              <td><strong>Sobreposição</strong></td>
+              <td>Trechos do Código 1 que se tocam, ao menos em parte, com trechos do Código 2.</td>
+              <td><em>Preconceito</em> com <em>Escola</em>: o ponto em que a fala sobre preconceito acontece na mesma passagem que a fala sobre a escola.</td>
+            </tr>
+            <tr>
+              <td><strong>Dentro de</strong></td>
+              <td>Trechos do Código 1 que ficam inteiramente dentro de um trecho do Código 2.</td>
+              <td><em>Carga horária</em> <strong>dentro de</strong> <em>Desgaste</em>: relatos de jornada que estão dentro de um relato de desgaste.</td>
+            </tr>
+            <tr>
+              <td><strong>Fora de</strong></td>
+              <td>Trechos do Código 1 que não encostam em nenhum trecho do Código 2.</td>
+              <td><em>Lazer</em> <strong>fora de</strong> <em>Trabalho</em>: falas sobre lazer que não aparecem em passagens sobre trabalho.</td>
+            </tr>
+            <tr>
+              <td><strong>Antes de</strong></td>
+              <td>Trechos da entrada 1 que terminam antes de a entrada 2 começar, sem sobreposição.</td>
+              <td><em>Infância</em> <strong>antes de</strong> <em>Formação</em>: relatos da infância que vêm antes dos relatos sobre formação.</td>
+            </tr>
+            <tr>
+              <td><strong>Seguido de</strong></td>
+              <td>Trechos da entrada 1 que começam depois de a entrada 2 terminar, sem sobreposição.</td>
+              <td><em>Adaptação</em> <strong>seguido de</strong> <em>Mudança</em>: falas sobre adaptação que vêm depois de um trecho sobre mudança.</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="cuidado">
+        <strong>Entradas só de texto</strong>
+        <p>Se a busca tiver só entradas de <em>Texto</em>, a única combinação permitida é <strong>OU</strong>. Com <strong>E</strong> ou <strong>OU EXCLUSIVO</strong>, o programa mostra uma mensagem explicando o limite.</p>
+      </div>
+
+      <h3>Resultados no painel Consultas</h3>
+
+      <p>Os resultados aparecem agrupados por documento. Cada item mostra os códigos associados (com a cor), o trecho com o termo em destaque e o contexto antes e depois. Em áudio e vídeo, você vê o intervalo de tempo. Em PDF e imagem com área, você vê a miniatura da área. Em questionários, você vê a pergunta e o respondente.</p>
+
+      <ul>
+        <li>Clique em <span class="botao-ui f-consultas">Abrir documento</span> para ir ao trecho no documento.</li>
+        <li><span class="botao-ui f-consultas">Mostrar mais</span> e <span class="botao-ui f-consultas">Mostrar menos</span> expandem ou recolhem o resultado.</li>
+        <li><span class="botao-ui f-consultas">Copiar resultado</span> copia o item para usar em outro lugar.</li>
+      </ul>
+
+      <p>Na barra do painel:</p>
+
+      <ul>
+        <li><span class="botao-ui f-consultas">Editar consulta</span> volta ao Construtor de consultas.</li>
+        <li><span class="botao-ui f-consultas">Salvar consulta</span> guarda a busca no projeto.</li>
+        <li><span class="botao-ui f-consultas">Selecionar documentos</span> marca no painel Documentos os documentos que têm resultado. Depois, você pode arrastar uma característica para todos eles de uma vez.</li>
+        <li><span class="botao-ui f-consultas">Codificar todos</span> aplica um código a todos os trechos encontrados. Você cria um código novo ou escolhe um existente.</li>
+        <li><span class="botao-ui f-consultas">Exportar PDF</span> gera um PDF com os resultados agrupados por documento.</li>
+      </ul>
+
+      <div class="atencao">
+        <strong>Codificar todos muda o projeto</strong>
+        <p>Esse botão aplica o código a cada trecho encontrado, de uma vez. Confira os resultados antes de usá-lo.</p>
+      </div>
+
+      <div class="dica">
+        <strong>Quando a busca muda</strong>
+        <p>Como o painel se atualiza enquanto você monta a busca, você pode ajustar um operador e ver o efeito na hora. Para testar uma hipótese, ajuste, confira e só depois salve.</p>
+      </div>
+
+      <h3>Consultas salvas</h3>
+
+      <p>No painel <strong>Consultas salvas</strong>, ficam as buscas que você guardou. Use o campo <em>Filtrar consultas salvas&hellip;</em> para encontrar uma pelo nome. Em cada item, você pode:</p>
+
+      <ul>
+        <li><span class="botao-ui f-consultas">Executar consulta</span>, para rodar a busca de novo com os dados atuais.</li>
+        <li><span class="botao-ui f-consultas">Editar consulta</span>, para mudar a busca.</li>
+        <li><span class="botao-ui f-consultas">Renomear</span> e <span class="botao-ui f-consultas">Excluir</span>.</li>
+        <li><span class="botao-ui f-consultas">Adicionar memo</span>, para anotar por que a busca existe. A anotação fica ligada à consulta.</li>
+      </ul>
+
+      <p>Consultas salvas aparecem nas análises de resultados (veja a seção Resultados e palavras) e podem ser usadas nos relatórios.</p>
+
+      <div class="cuidado">
+        <strong>Documentos removidos</strong>
+        <p>Se você remover um documento que uma consulta usa, a consulta continua na lista, com um aviso de que um documento não está mais no projeto.</p>
+      </div>
+
+      <h2>Aba Análises</h2>
+
+      <p>A aba <strong>Análises</strong> da faixa tem três grupos: <strong>Códigos</strong>, <strong>Resultados e palavras</strong> e <strong>Relatórios</strong>. Cada botão abre uma aba de análise no centro da tela, com o nome do tipo e um número (por exemplo, <em>Coocorrência de códigos (1)</em>). Você pode abrir várias ao mesmo tempo. Análises salvas aparecem no painel <strong>Análises salvas</strong> e podem ser abertas em janela própria.</p>
+
+      <h3>Opções que se repetem em quase todas as análises</h3>
+
+      <div class="tabela">
+        <table>
+          <caption>Opções comuns às análises</caption>
+          <thead>
+            <tr>
+              <th scope="col">Opção</th>
+              <th scope="col">O que faz</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><strong>Agrupar por</strong></td>
+              <td>Coloca características, atributos, pastas ou grupos de respondentes como colunas. Veja a explicação abaixo.</td>
+            </tr>
+            <tr>
+              <td><strong>Documentos</strong> (ou Selecionar documentos)</td>
+              <td>Define o conjunto de documentos da análise. Usa o mesmo seletor do Construtor de consultas.</td>
+            </tr>
+            <tr>
+              <td><strong>Exibir</strong></td>
+              <td>Muda a forma da visualização: <strong>Tabela</strong> (números), <strong>Visual</strong> (quadrados cujo tamanho e cor seguem o valor) ou <strong>Sankey</strong> (faixas que ligam códigos a documentos, com largura proporcional ao valor).</td>
+            </tr>
+            <tr>
+              <td><strong>Valores</strong></td>
+              <td><strong>Contagens</strong> mostra quantos trechos há em cada célula. <strong>Binário</strong> mostra 1 se houver pelo menos um trecho e 0 se não houver.</td>
+            </tr>
+            <tr>
+              <td><strong>Salvar análise</strong></td>
+              <td>Guarda a análise no projeto, com nome. Depois de salva, o botão vira <strong>Atualizar análise</strong>. Você pode renomear ou excluir a análise no painel Análises salvas.</td>
+            </tr>
+            <tr>
+              <td><strong>Exportar CSV</strong> e <strong>Exportar SVG</strong></td>
+              <td>Exportam a análise. Veja a tabela de exportação mais abaixo.</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="dica">
+        <strong>Clique numa célula</strong>
+        <p>Na maioria das análises, clicar numa célula ou num total abre a consulta correspondente no painel Consultas, com os trechos que formam aquele número. Assim você passa da contagem para o texto. É o melhor jeito de conferir um número antes de escrevê-lo.</p>
+      </div>
+
+      <h3>Agrupar por: comparar grupos</h3>
+
+      <p>Arraste uma característica, um atributo, uma pasta ou um grupo de respondentes para a zona <strong>Agrupar por</strong>. A análise então mostra os números separados por grupo. Cada tipo funciona de um jeito:</p>
+
+      <ul>
+        <li><strong>Característica</strong>: vira uma coluna.</li>
+        <li><strong>Atributo</strong>: vira um bloco com subtotal.</li>
+        <li><strong>Pasta</strong>: vira uma coluna por documento, com subtotal.</li>
+      </ul>
+
+      <p>Esse recurso serve para comparar grupos. Suponha que você tenha um atributo <em>Gênero</em> com os valores <em>Mulher</em> e <em>Homem</em>, aplicado aos entrevistados. Ao arrastá-lo para Agrupar por numa análise de códigos, você vê se o código <em>Sobrecarga</em> aparece mais nas entrevistas de um grupo do que nas do outro. Sem o agrupamento, você teria só o total, e nenhuma base para comparar.</p>
+
+      <div class="cuidado">
+        <strong>Grupos pequenos</strong>
+        <p>Diferenças entre grupos com poucos documentos podem não significar nada. Antes de concluir, confira quantos documentos cada grupo tem.</p>
+      </div>
+
+      <h3>Como ler as tabelas</h3>
+
+      <ul>
+        <li><strong>Contagens</strong>: número de trechos. <strong>Binário</strong>: presença ou ausência. Nos totais, o binário mostra em quantas células o item aparece.</li>
+        <li><strong>Subtotal</strong>: soma de uma linha ou de um grupo.</li>
+        <li><strong>Subtotal como % do total da linha</strong>: quanto daquela linha está em cada grupo.</li>
+        <li><strong>Total da linha como % do total geral</strong> (a coluna <strong>% do total</strong>): quanto daquela linha pesa no todo.</li>
+      </ul>
+
+      <h3>Grupo Códigos</h3>
+
+      <h4>Códigos nos documentos</h4>
+      <p>Uma grade com códigos nas linhas e documentos nas colunas. Cada célula mostra quantos trechos codificados com aquele código há naquele documento.</p>
+      <ul>
+        <li><strong>Pergunta que responde:</strong> quais temas aparecem em cada documento, e com que peso?</li>
+        <li><strong>Como ler:</strong> arraste os códigos para as linhas e os documentos (ou características e pastas, pela zona de agrupamento) para as colunas. Números altos indicam concentração do tema. Use o botão <span class="botao-ui f-analises">Abrir como matriz de síntese</span> para levar os mesmos códigos e documentos para a Matriz de síntese.</li>
+      </ul>
+
+      <h4>Matriz de síntese</h4>
+      <p>Uma tabela para resumir por escrito. As linhas são documentos, respondentes, perguntas de questionário ou agrupamentos. As colunas são códigos. Cada célula recebe um resumo que <strong>você</strong> escreve, sobre como aquele código aparece naquela linha.</p>
+      <ul>
+        <li><strong>Pergunta que responde:</strong> o que cada participante disse sobre cada tema, lado a lado?</li>
+        <li><strong>Como ler:</strong> a matriz é para leitura qualitativa, não para contagem. Clique numa célula para ver os trechos codificados nos resultados e escreva o resumo com eles ao lado. Arraste documentos, características, atributos, pastas ou respondentes para as linhas, e códigos para as colunas. Use <span class="botao-ui f-analises">Remover linha</span>, <span class="botao-ui f-analises">Remover coluna</span> e <span class="botao-ui f-analises">Descartar esta linha</span> para ajustar a tabela.</li>
+      </ul>
+      <p>O <span class="botao-ui f-analises">Exportar CSV</span> inclui os resumos.</p>
+
+      <h4>Coocorrência de códigos</h4>
+      <p>Uma matriz de códigos contra códigos. Cada célula conta os trechos em que os dois códigos aparecem juntos: o mesmo trecho com os dois códigos, ou trechos diferentes que se sobrepõem. Não é contagem por documento.</p>
+      <ul>
+        <li><strong>Pergunta que responde:</strong> quais temas aparecem juntos no mesmo relato?</li>
+        <li><strong>Como ler:</strong> uma célula alta mostra dois códigos que costumam caminhar juntos. Clique na célula para ver os trechos, que são a consulta de sobreposição entre os dois códigos. Uma célula alta não diz que um tema causa o outro. Diz só que aparecem juntos.</li>
+      </ul>
+
+      <h4>Ordem dos códigos</h4>
+      <p>Uma faixa horizontal para cada documento. Ela mostra em que parte do texto cada código aparece, de 0% (início) a 100% (fim).</p>
+      <ul>
+        <li><strong>Pergunta que responde:</strong> um tema aparece no começo, no meio ou no fim da conversa?</li>
+        <li><strong>Como ler:</strong> cada marca é um trecho codificado. Se um código fica sempre à direita, ele tende a surgir perto do fim do documento. A posição é calculada pelos caracteres do texto.</li>
+      </ul>
+
+      <h4>Frequência de códigos</h4>
+      <p>Uma grade de códigos contra documentos, com a porcentagem do documento que cada código cobre.</p>
+      <ul>
+        <li><strong>Pergunta que responde:</strong> quanto do material fala de cada tema?</li>
+        <li><strong>Como ler:</strong> a porcentagem depende do tipo do documento. Em texto, é a parte dos caracteres coberta (trechos que se sobrepõem contam uma vez). Em áudio e vídeo, é a parte da duração coberta. Em PDF, combina texto e áreas. Em imagem, é a parte dos trechos codificados. Em questionário, é a parte das respostas abertas codificadas. A página mostra a legenda com essas regras.</li>
+        <li>Duas visões: <strong>Grade de frequências</strong> e <strong>Gráfico</strong>.</li>
+      </ul>
+
+      <h3>Grupo Resultados e palavras</h3>
+
+      <h4>Resultados nos documentos</h4>
+      <p>É igual a Códigos nos documentos, mas as linhas são <strong>consultas salvas</strong>. Você arrasta as consultas do painel Consultas salvas. Cada célula mostra quantos resultados daquela consulta há naquele documento.</p>
+      <ul>
+        <li><strong>Pergunta que responde:</strong> onde cada busca encontra material?</li>
+        <li><strong>Como ler:</strong> serve para mapear buscas, como &ldquo;menções ao salário&rdquo;, pelos documentos. Use <span class="botao-ui f-analises">Remover consulta</span> para tirar uma linha.</li>
+      </ul>
+
+      <h4>Frequência de palavras</h4>
+      <p>Conta as palavras de todos os documentos do escopo, ou só as respostas abertas de um questionário.</p>
+      <ul>
+        <li><strong>Pergunta que responde:</strong> quais palavras o conjunto usa com mais frequência?</li>
+        <li><strong>Como ler:</strong> a contagem não diferencia maiúsculas de minúsculas. Palavras com menos de duas letras ficam de fora. Cada forma escrita conta à parte: <em>escola</em> e <em>escolas</em> aparecem em linhas diferentes.</li>
+        <li><strong>Excluir palavras</strong> vem preenchido com palavras vazias do português e do inglês, como &ldquo;de&rdquo;, &ldquo;que&rdquo; e &ldquo;the&rdquo;. Você pode editar essa lista.</li>
+        <li><strong>Incluir palavras</strong>: se você preencher, a contagem mostra só essas palavras. Deixe vazio para contar todas, exceto as excluídas.</li>
+        <li><strong>Mostrar</strong> define quantas palavras aparecem (de 5 a 200).</li>
+        <li>Duas visões: <strong>Gráfico de barras</strong> e <strong>Nuvem de palavras</strong>. Abaixo fica a <strong>Tabela de palavras</strong>.</li>
+        <li>Clicar numa palavra abre a consulta de texto com ela.</li>
+      </ul>
+
+      <div class="dica">
+        <strong>Palavras vazias</strong>
+        <p>Palavras vazias são termos gramaticais que quase sempre aparecem e pouco dizem sobre o conteúdo. Tirá-las deixa visível o vocabulário que importa. Se você quiser estudar uma palavra como &ldquo;de&rdquo;, tire-a da lista de exclusão.</p>
+      </div>
+
+      <h4>Relações (mapa de relações)</h4>
+      <p>Um mapa desenhado à mão, em que você liga elementos do projeto por linhas. Ele abre numa aba chamada <strong>Mapa de relações</strong>, no visualizador de documentos, e pode ser levado para uma janela própria.</p>
+      <ul>
+        <li><strong>Pergunta que responde:</strong> como as partes da pesquisa se conectam, do seu jeito?</li>
+        <li><strong>Como usar:</strong> arraste documentos, códigos, consultas, resultados, memos, análises, características, atributos, citações, pastas, respondentes, perguntas e células de questionário para a tela. Ligue os itens com linhas. Duplo clique em um item leva ao original.</li>
+        <li>A barra de texto do mapa serve para legendas e títulos, com negrito, itálico, cor e tamanho.</li>
+        <li>O painel lateral lista os itens do projeto, pode ser escondido e tem um campo <em>Filtrar&hellip;</em>. Use <span class="botao-ui f-analises">Centralizar</span> para encontrar o conteúdo se ele sair da tela.</li>
+        <li>Salve com <span class="botao-ui f-analises">Salvar mapa de relações</span>. Para uma figura, use <span class="botao-ui f-analises">Exportar como SVG</span>.</li>
+      </ul>
+
+      <h3>Grupo Relatórios</h3>
+
+      <p>O botão <span class="botao-ui f-analises">Relatórios</span> abre o montador de relatórios. Veja a seção <a href="#relatorios">Relatórios</a> abaixo.</p>
+
+      <h2 id="relatorios">Relatórios</h2>
+
+      <p>O relatório é uma lista ordenada de itens que você monta arrastando-os para a tela. Ao final, você exporta tudo como um PDF com sumário.</p>
+
+      <h3>Como montar</h3>
+
+      <ol class="passos">
+        <li>
+          <strong>Abra um relatório novo</strong>
+          <p>Na aba Análises, clique em <span class="botao-ui f-analises">Relatórios</span>. Ele aparece como <em>Relatório sem título</em>. Dê um nome no campo <strong>Relatório:</strong>.</p>
+        </li>
+        <li>
+          <strong>Adicione seções e textos</strong>
+          <p>Use as ferramentas da barra, <span class="botao-ui f-analises">Seção</span> e <span class="botao-ui f-analises">Texto</span>. A seção pode ser de nível 1 ou de <span class="botao-ui f-analises">Subseção</span>. O texto é formatado e não tem títulos próprios.</p>
+        </li>
+        <li>
+          <strong>Arraste o material</strong>
+          <p>Arraste para a tela documentos, consultas salvas, análises salvas, citações, memos e itens de questionário (perguntas, respondentes e células).</p>
+        </li>
+        <li>
+          <strong>Ajuste as opções de cada análise</strong>
+          <p>Análises de tabela têm as opções <span class="botao-ui f-analises">Somente totais</span>, <span class="botao-ui f-analises">Binário</span> e <span class="botao-ui f-analises">Visual</span>. Frequência de palavras tem <span class="botao-ui f-analises">Gráfico de barras</span> e <span class="botao-ui f-analises">Nuvem de palavras</span>. Matriz de síntese, Frequência de códigos, Ordem dos códigos e Relações não têm opções.</p>
+        </li>
+        <li>
+          <strong>Reordene</strong>
+          <p>Arraste os itens pela alça <em>Arraste para reordenar</em>. Para tirar um item, use <span class="botao-ui f-analises">Remover</span>.</p>
+        </li>
+        <li>
+          <strong>Salve e exporte</strong>
+          <p>Clique em <span class="botao-ui f-analises">Salvar relatório</span>. Depois, clique em <span class="botao-ui f-analises">Exportar PDF</span>. Durante a geração, o botão mostra <em>Exportando&hellip;</em>.</p>
+        </li>
+      </ol>
+
+      <div class="dica">
+        <strong>As tabelas saem atualizadas</strong>
+        <p>Cada tabela do relatório é refeita no momento da exportação, a partir dos dados atuais do projeto. Não é uma foto da tela. Se você mudou uma codificação depois de montar o relatório, o PDF já traz o número novo.</p>
+      </div>
+
+      <h3>O que o PDF tem</h3>
+
+      <ul>
+        <li>Um sumário com links e a numeração dos itens.</li>
+        <li>Cabeçalho e numeração de páginas.</li>
+        <li>Imagens, PDFs (página a página) e o primeiro quadro de vídeos dos documentos incluídos.</li>
+      </ul>
+
+      <div class="cuidado">
+        <strong>Sumário em inglês</strong>
+        <p>Nesta versão, o título do sumário sai como <em>Contents</em>, e a seção sem nome sai como <em>Section</em>. O restante do PDF fica em português.</p>
+      </div>
+
+      <h2>Memos e citações nas análises</h2>
+
+      <p><strong>Memos</strong> são anotações e <strong>citações</strong> são trechos que você separa para reutilizar na escrita. Você cria os dois a partir do próprio documento, e não nas análises. Veja como fazer em <a href="codificacao.html">Codificação</a>.</p>
+
+      <ul>
+        <li><strong>Memos</strong> aparecem no painel Memos, em três grupos: <em>Memos do projeto</em>, <em>Memos de documentos</em> e <em>Memos de seleções</em>. Dentro de um relatório, você arrasta memos da mesma forma que documentos.</li>
+        <li><strong>Citações</strong> aparecem no painel Citações. Elas podem entrar num relatório pelo arraste. Além disso, o mapa de relações aceita citações como itens.</li>
+      </ul>
+
+      <h2>Exportar</h2>
+
+      <p>Cada análise exporta em um formato próprio. A tabela abaixo mostra o que sai em cada um.</p>
+
+      <div class="tabela">
+        <table>
+          <caption>O que pode ser exportado, e em qual formato</caption>
+          <thead>
+            <tr>
+              <th scope="col">Formato</th>
+              <th scope="col">Onde</th>
+              <th scope="col">O que sai</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><strong>CSV</strong></td>
+              <td>Códigos nos documentos; Resultados nos documentos; Coocorrência de códigos; Frequência de códigos (valores em %); Matriz de síntese; tabela de Frequência de palavras</td>
+              <td>A tabela como está na tela, com subtotais e totais. A Matriz de síntese inclui os resumos.</td>
+            </tr>
+            <tr>
+              <td><strong>SVG</strong></td>
+              <td>Gráfico de Frequência de códigos; Ordem dos códigos; gráfico ou nuvem de Frequência de palavras; Mapa de relações</td>
+              <td>Imagem vetorial do gráfico ou do diagrama. Serve para editar em um programa de desenho.</td>
+            </tr>
+            <tr>
+              <td><strong>PDF</strong></td>
+              <td>Relatórios (<span class="botao-ui f-analises">Exportar PDF</span>); resultados de consulta (<span class="botao-ui f-consultas">Exportar PDF</span>)</td>
+              <td>Documento formatado, com sumário, para leitura e envio.</td>
+            </tr>
+            <tr>
+              <td><strong>.qdc</strong></td>
+              <td>Livro de códigos. Veja <a href="livro-de-codigos.html">Livro de códigos</a>.</td>
+              <td>Livro de códigos no padrão REFI-QDA, para outros programas.</td>
+            </tr>
+            <tr>
+              <td><strong>TXT e Markdown</strong></td>
+              <td>Transcrição (no editor de transcrição)</td>
+              <td>O texto da transcrição, sem a formatação do programa.</td>
+            </tr>
+            <tr>
+              <td><strong>.qdpx</strong></td>
+              <td>Salvar o projeto (<span class="botao-ui f-fontes">Salvar</span>, ou <kbd>Ctrl</kbd> + <kbd>S</kbd>)</td>
+              <td>O projeto inteiro, no padrão aberto QDPX / REFI-QDA.</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h3>O que não sai em formato de escritório</h3>
+
+      <div class="atencao">
+        <strong>Não há Word, Excel nem PNG nas análises</strong>
+        <p>As análises não exportam para Word (.docx), para Excel (.xlsx) nem para imagem PNG. Para usar uma tabela no Word, exporte o CSV e abra-o no Excel, ou gere um PDF do relatório. As análises léxicas exportam PNG: veja <a href="analises-lexicas.html">Análises léxicas</a>.</p>
+      </div>
+
+      <h3>Salvar não é o mesmo que exportar</h3>
+
+      <p>Consultas, análises salvas e relatórios ficam <strong>dentro do projeto</strong>. Quando você salva o projeto, eles vão junto. Outros programas que leem o formato QDPX levam os códigos, as fontes e as citações, mas não as consultas, as análises salvas nem os relatórios.</p>
+
+      <div class="cuidado">
+        <strong>Não mande só o CSV para outra pessoa</strong>
+        <p>Um CSV mostra a tabela, mas não guarda a pergunta que a gerou nem os filtros usados. Se outra pessoa precisar refazer a análise, mande o projeto (.qdpx) ou o relatório em PDF, e diga quais documentos entraram.</p>
+      </div>
+
+      <h2>Próximos passos</h2>
+
+      <p>Para codificar o material que essas ferramentas vão ler, veja <a href="codificacao.html">Codificação</a>. Para o formato dos códigos, veja <a href="livro-de-codigos.html">Livro de códigos</a>. Se a análise não mostrar o que você espera, veja <a href="problemas.html">Problemas comuns</a>.</p>
+
+      <nav class="navegacao-rodape" aria-label="Navegação entre páginas">
+        <a href="livro-de-codigos.html" rel="prev">
+          <small>Anterior</small>
+          <span>Livro de códigos</span>
+        </a>
+        <a href="analises-lexicas.html" rel="next">
+          <small>Próxima</small>
+          <span>Análises léxicas</span>
+        </a>
+      </nav>
+
+    </div>
+  </main>
+
+</body>
+</html>

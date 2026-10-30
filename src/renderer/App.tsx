@@ -28,8 +28,7 @@ import {
   faZoomOut,
   faPanelsTopLeft,
   faScale,
-  faFileAlt,
-  faHeart
+  faFileAlt
 } from './components/Icon'
 import { LicenceDialog } from './components/Licence/LicenceDialog'
 import { UpdateDialog, type UpdateAvailableInfo } from './components/Update/UpdateDialog'
@@ -103,7 +102,6 @@ import { FindDialog } from './components/Find/FindDialog'
 import { MemosPane } from './components/Memos/MemosPane'
 import { QuotesPane } from './components/Quotes/QuotesPane'
 import { ANALYSIS_TOOL_ORDER } from './components/Toolbar/AnalysisPopover'
-import { MANUAL_URL, SPONSOR_URL } from './components/Toolbar/HelpPopover'
 import { Ribbon, type RibbonButtonDef, type RibbonFamily, type RibbonMenuItem, type RibbonTabDef } from './components/Toolbar/Ribbon'
 import { StartMenu } from './components/Toolbar/StartMenu'
 import { StatusBar } from './components/StatusBar'
@@ -2579,9 +2577,7 @@ function App() {
                 useDocumentStore.getState().openToolTab(PREFERENCES_TAB_ID)
               }
             },
-            { id: 'licence', label: t("Licence"), title: t("Licence & Attributions"), icon: faScale, family: 'neutral', onClick: () => setShowLicenceDialog(true) },
-            { id: 'manual', label: t("Manual"), title: t("Open the user manual of Magnolia, the software labiia_quali is based on, in your browser (in English)."), icon: faFileAlt, family: 'neutral', onClick: () => window.open(MANUAL_URL, '_blank') },
-            { id: 'support', label: t("Support Magnolia"), icon: faHeart, family: 'affect', onClick: () => window.open(SPONSOR_URL, '_blank') }
+            { id: 'licence', label: t("Licence"), title: t("Licence & Attributions"), icon: faScale, family: 'neutral', onClick: () => setShowLicenceDialog(true) }
           ]
         }
       ]

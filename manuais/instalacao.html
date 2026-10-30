@@ -1,0 +1,276 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Instalação e R — Manual do labiia_quali</title>
+  <link rel="stylesheet" href="estilo.css">
+</head>
+<body>
+
+  <nav class="lateral" aria-label="Páginas do manual">
+    <div class="marca">
+      <strong>labiia_quali — Manual</strong>
+      <span>Versão 0.1.1 · Windows</span>
+    </div>
+    <ul>
+      <li><a href="index.html">Início</a></li>
+      <li><a href="instalacao.html" class="atual" aria-current="page">Instalação e R</a></li>
+      <li><a href="interface.html">Conhecendo a tela</a></li>
+      <li><a href="projetos.html">Projetos</a></li>
+      <li><a href="fontes.html">Documentos e fontes</a></li>
+      <li><a href="codificacao.html">Codificação</a></li>
+      <li><a href="livro-de-codigos.html">Livro de códigos</a></li>
+      <li><a href="analises.html">Consultas, análises e relatórios</a></li>
+      <li><a href="analises-lexicas.html">Análises léxicas</a></li>
+      <li><a href="problemas.html">Problemas comuns</a></li>
+      <li><a href="glossario.html">Glossário</a></li>
+      <li><a href="sobre.html">Sobre e créditos</a></li>
+    </ul>
+  </nav>
+
+  <main class="conteudo">
+    <div class="artigo">
+
+      <h1>Instalação e R</h1>
+      <p class="lead">Esta página mostra o que o labiia_quali precisa para rodar, como instalar o programa, por que ele pede o R durante a instalação e o que fazer se o R faltar depois.</p>
+
+      <h2>Requisitos</h2>
+      <ul>
+        <li><strong>Sistema:</strong> Windows 10 ou Windows 11.</li>
+        <li><strong>Para o programa em si:</strong> nada além do Windows. A maior parte das funções funciona sem o R.</li>
+        <li><strong>Para as análises léxicas que usam o R:</strong> o R, versão 4.0 ou mais recente, e os <em>pacotes</em> dele (extensões que trazem funções prontas para as análises). Os pacotes são instalados numa pasta própria do labiia_quali.</li>
+        <li><strong>Internet:</strong> necessária para baixar o R, caso você precise dele, e os pacotes.</li>
+      </ul>
+
+      <div class="dica">
+        <strong>Dica</strong>
+        <p>Se você só vai codificar e consultar documentos, pode pular a parte do R. Ela só faz diferença nas cinco análises léxicas listadas mais abaixo.</p>
+      </div>
+
+      <h2>Instalar o programa</h2>
+      <p>Você terá o arquivo de instalação do labiia_quali. Há duas versões:</p>
+
+      <div class="tabela">
+        <table>
+          <caption>Arquivos do labiia_quali para Windows</caption>
+          <thead>
+            <tr>
+              <th scope="col">Arquivo</th>
+              <th scope="col">O que é</th>
+              <th scope="col">Quando usar</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><code>labiia_quali-win-x64.exe</code></td>
+              <td>Instalador. Faz a instalação completa, com atalhos e a etapa do R.</td>
+              <td>Na maioria dos casos.</td>
+            </tr>
+            <tr>
+              <td><code>labiia_quali-win-portable-x64.exe</code></td>
+              <td>Versão portátil. Roda sem instalar.</td>
+              <td>Quando você não pode instalar programas no computador, como em um equipamento compartilhado.</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <ol class="passos">
+        <li>
+          <strong>Abra o instalador</strong>
+          <p>Dê dois cliques no arquivo <code>labiia_quali-win-x64.exe</code>.</p>
+        </li>
+        <li>
+          <strong>Confirme o aviso do Windows, se ele aparecer</strong>
+          <p>O instalador não tem assinatura digital, então o Windows pode mostrar "O Windows protegeu o computador". Clique em <span class="botao-ui">Mais informações</span> e depois em <span class="botao-ui">Executar assim mesmo</span>.</p>
+        </li>
+        <li>
+          <strong>Siga as telas em português</strong>
+          <p>Na tela de pasta, você pode trocar o lugar de instalação. O padrão é a pasta do seu usuário, sem pedir senha de administrador.</p>
+        </li>
+        <li>
+          <strong>Passe pela página do R</strong>
+          <p>Antes de terminar, aparece a página "R para os testes estatísticos". Leia a seção a seguir para entender o que escolher.</p>
+        </li>
+        <li>
+          <strong>Termine a instalação</strong>
+          <p>Ao final, o labiia_quali abre sozinho. Na primeira vez, ele pede o seu nome (veja <a href="#primeira-abertura">Primeira abertura</a>).</p>
+        </li>
+      </ol>
+
+      <h2>O que o instalador faz</h2>
+      <ul>
+        <li>Instala o programa só para o seu usuário, sem senha de administrador. A pasta padrão é <code>AppData\Local\Programs\labiia_quali</code>, dentro da pasta do seu usuário, e você pode escolher outra.</li>
+        <li>Cria um atalho na Área de Trabalho e outro no menu Iniciar.</li>
+        <li>Associa os arquivos <code>.qdpx</code> (projetos) e <code>.qdc</code> (livros de códigos) ao labiia_quali. Com isso, dar um duplo clique num projeto abre o programa.</li>
+        <li>Procura o R instalado no computador e, se preciso, oferece instalá-lo, junto com os pacotes das análises.</li>
+      </ul>
+
+      <h2>A etapa do R, e por que ela existe</h2>
+      <p>Cinco análises léxicas usam o R, um programa estatístico gratuito, para fazer os cálculos. São elas:</p>
+
+      <ul>
+        <li><strong>Nuvem de palavras</strong>, que mostra as palavras mais frequentes.</li>
+        <li><strong>CHD</strong> (Classificação Hierárquica Descendente, método Reinert), que separa os segmentos do texto em classes.</li>
+        <li><strong>Similitude</strong>, que mostra a rede de palavras que aparecem juntas.</li>
+        <li><strong>Emoções</strong>, que conta emoções e polaridades do texto.</li>
+        <li><strong>Tópicos LDA</strong>, que procura tópicos latentes no conjunto de documentos.</li>
+      </ul>
+
+      <p>Por isso o instalador tem a página do R. Ele faz a parte técnica por você: achar o R, instalar os pacotes e, se não houver R, baixar uma versão adequada.</p>
+
+      <p>A página se comporta de três jeitos:</p>
+
+      <div class="tabela">
+        <table>
+          <caption>O que o instalador oferece, conforme o R encontrado no computador</caption>
+          <thead>
+            <tr>
+              <th scope="col">Situação</th>
+              <th scope="col">O que acontece</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>R 4.5 ou mais novo já instalado</td>
+              <td>Oferece instalar os pacotes que as análises usam. Esse é o caminho mais rápido.</td>
+            </tr>
+            <tr>
+              <td>Nenhum R, ou um R mais antigo que 4.5</td>
+              <td>Oferece baixar e instalar o R 4.6.1, do CRAN (repositório oficial do R), só para o seu usuário (cerca de 90 MB, com conferência de integridade), e depois os pacotes.</td>
+            </tr>
+            <tr>
+              <td>Você recusa a instalação do R</td>
+              <td>A instalação do programa continua normalmente. Os pacotes podem ser instalados depois, pela página de Preferências (veja abaixo).</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="cuidado">
+        <strong>Cuidado</strong>
+        <p>O programa aceita R 4.0 ou mais recente, mas o instalador só oferece pacotes com R 4.5 ou mais novo. Se você já tem um R mais antigo, o instalador oferece baixar o R 4.6.1. Se o R faltar ou for antigo, veja a seção "Se o R faltar depois da instalação" abaixo.</p>
+      </div>
+
+      <div class="dica">
+        <strong>Para quem instala em vários computadores</strong>
+        <p>A instalação pode rodar sem telas, com <code>labiia_quali-win-x64.exe /S /R=packages</code>. Use <code>/R=install-r</code> para instalar também o R, ou <code>/R=skip</code> para pular a etapa do R.</p>
+      </div>
+
+      <h2 id="se-o-r-faltar">Se o R faltar depois da instalação</h2>
+      <p>Se você recusou a etapa do R, o R foi desinstalado ou o programa não o encontra, o ajuste é feito em Preferências, na categoria <strong>R</strong>. Para abrir, clique em <span class="botao-ui">Preferências</span> na aba Ajuda da faixa de opções.</p>
+
+      <p>No painel <strong>R para as análises léxicas</strong> você vê qual R está em uso, se ele foi "Encontrado automaticamente" ou "Escolhido por você", a pasta dos pacotes e a lista de <strong>Pacotes</strong>. Os botões do painel são:</p>
+
+      <div class="tabela">
+        <table>
+          <caption>Botões do painel R em Preferências</caption>
+          <thead>
+            <tr>
+              <th scope="col">Botão</th>
+              <th scope="col">Quando usar</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><span class="botao-ui">Encontrar automaticamente</span></td>
+              <td>Quando você instalou o R depois do labiia_quali, ou quer que o programa escolha o R mais novo de novo.</td>
+            </tr>
+            <tr>
+              <td><span class="botao-ui">Procurar de novo</span></td>
+              <td>Depois de instalar ou trocar o R, para atualizar a lista.</td>
+            </tr>
+            <tr>
+              <td><span class="botao-ui">Escolher o Rscript…</span></td>
+              <td>Quando você tem mais de um R e quer usar um específico. Escolha o arquivo <code>Rscript.exe</code> dele.</td>
+            </tr>
+            <tr>
+              <td><span class="botao-ui">Indicar onde está o R…</span></td>
+              <td>Quando o programa não acha o R em lugar nenhum. Você aponta a pasta onde ele está instalado.</td>
+            </tr>
+            <tr>
+              <td><span class="botao-ui">Instalar pacotes que faltam</span></td>
+              <td>Quando a lista de pacotes mostra algum faltando. O programa pede confirmação antes de instalar.</td>
+            </tr>
+            <tr>
+              <td><span class="botao-ui">Baixar o R</span></td>
+              <td>Quando não há R no computador. Baixa e instala a versão indicada pelo programa.</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <ol class="passos">
+        <li>
+          <strong>Abra Preferências</strong>
+          <p>Na faixa de opções, aba <span class="botao-ui">Ajuda</span>, clique em <span class="botao-ui">Preferências</span>.</p>
+        </li>
+        <li>
+          <strong>Vá até a categoria R</strong>
+          <p>Confira a linha <strong>R em uso</strong>. Se estiver vazia ou errada, clique em <span class="botao-ui">Encontrar automaticamente</span>.</p>
+        </li>
+        <li>
+          <strong>Complete o que falta</strong>
+          <p>Se não houver R, clique em <span class="botao-ui">Baixar o R</span>. Se houver R mas faltarem pacotes, clique em <span class="botao-ui">Instalar pacotes que faltam</span>.</p>
+        </li>
+        <li>
+          <strong>Confira a lista de pacotes</strong>
+          <p>Quando todos os pacotes aparecerem como instalados, feche Preferências e rode a análise de novo.</p>
+        </li>
+      </ol>
+
+      <p>Os pacotes ficam numa pasta própria do labiia_quali: <code>AppData\Local\labiia_quali\R\library</code>, dentro da pasta do seu usuário.</p>
+
+      <div class="atencao">
+        <strong>Atenção</strong>
+        <p>Se a instalação dos pacotes falhar por causa da internet, o programa avisa e você pode tentar de novo depois. O registro da etapa do R fica no arquivo <code>instalador-r.log</code>, dentro da pasta <code>AppData\Local\labiia_quali\logs</code>. Ele ajuda a descobrir o que aconteceu.</p>
+      </div>
+
+      <h2 id="primeira-abertura">Primeira abertura</h2>
+      <p>Na primeira vez que o programa abre, aparece a janela <strong>Boas-vindas ao labiia_quali</strong>.</p>
+
+      <ol class="passos">
+        <li>
+          <strong>Digite o seu nome</strong>
+          <p>Ele aparece para colegas quando vocês trabalham no mesmo projeto. Fica gravado no arquivo do projeto quando você é a última pessoa a editá-lo.</p>
+        </li>
+        <li>
+          <strong>Clique em <span class="botao-ui">Continuar</span></strong>
+          <p>Depois disso, abre a tela inicial, com a lista de projetos recentes (vazia, na primeira vez).</p>
+        </li>
+        <li>
+          <strong>Crie ou abra um projeto</strong>
+          <p>Use o botão <span class="botao-ui f-fontes">Novo</span> para começar um projeto, ou <span class="botao-ui f-fontes">Abrir…</span> para abrir um arquivo que você já tem. Veja a página <a href="projetos.html">Projetos</a>.</p>
+        </li>
+      </ol>
+
+      <div class="dica">
+        <strong>Dica</strong>
+        <p>Seu nome pode ser trocado depois, em Preferências, na categoria Geral.</p>
+      </div>
+
+      <h2>Desinstalar</h2>
+      <p>Para desinstalar, use <strong>Configurações</strong> do Windows, na área de aplicativos, e escolha o labiia_quali. A desinstalação remove o programa, mas <strong>não apaga</strong> os seus dados. Os projetos (arquivos <code>.qdpx</code>) ficam onde você os salvou. Os pacotes do R ficam em <code>AppData\Local\labiia_quali</code>, dentro da pasta do seu usuário.</p>
+
+      <div class="atencao">
+        <strong>Atenção</strong>
+        <p>Só apague a pasta <code>AppData\Local\labiia_quali</code> se quiser remover também os pacotes do R e os registros do programa. Antes disso, confira que todos os seus projetos estão salvos em outro lugar.</p>
+      </div>
+
+      <nav class="navegacao-rodape" aria-label="Navegação entre páginas">
+        <a href="index.html" rel="prev">
+          <small>Anterior</small>
+          <span>Início</span>
+        </a>
+        <a href="interface.html" rel="next">
+          <small>Próxima</small>
+          <span>Conhecendo a tela</span>
+        </a>
+      </nav>
+
+    </div>
+  </main>
+
+</body>
+</html>
