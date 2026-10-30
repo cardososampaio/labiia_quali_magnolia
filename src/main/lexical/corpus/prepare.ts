@@ -19,7 +19,8 @@ import { Lexicon, gramIsActive, type CorpusLanguage } from './lexicon'
 /** Bump when a change here would give different results for the same text. */
 // 2: units carry variables and a date.
 // 5: segments are cut on labiia_lex's word chain (contentChain); tokens flag what it keeps.
-export const PREPARATION_VERSION = 5
+// 6: a code's passages (parts) are cut one by one and each starts a new text.
+export const PREPARATION_VERSION = 6
 
 export interface TextUnitInput {
   id: string
@@ -27,6 +28,14 @@ export interface TextUnitInput {
   /** Source document of a coded passage (the CHD groups passages by it). */
   document?: string
   text: string
+  /**
+   * A code's passages. When present they replace text for cutting: each is
+   * cut on its own and starts a new text, so no segment or n-gram joins two
+   * passages (which may come from different documents).
+   */
+  parts?: string[]
+  /** 'code' when the unit gathers the passages of one code. */
+  kind?: 'code'
   variables?: string[]
   date?: string
 }
@@ -59,7 +68,7 @@ export interface PreparedCorpus {
   version: number
   language: CorpusLanguage
   uceSize: number
-  units: { id: string; name: string; document?: string; variables: string[]; date?: string }[]
+  units: { id: string; name: string; document?: string; kind?: 'code'; variables: string[]; date?: string }[]
   /** Unit index of each segment. */
   uceUnit: Uint32Array
   /**
@@ -388,21 +397,24 @@ export function prepareCorpus(
   const uceSize = Math.max(20, Math.min(200, Math.round(options.uceSize || 40)))
   for (let u = 0; u < units.length; u++) {
     if (isCancelled?.()) throw new Error('cancelled')
-    // The lines of a text are one stream, as in IRaMuTeQ: segments may span line breaks.
-    const lines = repairExtraction(units[u].text).split('\n').map((l) => l.trim()).filter(Boolean)
     const segments: { words: string[]; kept: boolean[]; newText: boolean }[] = []
     const add = (cut: { words: string[]; kept: boolean[] }[]): void => {
       cut.forEach((s, i) => segments.push({ ...s, newText: i === 0 }))
     }
-    if (options.segmentCount === 'content') {
-      // labiia_lex reads texts in IRaMuTeQ's format: a line starting with "****" (a text)
-      // or "-*" (a theme) is a heading, so it is left out and the cutting starts again after it.
-      for (const part of splitAtHeadings(lines)) {
-        const chain = contentChain(part.join(' '), lexicon)
-        add(cutSegments(chain.cleaned, uceSize, chain.counted))
+    // A code's passages are cut one by one; a document is one passage.
+    for (const passage of units[u].parts ?? [units[u].text]) {
+      // The lines of a text are one stream, as in IRaMuTeQ: segments may span line breaks.
+      const lines = repairExtraction(passage).split('\n').map((l) => l.trim()).filter(Boolean)
+      if (options.segmentCount === 'content') {
+        // labiia_lex reads texts in IRaMuTeQ's format: a line starting with "****" (a text)
+        // or "-*" (a theme) is a heading, so it is left out and the cutting starts again after it.
+        for (const part of splitAtHeadings(lines)) {
+          const chain = contentChain(part.join(' '), lexicon)
+          add(cutSegments(chain.cleaned, uceSize, chain.counted))
+        }
+      } else {
+        add(cutSegments(cleanText(lines.join(' '), lexicon.expressions), uceSize))
       }
-    } else {
-      add(cutSegments(cleanText(lines.join(' '), lexicon.expressions), uceSize))
     }
     for (const seg of segments) {
       uceUnit.push(u)
@@ -426,7 +438,7 @@ export function prepareCorpus(
     version: PREPARATION_VERSION,
     language: options.language,
     uceSize,
-    units: units.map((x) => ({ id: x.id, name: x.name, ...(x.document ? { document: x.document } : {}), variables: x.variables ?? [], ...(x.date ? { date: x.date } : {}) })),
+    units: units.map((x) => ({ id: x.id, name: x.name, ...(x.document ? { document: x.document } : {}), ...(x.kind ? { kind: x.kind } : {}), variables: x.variables ?? [], ...(x.date ? { date: x.date } : {}) })),
     uceUnit: Uint32Array.from(uceUnit),
     uceNewText: Uint8Array.from(uceNewText),
     uceText,

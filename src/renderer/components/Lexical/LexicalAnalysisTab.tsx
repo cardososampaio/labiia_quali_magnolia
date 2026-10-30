@@ -112,13 +112,15 @@ export function LexicalAnalysisTab({ test, data: propData, savedConfig, inTab }:
     [data, docFilter]
   )
   const docUnits = useMemo(() => documentUnits(data, filteredSourceGuids), [data, filteredSourceGuids])
-  const passageUnits = useMemo(
+  const codeTexts = useMemo(
     () => (source === 'codes' ? codeUnits(data, filteredSourceGuids, codeGuids, includeSubcodes) : null),
     [source, data, filteredSourceGuids, codeGuids, includeSubcodes]
   )
-  // The "Codes" source analyses the coded passages of the chosen documents instead of whole documents.
-  const units = passageUnits ? passageUnits.units : docUnits.units
-  const skipped = docUnits.skipped
+  // The "Codes" source analyses one text per chosen code (its passages in the chosen documents)
+  // instead of whole documents.
+  const units = codeTexts ? codeTexts.units : docUnits.units
+  // Documents without text only matter when whole documents are analysed.
+  const skipped = codeTexts ? [] : docUnits.skipped
   const wordEstimate = useMemo(() => units.reduce((n, u) => n + countWords(u.text), 0), [units])
 
   // What a result depends on: which documents, the language and the settings.
@@ -146,7 +148,7 @@ export function LexicalAnalysisTab({ test, data: propData, savedConfig, inTab }:
         testId: test.id,
         language,
         params,
-        units: units.map((u) => ({ id: u.id, name: u.name, document: u.document, text: u.text, variables: u.variables, date: u.date }))
+        units: units.map((u) => ({ id: u.id, name: u.name, document: u.document, text: u.text, parts: u.parts, kind: u.kind, variables: u.variables, date: u.date }))
       })
       if (runIdRef.current !== runId) return
       if (res.ok && res.files) {
@@ -247,35 +249,18 @@ export function LexicalAnalysisTab({ test, data: propData, savedConfig, inTab }:
       <div className="lex-body">
         <p className="lex-description">{test.description}</p>
 
-        <div className="analysis-section lex-section">
-          <div className="lex-section-toggle" onClick={() => setDocSectionOpen(!docSectionOpen)}>
-            <Icon icon={docSectionOpen ? faChevronDown : faChevronRight} style={{ fontSize: 12, color: 'var(--text-muted)' }} />
-            <span className="lex-section-title">{t('Select Documents')}</span>
-            <span className="lex-section-summary">
-              {tn(units.length, '{{count}} document', '{{count}} documents')} · {tn(wordEstimate, 'about {{count}} word', 'about {{count}} words')}
-            </span>
-          </div>
-          {docSectionOpen && (
-            <div style={{ marginTop: 10, minHeight: 160 }}>
-              <DocumentSelector sources={data.sources} tags={data.tags} categories={data.categories} folders={data.folders} sourceFolder={data.sourceFolder} tagMembers={data.tagMembers} respondentTagMembers={data.respondentTagMembers} questionTagMembers={data.questionTagMembers} surveyEntityLabels={data.surveyEntityLabels} filter={docFilter} onChange={setDocFilter} />
-            </div>
-          )}
-          {skipped.length > 0 && (
-            <div className="lex-note">
-              <Icon icon={faExclamationTriangle} style={{ fontSize: 12 }} />
-              {tn(skipped.length, '{{count}} document has no text and is left out', '{{count}} documents have no text and are left out')}
-              {': '}{skipped.slice(0, 5).map((s) => s.name).join(', ')}{skipped.length > 5 ? '…' : ''}
-            </div>
-          )}
-        </div>
-
+        {/* The first choice: whole documents, or one text per code. */}
         <div className="analysis-section lex-section lex-grid">
           <div className="lex-field">
-            <span className="lex-label">{t('Analyse')}</span>
+            <span className="lex-label">{t('What to analyse')}</span>
             <SegmentedControl
               value={source}
-              onChange={(v) => setSource(v as LexicalSource)}
-              label={t('Analyse')}
+              onChange={(v) => {
+                setSource(v as LexicalSource)
+                // With codes, the documents only narrow the passages: they start folded away.
+                setDocSectionOpen(v === 'documents')
+              }}
+              label={t('What to analyse')}
               options={[
                 { value: 'documents', label: t('Documents') },
                 { value: 'codes', label: t('Codes') }
@@ -290,10 +275,15 @@ export function LexicalAnalysisTab({ test, data: propData, savedConfig, inTab }:
           </label>
         </div>
 
-        {source === 'codes' && (
+        {codeTexts && (
           <div className="analysis-section lex-section">
             <div className="lex-codes-head">
               <span className="lex-section-title">{t('Codes')}</span>
+              <span className="lex-section-summary">
+                {tn(units.length, '{{count}} code', '{{count}} codes')} · {tn(wordEstimate, 'about {{count}} word', 'about {{count}} words')}
+              </span>
+            </div>
+            <div className="lex-codes-head" style={{ marginTop: 8 }}>
               <ManualSelectButton
                 kinds={['code']}
                 data={data}
@@ -310,9 +300,11 @@ export function LexicalAnalysisTab({ test, data: propData, savedConfig, inTab }:
               <div className="lex-chips">
                 {codeGuids.map((g) => {
                   const code = data.codes.find((c) => c.guid === g)
+                  const count = codeTexts.passageCounts[g] ?? 0
                   return (
                     <span key={g} className="lex-chip" style={{ borderColor: code?.color ?? 'var(--border)' }}>
                       {code?.name ?? g}
+                      <span className="lex-chip-count">{tn(count, '{{count}} passage', '{{count}} passages')}</span>
                       <button className="lex-chip-x" title={t('Remove')} onClick={() => setCodeGuids(codeGuids.filter((x) => x !== g))}>×</button>
                     </span>
                   )
@@ -321,14 +313,45 @@ export function LexicalAnalysisTab({ test, data: propData, savedConfig, inTab }:
             )}
             <div className="lex-note">
               {codeGuids.length === 0
-                ? t('Choose the codes whose passages will be analysed. Each coded passage of the chosen documents becomes a text.')
-                : tn(units.length, '{{count}} coded passage in the chosen documents', '{{count}} coded passages in the chosen documents')}
-              {passageUnits && passageUnits.passagesWithoutText > 0 && (
-                <> · {tn(passageUnits.passagesWithoutText, '{{count}} passage without text (image or PDF area) is left out', '{{count}} passages without text (image or PDF area) are left out')}</>
+                ? t('Choose the codes to analyse. Each code becomes one text with all its coded passages, so the results compare the codes.')
+                : t('Each code is one text with all its coded passages. A passage coded with more than one chosen code goes into each of them.')}
+              {codeTexts.passagesWithoutText > 0 && (
+                <> · {tn(codeTexts.passagesWithoutText, '{{count}} passage without text (image or PDF area) is left out', '{{count}} passages without text (image or PDF area) are left out')}</>
               )}
             </div>
+            {codeTexts.codesWithoutText.length > 0 && (
+              <div className="lex-note">
+                <Icon icon={faExclamationTriangle} style={{ fontSize: 12 }} />
+                {tn(codeTexts.codesWithoutText.length, '{{count}} code has no passage with text in the chosen documents and is left out', '{{count}} codes have no passage with text in the chosen documents and are left out')}
+                {': '}{codeTexts.codesWithoutText.slice(0, 5).join(', ')}{codeTexts.codesWithoutText.length > 5 ? '…' : ''}
+              </div>
+            )}
           </div>
         )}
+
+        <div className="analysis-section lex-section">
+          <div className="lex-section-toggle" onClick={() => setDocSectionOpen(!docSectionOpen)}>
+            <Icon icon={docSectionOpen ? faChevronDown : faChevronRight} style={{ fontSize: 12, color: 'var(--text-muted)' }} />
+            <span className="lex-section-title">{codeTexts ? t('Limit to documents (optional)') : t('Select Documents')}</span>
+            <span className="lex-section-summary">
+              {codeTexts
+                ? tn(filteredSourceGuids.length, '{{count}} document', '{{count}} documents')
+                : <>{tn(units.length, '{{count}} document', '{{count}} documents')} · {tn(wordEstimate, 'about {{count}} word', 'about {{count}} words')}</>}
+            </span>
+          </div>
+          {docSectionOpen && (
+            <div style={{ marginTop: 10, minHeight: 160 }}>
+              <DocumentSelector sources={data.sources} tags={data.tags} categories={data.categories} folders={data.folders} sourceFolder={data.sourceFolder} tagMembers={data.tagMembers} respondentTagMembers={data.respondentTagMembers} questionTagMembers={data.questionTagMembers} surveyEntityLabels={data.surveyEntityLabels} filter={docFilter} onChange={setDocFilter} />
+            </div>
+          )}
+          {skipped.length > 0 && (
+            <div className="lex-note">
+              <Icon icon={faExclamationTriangle} style={{ fontSize: 12 }} />
+              {tn(skipped.length, '{{count}} document has no text and is left out', '{{count}} documents have no text and are left out')}
+              {': '}{skipped.slice(0, 5).map((s) => s.name).join(', ')}{skipped.length > 5 ? '…' : ''}
+            </div>
+          )}
+        </div>
 
 
         {test.params.length > 0 && (

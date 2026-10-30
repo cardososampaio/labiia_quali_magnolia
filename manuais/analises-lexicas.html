@@ -126,23 +126,35 @@
       <h2 id="corpus">Como o corpus é montado</h2>
       <p>O <strong>corpus</strong> é o conjunto de textos que a análise lê. Você escolhe os documentos, e o programa prepara esse material antes de contar qualquer palavra. Esta seção explica cada etapa, para que você saiba exatamente o que está sendo contado.</p>
 
-      <h3>Origem: documentos ou trechos codificados</h3>
-      <p>No campo <strong>Analisar</strong>, você escolhe a unidade de texto:</p>
+      <h3>Origem: documentos ou códigos</h3>
+      <p>A tela de cada análise começa com a pergunta <strong>O que analisar?</strong>. Ali você escolhe a unidade de texto:</p>
       <ul>
         <li><strong>Documentos</strong> (padrão). Cada documento escolhido vira um texto.</li>
-        <li><strong>Códigos</strong>. Cada trecho codificado dos documentos escolhidos, marcado com um dos códigos que você selecionou, vira um texto. O trecho recebe o nome "documento · código", e continua ligado ao documento de origem.</li>
+        <li><strong>Códigos</strong>. Cada código escolhido vira <strong>um texto só</strong>, que junta todos os trechos marcados com esse código nos documentos escolhidos. Assim, os resultados comparam os códigos entre si.</li>
       </ul>
-      <p>Para escolher os códigos, clique em <span class="botao-ui f-lexicas">Escolher códigos…</span>. Os códigos escolhidos aparecem como fichas, e cada uma tem um botão × para tirar o código da lista. A opção <strong>Incluir subcódigos</strong> vem marcada: assim, ao escolher um código-pai, entram também os trechos dos seus subcódigos.</p>
+      <p>No modo Códigos, aparece primeiro o bloco <strong>Códigos</strong>:</p>
+      <ul>
+        <li>Clique em <span class="botao-ui f-lexicas">Escolher códigos…</span>. Depois da primeira escolha, o botão passa a se chamar <span class="botao-ui f-lexicas">Adicionar códigos…</span>.</li>
+        <li>Cada código escolhido aparece como uma etiqueta com a contagem de trechos, por exemplo "3 trechos". Para tirar um código da lista, clique no × da etiqueta.</li>
+        <li>A caixa <strong>Incluir subcódigos</strong> vem marcada. Assim, ao escolher um código-pai, entram também os trechos dos seus subcódigos. O código-pai soma os trechos dos filhos. Se você escolher o pai e um filho juntos, cada um vira seu próprio texto.</li>
+      </ul>
+      <p>Abaixo vem <strong>Limitar aos documentos (opcional)</strong>, recolhido. É o seletor de documentos de sempre. Por padrão, todos os documentos entram.</p>
+
+      <div class="cuidado">
+        <strong>Um trecho pode contar duas vezes</strong>
+        <p>Um trecho marcado com dois códigos escolhidos entra no texto de cada um deles. Por isso, nas análises que olham o conjunto todo (Nuvem de palavras, Word Tree, Bigramas, Trigramas, Similitude, Associações de palavras-chave, YAKE, Sentimento e Emoções), esse trecho conta duas vezes. Dentro de um mesmo código, o mesmo trecho conta uma vez só. Se o total parecer maior do que você esperava, confira se há trechos marcados com mais de um código escolhido.</p>
+      </div>
 
       <div class="dica">
         <strong>Dica</strong>
-        <p>Use o modo Códigos para comparar o que se disse sobre um tema específico. Por exemplo, escolha só o código "Participação" e rode uma Nuvem de palavras: a figura mostra o vocabulário usado nos trechos sobre esse tema, e não no documento inteiro.</p>
+        <p>Use o modo Códigos para comparar o que se disse sobre temas diferentes. Por exemplo, escolha só o código "Participação" e rode uma Nuvem de palavras: a figura mostra o vocabulário usado nos trechos sobre esse tema, e não no documento inteiro.</p>
       </div>
 
       <p>Alguns materiais não entram por não terem texto:</p>
       <ul>
         <li><strong>Imagens e arquivos vazios</strong> são deixados de fora. O painel de seleção avisa e lista até cinco nomes.</li>
         <li><strong>Trechos em área de imagem ou de PDF</strong> também ficam de fora, com aviso na execução.</li>
+        <li><strong>Códigos sem nenhum trecho com texto</strong> (só imagem ou área de PDF, ou sem trechos nos documentos escolhidos) ficam de fora. O aviso diz o nome de cada um.</li>
         <li><strong>Questionários</strong>: entram apenas as respostas abertas. Perguntas fechadas e cabeçalhos não são texto corrido e ficam de fora.</li>
       </ul>
 
@@ -151,6 +163,7 @@
       <h3>Segmentos de cerca de 40 palavras</h3>
       <p>Muitos métodos comparam trechos curtos, e não textos longos. Por isso, o programa corta cada texto em <strong>segmentos</strong> de cerca de 40 palavras. Quando possível, o corte cai no fim de uma frase. Um texto curto pode virar um único segmento; um texto longo vira vários.</p>
       <p>Só as palavras com conteúdo contam para as 40. As palavras vazias, como artigos e preposições, continuam no segmento, mas os testes não as leem. Os segmentos são a base da CHD, da Similitude e do Mapa temático.</p>
+      <p>No modo Códigos, cada trecho é cortado em segmentos separadamente. Assim, um segmento nunca junta o fim de um trecho com o começo de outro, e os bigramas e trigramas também não atravessam essa fronteira.</p>
 
       <h3>Idioma do corpus</h3>
       <p>Escolha o idioma em <strong>Idioma do corpus</strong>: <strong>Português</strong> (padrão), <strong>Inglês</strong> ou <strong>Espanhol</strong>. O idioma define três coisas: o dicionário que reconhece as formas das palavras, a lista de palavras vazias e o léxico de emoções. O programa não traduz nada. Os textos precisam estar no idioma escolhido.</p>
@@ -182,13 +195,13 @@
       <h3>Variáveis estreladas</h3>
       <p>Cada documento pode ter informações sobre quem é ou de onde vem: sexo, região, rodada, data etc. Essas informações são as <strong>características</strong> e os <strong>atributos</strong> que você já cadastrou no projeto. Na análise, elas viram <strong>variáveis estreladas</strong>, que começam com asterisco, e servem para comparar grupos.</p>
       <p>O nome de cada variável é formado pelo nome do atributo, seguido do valor da característica. Por exemplo, o atributo "Gênero" com a característica "Feminino" vira <code>*genero_feminino</code>. Quando uma característica não pertence a nenhum atributo, a variável começa com <code>*caracteristica_</code>. Além disso, a pasta do documento vira <code>*pasta_</code> seguido do nome da pasta. Os nomes são simplificados: sem acento, sem espaço, sem pontuação e em letras minúsculas. Um atributo "Data da entrevista" com o valor "15/03/2024" vira <code>*datadaentrevista_15032024</code>.</p>
-      <p>Em modo Códigos, cada trecho ganha uma variável <code>*codigo_</code> para cada código aplicado a ele. Um trecho com dois códigos recebe as duas variáveis.</p>
+      <p>No modo Códigos, cada texto recebe uma única variável <code>*codigo_</code> com o nome do código. Por exemplo, o código "Saúde" vira <code>*codigo_saude</code>. Como cada texto é um código, essa variável diz de qual código o texto veio. O texto de um código não carrega características, atributos nem data dos documentos.</p>
 
       <p>As variáveis servem para três coisas:</p>
       <ul>
-        <li>Na <strong>CHD</strong>, a tabela <strong>Variáveis por classe</strong> mostra quais características aparecem mais em cada classe de texto.</li>
+        <li>Na <strong>CHD</strong>, a tabela <strong>Variáveis por classe</strong> mostra quais características aparecem mais em cada classe de texto. No modo Códigos, ela mostra as variáveis <code>*codigo_</code>: qual código pesa em cada classe.</li>
         <li>Na <strong>CHD</strong>, a análise fatorial mostra também a posição das variáveis entre as classes.</li>
-        <li>Quando um atributo é do tipo <strong>data</strong>, a data do documento alimenta a <strong>linha do tempo</strong> do Sentimento e dos Tópicos LDA. Documentos sem data ficam de fora da linha do tempo, mas continuam na análise.</li>
+        <li>Quando um atributo é do tipo <strong>data</strong>, a data do documento alimenta a <strong>linha do tempo</strong> do Sentimento e dos Tópicos LDA. Documentos sem data ficam de fora da linha do tempo, mas continuam na análise. No modo Códigos, não há linha do tempo, porque o texto de cada código não tem data.</li>
       </ul>
 
       <div class="cuidado">
@@ -212,12 +225,12 @@
           <p>Clique no botão do teste, por exemplo <span class="botao-ui f-lexicas">Nuvem de palavras</span>. Cada teste abre a sua própria aba.</p>
         </li>
         <li>
-          <strong>Selecione os documentos</strong>
-          <p>Clique em <span class="botao-ui f-lexicas">Selecionar documentos</span> e marque o que vai entrar. Você pode filtrar por fontes, características, atributos, pastas e tipo de arquivo.</p>
+          <strong>Escolha o que analisar</strong>
+          <p>Na pergunta <strong>O que analisar?</strong>, deixe <strong>Documentos</strong> ou escolha <strong>Códigos</strong>. No modo Códigos, clique em <span class="botao-ui f-lexicas">Escolher códigos…</span> e escolha os códigos.</p>
         </li>
         <li>
-          <strong>Escolha a unidade</strong>
-          <p>Em <strong>Analisar</strong>, deixe <strong>Documentos</strong> ou escolha <strong>Códigos</strong> e, se quiser, escolha os códigos.</p>
+          <strong>Selecione os documentos</strong>
+          <p>Clique em <span class="botao-ui f-lexicas">Selecionar documentos</span> e marque o que vai entrar. Você pode filtrar por fontes, características, atributos, pastas e tipo de arquivo. No modo Códigos, esse seletor fica em <strong>Limitar aos documentos (opcional)</strong>.</p>
         </li>
         <li>
           <strong>Confirme o idioma</strong>
@@ -266,7 +279,7 @@
             </tr>
           </thead>
           <tbody>
-            <tr><td>Textos</td><td>Quantos textos entraram: documentos ou trechos codificados, conforme o modo escolhido.</td></tr>
+            <tr><td>Textos</td><td>Quantos textos entraram: documentos ou códigos escolhidos, conforme o modo.</td></tr>
             <tr><td>Segmentos de texto</td><td>Quantos pedaços de cerca de 40 palavras foram criados a partir dos textos.</td></tr>
             <tr><td>Ocorrências</td><td>Quantas vezes palavras foram lidas no total, contando cada repetição.</td></tr>
             <tr><td>Formas</td><td>Quantas palavras diferentes aparecem.</td></tr>
@@ -473,7 +486,7 @@
         <li><strong>Antiperfis.</strong> São as palavras que aparecem pouco ou nada em cada classe. Ajudam a entender o que a classe não é.</li>
         <li><strong>Segmentos típicos.</strong> São os trechos reais que melhor representam cada classe. Esta é a evidência mais forte para dar nome a uma classe. Leia esses trechos antes de decidir o que a classe significa.</li>
         <li><strong>Análise fatorial de correspondência (AFC).</strong> É uma figura que dispõe as classes e as palavras em um plano. Quanto mais próximas duas classes, mais parecido é o vocabulário delas.</li>
-        <li><strong>Variáveis por classe.</strong> Aparece quando há atributos ou características nos documentos. A tabela mostra quais variáveis estão concentradas em cada classe.</li>
+        <li><strong>Variáveis por classe.</strong> Aparece quando há atributos ou características nos documentos. A tabela mostra quais variáveis estão concentradas em cada classe. No modo Códigos, as variáveis são <code>*codigo_</code> (por exemplo, <code>*codigo_saude</code>), e a tabela mostra qual código pesa em cada classe.</li>
         <li><strong>Robustez.</strong> Aparece quando a opção Teste de robustez está ligada. Veja a seção de parâmetros abaixo.</li>
       </ul>
 
@@ -578,7 +591,7 @@
       <ul>
         <li><strong>Rede de expressões.</strong> Mostra as palavras ligadas entre si, com as cores indicando o tema de cada uma.</li>
         <li><strong>Mapa estratégico.</strong> Cada bolha é um tema. O eixo horizontal é a <strong>centralidade</strong>: quanto o tema se conecta a outros temas. O eixo vertical é a <strong>densidade</strong>: quão coeso o tema é por dentro. O tamanho da bolha mostra a frequência do tema.</li>
-        <li><strong>Tabelas.</strong> <em>Temas</em> lista as palavras de cada tema. <em>Documentos por tema</em> mostra em quais documentos cada tema aparece. <em>Segmentos representativos</em> traz trechos reais de cada tema.</li>
+        <li><strong>Tabelas.</strong> <em>Temas</em> lista as palavras de cada tema. <em>Documentos por tema</em> mostra em quais documentos cada tema aparece. No modo Códigos, essa tabela lista os códigos, porque cada texto é um código. <em>Segmentos representativos</em> traz trechos reais de cada tema.</li>
       </ul>
 
       <p>Os temas do mapa caem em quatro áreas:</p>
@@ -651,10 +664,30 @@
       <ul>
         <li><strong>Distribuição dos tópicos.</strong> Mostra quanto de cada tópico existe no corpus como um todo.</li>
         <li><strong>Termos principais por tópico.</strong> São as palavras mais prováveis em cada tópico. Use-as para pensar no nome do tópico, e confira com os textos antes de decidir.</li>
-        <li><strong>Mapa de calor documento por tópico.</strong> Cada linha é um documento e cada coluna é um tópico. Cores mais fortes indicam que o tópico tem mais peso naquele documento. A tabela <em>Tópicos por documento</em> traz os mesmos valores em números.</li>
+        <li><strong>Mapa de calor documento por tópico.</strong> Cada linha é um documento e cada coluna é um tópico. Cores mais fortes indicam que o tópico tem mais peso naquele documento. A tabela <em>Tópicos por documento</em> traz os mesmos valores em números. No modo Códigos, cada linha é um código, e não um documento.</li>
         <li><strong>Mapa entre tópicos.</strong> Mostra os tópicos como pontos em um plano. Pontos mais próximos têm vocabulário mais parecido. Aparece quando há dois ou mais tópicos.</li>
-        <li><strong>Linha do tempo.</strong> Aparece quando os documentos têm data. Mostra como a proporção dos tópicos muda com o tempo.</li>
+        <li><strong>Linha do tempo.</strong> Aparece quando os documentos têm data. Mostra como a proporção dos tópicos muda com o tempo. Não aparece no modo Códigos.</li>
       </ul>
+
+      <h4>Exemplo prático: comparar os códigos "Saúde" e "Educação"</h4>
+      <ol class="passos">
+        <li>
+          <strong>Escolha os códigos</strong>
+          <p>Em <strong>O que analisar?</strong>, escolha <strong>Códigos</strong>. Clique em <span class="botao-ui f-lexicas">Escolher códigos…</span>, marque "Saúde" e "Educação" e confira as contagens de trechos nas etiquetas.</p>
+        </li>
+        <li>
+          <strong>Ajuste o número de tópicos</strong>
+          <p>Com só dois textos, o modelo tem pouca informação. Use um número pequeno, como 2 ou 3, no campo <strong>Número de tópicos</strong>.</p>
+        </li>
+        <li>
+          <strong>Execute e leia a tabela</strong>
+          <p>Na tabela <em>Tópicos por documento</em> e no mapa de calor, cada linha é um código: uma linha de "Saúde" e uma de "Educação". Se um tópico tem peso alto em "Saúde" e baixo em "Educação", ele é mais característico do primeiro código.</p>
+        </li>
+        <li>
+          <strong>Confira nos trechos</strong>
+          <p>Leia alguns trechos de "Saúde" e de "Educação" nos documentos e veja se o nome que você deu ao tópico faz sentido na prática. Não há linha do tempo nesse modo.</p>
+        </li>
+      </ol>
 
       <h4>Parâmetros principais</h4>
       <div class="tabela">
@@ -798,7 +831,7 @@
         <li><strong>Gráfico de distribuição.</strong> Mostra quantas vezes palavras positivas, negativas e neutras aparecem no corpus. A contagem é de palavras, e não de documentos.</li>
         <li><strong>Tabela Distribuição.</strong> Traz os mesmos números em forma de tabela.</li>
         <li><strong>Tabela Palavras com polaridade.</strong> Lista as palavras mais contadas e a polaridade que o léxico atribui a cada uma. Leia essa tabela antes de tirar conclusões: ela mostra exatamente o que pesou no resultado.</li>
-        <li><strong>Linha do tempo.</strong> Aparece quando os documentos têm data. Mostra como o tom muda ao longo do tempo.</li>
+        <li><strong>Linha do tempo.</strong> Aparece quando os documentos têm data. Mostra como o tom muda ao longo do tempo. Não aparece no modo Códigos.</li>
       </ul>
 
       <h4>Parâmetros principais</h4>
@@ -881,7 +914,7 @@
             <tr><td>Grupos diferentes falam de forma diferente?</td><td>CHD com variáveis (tabela Variáveis por classe); repita as análises acima só com os documentos de cada grupo</td><td>Compara a presença de cada característica nas classes e permite comparar grupos separadamente.</td></tr>
             <tr><td>Qual é o tom geral dos textos?</td><td>Sentimento</td><td>Conta palavras positivas, negativas e neutras (só em português).</td></tr>
             <tr><td>Quais emoções aparecem nos textos?</td><td>Emoções</td><td>Mostra o perfil das oito emoções e a polaridade.</td></tr>
-            <tr><td>Como o tom ou os temas mudam ao longo do tempo?</td><td>Sentimento e Tópicos LDA, com linha do tempo</td><td>A linha do tempo depende de atributos do tipo data nos documentos.</td></tr>
+            <tr><td>Como o tom ou os temas mudam ao longo do tempo?</td><td>Sentimento e Tópicos LDA, com linha do tempo</td><td>A linha do tempo depende de atributos do tipo data nos documentos. Não aparece no modo Códigos.</td></tr>
           </tbody>
         </table>
       </div>
@@ -917,7 +950,7 @@
       <h3>Ao relatar uma análise</h3>
       <p>Para que outra pessoa consiga entender e repetir o seu resultado, informe:</p>
       <ul>
-        <li>o idioma do corpus, o número de documentos (ou de trechos codificados) e o número de segmentos;</li>
+        <li>o idioma do corpus, o modo (documentos ou códigos), o número de documentos ou de códigos escolhidos e o número de segmentos;</li>
         <li>os parâmetros que você mudou em relação ao padrão, especialmente número de classes ou de tópicos, resolução, índice e frequência mínima;</li>
         <li>o que foi excluído (documentos sem texto, por exemplo) e, na CHD, quantas classes foram pedidas e quantas foram obtidas.</li>
       </ul>

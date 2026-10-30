@@ -101,6 +101,8 @@
 .lex-chip { display: inline-flex; align-items: center; gap: 4px; padding: 2px 4px 2px 8px; border: 1px solid var(--border); border-left-width: 4px; border-radius: 4px; font-size: var(--font-size-sm); background: var(--bg-secondary, transparent); }
 .lex-chip-x { border: none; background: none; padding: 0 4px; cursor: pointer; color: var(--text-muted); font-size: 14px; line-height: 1; }
 .lex-chip-x:hover { color: var(--text-primary); }
+/* How many passages a chosen code brings to its text. */
+.lex-chip-count { margin-left: 4px; color: var(--text-muted); font-size: 11px; }
 
 /* Zoom controls of a result picture. */
 .lex-zoom { display: inline-flex; align-items: center; gap: 4px; margin-right: 6px; }

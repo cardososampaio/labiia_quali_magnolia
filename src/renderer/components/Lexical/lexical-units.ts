@@ -2,8 +2,8 @@
  * Text units — what the lexical analyses read.
  *
  * A unit is one piece of running text with an id and a name: one document
- * (an IRaMuTeQ "text", UCI), or one coded passage when the analyses run
- * over codes. Corpus preparation and the tests only ever see units.
+ * (an IRaMuTeQ "text", UCI), or one code with all its passages when the
+ * analyses run over codes. Corpus preparation and the tests only ever see units.
  */
 import type { AnalysisInitData } from '../../models/types'
 import { stripFormatting } from '../../utils/strip-formatting'
@@ -18,6 +18,15 @@ export interface TextUnit {
   /** The document a coded passage comes from (absent for whole documents, whose name is the document). */
   document?: string
   text: string
+  /**
+   * For a code, its passages one by one (text is them joined by line
+   * breaks). Each passage is cut into segments on its own, so a segment or
+   * an n-gram never joins the end of one passage to the start of the next,
+   * which may come from another document.
+   */
+  parts?: string[]
+  /** 'code' when the unit gathers the passages of one code. */
+  kind?: 'code'
   /**
    * The document's variables in IRaMuTeQ's form (*variable_value): one per
    * tag on the document (tag category, or "etiqueta" without category, and
@@ -114,6 +123,10 @@ export function documentUnits(data: AnalysisInitData, sourceGuids: string[]): Un
 export interface CodeUnitsResult extends UnitsResult {
   /** Coded passages left out because they hold no text (image or PDF areas). */
   passagesWithoutText: number
+  /** Passages with text gathered into each chosen code's text, by code guid. */
+  passageCounts: Record<string, number>
+  /** Chosen codes left out because none of their passages in the chosen documents holds text. */
+  codesWithoutText: string[]
 }
 
 /** The chosen codes, plus all their subcodes when `includeSubcodes`. */
@@ -128,64 +141,66 @@ export function expandCodes(data: AnalysisInitData, codeGuids: string[], include
 }
 
 /**
- * Coded passages as text units (the "Codes" source): each passage of the
- * chosen documents coded with one of the chosen codes is one text, in
- * document order. It keeps its document's variables and date, adds one
- * *codigo_name variable per chosen code applied to it, and names its
- * document, so the CHD still groups the passages by document.
+ * Codes as text units (the "Codes" source): each chosen code becomes one
+ * text gathering all its passages in the chosen documents, so the analyses
+ * that compare texts (LDA topics, Thematic map documents, CHD variables)
+ * compare codes. With `includeSubcodes`, a code's text also holds its
+ * subcodes' passages. A passage coded with two chosen codes goes into both
+ * texts, so each code is complete; within one code the same span counts
+ * once, even when coded twice or by both a parent and its child. The text
+ * carries only *codigo_name: it mixes documents, so it has no document
+ * variables and no date.
  */
 export function codeUnits(data: AnalysisInitData, sourceGuids: string[], codeGuids: string[], includeSubcodes: boolean): CodeUnitsResult {
   const wanted = new Set(sourceGuids)
-  const codes = expandCodes(data, codeGuids, includeSubcodes)
-  const codeName = new Map((data.codes ?? []).map((c) => [c.guid, c.name]))
+  const codeByGuid = new Map((data.codes ?? []).map((c) => [c.guid, c]))
   const units: TextUnit[] = []
-  let passagesWithoutText = 0
-  for (const src of data.sources) {
-    if (!wanted.has(src.guid)) continue
-    const coded = (data.sourceSelections?.[src.guid] ?? [])
-      .filter((sel) => sel.codings.some((c) => codes.has(c.codeGuid)))
-      .sort((a, b) => a.startPosition - b.startPosition || a.endPosition - b.endPosition)
-    if (coded.length === 0) continue
-    // The same span coded in separate selections is one passage with all its codes,
-    // so its words are not counted twice.
-    const passages: { sel: (typeof coded)[number]; codeGuids: Set<string> }[] = []
-    const byRange = new Map<string, (typeof passages)[number]>()
-    for (const sel of coded) {
-      const key = `${sel.surveyCell?.respondentId ?? ''}|${sel.surveyCell?.questionId ?? ''}|${sel.startPosition}|${sel.endPosition}`
-      const applied = sel.codings.filter((c) => codes.has(c.codeGuid)).map((c) => c.codeGuid)
-      const found = byRange.get(key)
-      if (found) applied.forEach((g) => found.codeGuids.add(g))
-      else {
-        const entry = { sel, codeGuids: new Set(applied) }
-        byRange.set(key, entry)
-        passages.push(entry)
+  const passageCounts: Record<string, number> = {}
+  const codesWithoutText: string[] = []
+  // A passage without text counts once, however many chosen codes hold it.
+  const textless = new Set<string>()
+  for (const codeGuid of [...new Set(codeGuids)]) {
+    const code = codeByGuid.get(codeGuid)
+    if (!code) continue
+    const members = expandCodes(data, [codeGuid], includeSubcodes)
+    const parts: string[] = []
+    for (const src of data.sources) {
+      if (!wanted.has(src.guid)) continue
+      const coded = (data.sourceSelections?.[src.guid] ?? [])
+        .filter((sel) => sel.codings.some((c) => members.has(c.codeGuid)))
+        .sort((a, b) => a.startPosition - b.startPosition || a.endPosition - b.endPosition)
+      if (coded.length === 0) continue
+      const raw = data.sourceContents[src.guid] ?? ''
+      const st = sourceTypeFromFilename(src.name)
+      const cells = data.surveyCodableCells?.[src.guid] ?? []
+      const seen = new Set<string>()
+      for (const sel of coded) {
+        const key = `${src.guid}|${sel.surveyCell?.respondentId ?? ''}|${sel.surveyCell?.questionId ?? ''}|${sel.startPosition}|${sel.endPosition}`
+        if (seen.has(key)) continue
+        seen.add(key)
+        let text = ''
+        if (src.sourceType === 'image') text = ''
+        else if (sel.surveyCell) {
+          const cell = cells.find((c) => c.respondentId === sel.surveyCell!.respondentId && c.questionId === sel.surveyCell!.questionId)
+          text = cell ? cell.text.slice(sel.startPosition, sel.endPosition) : ''
+        } else {
+          text = raw.slice(sel.startPosition, sel.endPosition)
+          if (text && st !== 'text') text = stripFormatting(text, st)
+        }
+        if (text.trim()) parts.push(text)
+        else textless.add(key)
       }
     }
-    const doc = documentVariables(data, src.guid)
-    const raw = data.sourceContents[src.guid] ?? ''
-    const st = sourceTypeFromFilename(src.name)
-    const cells = data.surveyCodableCells?.[src.guid] ?? []
-    for (const { sel, codeGuids: passageCodes } of passages) {
-      let text = ''
-      if (src.sourceType === 'image') text = ''
-      else if (sel.surveyCell) {
-        const cell = cells.find((c) => c.respondentId === sel.surveyCell!.respondentId && c.questionId === sel.surveyCell!.questionId)
-        text = cell ? cell.text.slice(sel.startPosition, sel.endPosition) : ''
-      } else {
-        text = raw.slice(sel.startPosition, sel.endPosition)
-        if (text && st !== 'text') text = stripFormatting(text, st)
-      }
-      if (!text.trim()) { passagesWithoutText++; continue }
-      const applied = [...new Set([...passageCodes].map((g) => codeName.get(g) ?? ''))].filter(Boolean)
-      units.push({
-        id: `${src.guid}:${sel.guid}`,
-        name: `${src.name} · ${applied.join(', ')}`,
-        document: src.name,
-        text,
-        variables: [...new Set([...doc.variables, ...applied.map((n) => `*codigo_${variablePart(n)}`)])].sort(),
-        ...(doc.date ? { date: doc.date } : {})
-      })
-    }
+    passageCounts[codeGuid] = parts.length
+    if (parts.length === 0) { codesWithoutText.push(code.name); continue }
+    units.push({
+      id: `code:${codeGuid}`,
+      name: code.name,
+      kind: 'code',
+      text: parts.join('\n'),
+      parts,
+      variables: [`*codigo_${variablePart(code.name)}`]
+    })
   }
-  return { units, skipped: [], passagesWithoutText }
+  return { units, skipped: [], passagesWithoutText: textless.size, passageCounts, codesWithoutText }
 }

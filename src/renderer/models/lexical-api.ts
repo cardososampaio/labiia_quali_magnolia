@@ -71,6 +71,10 @@ export interface LexicalUnit {
   /** Source document of a coded passage. */
   document?: string
   text: string
+  /** A code's passages, each cut into segments on its own. */
+  parts?: string[]
+  /** 'code' when the unit gathers the passages of one code. */
+  kind?: 'code'
   /** IRaMuTeQ-style variables (*variable_value) from the document's tags and folder. */
   variables?: string[]
   /** "YYYY", "YYYY-MM" or "YYYY-MM-DD", from a date tag. */

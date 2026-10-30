@@ -28,6 +28,11 @@ export function corpusKey(units: TextUnitInput[], options: PrepareOptions): stri
       h.update(`${field.length}:`)
       h.update(field)
     }
+    // Where a code's passages split changes the segments; documents keep their earlier keys.
+    if (u.parts) {
+      h.update(`parts:${u.parts.length}:${u.kind ?? ''}\u0000`)
+      for (const p of u.parts) h.update(`${p.length}:`)
+    }
   }
   return h.digest('hex')
 }
