@@ -2202,7 +2202,22 @@
       "tagline": "Qualitative data analysis",
       "basedOnMagnolia": "Based on Magnolia, by Cale Davis — support the original project",
       "developedBy": "Version developed by",
-      "programmedWithClaude": "Programmed with Claude. It may contain errors."
+      "programmedWithClaude": "Programmed with Claude. It may contain errors.",
+      "word": {
+        "analysis": "analysis",
+        "text": "text",
+        "interview": "interview",
+        "source": "source",
+        "code": "code",
+        "category": "category",
+        "memo": "memo",
+        "word": "word",
+        "corpus": "corpus",
+        "frequency": "frequency",
+        "theme": "theme",
+        "speech": "speech",
+        "meaning": "meaning"
+      }
     },
     "credits": {
       "desktopRuntime": "desktop runtime",

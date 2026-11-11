@@ -1,7 +1,7 @@
 //! Closing labiia_quali's project window.
 //!
 //! The researcher is asked before the program closes ("Fechar o
-//! labiia_quali?", Cancel by default), so a stray click on the window's ×
+//! labiia_quali?", No by default), so a stray click on the window's ×
 //! does not end the session. The project is saved automatically before
 //! closing either way, as in Magnolia. Closing the project window ends the
 //! program, as labiia_quali has always done, instead of returning to the
@@ -11,7 +11,6 @@
 use crate::state::AppState;
 use std::sync::atomic::{AtomicBool, Ordering};
 use tauri::{AppHandle, CloseRequestApi, Manager};
-use tauri_plugin_dialog::{DialogExt, MessageDialogButtons, MessageDialogKind};
 
 /// The researcher said yes; the next close request goes through.
 static CONFIRMED: AtomicBool = AtomicBool::new(false);
@@ -36,19 +35,7 @@ pub fn intercept(app: &AppHandle, label: &str, api: &CloseRequestApi) -> bool {
     let label = label.to_string();
     std::thread::spawn(move || {
         let window = app.get_webview_window(&label);
-        let mut dialog = app
-            .dialog()
-            .message(crate::i18n::t("labiia.closeDetail"))
-            .title(crate::i18n::t("labiia.closeTitle"))
-            .kind(MessageDialogKind::Info)
-            .buttons(MessageDialogButtons::OkCancelCustom(
-                crate::i18n::t("labiia.closeYes"),
-                crate::i18n::t("labiia.closeCancel"),
-            ));
-        if let Some(w) = &window {
-            dialog = dialog.parent(w);
-        }
-        let yes = dialog.blocking_show();
+        let yes = ask(&app, window.as_ref());
         ASKING.store(false, Ordering::SeqCst);
         let state = app.state::<AppState>();
         if yes {
@@ -64,4 +51,45 @@ pub fn intercept(app: &AppHandle, label: &str, api: &CloseRequestApi) -> bool {
         }
     });
     true
+}
+
+/// Windows' own question box, with "No" as the default button, so pressing
+/// Enter by accident keeps the program open. Its buttons read Yes / No in
+/// the language of Windows.
+#[cfg(windows)]
+fn ask(_app: &AppHandle, window: Option<&tauri::WebviewWindow>) -> bool {
+    use windows::Win32::Foundation::HWND;
+    use windows::Win32::UI::WindowsAndMessaging::{
+        IDYES, MB_DEFBUTTON2, MB_ICONQUESTION, MB_YESNO, MessageBoxW,
+    };
+    use windows::core::HSTRING;
+    let owner = window
+        .and_then(|w| w.hwnd().ok())
+        .map(|h| HWND(h.0 as _))
+        .unwrap_or_default();
+    let text = HSTRING::from(format!(
+        "{}\n\n{}",
+        crate::i18n::t("labiia.closeTitle"),
+        crate::i18n::t("labiia.closeDetail")
+    ));
+    let caption = HSTRING::from("labiia_quali");
+    let answer = unsafe { MessageBoxW(Some(owner), &text, &caption, MB_YESNO | MB_ICONQUESTION | MB_DEFBUTTON2) };
+    answer == IDYES
+}
+
+#[cfg(not(windows))]
+fn ask(app: &AppHandle, window: Option<&tauri::WebviewWindow>) -> bool {
+    use tauri_plugin_dialog::{DialogExt, MessageDialogButtons};
+    let mut dialog = app
+        .dialog()
+        .message(crate::i18n::t("labiia.closeDetail"))
+        .title(crate::i18n::t("labiia.closeTitle"))
+        .buttons(MessageDialogButtons::OkCancelCustom(
+            crate::i18n::t("labiia.closeYes"),
+            crate::i18n::t("labiia.closeCancel"),
+        ));
+    if let Some(w) = window {
+        dialog = dialog.parent(w);
+    }
+    dialog.blocking_show()
 }

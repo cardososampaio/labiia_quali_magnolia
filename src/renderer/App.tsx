@@ -105,6 +105,7 @@ import { StartMenu } from './components/Toolbar/StartMenu'
 import { StatusBar } from './components/StatusBar'
 import labiiaIconUrl from './assets/labiia-icon.png'
 import { QuickCoding } from './components/QuickCoding/QuickCoding'
+import { PRODUCT_NAME } from './labiia/config'
 
 /** Fold the survey-cell scope carried by an analysis cell-click into the
  *  documentFilter of the Query being generated, so it re-runs against the
@@ -851,7 +852,7 @@ function App() {
     const userGuid = generateGuid()
     projectStore.loadProject({
       name: projectName,
-      origin: `Magnolia ${__APP_VERSION__}`,
+      origin: `labiia_quali ${__APP_VERSION__}`, // labiia_quali: the program that wrote the project
       users: [{ guid: userGuid, name: 'User' }],
       creatingUserGUID: userGuid,
       creationDateTime: new Date().toISOString(),
@@ -1901,7 +1902,7 @@ function App() {
       name = projectStore.name
     }
     const dirty = projectStore.isDirty ? ' — Edited' : ''
-    document.title = `${name}${dirty} — Magnolia`
+    document.title = `${name}${dirty} — ${PRODUCT_NAME}` // labiia_quali
   }, [projectStore.name, projectStore.filePath, projectStore.isDirty, t])
 
   // Listen for memo updates from the memo edit window
@@ -2350,7 +2351,7 @@ function App() {
       const userGuid = ps.users[0]?.guid ?? generateGuid()
       ps.loadProject({
         name: projectName,
-        origin: `Magnolia ${__APP_VERSION__}`,
+        origin: `labiia_quali ${__APP_VERSION__}`, // labiia_quali: the program that wrote the project
         users: [{ guid: userGuid, name: 'User' }],
         creatingUserGUID: userGuid,
         creationDateTime: new Date().toISOString(),

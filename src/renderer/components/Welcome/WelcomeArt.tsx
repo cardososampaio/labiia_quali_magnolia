@@ -128,7 +128,7 @@ export function WelcomeArt(): JSX.Element {
               textAnchor="middle"
               className={main ? 'welcome-art-label welcome-art-label-main' : 'welcome-art-label'}
             >
-              {t(n.label)}
+              {t(`labiia.welcome.word.${n.id}`)}
             </text>
           </g>
         )

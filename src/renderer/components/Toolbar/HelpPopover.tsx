@@ -22,7 +22,9 @@ import { useTranslation } from 'react-i18next'
 /** GitHub Sponsors page for funding Magnolia's development — same link
  *  as Preferences → Support Magnolia and the Welcome screen's ♥. */
 export const SPONSOR_URL = 'https://github.com/sponsors/caledavis'
-export const MANUAL_URL = 'https://caledavis.github.io/Magnolia/'
+// labiia_quali: its own manual (see labiia/config.ts).
+import { MANUAL_URL } from '../../labiia/config'
+export { MANUAL_URL }
 
 interface Props {
   onShowLicence: () => void

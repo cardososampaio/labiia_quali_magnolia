@@ -80,7 +80,7 @@ export function isUntitledName(name: string): boolean {
 
 export const useProjectStore = create<ProjectState>((set, get) => ({
   name: 'Untitled Project',
-  origin: `Magnolia ${__APP_VERSION__}`,
+  origin: `labiia_quali ${__APP_VERSION__}`, // labiia_quali: the program that wrote the project
   description: undefined,
   users: [{ guid: defaultUserGuid, name: 'User' }],
   creatingUserGUID: defaultUserGuid,
@@ -95,7 +95,7 @@ export const useProjectStore = create<ProjectState>((set, get) => ({
     const userGuid = generateGuid()
     set({
       name: 'Untitled Project',
-      origin: `Magnolia ${__APP_VERSION__}`,
+      origin: `labiia_quali ${__APP_VERSION__}`, // labiia_quali: the program that wrote the project
       description: undefined,
       users: [{ guid: userGuid, name: 'User' }],
       creatingUserGUID: userGuid,

@@ -2291,7 +2291,22 @@
       "tagline": "Análise de dados qualitativos",
       "basedOnMagnolia": "Baseado no Magnolia, de Cale Davis — apoie o projeto original",
       "developedBy": "Versão desenvolvida por",
-      "programmedWithClaude": "Programado com Claude. Pode conter erros."
+      "programmedWithClaude": "Programado com Claude. Pode conter erros.",
+      "word": {
+        "analysis": "análise",
+        "text": "texto",
+        "interview": "entrevista",
+        "source": "fonte",
+        "code": "código",
+        "category": "categoria",
+        "memo": "memo",
+        "word": "palavra",
+        "corpus": "corpus",
+        "frequency": "frequência",
+        "theme": "tema",
+        "speech": "fala",
+        "meaning": "sentido"
+      }
     },
     "credits": {
       "desktopRuntime": "ambiente de execução para desktop",
