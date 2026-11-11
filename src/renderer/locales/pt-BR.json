@@ -173,6 +173,10 @@
         "missingFiles_many": "O Magnolia não vai salvar “{{file}}”: o conteúdo de {{count}} documentos importados não foi encontrado ({{names}}). Eles não estavam na memória, no cache temporário nem no arquivo do projeto, então salvar agora os deixaria vazios. Importe os documentos de novo e tente outra vez.",
         "missingFiles_other": "O Magnolia não vai salvar “{{file}}”: o conteúdo de {{count}} documentos importados não foi encontrado ({{names}}). Eles não estavam na memória, no cache temporário nem no arquivo do projeto, então salvar agora os deixaria vazios. Importe os documentos de novo e tente outra vez."
       }
+    },
+    "labiia": {
+      "updatesUnavailableTitle": "As atualizações automáticas ainda não estão disponíveis",
+      "updatesUnavailableMessage": "As novas versões do labiia_quali são publicadas na página dele no GitHub. Para atualizar, baixe o instalador de lá."
     }
   },
   "tools": {

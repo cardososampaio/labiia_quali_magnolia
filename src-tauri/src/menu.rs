@@ -235,9 +235,11 @@ fn build(app: &AppHandle) -> tauri::Result<Menu<Wry>> {
         .item(&item(app, "github", &t("menu.github"), None)?)
         .item(&item(app, "sponsor", &t("menu.sponsor"), None)?);
     if !mac {
+        help = help.item(&sep()?);
+        if crate::labiia::UPDATES_ENABLED {
+            help = help.item(&item(app, "check-updates", &t("menu.checkUpdates"), None)?);
+        }
         help = help
-            .item(&sep()?)
-            .item(&item(app, "check-updates", &t("menu.checkUpdates"), None)?)
             .item(&item(app, "acknowledgements", &t("menu.acknowledgements"), None)?)
             .item(&PredefinedMenuItem::about(
                 app,

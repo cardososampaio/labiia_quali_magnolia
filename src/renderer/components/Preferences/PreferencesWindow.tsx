@@ -16,6 +16,7 @@ import { COLOURFUL_INTERFACE_ENABLED, colourfulInterfaceFromSaved } from '../../
 import { useTranslation } from 'react-i18next'
 import { LANGUAGE_IDS, normaliseLanguagePreference, resolveLanguage, setLanguagePreference, setDigitsPreference, digitChoices, digitsSample, type LanguagePreference, type DigitsPreference } from '../../i18n'
 import { keyCombo } from '../../utils/keys'
+import { UPDATES_ENABLED } from '../../labiia/config'
 
 interface FootPedalMappings {
   playPause: string
@@ -115,7 +116,7 @@ const CATEGORIES: Category[] = [
   { id: 'paper-size',     labelKey: 'prefs.cat.paperSize' },
   { id: 'updates',        labelKey: 'prefs.cat.updates' },
   { id: 'support',        labelKey: 'prefs.cat.support' }
-]
+].filter((c) => UPDATES_ENABLED || c.id !== 'updates') as Category[]
 
 // Lets callers outside this module (e.g. the toolbar wordmark, when it's
 // showing an update badge) open Preferences to a specific category. If the

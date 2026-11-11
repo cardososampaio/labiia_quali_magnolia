@@ -260,11 +260,13 @@ pub fn write_qdpx(
         json_entry(&mut zip, "magnolia-quotes.json", &project["quotes"])?;
     }
     if !get_arr(project, "savedAnalyses").is_empty() {
-        json_entry(
-            &mut zip,
-            "magnolia-analyses.json",
+        // labiia_quali: lexical result files go in their own entries.
+        let analyses = super::labiia_lexical::pack(
             &project["savedAnalyses"],
+            &mut zip,
+            opts.carry_forward_from.unwrap_or(path),
         )?;
+        json_entry(&mut zip, "magnolia-analyses.json", &analyses)?;
     }
     if let Some(tabs) = project.get("tabState").filter(|t| truthy(t)) {
         let has_tabs = !get_arr(tabs, "openTabs").is_empty();

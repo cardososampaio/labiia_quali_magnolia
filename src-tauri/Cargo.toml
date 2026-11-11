@@ -1,7 +1,7 @@
 [package]
 name = "magnolia"
-version = "2.1.0"
-description = "Open-source qualitative data analysis software"
+version = "0.2.0"
+description = "labiia_quali: qualitative data analysis, based on Magnolia"
 authors = ["Cale Davis <cale@caledavis.eu>"]
 license = "EUPL-1.2"
 repository = "https://github.com/caledavis/Magnolia"

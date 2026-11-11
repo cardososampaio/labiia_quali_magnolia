@@ -170,6 +170,10 @@
         "missingFiles_one": "Refusing to save “{{file}}”: the contents of {{count}} imported document couldn’t be found ({{names}}). They weren’t in memory, the temporary cache or the existing project file, so saving now would save it empty. Import the document again and try again.",
         "missingFiles_other": "Refusing to save “{{file}}”: the contents of {{count}} imported documents couldn’t be found ({{names}}). They weren’t in memory, the temporary cache or the existing project file, so saving now would save them empty. Import the documents again and try again."
       }
+    },
+    "labiia": {
+      "updatesUnavailableTitle": "Automatic updates are not available yet",
+      "updatesUnavailableMessage": "New versions of labiia_quali are published on its GitHub page. Download the installer from there to update."
     }
   },
   "tools": {

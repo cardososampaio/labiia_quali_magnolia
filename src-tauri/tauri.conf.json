@@ -1,12 +1,12 @@
 {
   "$schema": "https://schema.tauri.app/config/2",
-  "productName": "Magnolia",
+  "productName": "labiia_quali",
   "version": "../package.json",
-  "identifier": "com.magnolia.app",
+  "identifier": "br.labiia.quali",
   "build": {
-    "beforeDevCommand": "npm run dev:web",
+    "beforeDevCommand": "npm run prepare:helper && npm run dev:web",
     "devUrl": "http://localhost:5173",
-    "beforeBuildCommand": "npm run build:web",
+    "beforeBuildCommand": "npm run prepare:helper && npm run build:web",
     "frontendDist": "../out/renderer"
   },
   "app": {
@@ -19,39 +19,33 @@
   },
   "bundle": {
     "active": true,
-    "createUpdaterArtifacts": true,
+    "createUpdaterArtifacts": false,
     "targets": [
-      "app",
-      "dmg",
-      "nsis",
-      "appimage",
-      "deb",
-      "rpm"
+      "nsis"
     ],
     "icon": [
       "icons/32x32.png",
       "icons/128x128.png",
       "icons/128x128@2x.png",
-      "icons/256x256.png",
       "icons/icon.png",
-      "icons/icon.icns",
       "icons/icon.ico"
     ],
-    "copyright": "Copyright © 2026 Cale Davis",
-    "category": "Productivity",
-    "shortDescription": "Open-source qualitative data analysis",
-    "longDescription": "Magnolia is free and open-source qualitative data analysis software built on the REFI-QDA standard.",
+    "copyright": "Copyright © 2026 Cale Davis (Magnolia) e contribuidores do labiia_quali",
+    "shortDescription": "Análise de dados qualitativos",
+    "longDescription": "labiia_quali é um software livre de análise de dados qualitativos, baseado no Magnolia e no padrão REFI-QDA, com análises léxicas do labiia_lex.",
     "resources": {
       "../LICENSE": "LICENSE",
-      "../THIRD-PARTY-LICENSES.txt": "THIRD-PARTY-LICENSES.txt"
+      "../THIRD-PARTY-LICENSES.txt": "THIRD-PARTY-LICENSES.txt",
+      "../helper/dist/": "helper/",
+      "../resources/lexical/": "lexical/"
     },
     "fileAssociations": [
       {
         "ext": [
           "qdpx"
         ],
-        "name": "QDPX Project",
-        "description": "REFI-QDA Project Exchange File",
+        "name": "Projeto QDPX",
+        "description": "Projeto REFI-QDA (labiia_quali)",
         "role": "Editor",
         "mimeType": "application/x-qdpx"
       },
@@ -59,54 +53,25 @@
         "ext": [
           "qdc"
         ],
-        "name": "QDC Codebook",
-        "description": "REFI-QDA Codebook File",
+        "name": "Livro de códigos QDC",
+        "description": "Livro de códigos REFI-QDA",
         "role": "Viewer",
         "mimeType": "application/x-qdc"
       }
     ],
-    "macOS": {
-      "minimumSystemVersion": "13.0",
-      "hardenedRuntime": true,
-      "dmg": {
-        "windowSize": {
-          "width": 540,
-          "height": 380
-        },
-        "appPosition": {
-          "x": 130,
-          "y": 220
-        },
-        "applicationFolderPosition": {
-          "x": 410,
-          "y": 220
-        }
-      },
-      "files": {
-        "Resources/document-icon.icns": "icons/document-icon.icns",
-        "Resources/codebook-icon.icns": "icons/codebook-icon.icns"
-      },
-      "entitlements": "entitlements.mac.plist"
-    },
     "windows": {
       "nsis": {
         "installMode": "currentUser"
       }
     },
-    "linux": {
-      "deb": {
-        "section": "education",
-        "postInstallScript": "linux/postinst.sh"
-      },
-      "rpm": {
-        "postInstallScript": "linux/postinst.sh"
-      }
-    }
+    "externalBin": [
+      "binaries/labiia-node"
+    ]
   },
   "plugins": {
     "updater": {
       "endpoints": [
-        "https://github.com/caledavis/Magnolia/releases/latest/download/latest.json"
+        "https://github.com/cardososampaio/labiia_quali_magnolia/releases/latest/download/latest.json"
       ],
       "pubkey": "dW50cnVzdGVkIGNvbW1lbnQ6IG1pbmlzaWduIHB1YmxpYyBrZXk6IDVEQzRDNUY3OTdBM0YxOTAKUldTUThhT1g5OFhFWFF4eUV2STEzaGQxNDZwQzV5eDdzdURmVWh3WG5tWlJORjlOMXd6Rm55U00K"
     }

@@ -1,6 +1,51 @@
 {
   "about": "Written by npm run i18n:sync; see scripts/i18n-sync.mjs. \"english\" is en.json at the last sync; \"pending\" lists, per language, the messages waiting for a translator.",
-  "pending": {},
+  "pending": {
+    "ar": {
+      "native.labiia.updatesUnavailableMessage": "new",
+      "native.labiia.updatesUnavailableTitle": "new"
+    },
+    "de": {
+      "native.labiia.updatesUnavailableMessage": "new",
+      "native.labiia.updatesUnavailableTitle": "new"
+    },
+    "es": {
+      "native.labiia.updatesUnavailableMessage": "new",
+      "native.labiia.updatesUnavailableTitle": "new"
+    },
+    "fi": {
+      "native.labiia.updatesUnavailableMessage": "new",
+      "native.labiia.updatesUnavailableTitle": "new"
+    },
+    "fr": {
+      "native.labiia.updatesUnavailableMessage": "new",
+      "native.labiia.updatesUnavailableTitle": "new"
+    },
+    "hi": {
+      "native.labiia.updatesUnavailableMessage": "new",
+      "native.labiia.updatesUnavailableTitle": "new"
+    },
+    "it": {
+      "native.labiia.updatesUnavailableMessage": "new",
+      "native.labiia.updatesUnavailableTitle": "new"
+    },
+    "nl": {
+      "native.labiia.updatesUnavailableMessage": "new",
+      "native.labiia.updatesUnavailableTitle": "new"
+    },
+    "pt-PT": {
+      "native.labiia.updatesUnavailableMessage": "new",
+      "native.labiia.updatesUnavailableTitle": "new"
+    },
+    "ru": {
+      "native.labiia.updatesUnavailableMessage": "new",
+      "native.labiia.updatesUnavailableTitle": "new"
+    },
+    "zh-Hans": {
+      "native.labiia.updatesUnavailableMessage": "new",
+      "native.labiia.updatesUnavailableTitle": "new"
+    }
+  },
   "english": {
     "language.name.en": "English",
     "language.name.es": "Español",
@@ -145,6 +190,8 @@
     "native.core.guard.noText_other": "Refusing to overwrite “{{file}}”: the project has {{count}} documents, but none of their text is loaded. This usually means the project didn’t open fully, and saving now would erase the documents’ text. Reopen the project, and if the problem persists, restore it from a backup.",
     "native.core.guard.missingFiles_one": "Refusing to save “{{file}}”: the contents of {{count}} imported document couldn’t be found ({{names}}). They weren’t in memory, the temporary cache or the existing project file, so saving now would save it empty. Import the document again and try again.",
     "native.core.guard.missingFiles_other": "Refusing to save “{{file}}”: the contents of {{count}} imported documents couldn’t be found ({{names}}). They weren’t in memory, the temporary cache or the existing project file, so saving now would save them empty. Import the documents again and try again.",
+    "native.labiia.updatesUnavailableTitle": "Automatic updates are not available yet",
+    "native.labiia.updatesUnavailableMessage": "New versions of labiia_quali are published on its GitHub page. Download the installer from there to update.",
     "tools.queryBuilder.label": "Query Builder",
     "tools.queryBuilder.description": "Build a code / text query",
     "tools.codesInDocuments.label": "Codes in Documents",

@@ -1,4 +1,5 @@
 import { defineConfig } from 'vitest/config'
+import { fileURLToPath } from 'url'
 
 // Node-environment unit tests for renderer logic (stores, query engine,
 // merge). Test files live under test/; the Rust backend's tests run with
@@ -10,6 +11,11 @@ export default defineConfig({
   // build config.
   define: {
     __APP_VERSION__: JSON.stringify('0.0.0-test')
+  },
+  // labiia_quali's lexical engine (src/helper) was written for Electron; its
+  // tests resolve `electron` to the helper's stand-in, as the helper bundle does.
+  resolve: {
+    alias: { electron: fileURLToPath(new URL('./src/helper/electron-shim.ts', import.meta.url)) }
   },
   test: {
     include: ['test/**/*.test.ts'],

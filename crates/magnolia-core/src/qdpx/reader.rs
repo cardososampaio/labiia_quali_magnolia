@@ -730,7 +730,9 @@ fn restore_side_tables(
             project["sourceFolder"] = sf.clone();
         }
     }
-    if let Some(v) = json_entry(zip, "magnolia-analyses.json") {
+    if let Some(mut v) = json_entry(zip, "magnolia-analyses.json") {
+        // labiia_quali: lexical result files come back from their entries.
+        super::labiia_lexical::unpack(&mut v, zip);
         project["savedAnalyses"] = v;
     }
 

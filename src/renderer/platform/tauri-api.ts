@@ -19,6 +19,7 @@ import { base64ToBytes, extractPdfText } from './pdf-text'
 import { t } from '../i18n'
 import { withDocumentLanguage } from '../utils/document-language'
 import { guardComposition } from '../utils/keys'
+import { lexicalApi } from '../labiia/lexical-bridge'
 
 const current = getCurrentWebviewWindow()
 const MAIN = 'main'
@@ -227,6 +228,7 @@ const toMain = (event: string, payload?: unknown): void => {
 }
 
 const api: MagnoliaAPI = {
+  lexical: lexicalApi,
   getFileSize: (filePath) => invoke('get_file_size', { filePath }),
   readPdfFile: async (filePath) => new Uint8Array(await readMedia(filePath)),
   setActiveProjectPath: async (filePath) => {

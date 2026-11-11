@@ -4,6 +4,7 @@
 mod automation;
 mod commands;
 mod i18n;
+mod labiia;
 mod menu;
 mod print;
 mod state;
@@ -150,6 +151,16 @@ pub fn run() {
             automation::automation_log,
             automation::automation_pdf,
             automation::automation_quit,
+            labiia::helper::labiia_helper_ping,
+            labiia::lexical::lexical_r_status,
+            labiia::lexical::lexical_r_set_path,
+            labiia::lexical::lexical_r_pick_path,
+            labiia::lexical::lexical_r_check_packages,
+            labiia::lexical::lexical_r_install_packages,
+            labiia::lexical::lexical_r_cancel_install,
+            labiia::lexical::lexical_run,
+            labiia::lexical::lexical_cancel_run,
+            labiia::lexical::lexical_save_file,
         ])
         .setup(|app| {
             storage::init(app.handle());
@@ -177,7 +188,7 @@ pub fn run() {
             Ok(())
         })
         .build(updater::with_endpoint_override(tauri::generate_context!()))
-        .expect("error while building Magnolia");
+        .expect("error while building labiia_quali");
 
     app.run(|app, event| match event {
         // Finder double-click / "Open With" on macOS.
@@ -218,6 +229,8 @@ pub fn run() {
                 api.prevent_exit();
             }
         }
+        // labiia_quali: stop the lexical helper and any R it started.
+        RunEvent::Exit => labiia::helper::shutdown(),
         _ => {}
     });
 }

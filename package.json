@@ -1,40 +1,37 @@
 {
-  "name": "magnolia",
-  "version": "2.1.0",
-  "description": "Open-source qualitative data analysis software",
+  "name": "labiia_quali",
+  "version": "0.2.0",
+  "description": "Software livre de análise de dados qualitativos para pesquisadores brasileiros, baseado no Magnolia",
   "author": {
-    "name": "Cale Davis",
-    "email": "cale@caledavis.eu"
+    "name": "labiia_quali"
   },
+  "contributors": [
+    {
+      "name": "Cale Davis",
+      "email": "cale@caledavis.eu",
+      "url": "https://github.com/caledavis/Magnolia"
+    }
+  ],
   "license": "EUPL-1.2",
-  "homepage": "https://github.com/caledavis/Magnolia",
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/caledavis/Magnolia.git"
-  },
-  "bugs": {
-    "url": "https://github.com/caledavis/Magnolia/issues"
-  },
   "scripts": {
     "dev": "tauri dev",
     "dev:web": "vite",
     "build": "tauri build",
     "build:web": "vite build",
     "tauri": "tauri",
-    "typecheck": "tsc -p tsconfig.web.json --noEmit",
+    "typecheck": "tsc -p tsconfig.web.json --noEmit && tsc -p tsconfig.helper.json",
     "test": "vitest run && cargo test --workspace",
     "test:watch": "vitest",
     "licenses": "node scripts/build-third-party-licenses.mjs > THIRD-PARTY-LICENSES.txt",
     "icons": "bash scripts/build-icons.sh",
     "downloads": "bash scripts/downloads.sh",
-    "release:mac": "node scripts/release.mjs release mac",
-    "release:win": "node scripts/release.mjs release win",
-    "release:linux": "node scripts/release.mjs release linux",
-    "release:finish": "node scripts/release.mjs finish",
     "i18n:review-export": "node scripts/translation-review.mjs export",
     "i18n:review-import": "node scripts/translation-review.mjs import",
     "i18n:sync": "node scripts/i18n-sync.mjs",
-    "layout-check": "node scripts/layout-check/run.mjs"
+    "layout-check": "node scripts/layout-check/run.mjs",
+    "build:helper": "node scripts/build-helper.mjs",
+    "fetch:helper-node": "node scripts/fetch-helper-node.mjs",
+    "prepare:helper": "npm run fetch:helper-node && npm run build:helper"
   },
   "dependencies": {
     "@tauri-apps/api": "^2.12.4",
@@ -72,6 +69,7 @@
     "@types/react-dom": "^18.3.1",
     "@types/uuid": "^9.0.8",
     "@vitejs/plugin-react": "^4.3.4",
+    "esbuild": "0.28.2",
     "typescript": "^5.7.3",
     "vite": "^5.4.14",
     "vitest": "^2.1.9"

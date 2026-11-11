@@ -4,3 +4,8 @@
 # "#!" line followed by a carriage return).
 *.mjs text eol=lf
 *.sh text eol=lf
+
+# labiia_quali: the lexical dictionaries, stopword lists and R scripts are
+# kept byte for byte as labiia_lex ships them, so the same corpus gives the
+# same results on every computer.
+resources/lexical/** -text

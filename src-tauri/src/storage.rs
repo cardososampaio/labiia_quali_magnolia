@@ -1,9 +1,12 @@
 //! Small JSON files in the user-data folder: preferences, recent projects,
 //! per-project import folders and updater state.
 //!
-//! The folder is the one the Electron build used (`<config dir>/Magnolia`,
-//! e.g. `~/Library/Application Support/Magnolia`), so preferences and the
-//! recent-projects list carry over for existing users.
+//! labiia_quali keeps them in `<config dir>/labiia_quali`
+//! (`%APPDATA%\labiia_quali`), the folder its Electron build (0.1.x) used,
+//! so preferences, recent projects and the chosen Rscript carry over, and
+//! nothing is shared with a Magnolia installed on the same computer.
+//! `LABIIA_DATA_DIR` points it elsewhere, so development and test runs never
+//! touch the researcher's own settings.
 
 use serde_json::{Value, json};
 use std::path::{Path, PathBuf};
@@ -17,7 +20,8 @@ pub fn init(app: &AppHandle) {
         .path()
         .config_dir()
         .unwrap_or_else(|_| std::env::temp_dir())
-        .join("Magnolia");
+        .join(crate::labiia::DATA_FOLDER);
+    let base = crate::labiia::data_dir_override().unwrap_or(base);
     let base = crate::automation::data_dir().unwrap_or(base);
     let _ = std::fs::create_dir_all(&base);
     let _ = DIR.set(base);

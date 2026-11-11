@@ -257,7 +257,7 @@ pub fn preview_at_launch(app: &AppHandle) {
 }
 
 pub fn schedule_startup_check(app: &AppHandle) {
-    if STARTUP_SCHEDULED.swap(true, Ordering::SeqCst) {
+    if !crate::labiia::UPDATES_ENABLED || STARTUP_SCHEDULED.swap(true, Ordering::SeqCst) {
         return;
     }
     let app = app.clone();
@@ -268,6 +268,16 @@ pub fn schedule_startup_check(app: &AppHandle) {
 }
 
 pub fn check_manually(app: &AppHandle, source: Source) {
+    if !crate::labiia::UPDATES_ENABLED {
+        // No menu item or Preferences pane offers this; a stray request
+        // (an old shortcut, say) gets an explanation instead of a check
+        // against Magnolia's releases.
+        show(
+            app,
+            error_view(&t("labiia.updatesUnavailableTitle"), &t("labiia.updatesUnavailableMessage")),
+        );
+        return;
+    }
     if cfg!(debug_assertions) && fake_mode().is_none() {
         match source {
             Source::Preferences => send_status(app, "dev-disabled", None, None),

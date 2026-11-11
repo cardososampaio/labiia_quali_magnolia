@@ -6,6 +6,7 @@ pub mod checkout;
 pub mod codebook;
 pub mod deserializer;
 pub mod graph_refi;
+pub mod labiia_lexical;
 pub mod reader;
 pub mod serializer;
 pub mod survey_refi;

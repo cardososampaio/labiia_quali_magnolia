@@ -543,6 +543,8 @@ export interface EditorInfo {
 
 // IPC API exposed to renderer
 export interface MagnoliaAPI {
+  /** labiia_quali's lexical analyses (src/renderer/labiia/lexical-bridge.ts). */
+  lexical: import('./lexical-api').LexicalApi
   getFileSize: (filePath: string) => Promise<number | null>
   readPdfFile: (filePath: string) => Promise<Uint8Array>
   onProjectLoadProgress: (callback: (p: { stage: string; current: number; total: number }) => void) => () => void

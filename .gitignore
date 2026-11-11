@@ -30,3 +30,11 @@ working_materials/
 translation-review/
 # Captures and reports made by scripts/layout-check/run.mjs
 layout-report/
+
+# labiia_quali: the helper's bundle (npm run build:helper) and the Node runtime
+# fetched for it (scripts/fetch-helper-node.mjs)
+helper/dist/
+src-tauri/binaries/
+
+# Per-computer Cargo settings (e.g. a build folder outside protected folders)
+.cargo/
