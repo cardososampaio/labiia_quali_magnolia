@@ -52,6 +52,20 @@ fn hide_window(cmd: &mut Command) {
 #[cfg(not(windows))]
 fn hide_window(_cmd: &mut Command) {}
 
+/// Removes the `\\?\` prefix Windows uses for long paths. R cannot open a
+/// file under such a path ("Invalid argument"), and the helper passes the
+/// resource folder on to R's `source()`.
+fn plain_path(p: PathBuf) -> PathBuf {
+    let s = p.to_string_lossy();
+    if let Some(rest) = s.strip_prefix(r"\\?\UNC\") {
+        PathBuf::from(format!(r"\\{rest}"))
+    } else if let Some(rest) = s.strip_prefix(r"\\?\") {
+        PathBuf::from(rest)
+    } else {
+        p
+    }
+}
+
 fn first_existing(candidates: Vec<PathBuf>) -> Option<PathBuf> {
     candidates.into_iter().find(|p| p.exists())
 }
@@ -124,9 +138,9 @@ fn log_line(text: &str) {
 
 fn start(app: &AppHandle) -> Result<Running, String> {
     let node = node_exe().ok_or("helper-unavailable: labiia-node.exe not found next to the app")?;
-    let script = helper_script(app).ok_or("helper-unavailable: helper/labiia-helper.cjs not found")?;
-    let resources = lexical_resources(app).ok_or("helper-unavailable: lexical resources not found")?;
-    let data = crate::storage::user_data_dir().to_path_buf();
+    let script = plain_path(helper_script(app).ok_or("helper-unavailable: helper/labiia-helper.cjs not found")?);
+    let resources = plain_path(lexical_resources(app).ok_or("helper-unavailable: lexical resources not found")?);
+    let data = plain_path(crate::storage::user_data_dir().to_path_buf());
 
     let mut cmd = Command::new(&node);
     cmd.arg(&script)
@@ -272,4 +286,17 @@ pub fn shutdown() {
 #[tauri::command]
 pub async fn labiia_helper_ping(app: AppHandle) -> Result<Value, String> {
     request(&app, "ping", Value::Null).await
+}
+
+#[cfg(test)]
+mod plain_path_tests {
+    use super::plain_path;
+    use std::path::PathBuf;
+
+    #[test]
+    fn long_path_prefix_is_removed_so_r_can_open_the_scripts() {
+        assert_eq!(plain_path(PathBuf::from(r"\\?\C:\Program Files\labiia_quali")), PathBuf::from(r"C:\Program Files\labiia_quali"));
+        assert_eq!(plain_path(PathBuf::from(r"\\?\UNC\server\share\x")), PathBuf::from(r"\\server\share\x"));
+        assert_eq!(plain_path(PathBuf::from(r"C:\Usuários\pasta com espaço")), PathBuf::from(r"C:\Usuários\pasta com espaço"));
+    }
 }

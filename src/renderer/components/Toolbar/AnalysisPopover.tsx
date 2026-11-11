@@ -27,6 +27,7 @@ import type { AnalysisToolType } from '../../models/types'
 import { TOOL_REGISTRY } from '../../utils/tool-registry'
 import { PALETTE_ICON_CLASS } from '../../utils/icon-tint'
 import { useTranslation } from 'react-i18next'
+import { LexicalPopoverSection } from '../../labiia/LexicalPopoverSection' // labiia_quali
 
 /** Tools the popover surfaces, in the order they appear in the grid.
  *  Query Builder is intentionally NOT in this list — it stays on the
@@ -163,6 +164,8 @@ export function AnalysisPopover({ onSelect }: Props) {
           style={{ position: 'fixed', top: pos.top, left: pos.left, transform: 'none', zIndex: 10000 }}
         >
           <div className="analysis-popover-arrow" style={{ left: pos.arrowLeft, transform: 'rotate(45deg)' }} />
+          {/* labiia_quali: the list scrolls when the lexical section makes it taller than the window. */}
+          <div style={{ maxHeight: `calc(100vh - ${pos.top + 16}px)`, overflowY: 'auto' }}>
           <div className="analysis-popover-title">{t('toolbar.analysisTools')}</div>
           <div className="analysis-popover-grid">
             {ANALYSIS_TOOL_ORDER.map((toolType) => {
@@ -185,6 +188,9 @@ export function AnalysisPopover({ onSelect }: Props) {
                 </button>
               )
             })}
+          </div>
+          {/* labiia_quali: the twelve lexical analyses. */}
+          <LexicalPopoverSection onSelect={handleSelect} />
           </div>
         </div>,
         document.body

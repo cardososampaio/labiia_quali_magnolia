@@ -54,11 +54,17 @@ fn write_json(name: &str, v: &Value, pretty: bool) {
 const PREFS: &str = "magnolia-preferences.json";
 
 pub fn load_preferences() -> Value {
-    read_json(PREFS).unwrap_or(Value::Null)
+    let mut prefs = read_json(PREFS).unwrap_or(Value::Null);
+    // labiia_quali: 0.1.x preferences open with the ribbon.
+    if crate::labiia::prefs::migrate(&mut prefs) {
+        write_json(PREFS, &prefs, true);
+    }
+    prefs
 }
 
 pub fn save_preferences(prefs: &Value) {
-    write_json(PREFS, prefs, true);
+    // labiia_quali: mark the file as saved by this version.
+    write_json(PREFS, &crate::labiia::prefs::stamp(prefs), true);
 }
 
 /// The user's display name, stamped into magnolia-editor.json on save.

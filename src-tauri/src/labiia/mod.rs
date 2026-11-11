@@ -9,6 +9,7 @@ pub mod close;
 pub mod codebook;
 pub mod helper;
 pub mod lexical;
+pub mod prefs;
 pub mod terms;
 
 use std::path::PathBuf;

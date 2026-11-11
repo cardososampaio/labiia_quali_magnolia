@@ -107,7 +107,7 @@ npm run build               # instalador em <pasta de compilação>/release/bund
 1. Num ramo próprio, faça `git fetch upstream` e `git merge <tag do Magnolia>`.
 2. Os pontos de contato com o Magnolia estão nos arquivos abaixo; procure `labiia_quali:` em cada um.
    - Rust: `src-tauri/src/lib.rs`, `windows.rs`, `storage.rs`, `updater.rs`, `menu.rs`, `commands.rs` (ação `author`), `i18n.rs`, `crates/magnolia-core/src/qdpx/{reader,writer,mod}.rs`.
-   - Interface: `src/renderer/platform/tauri-api.ts`, `models/types.ts`, `App.tsx`, `components/Toolbar/Ribbon.tsx`, `i18n/index.ts`.
+   - Interface: `src/renderer/platform/tauri-api.ts`, `models/types.ts`, `App.tsx`, `components/Toolbar/Ribbon.tsx`, `components/Toolbar/AnalysisPopover.tsx`, `i18n/index.ts`.
    - Configuração: `tauri.conf.json`.
 3. Rode `npm run i18n:sync`, os testes e a paridade léxica.
 

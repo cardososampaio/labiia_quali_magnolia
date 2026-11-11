@@ -31,6 +31,11 @@ Tauri, com o núcleo em Rust, no lugar do Electron.
   exportação de documentos em PDF com os códigos, arrastar a seleção até um
   código, frequência de palavras nos trechos codificados, interface em
   pt-BR e em inglês com troca imediata de idioma.
+- Um botão no fim do trecho selecionado abre o menu de codificação, com
+  todos os códigos do livro. Ele substitui o arrastar do trecho até um
+  código (mudança do Magnolia 2.1.0-beta.1).
+- Com a barra de ferramentas compacta (Preferências), o menu Analisar também
+  traz as 12 análises léxicas. Quem vem da 0.1.1 abre com a faixa de opções.
 - Fechar a janela do projeto pergunta antes ("Não" é a resposta padrão),
   salva e encerra o programa.
 - O instalador pergunta sobre o R depois de copiar os arquivos, em vez de
