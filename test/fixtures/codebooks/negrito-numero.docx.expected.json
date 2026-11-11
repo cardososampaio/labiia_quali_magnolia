@@ -1,0 +1,86 @@
+[
+ {
+  "text": "Livro de códigos usado na pesquisa sobre reflexão docente.",
+  "headingLevel": null,
+  "isTitle": false,
+  "bold": false,
+  "listLevel": null
+ },
+ {
+  "text": "*1. Nível de reflexão",
+  "headingLevel": null,
+  "isTitle": false,
+  "bold": true,
+  "listLevel": null
+ },
+ {
+  "text": "Quanto o participante reflete sobre a própria prática.",
+  "headingLevel": null,
+  "isTitle": false,
+  "bold": false,
+  "listLevel": null
+ },
+ {
+  "text": "0. nenhuma",
+  "headingLevel": null,
+  "isTitle": false,
+  "bold": false,
+  "listLevel": null
+ },
+ {
+  "text": "1. opinião",
+  "headingLevel": null,
+  "isTitle": false,
+  "bold": false,
+  "listLevel": null
+ },
+ {
+  "text": "2. reflexão baixa",
+  "headingLevel": null,
+  "isTitle": false,
+  "bold": false,
+  "listLevel": null
+ },
+ {
+  "text": "3. reflexão alta",
+  "headingLevel": null,
+  "isTitle": false,
+  "bold": false,
+  "listLevel": null
+ },
+ {
+  "text": "2. Tema",
+  "headingLevel": null,
+  "isTitle": false,
+  "bold": true,
+  "listLevel": null
+ },
+ {
+  "text": "Assunto principal da fala.",
+  "headingLevel": null,
+  "isTitle": false,
+  "bold": false,
+  "listLevel": null
+ },
+ {
+  "text": "1. avaliação",
+  "headingLevel": null,
+  "isTitle": false,
+  "bold": false,
+  "listLevel": null
+ },
+ {
+  "text": "Quando fala de provas e notas.",
+  "headingLevel": null,
+  "isTitle": false,
+  "bold": false,
+  "listLevel": null
+ },
+ {
+  "text": "2. currículo",
+  "headingLevel": null,
+  "isTitle": false,
+  "bold": false,
+  "listLevel": null
+ }
+]

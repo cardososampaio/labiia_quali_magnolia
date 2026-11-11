@@ -1,0 +1,51 @@
+[
+ {
+  "text": "1. Nível de reflexão",
+  "headingLevel": null,
+  "isTitle": false,
+  "bold": false,
+  "listLevel": 1
+ },
+ {
+  "text": "Descrição da categoria.",
+  "headingLevel": null,
+  "isTitle": false,
+  "bold": false,
+  "listLevel": null
+ },
+ {
+  "text": "1.1 nenhuma",
+  "headingLevel": null,
+  "isTitle": false,
+  "bold": false,
+  "listLevel": null
+ },
+ {
+  "text": "1.2 opinião",
+  "headingLevel": null,
+  "isTitle": false,
+  "bold": false,
+  "listLevel": null
+ },
+ {
+  "text": "1.2.1 opinião política",
+  "headingLevel": null,
+  "isTitle": false,
+  "bold": false,
+  "listLevel": null
+ },
+ {
+  "text": "2. Tema",
+  "headingLevel": null,
+  "isTitle": false,
+  "bold": false,
+  "listLevel": 1
+ },
+ {
+  "text": "2.1 avaliação",
+  "headingLevel": null,
+  "isTitle": false,
+  "bold": false,
+  "listLevel": null
+ }
+]

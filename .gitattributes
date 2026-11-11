@@ -9,3 +9,6 @@
 # kept byte for byte as labiia_lex ships them, so the same corpus gives the
 # same results on every computer.
 resources/lexical/** -text
+
+# Codebook samples are binary documents and must stay byte for byte.
+test/fixtures/codebooks/** -text

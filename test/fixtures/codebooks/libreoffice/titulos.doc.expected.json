@@ -1,0 +1,65 @@
+[
+ {
+  "text": "Livro de códigos – Projeto X",
+  "headingLevel": 1,
+  "isTitle": false,
+  "bold": true,
+  "listLevel": null
+ },
+ {
+  "text": "Nível de reflexão",
+  "headingLevel": 2,
+  "isTitle": false,
+  "bold": true,
+  "listLevel": null
+ },
+ {
+  "text": "Quanto o participante reflete.",
+  "headingLevel": null,
+  "isTitle": false,
+  "bold": false,
+  "listLevel": null
+ },
+ {
+  "text": "nenhuma",
+  "headingLevel": 3,
+  "isTitle": false,
+  "bold": true,
+  "listLevel": null
+ },
+ {
+  "text": "opinião",
+  "headingLevel": 3,
+  "isTitle": false,
+  "bold": true,
+  "listLevel": null
+ },
+ {
+  "text": "Expressa só opinião, sem justificar.",
+  "headingLevel": null,
+  "isTitle": false,
+  "bold": false,
+  "listLevel": null
+ },
+ {
+  "text": "Tema",
+  "headingLevel": 2,
+  "isTitle": false,
+  "bold": true,
+  "listLevel": null
+ },
+ {
+  "text": "avaliação",
+  "headingLevel": 3,
+  "isTitle": false,
+  "bold": true,
+  "listLevel": null
+ },
+ {
+  "text": "Subtema da avaliação",
+  "headingLevel": 4,
+  "isTitle": false,
+  "bold": true,
+  "listLevel": null
+ }
+]

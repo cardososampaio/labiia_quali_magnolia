@@ -1,0 +1,65 @@
+[
+ {
+  "text": "Introdução",
+  "headingLevel": 1,
+  "isTitle": false,
+  "bold": true,
+  "listLevel": null
+ },
+ {
+  "text": "Este livro descreve os códigos.",
+  "headingLevel": null,
+  "isTitle": false,
+  "bold": false,
+  "listLevel": null
+ },
+ {
+  "text": "Códigos",
+  "headingLevel": 1,
+  "isTitle": false,
+  "bold": true,
+  "listLevel": null
+ },
+ {
+  "text": "1. Nível de reflexão",
+  "headingLevel": null,
+  "isTitle": false,
+  "bold": true,
+  "listLevel": null
+ },
+ {
+  "text": "0. nenhuma",
+  "headingLevel": null,
+  "isTitle": false,
+  "bold": false,
+  "listLevel": 1
+ },
+ {
+  "text": "1. opinião",
+  "headingLevel": null,
+  "isTitle": false,
+  "bold": false,
+  "listLevel": 1
+ },
+ {
+  "text": "2. Tema",
+  "headingLevel": null,
+  "isTitle": false,
+  "bold": true,
+  "listLevel": null
+ },
+ {
+  "text": "1. avaliação",
+  "headingLevel": null,
+  "isTitle": false,
+  "bold": false,
+  "listLevel": 1
+ },
+ {
+  "text": "2. currículo",
+  "headingLevel": null,
+  "isTitle": false,
+  "bold": false,
+  "listLevel": 1
+ }
+]
