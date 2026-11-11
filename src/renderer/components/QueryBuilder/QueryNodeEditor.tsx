@@ -7,6 +7,9 @@ import { modKey, altClickHint } from '../../utils/platform'
 import { useTranslation } from 'react-i18next'
 import { t } from '../../i18n'
 import { isLetterKey } from '../../utils/keys'
+import { ItemPickerDialog } from '../ItemPicker/ItemPickerDialog'
+import { useCodeStore } from '../../stores/code-store'
+import { manualCondition } from '../../labiia/manual-query'
 
 /* ═══════════════════════════════════════════════════
    Types
@@ -610,6 +613,10 @@ export function QueryNodeEditor({ onChange, onGraphChange, initialCondition, ini
   )
   const [selNodes, setSelNodes] = useState<Set<string>>(new Set())
   const [selConn, setSelConn] = useState<string | null>(null)
+  // labiia_quali: choose codes from a list and the query is drawn from them.
+  const [manualOpen, setManualOpen] = useState(false)
+  const [manualOp, setManualOp] = useState<'and' | 'or'>('or')
+  const [manualText, setManualText] = useState('')
   const [marqueeRect, setMarqueeRect] = useState<{ x: number; y: number; w: number; h: number } | null>(null)
   const [pan, setPan] = useState({ x: 0, y: 0 })
   const panRef = useRef(pan)
@@ -1191,7 +1198,73 @@ export function QueryNodeEditor({ onChange, onGraphChange, initialCondition, ini
             />
           ))}
         </PaletteGroup>
+
+        <PaletteDivider />
+
+        {/* labiia_quali: choose codes from a list instead of dragging. */}
+        <PaletteGroup label={t('labiia.docSelector.manual')}>
+          <button
+            type="button"
+            className="secondary"
+            style={{ fontSize: 12, padding: '3px 10px' }}
+            title={t('labiia.query.manualTitle')}
+            onClick={() => setManualOpen(true)}
+          >
+            {t('labiia.itemPicker.selectManually')}
+          </button>
+        </PaletteGroup>
       </div>
+      {manualOpen && (
+        <ItemPickerDialog
+          title={t('labiia.query.selectContent')}
+          kinds={['code']}
+          confirmLabel={t('labiia.query.buildQuery')}
+          requireSelection={false}
+          extra={
+            <div className="ip-fieldset">
+              <span className="ip-fieldset-label">{t('labiia.query.findPassagesCodedWith')}</span>
+              <label className="ip-radio">
+                <input type="radio" checked={manualOp === 'or'} onChange={() => setManualOp('or')} />
+                {t('labiia.query.anyCodes')}
+              </label>
+              <label className="ip-radio">
+                <input type="radio" checked={manualOp === 'and'} onChange={() => setManualOp('and')} />
+                {t('labiia.query.allCodes')}
+              </label>
+              <input
+                className="ip-text-input"
+                value={manualText}
+                placeholder={t('labiia.query.containingText')}
+                aria-label={t('labiia.query.textToSearch')}
+                onChange={(e) => setManualText(e.target.value)}
+              />
+            </div>
+          }
+          onConfirm={(picked, { includeSubcodes }) => {
+            const codeInfos: CodeInfo[] = codes ?? (() => {
+              const acc: CodeInfo[] = []
+              const visit = (cs: ReturnType<typeof useCodeStore.getState>['codes'], parentGuid?: string): void => {
+                for (const c of cs) { acc.push({ guid: c.guid, name: c.name, color: c.color, isCodable: c.isCodable, parentGuid }); visit(c.children, c.guid) }
+              }
+              visit(useCodeStore.getState().codes)
+              return acc
+            })()
+            const cond = manualCondition(picked, manualOp, manualText, includeSubcodes, codeInfos)
+            if (!cond) return
+            const hasDrawing = nodesRef.current.some((n) => n.kind !== 'result')
+            if (hasDrawing && !window.confirm(t('labiia.query.replaceQuery'))) return
+            const g = conditionToGraph(cond, codeInfos)
+            advanceUidPast(g.nodes, g.conns)
+            setNodes(g.nodes)
+            setConns(g.conns)
+            setSelNodes(new Set())
+            setSelConn(null)
+            setPan({ x: 0, y: 0 })
+            setManualOpen(false)
+          }}
+          onCancel={() => setManualOpen(false)}
+        />
+      )}
 
       {/* ── Canvas ── */}
       <div

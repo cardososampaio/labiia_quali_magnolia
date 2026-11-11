@@ -17,6 +17,9 @@ import { SurveyScopeLine, chosenIds, mayBeSurveyEntityDrag, parseSurveyEntityDro
 import { useTranslation } from 'react-i18next'
 import { t, compareText } from '../../i18n'
 import { isLetterKey } from '../../utils/keys'
+import { ItemPickerDialog } from '../ItemPicker/ItemPickerDialog'
+import type { AnalysisInitData } from '../../models/types'
+import { emptyDocumentFilter as labiiaEmptyFilter } from '../../utils/document-graph'
 
 /** A document category's name (docSelector.category.<category>). */
 const categoryLabel = (category: DocCategory): string => t(`docSelector.category.${category}`)
@@ -157,7 +160,8 @@ function graphFromFilter(
   const hasSourceGuids = filter.sourceGuids && filter.sourceGuids.length > 0
   const hasTagGuids = filter.tagGuids && filter.tagGuids.length > 0
   const hasTagExclude = filter.tagExcludeGuids && filter.tagExcludeGuids.length > 0
-  if (!hasSourceGuids && !hasTagGuids && !hasTagExclude) return null
+  const hasFolderGuids = filter.folderGuids && filter.folderGuids.length > 0
+  if (!hasSourceGuids && !hasTagGuids && !hasTagExclude && !hasFolderGuids) return null
 
   const nodes: DNode[] = []
   const conns: DConn[] = []
@@ -205,6 +209,16 @@ function graphFromFilter(
       }
       nodes.push(tagNode)
       sourceNodes.push(tagNode)
+      nextRow++
+    }
+  }
+
+  // labiia_quali: a folder node for each chosen folder (subfolders included by the node).
+  if (hasFolderGuids) {
+    for (const folderGuid of filter.folderGuids) {
+      const folderNode: DNode = { id: uid(), kind: 'folder', x: COL_SOURCES, y: 30 + nextRow * ROW_GAP, folderGuid }
+      nodes.push(folderNode)
+      sourceNodes.push(folderNode)
       nextRow++
     }
   }
@@ -602,6 +616,9 @@ export function DocumentSelector({
   const [respondentScope, setRespondentScope] = useState<SurveyEntityRef[]>(filter.respondentScope ?? [])
   const [selNodes, setSelNodes] = useState<Set<string>>(new Set())
   const [selConn, setSelConn] = useState<string | null>(null)
+  // labiia_quali: choose documents, folders and characteristics from a list,
+  // and the selection is drawn from them.
+  const [manualOpen, setManualOpen] = useState(false)
   const [marqueeRect, setMarqueeRect] = useState<{ x: number; y: number; w: number; h: number } | null>(null)
   const [pan, setPan] = useState({ x: 0, y: 0 })
   const panRef = useRef(pan)
@@ -1199,7 +1216,52 @@ export function DocumentSelector({
             onClick={() => addNode('setOp', { setOps: [undefined] })}
           />
         </PaletteGroup>
+
+        <PaletteDivider />
+
+        {/* labiia_quali: choose from a list instead of dragging. */}
+        <PaletteGroup label={t('labiia.docSelector.manual')}>
+          <button
+            type="button"
+            className="secondary"
+            style={{ fontSize: 12, padding: '3px 10px' }}
+            title={t('labiia.docSelector.manualTitle')}
+            onClick={() => setManualOpen(true)}
+          >
+            {t('labiia.itemPicker.selectManually')}
+          </button>
+        </PaletteGroup>
       </div>
+      {manualOpen && (
+        <ItemPickerDialog
+          title={t('labiia.docSelector.selectDocuments')}
+          kinds={['document', 'folder', 'tag']}
+          // The selector's own lists, so the dialog matches what its nodes
+          // can resolve (and works in popped-out analysis windows).
+          data={{ sources, folders, tags, categories, codes: [] } as unknown as AnalysisInitData}
+          confirmLabel={t('labiia.docSelector.useTheseDocuments')}
+          onConfirm={(picked) => {
+            const g = graphFromFilter({
+              ...labiiaEmptyFilter(),
+              sourceGuids: (picked.document ?? []).map((d) => d.guid),
+              tagGuids: (picked.tag ?? []).map((tg) => tg.guid),
+              folderGuids: (picked.folder ?? []).map((f) => f.guid)
+            }, tags)
+            if (!g) return
+            // Only the default "All documents → Result" drawing is replaced silently.
+            const custom = nodesRef.current.some((n) => n.kind !== 'allDocs' && n.kind !== 'result') ||
+              nodesRef.current.filter((n) => n.kind === 'allDocs').length > 1
+            if (custom && !window.confirm(t('labiia.docSelector.replaceSelection'))) return
+            advanceUidPast(g.nodes, g.conns)
+            setNodes(g.nodes)
+            setConns(g.conns)
+            setSelNodes(new Set())
+            setSelConn(null)
+            setManualOpen(false)
+          }}
+          onCancel={() => setManualOpen(false)}
+        />
+      )}
 
       {/* ── Canvas + Selected Documents ── */}
       <div style={{ display: 'flex', gap: 10 }}>

@@ -2367,6 +2367,24 @@
       "rTitle": "R e pacotes R",
       "rIntro": "Nuvem de palavras, CHD, Similitude, Emoções e LDA rodam no R com estes pacotes do CRAN. Eles não vão dentro do programa: o instalador ou o próprio programa os baixa do CRAN, cada um com sua licença.",
       "dejavuRole": "fonte das figuras léxicas"
+    },
+    "docSelector": {
+      "manual": "Manual",
+      "manualTitle": "Escolha documentos, pastas e características numa lista e o labiia_quali monta a seleção",
+      "selectDocuments": "Selecionar documentos",
+      "useTheseDocuments": "Usar estes documentos",
+      "replaceSelection": "Substituir a seleção de documentos atual?"
+    },
+    "query": {
+      "manualTitle": "Escolha códigos numa lista e o labiia_quali monta a consulta",
+      "selectContent": "Selecionar conteúdo da consulta",
+      "buildQuery": "Montar consulta",
+      "findPassagesCodedWith": "Encontrar trechos codificados com",
+      "anyCodes": "qualquer um dos códigos (OU)",
+      "allCodes": "todos os códigos (E)",
+      "containingText": "…e que contenham este texto (opcional)",
+      "textToSearch": "Texto a buscar (opcional)",
+      "replaceQuery": "Substituir a consulta atual por esta seleção?"
     }
   }
 }

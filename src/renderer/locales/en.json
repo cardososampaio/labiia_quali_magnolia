@@ -2278,6 +2278,24 @@
       "rTitle": "R and R packages",
       "rIntro": "Word cloud, CHD, Similitude, Emotions and LDA run in R with these CRAN packages. They are not bundled: the installer or the program downloads them from CRAN, each under its own licence.",
       "dejavuRole": "font of the lexical figures"
+    },
+    "docSelector": {
+      "manual": "Manual",
+      "manualTitle": "Choose documents, folders and characteristics from a list and let labiia_quali draw the selection",
+      "selectDocuments": "Select documents",
+      "useTheseDocuments": "Use these documents",
+      "replaceSelection": "Replace the current document selection?"
+    },
+    "query": {
+      "manualTitle": "Choose codes from a list and let labiia_quali draw the query",
+      "selectContent": "Select query content",
+      "buildQuery": "Build query",
+      "findPassagesCodedWith": "Find passages coded with",
+      "anyCodes": "any of the selected codes (OR)",
+      "allCodes": "all of the selected codes (AND)",
+      "containingText": "…and containing this text (optional)",
+      "textToSearch": "Text to search for (optional)",
+      "replaceQuery": "Replace the current query with this selection?"
     }
   }
 }
