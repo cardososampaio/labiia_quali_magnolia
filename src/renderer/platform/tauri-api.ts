@@ -296,7 +296,7 @@ const api: MagnoliaAPI = {
   exportPdf: (html, defaultName, dialogTitle, headerTemplate, footerTemplate) =>
     invoke('export_pdf', { html: withDocumentLanguage(html), defaultName, dialogTitle, headerTemplate, footerTemplate }),
   exportCodebook: (codes) => invoke('export_codebook', { codes }),
-  importCodebook: () => invoke('import_codebook'),
+  importCodebook: () => invoke('labiia_import_codebook'),
   showNewQueryDialog: () => {},
 
   // Query builder (runs in a main-window tab; round-trips main → main).

@@ -176,7 +176,11 @@
     },
     "labiia": {
       "updatesUnavailableTitle": "As atualizações automáticas ainda não estão disponíveis",
-      "updatesUnavailableMessage": "As novas versões do labiia_quali são publicadas na página dele no GitHub. Para atualizar, baixe o instalador de lá."
+      "updatesUnavailableMessage": "As novas versões do labiia_quali são publicadas na página dele no GitHub. Para atualizar, baixe o instalador de lá.",
+      "docNotConverted": "Não foi possível abrir este arquivo .doc. Abra-o no Word ou no LibreOffice, salve como .docx e importe esse arquivo.",
+      "notACodebookDocument": "Este arquivo não é um documento do Word, OpenDocument, RTF ou Markdown.",
+      "antivirusBlocked": "O Windows não deixou o labiia_quali abrir este arquivo. Em geral é o antivírus protegendo documentos de pastas como a Área de Trabalho ou Documentos (no Avast: Proteção → Escudo de dados confidenciais ou Escudo contra ransomware). Permita o labiia_quali no antivírus, ou copie o arquivo para outra pasta, e importe de novo.",
+      "codebookFiles": "Livros de códigos (QDC, Word, OpenDocument, RTF, Markdown)"
     }
   },
   "tools": {
@@ -1805,5 +1809,44 @@
     "notebookSubtitle_one": "{{count}} nota — exportado em {{date}}",
     "notebookSubtitle_many": "{{count}} de notas — exportado em {{date}}",
     "notebookSubtitle_other": "{{count}} notas — exportado em {{date}}"
+  },
+  "labiia": {
+    "codebookImport": {
+      "wordHeadings": "Títulos do Word",
+      "boldAndNumber": "Negrito e número",
+      "numbering": "Numeração",
+      "heading1IsACategory": "Título 1 é categoria, Título 2 é código, Título 3 é subcódigo.",
+      "aWholeBoldLineStarting": "Uma linha inteira em negrito que começa com número é categoria; as linhas numeradas sem negrito são os códigos dela.",
+      "n1IsACategory1": "1. é categoria, 1.1 é código, 1.1.1 é subcódigo (ou o nível de uma lista).",
+      "codebookCategory": "Categoria",
+      "code": "Código",
+      "subCode": "Subcódigo",
+      "noCategoriesOrCodesWere": "Nenhuma categoria ou código foi encontrado com esta regra. Experimente outra regra acima, ou marque as categorias no documento com Título 1 ou com negrito e número.",
+      "categoriesAndCodesFound": "Categorias e códigos encontrados",
+      "import": "Importar {{name}}",
+      "moveUpALevel": "Subir um nível",
+      "moveDownALevel": "Descer um nível",
+      "importCodebook": "Importar livro de códigos",
+      "howTheDocumentIsOrganised": "Como o documento está organizado",
+      "detected": "detectado · ",
+      "item_one": "{{count}} item",
+      "item_many": "{{count}} itens",
+      "item_other": "{{count}} itens",
+      "isTheBookSTitle": "“{{title}}” é o título do livro e não é importado.",
+      "theParagraphBeforeTheFirst_one": "O parágrafo antes da primeira categoria é uma introdução e não é importado.",
+      "theParagraphBeforeTheFirst_many": "Os {{count}} parágrafos antes da primeira categoria são uma introdução e não são importados.",
+      "theParagraphBeforeTheFirst_other": "Os {{count}} parágrafos antes da primeira categoria são uma introdução e não são importados.",
+      "keepTheNumbersInThe": "Manter os números nos nomes",
+      "codebookCategory2_one": "{{count}} categoria",
+      "codebookCategory2_many": "{{count}} categorias",
+      "codebookCategory2_other": "{{count}} categorias",
+      "code2_one": "{{count}} código",
+      "code2_many": "{{count}} códigos",
+      "code2_other": "{{count}} códigos",
+      "cancel": "Cancelar",
+      "import2": "Importar",
+      "ok": "OK",
+      "buttonTitle": "Importar um livro de códigos: REFI-QDA (.qdc), Word, OpenDocument, RTF ou Markdown"
+    }
   }
 }

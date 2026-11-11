@@ -10,6 +10,7 @@ import { useCodeColourPresets } from '../../utils/code-colours'
 import { useClampedMenuPosition } from '../../utils/use-clamped-menu-position'
 import { useTranslation } from 'react-i18next'
 import { t, formatDateTime, formatNumber } from '../../i18n'
+import { useCodebookImport } from './CodebookOutlineDialog'
 
 function flattenCodes(codes: Code[]): Code[] {
   const result: Code[] = []
@@ -450,17 +451,15 @@ export function CodebookWindow() {
     await window.api.exportCodebook(codes)
   }, [codes])
 
-  const handleImportQdc = useCallback(async () => {
-    const imported = await window.api.importCodebook()
-    if (imported && imported.length > 0) {
-      setCodes((prev) => {
-        const existingGuids = new Set(flattenCodes(prev).map((c) => c.guid))
-        const newCodes = imported.filter((c) => !existingGuids.has(c.guid))
-        return [...prev, ...newCodes]
-      })
-      window.api.sendCodebookUpdate('merge-codes', imported)
-    }
-  }, [])
+  // labiia_quali: .qdc files and codebooks written in documents (with a preview).
+  const { startImport: handleImportQdc, dialog: importDialog } = useCodebookImport((imported) => {
+    setCodes((prev) => {
+      const existingGuids = new Set(flattenCodes(prev).map((c) => c.guid))
+      const newCodes = imported.filter((c) => !existingGuids.has(c.guid))
+      return [...prev, ...newCodes]
+    })
+    window.api.sendCodebookUpdate('merge-codes', imported)
+  })
 
   const selectedCode = selectedCodeGuid ? findCode(selectedCodeGuid) : null
 
@@ -506,8 +505,8 @@ export function CodebookWindow() {
           <div style={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
             <div className="panel-header">
               <span style={{ flex: 1 }}>{t('codebook.title')}</span>
-              <button className="secondary" style={HEADER_BUTTON} onClick={handleImportQdc} title={t('codebook.importQdcTitle')}>
-                {t('codebook.importQdc')}
+              <button className="secondary" style={HEADER_BUTTON} onClick={handleImportQdc} title={t('labiia.codebookImport.buttonTitle')}>
+                {t('labiia.codebookImport.importCodebook')}
               </button>
               <button className="secondary" style={HEADER_BUTTON} onClick={handleExportQdc} title={t('codebook.exportQdcTitle')}>
                 {t('codebook.exportQdc')}
@@ -594,6 +593,7 @@ export function CodebookWindow() {
           />
         )
       })()}
+      {importDialog}
     </div>
   )
 }

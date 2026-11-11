@@ -152,6 +152,7 @@ pub fn run() {
             automation::automation_pdf,
             automation::automation_quit,
             labiia::helper::labiia_helper_ping,
+            labiia::codebook::labiia_import_codebook,
             labiia::lexical::lexical_r_status,
             labiia::lexical::lexical_r_set_path,
             labiia::lexical::lexical_r_pick_path,

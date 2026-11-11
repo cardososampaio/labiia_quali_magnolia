@@ -173,7 +173,11 @@
     },
     "labiia": {
       "updatesUnavailableTitle": "Automatic updates are not available yet",
-      "updatesUnavailableMessage": "New versions of labiia_quali are published on its GitHub page. Download the installer from there to update."
+      "updatesUnavailableMessage": "New versions of labiia_quali are published on its GitHub page. Download the installer from there to update.",
+      "docNotConverted": "This .doc file could not be opened. Open it in Word or LibreOffice, save it as .docx and import that file.",
+      "notACodebookDocument": "This file is not a Word, OpenDocument, RTF or Markdown document.",
+      "antivirusBlocked": "Windows did not let labiia_quali open this file. This is usually an antivirus protecting documents in folders such as the Desktop or Documents (in Avast: Protection → Sensitive Data Shield or Ransomware Shield). Allow labiia_quali in the antivirus, or copy the file to another folder, and import again.",
+      "codebookFiles": "Codebooks (QDC, Word, OpenDocument, RTF, Markdown)"
     }
   },
   "tools": {
@@ -1737,5 +1741,40 @@
     "failed": "The PDF couldn't be exported.\n\n{{detail}}",
     "notebookSubtitle_one": "{{count}} note — exported {{date}}",
     "notebookSubtitle_other": "{{count}} notes — exported {{date}}"
+  },
+  "labiia": {
+    "codebookImport": {
+      "wordHeadings": "Word headings",
+      "boldAndNumber": "Bold and number",
+      "numbering": "Numbering",
+      "heading1IsACategory": "Heading 1 is a category, Heading 2 a code, Heading 3 a sub-code.",
+      "aWholeBoldLineStarting": "A whole bold line starting with a number is a category; numbered lines that are not bold are its codes.",
+      "n1IsACategory1": "1. is a category, 1.1 a code, 1.1.1 a sub-code (or the level of a list).",
+      "codebookCategory": "Codebook category",
+      "code": "Code",
+      "subCode": "Sub-code",
+      "noCategoriesOrCodesWere": "No categories or codes were found with this rule. Try another rule above, or mark the categories in the document with Heading 1 or with bold and a number.",
+      "categoriesAndCodesFound": "Categories and codes found",
+      "import": "Import {{name}}",
+      "moveUpALevel": "Move up a level",
+      "moveDownALevel": "Move down a level",
+      "importCodebook": "Import codebook",
+      "howTheDocumentIsOrganised": "How the document is organised",
+      "detected": "detected · ",
+      "item_one": "{{count}} item",
+      "item_other": "{{count}} items",
+      "isTheBookSTitle": "“{{title}}” is the book's title and is not imported.",
+      "theParagraphBeforeTheFirst_one": "The {{count}} paragraph before the first category is an introduction and is not imported.",
+      "theParagraphBeforeTheFirst_other": "The {{count}} paragraphs before the first category are an introduction and are not imported.",
+      "keepTheNumbersInThe": "Keep the numbers in the names",
+      "codebookCategory2_one": "{{count}} codebook category",
+      "codebookCategory2_other": "{{count}} codebook categories",
+      "code2_one": "{{count}} code",
+      "code2_other": "{{count}} codes",
+      "cancel": "Cancel",
+      "import2": "Import",
+      "ok": "OK",
+      "buttonTitle": "Import a codebook: REFI-QDA (.qdc), Word, OpenDocument, RTF or Markdown"
+    }
   }
 }

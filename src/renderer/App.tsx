@@ -99,6 +99,7 @@ import { buildSurveyEntityLabels } from './utils/survey/survey-labels'
 import { useTranslation } from 'react-i18next'
 import { t } from './i18n'
 import { isLetterKey } from './utils/keys'
+import { useCodebookImport } from './components/Codebook/CodebookOutlineDialog'
 
 /** Fold the survey-cell scope carried by an analysis cell-click into the
  *  documentFilter of the Query being generated, so it re-runs against the
@@ -466,6 +467,8 @@ function App() {
   const projectStore = useProjectStore()
   const documentStore = useDocumentStore()
   const codeStore = useCodeStore()
+  // labiia_quali: codebooks from .qdc files or from documents, with a preview.
+  const { startImport: startCodebookImport, dialog: codebookImportDialog } = useCodebookImport((codes) => useCodeStore.getState().mergeCodes(codes))
   const tagStore = useTagStore()
   const queryStore = useQueryStore()
   // The Reports tool only accepts Saved Queries / Analyses / Quotes /
@@ -1756,11 +1759,7 @@ function App() {
           window.api.exportCodebook(codeStore.codes)
           break
         case 'import-codebook':
-          window.api.importCodebook().then((imported) => {
-            if (imported && imported.length > 0) {
-              codeStore.mergeCodes(imported)
-            }
-          })
+          void startCodebookImport()
           break
         case 'analysis-code-cooccurrences':
           openAnalysis('code-cooccurrences')
@@ -3688,6 +3687,7 @@ function App() {
           }}
         />
       )}
+      {codebookImportDialog}
     </div>
   )
 }
