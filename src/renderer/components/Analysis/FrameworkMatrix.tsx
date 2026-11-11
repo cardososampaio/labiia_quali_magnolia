@@ -65,6 +65,7 @@ import { useRegisterToolSave } from '../../hooks/use-register-tool-save'
 import { useAnalysisTabsStore } from '../../stores/analysis-tabs-store'
 import { useTranslation } from 'react-i18next'
 import { formatNumber } from '../../i18n'
+import { ManualSelectButton } from '../ItemPicker/ManualSelectButton'
 
 interface Props {
   data: AnalysisInitData
@@ -571,14 +572,30 @@ export function FrameworkMatrix({ data: propData, savedConfig, inTab }: Props) {
         </div>
       )}
 
-      <div style={{ padding: '4px 20px 8px', fontSize: 11, color: 'var(--text-muted)', flexShrink: 0 }}>
-        {t('framework.intro')}
+      <div style={{ padding: '4px 20px 8px', fontSize: 11, color: 'var(--text-muted)', flexShrink: 0, display: 'flex', alignItems: 'center', gap: 8, flexWrap: 'wrap' }}>
+        <span style={{ flex: 1, minWidth: 240 }}>
+          {t('framework.intro')}
+        </span>
+        {/* labiia_quali: choose rows and columns from a list instead of dragging. */}
+        <ManualSelectButton
+          label={t('labiia.itemPicker.selectRows')}
+          title={t('labiia.itemPicker.selectRowsTitle')}
+          kinds={['document', 'folder', 'tag', 'category', 'survey-respondent', 'survey-question']}
+          target={() => wrapperRef.current?.querySelector('[data-matrix-drop]') ?? null}
+        />
+        <ManualSelectButton
+          label={t('labiia.itemPicker.selectColumns')}
+          title={t('labiia.itemPicker.selectColumnsTitle')}
+          kinds={['code']}
+          target={() => wrapperRef.current?.querySelector('[data-matrix-drop]') ?? null}
+        />
       </div>
 
       {/* The whole matrix area is the drop target and the scroll
           container, so the header row and label column can stick. */}
       <div ref={wrapperRef} style={{ flex: 1, minHeight: 0, margin: '0 20px 14px', position: 'relative' }}>
       <div
+        data-matrix-drop
         style={{ height: '100%', overflow: 'auto', background: 'var(--bg-panel)', border: '1px solid var(--border-color)', borderRadius: 'var(--radius-md)' }}
         onDragOver={(e) => {
           if (e.dataTransfer.types.includes(REORDER_MIME)) {

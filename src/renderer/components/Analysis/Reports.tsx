@@ -51,6 +51,7 @@ import {
   type AnalysisItemOptions
 } from './report-export'
 import { useTranslation } from 'react-i18next'
+import { ManualSelectButton } from '../ItemPicker/ManualSelectButton'
 
 interface Props {
   data: AnalysisInitData
@@ -460,10 +461,18 @@ export function Reports({ savedConfig, inTab }: Props) {
         <span style={{ fontSize: 11, color: 'var(--text-muted)', marginInlineEnd: 4 }}>{t('reports.dragToAdd')}</span>
         <PaletteChip block="section" icon={faHeading1} label={t('reports.section')} />
         <PaletteChip block="text" icon={faFont} label={t('reports.text')} />
+        <span style={{ flex: 1 }} />
+        {/* labiia_quali: add items from a list instead of dragging. */}
+        <ManualSelectButton
+          title={t('labiia.itemPicker.addToReport')}
+          kinds={['document', 'query', 'analysis', 'quote', 'memo']}
+          target={(button) => button.parentElement?.parentElement?.querySelector('[data-report-drop]')}
+        />
       </div>
 
       {/* The report list */}
       <div
+        data-report-drop
         style={{ flex: 1, overflow: 'auto', padding: '14px 20px' }}
         onDragOver={(e) => {
           if (!isAcceptedDrag(e)) return

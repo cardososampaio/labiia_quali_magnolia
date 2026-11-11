@@ -1804,7 +1804,13 @@
       "cancel": "Cancel",
       "ok": "OK",
       "chooseItemsFromAList": "Choose items from a list instead of dragging them",
-      "selectManually": "Select manually…"
+      "selectManually": "Select manually…",
+      "selectRows": "Select rows…",
+      "selectRowsTitle": "Select rows",
+      "selectColumns": "Select columns…",
+      "selectColumnsTitle": "Select columns",
+      "addToReport": "Add to report",
+      "addToMap": "Add to map"
     },
     "dragPayload": {
       "document": "Document"

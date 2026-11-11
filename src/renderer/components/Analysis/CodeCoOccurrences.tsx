@@ -21,6 +21,7 @@ import { useRegisterToolSave } from '../../hooks/use-register-tool-save'
 import { visualBoxColour } from '../../utils/code-colours'
 import { useTranslation } from 'react-i18next'
 import { formatNumber } from '../../i18n'
+import { ManualSelectButton } from '../ItemPicker/ManualSelectButton'
 
 interface Props {
   data: AnalysisInitData
@@ -88,7 +89,11 @@ function CodeDropZone({ label, onDrop: onDropCodes, existingGuids }: {
         if (newGuids.length > 0) onDropCodes(newGuids)
       }}
     >
-      {label}
+      {/* labiia_quali: choose codes from a list instead of dragging. */}
+      <span style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8, flexWrap: 'wrap' }}>
+        {label}
+        <ManualSelectButton kinds={['code']} />
+      </span>
     </div>
   )
 }

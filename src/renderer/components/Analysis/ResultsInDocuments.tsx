@@ -26,6 +26,7 @@ import { useToolDirtyState } from '../../hooks/use-tool-dirty-state'
 import { useRegisterToolSave } from '../../hooks/use-register-tool-save'
 import { useTranslation } from 'react-i18next'
 import { formatNumber } from '../../i18n'
+import { ManualSelectButton } from '../ItemPicker/ManualSelectButton'
 
 /** Each "Group by" entry is one of:
  *   - a single tag → one row in the grid;
@@ -534,8 +535,10 @@ export function ResultsInDocuments({ data: propData, savedConfig, inTab }: Props
         >
           <div style={{ display: 'flex', alignItems: 'baseline', justifyContent: 'space-between', gap: 12, marginBottom: groupBy.length > 0 ? 8 : 0, position: 'relative', zIndex: 1 }}>
             <span style={{ fontSize: 'var(--font-size-lg)', fontWeight: 600, color: 'var(--text-secondary)' }}>{t('analysis.groupedBy')}</span>
-            <span style={{ fontSize: 11, color: 'var(--text-muted)' }}>
+            <span style={{ display: 'flex', alignItems: 'center', gap: 8, fontSize: 11, color: 'var(--text-muted)' }}>
               {t('analysis.dragGroupHint')}
+              {/* labiia_quali: choose from a list instead of dragging. */}
+              <ManualSelectButton kinds={['tag', 'category', 'folder', 'respondents-group']} title={t('analysis.groupedBy')} />
             </span>
           </div>
           {tagDropOver && (
@@ -596,7 +599,7 @@ export function ResultsInDocuments({ data: propData, savedConfig, inTab }: Props
         >
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 10, position: 'relative', zIndex: 1 }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: 8, flexWrap: 'wrap' }}>
-              <span style={{ fontSize: 'var(--font-size-lg)', fontWeight: 600, color: 'var(--text-secondary)', marginInlineEnd: 4 }}>{t('analysis.results')}</span>
+              <span style={{ fontSize: 'var(--font-size-lg)', fontWeight: 600, color: 'var(--text-secondary)', marginInlineEnd: 4 }}>{t('analysis.results')}</span><ManualSelectButton kinds={['query']} />
               <SegmentedControl
                 label={t('analysis.view')}
                 value={view}

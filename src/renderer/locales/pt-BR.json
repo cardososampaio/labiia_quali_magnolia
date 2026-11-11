@@ -1876,7 +1876,13 @@
       "cancel": "Cancelar",
       "ok": "OK",
       "chooseItemsFromAList": "Escolher itens numa lista em vez de arrastá-los",
-      "selectManually": "Selecionar manualmente…"
+      "selectManually": "Selecionar manualmente…",
+      "selectRows": "Selecionar linhas…",
+      "selectRowsTitle": "Selecionar linhas",
+      "selectColumns": "Selecionar colunas…",
+      "selectColumnsTitle": "Selecionar colunas",
+      "addToReport": "Adicionar ao relatório",
+      "addToMap": "Adicionar ao mapa"
     },
     "dragPayload": {
       "document": "Documento"

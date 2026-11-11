@@ -8,6 +8,7 @@ import { FreeTextNode } from './FreeTextNode'
 import { Icon, MEMO_RANGED_ICON } from '../../Icon'
 import { useTranslation } from 'react-i18next'
 import { isLetterKey } from '../../../utils/keys'
+import { ManualSelectButton } from '../../ItemPicker/ManualSelectButton'
 
 interface Props {
   elements: MapElementType[]
@@ -594,6 +595,14 @@ export function MapCanvas({
             {t('queryBuilder.recentre')}
           </button>
         </div>
+        {/* labiia_quali: add items from a list instead of dragging. */}
+        <ManualSelectButton
+          title={t('labiia.itemPicker.addToMap')}
+          kinds={['code', 'document', 'folder', 'tag', 'category', 'query', 'memo', 'quote', 'analysis', 'survey-question', 'survey-respondent']}
+          target={() => containerRef.current}
+          spread
+          style={{ marginInlineStart: 8 }}
+        />
         <span className="viewer-spacer" />
         <span className="viewer-meta">{t('map.map')}</span>
       </div>
