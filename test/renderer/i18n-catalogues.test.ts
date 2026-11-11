@@ -196,9 +196,12 @@ describe('choosing the language', () => {
     expect(resolveLanguage('system', [])).toBe('en')
   })
 
-  it('reads an unknown saved preference as "system"', () => {
-    expect(normaliseLanguagePreference('ja')).toBe('system')
-    expect(normaliseLanguagePreference(undefined)).toBe('system')
-    expect(normaliseLanguagePreference('pt-BR')).toBe('pt-BR')
+  // labiia_quali is written for Brazilian researchers: with nothing saved, or
+  // something unknown, it opens in Brazilian Portuguese; "system" stays a choice.
+  it('reads an unknown saved preference as Brazilian Portuguese', () => {
+    expect(normaliseLanguagePreference('ja')).toBe('pt-BR')
+    expect(normaliseLanguagePreference(undefined)).toBe('pt-BR')
+    expect(normaliseLanguagePreference('system')).toBe('system')
+    expect(normaliseLanguagePreference('en')).toBe('en')
   })
 })

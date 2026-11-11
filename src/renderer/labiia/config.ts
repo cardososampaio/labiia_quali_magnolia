@@ -15,3 +15,11 @@ export const UPDATES_ENABLED = false
 export const MANUAL_URL = 'https://cardososampaio.github.io/labiia_quali_magnolia/'
 
 export const PRODUCT_NAME = 'labiia_quali'
+
+/** The language with nothing chosen yet: labiia_quali is written for
+ *  Brazilian researchers. */
+export const DEFAULT_LANGUAGE = 'pt-BR'
+
+/** Languages offered in Preferences: the ones labiia_quali's own screens
+ *  (lexical analyses, codebook import, Start menu…) are written in. */
+export const OFFERED_LANGUAGES: readonly string[] = ['pt-BR', 'en']

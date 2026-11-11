@@ -16,7 +16,7 @@ import { COLOURFUL_INTERFACE_ENABLED, colourfulInterfaceFromSaved } from '../../
 import { useTranslation } from 'react-i18next'
 import { LANGUAGE_IDS, normaliseLanguagePreference, resolveLanguage, setLanguagePreference, setDigitsPreference, digitChoices, digitsSample, type LanguagePreference, type DigitsPreference } from '../../i18n'
 import { keyCombo } from '../../utils/keys'
-import { UPDATES_ENABLED } from '../../labiia/config'
+import { UPDATES_ENABLED, OFFERED_LANGUAGES } from '../../labiia/config'
 import { RSettingsPanel } from '../Lexical/RStatusPanel'
 
 interface FootPedalMappings {
@@ -337,7 +337,7 @@ function GeneralSettings({
         style={{ fontSize: 12, padding: '3px 6px', marginBottom: 24 }}
       >
         <option value="system">{t('language.system', { language: t(`language.name.${systemLanguage}`) })}</option>
-        {LANGUAGE_IDS.map((id) => (
+        {LANGUAGE_IDS.filter((id) => OFFERED_LANGUAGES.includes(id)).map((id) => (
           <option key={id} value={id}>{t(`language.name.${id}`)}</option>
         ))}
       </select>

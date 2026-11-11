@@ -1,0 +1,151 @@
+{
+  "analysis": {
+    "category": "Atributo",
+    "dragGroupHint": "Arraste características, atributos ou pastas para cá"
+  },
+  "app": {
+    "step": {
+      "tags": "Características"
+    }
+  },
+  "common": {
+    "tag": "Característica"
+  },
+  "docSelector": {
+    "kind": {
+      "tag": "Característica"
+    },
+    "selectCategory": "Selecionar atributo...",
+    "statusHint": "Arraste documentos e características para a tela · Conecte os nós a Resultado · Arraste perguntas e respondentes para cá para escolhê-los",
+    "tip": {
+      "tag": "Todos os documentos com uma determinada característica"
+    },
+    "uncategorised": "Sem atributo"
+  },
+  "framework": {
+    "deletedCategory": "Atributo excluído",
+    "deletedTag": "Característica excluída",
+    "dropHint": "Arraste documentos ou características para cá para as linhas, e códigos para as colunas",
+    "dropRows": "Arraste documentos ou características para cá",
+    "intro": "Arraste documentos, características, atributos, pastas ou respondentes e perguntas de questionários para adicionar linhas, e códigos para adicionar colunas. Clique numa célula para ver os segmentos codificados nos resultados da consulta e escrever um resumo.",
+    "orphan": {
+      "category": "Não tem mais característica neste atributo",
+      "tag": "Não tem mais esta característica"
+    }
+  },
+  "map": {
+    "kind": {
+      "tag": "CARACTERÍSTICA",
+      "tag-category": "ATRIBUTO"
+    }
+  },
+  "merge": {
+    "cat": {
+      "tagCategories": "Atributos",
+      "tags": "Características"
+    }
+  },
+  "nameGate": {
+    "title": "Boas-vindas ao labiia_quali"
+  },
+  "native": {
+    "core": {
+      "guard": {
+        "emptyProject": "O labiia_quali não vai substituir “{{file}}” ({{size}} bytes) por um projeto vazio. Se quiser mesmo salvar um projeto vazio, use Salvar projeto como.",
+        "missingFiles_many": "O labiia_quali não vai salvar “{{file}}”: o conteúdo de {{count}} documentos importados não foi encontrado ({{names}}). Eles não estavam na memória, no cache temporário nem no arquivo do projeto, então salvar agora os deixaria vazios. Importe os documentos de novo e tente outra vez.",
+        "missingFiles_one": "O labiia_quali não vai salvar “{{file}}”: o conteúdo de {{count}} documento importado não foi encontrado ({{names}}). Ele não estava na memória, no cache temporário nem no arquivo do projeto, então salvar agora o deixaria vazio. Importe o documento de novo e tente outra vez.",
+        "missingFiles_other": "O labiia_quali não vai salvar “{{file}}”: o conteúdo de {{count}} documentos importados não foi encontrado ({{names}}). Eles não estavam na memória, no cache temporário nem no arquivo do projeto, então salvar agora os deixaria vazios. Importe os documentos de novo e tente outra vez.",
+        "noSources_many": "O labiia_quali não vai substituir “{{file}}”: este projeto não tem documentos, mas o arquivo contém {{count}} documentos. Isso geralmente significa que uma falha apagou os documentos depois que o arquivo foi aberto. Se quiser mesmo salvar um projeto vazio, use Salvar projeto como para salvá-lo em um novo arquivo.",
+        "noSources_one": "O labiia_quali não vai substituir “{{file}}”: este projeto não tem documentos, mas o arquivo contém {{count}} documento. Isso geralmente significa que uma falha apagou os documentos depois que o arquivo foi aberto. Se quiser mesmo salvar um projeto vazio, use Salvar projeto como para salvá-lo em um novo arquivo.",
+        "noSources_other": "O labiia_quali não vai substituir “{{file}}”: este projeto não tem documentos, mas o arquivo contém {{count}} documentos. Isso geralmente significa que uma falha apagou os documentos depois que o arquivo foi aberto. Se quiser mesmo salvar um projeto vazio, use Salvar projeto como para salvá-lo em um novo arquivo.",
+        "noText_many": "O labiia_quali não vai substituir “{{file}}”: o projeto tem {{count}} documentos, mas o texto de nenhum deles está carregado. Isso geralmente significa que o projeto não abriu por completo, e salvar agora apagaria o texto dos documentos. Abra o projeto de novo e, se o problema continuar, restaure-o de um backup.",
+        "noText_one": "O labiia_quali não vai substituir “{{file}}”: o projeto tem {{count}} documento, mas o texto dele não está carregado. Isso geralmente significa que o projeto não abriu por completo, e salvar agora apagaria o texto do documento. Abra o projeto de novo e, se o problema continuar, restaure-o de um backup.",
+        "noText_other": "O labiia_quali não vai substituir “{{file}}”: o projeto tem {{count}} documentos, mas o texto de nenhum deles está carregado. Isso geralmente significa que o projeto não abriu por completo, e salvar agora apagaria o texto dos documentos. Abra o projeto de novo e, se o problema continuar, restaure-o de um backup."
+      }
+    },
+    "import": {
+      "unsupported": "O labiia_quali não pode importar arquivos .{{ext}}."
+    },
+    "menu": {
+      "about": "Sobre o labiia_quali",
+      "github": "Magnolia (projeto original) no GitHub",
+      "hide": "Ocultar labiia_quali",
+      "manageDocumentTags": "Gerenciar características dos documentos...",
+      "quit": "Encerrar labiia_quali",
+      "sponsor": "Apoiar o Magnolia (projeto original)…"
+    },
+    "update": {
+      "installFailedMessage": "O labiia_quali {{version}} será reaberto quando você fechar esta mensagem e oferecerá a atualização novamente. O erro foi: {{error}}",
+      "notificationTitle": "Atualização do labiia_quali disponível"
+    },
+    "window": {
+      "magnoliaUpdate": "Atualização do labiia_quali"
+    }
+  },
+  "preferences": {
+    "language": {
+      "description": "O idioma dos menus, das janelas e das exportações do labiia_quali. Seus projetos não mudam: códigos, documentos e memos continuam como você os escreveu."
+    }
+  },
+  "prefs": {
+    "paperSizeText": "Tamanho de página dos PDFs que o labiia_quali exporta (documentos codificados, resultados de consultas, livros de códigos, o diário de bordo e resumos de pesquisas).",
+    "updateItself": "Se o labiia_quali não se atualizar sozinho, baixe a versão mais recente na página de versões.",
+    "updatesText": "O labiia_quali busca atualizações automaticamente em segundo plano. Se isso não funcionar no seu computador (por exemplo, em uma máquina gerenciada ou restrita), você pode buscar uma nova versão aqui a qualquer momento."
+  },
+  "results": {
+    "selectDocsTitle": "Seleciona no painel de documentos todos os documentos e respondentes destes resultados — depois arraste uma característica para eles para atribuí-la a todos de uma vez"
+  },
+  "resultsInDocs": {
+    "legacyQuestions_many": "Só {{count}} perguntas da pesquisa são contadas, escolhidas em uma versão anterior do labiia_quali. Para escolher perguntas agora, use Destes documentos no Construtor de consultas.",
+    "legacyQuestions_one": "Só {{count}} pergunta da pesquisa é contada, escolhida em uma versão anterior do labiia_quali. Para escolher perguntas agora, use Destes documentos no Construtor de consultas.",
+    "legacyQuestions_other": "Só {{count}} perguntas da pesquisa são contadas, escolhidas em uma versão anterior do labiia_quali. Para escolher perguntas agora, use Destes documentos no Construtor de consultas."
+  },
+  "tags": {
+    "addCategory": "Adicionar atributo",
+    "addTag": "Adicionar característica...",
+    "categoryPlaceholder": "Nome do atributo (ex.: País)...",
+    "deleteTag": "Excluir característica",
+    "editTags": "Editar características",
+    "editTagsEllipsis": "Editar características...",
+    "empty": "Ainda não há características.",
+    "emptyHelp": "Nenhuma característica ainda. Use {{menu}} para criar atributos e características.",
+    "filter": "Filtrar características",
+    "filterPlaceholder": "Filtrar características...",
+    "heading": "Características",
+    "hide": "Ocultar características",
+    "manage": "Gerenciar características",
+    "manageEllipsis": "Gerenciar características dos documentos...",
+    "manageTitle": "Gerenciar características dos documentos",
+    "noMatch": "Nenhuma característica corresponde a \"{{query}}\".",
+    "noTagsAddBelow": "Ainda não há características — adicione uma abaixo.",
+    "noTagsOrCategories": "Ainda não há atributos nem características. Crie um atributo abaixo para começar.",
+    "selectAllActive": "Selecionar documentos de todas as características ativas ({{count}})",
+    "selectDocs": "Selecionar documentos com esta característica",
+    "show": "Mostrar características",
+    "tagCount_many": "{{count}} características",
+    "tagCount_one": "{{count}} característica",
+    "tagCount_other": "{{count}} características",
+    "type": {
+      "uncategorised": "sem atributo"
+    }
+  },
+  "toolbar": {
+    "groupMagnolia": "labiia_quali",
+    "licenceDescription": "A licença do labiia_quali (EUPL-1.2, a mesma do Magnolia, em que ele se baseia) e os créditos das bibliotecas incluídas.",
+    "manualDescription": "Abra o manual do usuário do labiia_quali no navegador.",
+    "tags": "Características",
+    "tagsTitle": "Gerenciar características"
+  },
+  "update": {
+    "availableHeading": "Uma nova versão do labiia_quali está disponível!",
+    "availableInfo": "O labiia_quali {{version}} já está disponível; você tem a {{current}}. Quer baixá-la agora?",
+    "downloading": "Baixando o labiia_quali {{version}}…",
+    "installingInfo": "O labiia_quali será reaberto quando terminar.",
+    "readyInfo": "O labiia_quali {{version}} foi baixado. Se você fechar esta janela, ele será instalado quando você encerrar o labiia_quali.",
+    "upToDateInfo": "O labiia_quali {{version}} é a versão mais recente disponível."
+  },
+  "welcome": {
+    "ownRisk": "Use o labiia_quali por sua conta e risco.",
+    "windowTitle": "Boas-vindas — labiia_quali"
+  }
+}

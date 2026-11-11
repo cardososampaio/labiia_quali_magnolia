@@ -1,0 +1,131 @@
+{
+  "analysis": {
+    "category": "Attribute",
+    "dragGroupHint": "Drag characteristics, attributes, or folders here"
+  },
+  "app": {
+    "step": {
+      "tags": "Characteristics"
+    }
+  },
+  "common": {
+    "tag": "Characteristic"
+  },
+  "docSelector": {
+    "kind": {
+      "tag": "Characteristic"
+    },
+    "selectCategory": "Select attribute...",
+    "statusHint": "Drag documents & characteristics onto canvas · Connect nodes to Result · Drag survey questions & respondents here to choose them",
+    "tip": {
+      "tag": "All documents assigned to a particular characteristic"
+    }
+  },
+  "framework": {
+    "deletedCategory": "Deleted attribute",
+    "deletedTag": "Deleted characteristic",
+    "dropHint": "Drag documents or characteristics here for rows, and codes for columns",
+    "dropRows": "Drag documents or characteristics here",
+    "intro": "Drag documents, characteristics, attributes, folders, or survey respondents and questions in to add rows, and codes to add columns. Click a cell to see its coded segments in Query Results and write a summary.",
+    "orphan": {
+      "category": "No longer has a characteristic in this attribute",
+      "tag": "No longer has this characteristic"
+    }
+  },
+  "map": {
+    "kind": {
+      "tag": "CHARACTERISTICS",
+      "tag-category": "ATTRIBUTE"
+    }
+  },
+  "merge": {
+    "cat": {
+      "tagCategories": "Attributes",
+      "tags": "Characteristics"
+    }
+  },
+  "nameGate": {
+    "title": "Welcome to labiia_quali"
+  },
+  "native": {
+    "import": {
+      "unsupported": "labiia_quali can't import .{{ext}} files."
+    },
+    "menu": {
+      "about": "About labiia_quali",
+      "github": "Magnolia (original project) on GitHub",
+      "hide": "Hide labiia_quali",
+      "manageDocumentTags": "Manage Document Characteristics...",
+      "quit": "Quit labiia_quali",
+      "sponsor": "Support Magnolia (original project)…"
+    },
+    "update": {
+      "installFailedMessage": "labiia_quali {{version}} will reopen when you close this message, and will offer the update again. The error was: {{error}}",
+      "notificationTitle": "labiia_quali update available"
+    },
+    "window": {
+      "magnoliaUpdate": "labiia_quali Update"
+    }
+  },
+  "preferences": {
+    "language": {
+      "description": "The language of labiia_quali's menus, windows and exports. Your projects aren't changed: codes, documents and memos stay as you wrote them."
+    }
+  },
+  "prefs": {
+    "paperSizeText": "Page size for PDFs labiia_quali exports (coded documents, query results, codebooks, the logbook, and survey summaries).",
+    "updateItself": "If labiia_quali doesn't update itself, download the latest version from the releases page.",
+    "updatesText": "labiia_quali checks for updates automatically in the background. If that doesn't work on your computer (for example on a managed or restricted machine), you can check for a new version here at any time."
+  },
+  "results": {
+    "selectDocsTitle": "Select all documents and respondents in these results in the Document Browser — then drag a characteristic onto them to assign it to all at once"
+  },
+  "resultsInDocs": {
+    "legacyQuestions_one": "Only {{count}} survey question is counted, as chosen in an earlier version of labiia_quali. To choose questions now, use From these documents in the Query Builder.",
+    "legacyQuestions_other": "Only {{count}} survey questions are counted, as chosen in an earlier version of labiia_quali. To choose questions now, use From these documents in the Query Builder."
+  },
+  "tags": {
+    "addCategory": "Add Attribute",
+    "addTag": "Add characteristic...",
+    "categoryPlaceholder": "Attribute name (e.g. Country)...",
+    "deleteTag": "Delete Characteristic",
+    "editTags": "Edit Characteristics",
+    "editTagsEllipsis": "Edit Characteristics...",
+    "empty": "No characteristics yet.",
+    "emptyHelp": "No characteristics yet. Use {{menu}} to create attributes and characteristics.",
+    "filter": "Filter characteristics",
+    "filterPlaceholder": "Filter characteristics...",
+    "heading": "Characteristics",
+    "hide": "Hide characteristics",
+    "manage": "Manage characteristics",
+    "manageEllipsis": "Manage Document Characteristics...",
+    "manageTitle": "Manage Document Characteristics",
+    "noMatch": "No characteristics match \"{{query}}\".",
+    "noTagsAddBelow": "No characteristics yet — add one below.",
+    "noTagsOrCategories": "No attributes or characteristics yet. Create an attribute below to get started.",
+    "selectAllActive": "Select Documents for All Active Characteristics ({{count}})",
+    "selectDocs": "Select Documents with This Characteristic",
+    "show": "Show characteristics",
+    "tagCount_one": "{{count}} characteristic",
+    "tagCount_other": "{{count}} characteristics"
+  },
+  "toolbar": {
+    "groupMagnolia": "labiia_quali",
+    "licenceDescription": "The licence of labiia_quali (EUPL-1.2, the same as Magnolia, on which it is based) and the credits of the bundled libraries.",
+    "manualDescription": "Open labiia_quali's user manual in your browser.",
+    "tags": "Characteristics",
+    "tagsTitle": "Manage characteristics"
+  },
+  "update": {
+    "availableHeading": "A new version of labiia_quali is available!",
+    "availableInfo": "labiia_quali {{version}} is now available—you have {{current}}. Would you like to download it now?",
+    "downloading": "Downloading labiia_quali {{version}}…",
+    "installingInfo": "labiia_quali will relaunch when it’s done.",
+    "readyInfo": "labiia_quali {{version}} has been downloaded. If you close this window, it installs when you quit labiia_quali.",
+    "upToDateInfo": "labiia_quali {{version}} is currently the newest version available."
+  },
+  "welcome": {
+    "ownRisk": "Use labiia_quali at your own risk.",
+    "windowTitle": "Welcome — labiia_quali"
+  }
+}

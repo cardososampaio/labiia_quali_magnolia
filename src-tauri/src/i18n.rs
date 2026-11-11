@@ -46,7 +46,11 @@ fn catalogues() -> &'static [(&'static str, Value)] {
     PARSED.get_or_init(|| {
         CATALOGUES
             .iter()
-            .map(|(id, text)| (*id, serde_json::from_str(text).unwrap_or(Value::Null)))
+            .map(|(id, text)| {
+                let mut v = serde_json::from_str(text).unwrap_or(Value::Null);
+                crate::labiia::terms::apply(id, &mut v);
+                (*id, v)
+            })
             .collect()
     })
 }
@@ -254,7 +258,7 @@ mod tests {
         let text = lookup("en", "import.unsupported")
             .unwrap()
             .replace("{{ext}}", "xyz");
-        assert_eq!(text, "Magnolia can't import .xyz files.");
+        assert_eq!(text, "labiia_quali can't import .xyz files.");
     }
 
     #[test]

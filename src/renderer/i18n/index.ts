@@ -31,6 +31,8 @@ import hi from '../locales/hi.json'
 import ptPT from '../locales/pt-PT.json'
 import de from '../locales/de.json'
 import fi from '../locales/fi.json'
+import { applyLabiiaTerms } from '../labiia/terms'
+import { DEFAULT_LANGUAGE } from '../labiia/config'
 
 /** Every catalogue, by language id. Adding a language: see "Adding a
  *  language" in locales/GLOSSARY.md (the tests name anything missed). */
@@ -42,9 +44,11 @@ export type LanguagePreference = 'system' | LanguageId
 
 const isLanguageId = (v: unknown): v is LanguageId => (LANGUAGE_IDS as readonly unknown[]).includes(v)
 
-/** A saved preference, or "system" for anything else (unset, unknown). */
+/** A saved preference. labiia_quali is written for Brazilian researchers,
+ *  so with nothing saved (or something unknown) it opens in Brazilian
+ *  Portuguese; "system" is kept when chosen. */
 export function normaliseLanguagePreference(v: unknown): LanguagePreference {
-  return isLanguageId(v) ? v : 'system'
+  return v === 'system' ? 'system' : isLanguageId(v) ? v : DEFAULT_LANGUAGE
 }
 
 /** The language for a preference: the one chosen, or for "system" the first
@@ -83,6 +87,8 @@ void i18n.use(initReactI18next).use(numberFormatter).init({
   // Resources are bundled, so init and changeLanguage finish synchronously.
   initAsync: false
 })
+// labiia_quali: Características/Atributos and the program's name (labiia/terms.ts).
+applyLabiiaTerms(i18n)
 
 export const t = i18n.t.bind(i18n)
 export { i18n }

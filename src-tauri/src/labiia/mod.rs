@@ -8,6 +8,7 @@
 pub mod codebook;
 pub mod helper;
 pub mod lexical;
+pub mod terms;
 
 use std::path::PathBuf;
 
