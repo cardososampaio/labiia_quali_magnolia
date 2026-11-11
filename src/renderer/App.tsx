@@ -415,14 +415,17 @@ function App() {
   const [saveQueryName, setSaveQueryName] = useState('')
   const [pulsedQueryGuid, setPulsedQueryGuid] = useState<string | null>(null)
   const [queryResultsPoppedOut, setQueryResultsPoppedOut] = useState(false)
-  const [queryResultsClosed, setQueryResultsClosed] = useState(false)
+  // labiia_quali: the program opens with Documents, Codes and the viewer;
+  // the other panes are a click away under View, and Query Results comes
+  // back by itself when a query runs (below).
+  const [queryResultsClosed, setQueryResultsClosed] = useState(true)
   const queryResultsHidden = queryResultsPoppedOut || queryResultsClosed
   const [panelVisibility, setPanelVisibility] = useState({
     documents: true,
     codes: true,
-    memos: true,
-    quotes: true,
-    analyses: true,
+    memos: false,
+    quotes: false,
+    analyses: false,
   })
   type PanelId = keyof typeof panelVisibility
   const closePanel = useCallback((id: PanelId) => {
@@ -477,6 +480,13 @@ function App() {
   const { startImport: startCodebookImport, dialog: codebookImportDialog } = useCodebookImport((codes) => useCodeStore.getState().mergeCodes(codes))
   const tagStore = useTagStore()
   const queryStore = useQueryStore()
+  // labiia_quali: Query Results starts hidden, so running a query (from the
+  // Query Builder, a saved query, a code's double-click or Find) brings it
+  // back; otherwise the results would land in a pane nobody can see.
+  const activeQuery = queryStore.currentQuery
+  useEffect(() => {
+    if (activeQuery) setQueryResultsClosed(false)
+  }, [activeQuery])
   // The Reports tool only accepts Saved Queries / Analyses / Quotes /
   // Memos — not documents or codes. Dim and disable those two panels while
   // it's the active tab so the unavailable drag sources can't be used.
