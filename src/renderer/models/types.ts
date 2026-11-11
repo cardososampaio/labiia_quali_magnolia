@@ -948,6 +948,8 @@ export type AnalysisToolType =
   | 'word-combinations'
   | 'relationship-map'
   | 'reports'
+  // labiia_quali: the lexical analyses (lexical-wordcloud, lexical-chd, …).
+  | import('./lexical-api').LexicalToolType
 
 export interface AnalysisInitData {
   toolType: AnalysisToolType

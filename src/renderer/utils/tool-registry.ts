@@ -17,6 +17,7 @@ import {
 } from '../components/Icon'
 import type { IconComponent } from '../components/Icon'
 import { t } from '../i18n'
+import { LEXICAL_TESTS, lexicalToolType } from '../components/Lexical/lexical-catalog'
 
 /** A tool whose label and description are read from the catalogues
  *  (tools.<key>.label / .description) each time, in the current language. */
@@ -59,6 +60,13 @@ export const TOOL_REGISTRY: Record<string, ToolDef> = {
   'word-combinations':     tool('wordCombinations',   faWholeWord,        '#C83C3C'), // crimson
   'relationship-map':      tool('relationshipMap',    faCircleNodes,      '#A830D0'), // violet
   'reports':               tool('reports',            faNotebookTabs,     '#607080'), // slate
+  // labiia_quali: one entry per lexical analysis, labels read when shown.
+  ...Object.fromEntries(
+    LEXICAL_TESTS.map((d) => [
+      lexicalToolType(d.id),
+      { icon: d.icon, color: d.color, get label() { return d.label }, get description() { return d.description } }
+    ])
+  )
 }
 
 /** Backward-compatible color map (used by many components) */

@@ -5,6 +5,7 @@ import React from 'react'
 import ReactDOM from 'react-dom/client'
 import { CodebookWindow } from './components/Codebook/CodebookWindow'
 import './styles/global.css'
+import './labiia/labiia-shell.css'
 import { applyStoredAppearance, installAppearanceListeners } from './utils/apply-theme'
 import { usePreferencesStore } from './stores/preferences-store'
 

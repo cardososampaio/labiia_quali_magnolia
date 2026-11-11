@@ -100,6 +100,7 @@ import { useTranslation } from 'react-i18next'
 import { t } from './i18n'
 import { isLetterKey } from './utils/keys'
 import { useCodebookImport } from './components/Codebook/CodebookOutlineDialog'
+import { labiiaRibbonTabs } from './labiia/ribbon-tabs'
 
 /** Fold the survey-cell scope carried by an analysis cell-click into the
  *  documentFilter of the Query being generated, so it re-runs against the
@@ -2733,89 +2734,27 @@ function App() {
     title: visible ? t('toolbar.hidePane', { pane: t(`panes.${id}`) }) : t('toolbar.showPane', { pane: t(`panes.${id}`) }),
     onClick: () => (id === 'queries' ? setQueryResultsClosed((prev) => !prev) : togglePanel(id))
   })
-  const ribbonTabs: RibbonTabDef[] = [
-    {
-      id: 'home',
-      label: t('toolbar.tabHome'),
-      groups: [
-        {
-          label: t('toolbar.groupProject'),
-          buttons: [
-            {
-              id: 'project-details', label: t('toolbar.projectDetails'), title: t('toolbar.projectDetails'),
-              glyph: <span className="ribbon-magnolia" aria-hidden style={{ WebkitMaskImage: `url("${magnoliaIconUrl}")`, maskImage: `url("${magnoliaIconUrl}")` }} />,
-              onClick: () => setShowProjectDetails(true)
-            },
-            { id: 'import', label: t('toolbar.import'), title: t('toolbar.importTitle'), icon: faSquareArrowRightEnter, disabledReason: lockedReason, onClick: () => handleImportDocument() },
-            { id: 'merge', label: t('toolbar.merge'), title: t('toolbar.mergeTitle'), icon: faGitMerge, iconStyle: { transform: 'scale(-1, -1)' }, onClick: () => handleMergeProject() },
-            {
-              id: 'preferences', label: t('toolbar.preferences'), icon: faGear, badge: updateBadgeAvailable,
-              title: updateBadgeAvailable ? t('toolbar.updateAvailableTitle') : t('toolbar.preferences'),
-              onClick: () => {
-                if (updateBadgeAvailable) requestPreferencesCategory('updates')
-                useDocumentStore.getState().openToolTab(PREFERENCES_TAB_ID)
-              }
-            }
-          ]
-        },
-        {
-          label: t('toolbar.groupOrganise'),
-          buttons: [
-            { id: 'codebook', label: t('toolbar.codebook'), icon: faBook, onClick: () => openCodebook() },
-            { id: 'logbook', label: t('toolbar.logbook'), icon: faNotebookPen, onClick: () => openLogbook() },
-            { id: 'memos', label: t('toolbar.memos'), title: t('toolbar.memosTitle'), icon: PANE_ICONS.memos, onClick: () => openMemos() },
-            { id: 'tags', label: t('toolbar.tags'), title: t('toolbar.tagsTitle'), icon: faTags, onClick: () => setShowManageDocTags(true) }
-          ]
-        },
-        {
-          label: t('toolbar.groupQuery'),
-          buttons: [
-            { id: 'query', label: t('toolbar.query'), title: TOOL_REGISTRY.queryBuilder.description, icon: faMagnifyingGlass, onClick: () => openQueryBuilder() }
-          ]
-        }
-      ]
-    },
-    {
-      id: 'analyse',
-      label: t('toolbar.tabAnalyse'),
-      groups: [
-        { label: t('toolbar.groupCodes'), buttons: (['codes-in-documents', 'framework-matrix', 'code-cooccurrences', 'code-orders', 'code-frequencies'] as AnalysisToolType[]).map(toolButton) },
-        { label: t('toolbar.groupQueriesWords'), buttons: (['results-in-documents', 'word-frequencies', 'word-combinations'] as AnalysisToolType[]).map(toolButton) },
-        { label: t('toolbar.groupRelationshipsReports'), buttons: (['relationship-map', 'reports'] as AnalysisToolType[]).map(toolButton) }
-      ]
-    },
-    {
-      id: 'view',
-      label: t('toolbar.tabView'),
-      groups: [
-        {
-          label: t('toolbar.groupPanes'),
-          buttons: [
-            panelButton('documents', PANE_ICONS.documents, panelVisibility.documents),
-            panelButton('codes', PANE_ICONS.codes, panelVisibility.codes),
-            panelButton('queries', PANE_ICONS.queries, !queryResultsClosed),
-            panelButton('memos', PANE_ICONS.memos, panelVisibility.memos),
-            panelButton('quotes', PANE_ICONS.quotes, panelVisibility.quotes),
-            panelButton('analyses', PANE_ICONS.analyses, panelVisibility.analyses)
-          ]
-        }
-      ]
-    },
-    {
-      id: 'help',
-      label: t('toolbar.tabHelp'),
-      groups: [
-        {
-          label: t('toolbar.groupMagnolia'),
-          buttons: [
-            { id: 'manual', label: t('toolbar.manual'), title: t('toolbar.manualDescription'), icon: HELP_ICONS.manual, onClick: () => window.open(MANUAL_URL, '_blank') },
-            { id: 'licence', label: t('toolbar.licence'), title: t('toolbar.licenceAttributions'), icon: HELP_ICONS.licence, onClick: () => setShowLicenceDialog(true) },
-            { id: 'donate', label: t('toolbar.donate'), title: t('toolbar.donateDescription'), icon: HELP_ICONS.donate, onClick: () => window.open(SPONSOR_URL, '_blank') }
-          ]
-        }
-      ]
-    }
-  ]
+  // labiia_quali's tabs and buttons (src/renderer/labiia/ribbon-tabs.tsx).
+  const ribbonTabs: RibbonTabDef[] = labiiaRibbonTabs({
+    newProject: () => void handleNewProject(),
+    openProject: () => void handleOpenProject(),
+    importSources: () => void handleImportDocument(),
+    newFolder: () => { if (!checkoutLockedBy) documentStore.addFolder(t('documents.defaultFolderName')) },
+    mergeProjects: () => void handleMergeProject(),
+    projectDetails: () => setShowProjectDetails(true),
+    openCodebook: () => openCodebook(),
+    manageTags: () => setShowManageDocTags(true),
+    openLogbook: () => openLogbook(),
+    openMemos: () => openMemos(),
+    openQuery: () => openQueryBuilder(),
+    openAnalysis: (toolType) => openAnalysis(toolType),
+    openPreferences: () => useDocumentStore.getState().openToolTab(PREFERENCES_TAB_ID),
+    openLicence: () => setShowLicenceDialog(true),
+    lockedReason,
+    panelVisible: (id) => (id === 'queries' ? !queryResultsClosed : panelVisibility[id]),
+    togglePanel: (id) => (id === 'queries' ? setQueryResultsClosed((prev) => !prev) : togglePanel(id)),
+    memosIcon: PANE_ICONS.memos
+  })
   const ribbon = useRibbon(ribbonTabs)
   const useRibbonToolbar = toolbarStyle === 'ribbon'
   // The menu handler is registered above useRibbon, so it reaches the

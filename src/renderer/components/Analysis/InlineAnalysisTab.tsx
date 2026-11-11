@@ -38,6 +38,8 @@ import { QueryBuilderWindow } from '../QueryBuilder/QueryBuilderWindow'
 import { MemoFab } from '../Memos/MemoFab'
 import type { AnalysisToolType } from '../../models/types'
 import { i18n } from '../../i18n'
+import { LexicalAnalysisTab } from '../Lexical/LexicalAnalysisTab'
+import { lexicalTestFor } from '../Lexical/lexical-catalog'
 
 interface Props {
   tabId: string
@@ -204,7 +206,11 @@ function dispatch(
       return <WordCombinations data={data} savedConfig={savedConfig} inTab={inTab} />
     case 'reports':
       return <Reports data={data} savedConfig={savedConfig} inTab={inTab} />
-    default:
+    default: {
+      // labiia_quali: the lexical analyses share one tab component.
+      const lexical = lexicalTestFor(toolType)
+      if (lexical) return <LexicalAnalysisTab key={lexical.id} test={lexical} data={data} savedConfig={savedConfig} inTab={inTab} />
       return <div style={{ padding: 20, color: 'var(--text-muted)' }}>{i18n.t('analysis.unknownTool', { tool: toolType })}</div>
+    }
   }
 }

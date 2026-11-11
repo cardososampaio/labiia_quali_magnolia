@@ -54,7 +54,7 @@ const DEFAULT_PREFERENCES: Preferences = {
     fastForwardSeconds: 5
   },
   defaultPlaybackSpeed: 1.0,
-  theme: 'magnolia',
+  theme: 'windows', // labiia_quali's Windows look
   paperSize: 'A4',
   interfaceScale: 1,
   userName: '',

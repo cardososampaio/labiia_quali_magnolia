@@ -38,6 +38,8 @@ export type ToolKind =
   | 'word-combinations'
   | 'reports'
   | 'query-builder'
+  // labiia_quali: the lexical analyses.
+  | import('../models/lexical-api').LexicalToolType
 
 export interface AnalysisTabInstance {
   toolType: ToolKind

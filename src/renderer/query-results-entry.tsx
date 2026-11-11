@@ -5,6 +5,7 @@ import React from 'react'
 import ReactDOM from 'react-dom/client'
 import { QueryResultsWindow } from './components/QueryResultViewer/QueryResultsWindow'
 import './styles/global.css'
+import './labiia/labiia-shell.css'
 import { applyStoredAppearance, installAppearanceListeners } from './utils/apply-theme'
 
 document.addEventListener('dragover', (e) => e.preventDefault())

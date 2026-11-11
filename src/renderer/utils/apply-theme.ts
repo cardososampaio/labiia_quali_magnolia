@@ -15,7 +15,8 @@ import { colourfulInterfaceFromSaved } from './colourful-interface'
 import { normaliseThemeId } from './theme-id'
 
 export async function applyStoredAppearance(): Promise<void> {
-  let theme = 'magnolia'
+  // labiia_quali: the Windows look is the default.
+  let theme = 'windows'
   let hadSavedTheme = false
   let interfaceScale = 1
   let colourful = colourfulInterfaceFromSaved(undefined)
@@ -49,7 +50,7 @@ export async function applyStoredAppearance(): Promise<void> {
       if (window.matchMedia && window.matchMedia('(prefers-contrast: more)').matches) {
         theme = 'high-contrast'
       } else if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
-        theme = 'magnolia-dark'
+        theme = 'windows-dark'
       }
     } catch { /* matchMedia unavailable — keep default */ }
   }

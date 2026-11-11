@@ -15,6 +15,7 @@ import type { IconComponent } from './icons/lucide'
 
 export type { IconComponent }
 export * from './icons/lucide'
+export * from './icons/labiia'
 
 /** Semantic aliases — re-resolve to whichever fa* the active set maps to. */
 /**

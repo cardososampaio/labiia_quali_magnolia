@@ -33,6 +33,7 @@ import { useCallback, useEffect, useLayoutEffect, useRef, useState } from 'react
 import { Icon, faChevronUp, faChevronDown, faChevronsLeft, faChevronsRight, type IconComponent } from '../Icon'
 import { PALETTE_ICON_CLASS } from '../../utils/icon-tint'
 import { useTranslation } from 'react-i18next'
+import { RibbonSplitButton } from '../../labiia/RibbonSplitButton'
 
 export interface RibbonButtonDef {
   id: string
@@ -51,6 +52,26 @@ export interface RibbonButtonDef {
   /** A small dot on the tile, e.g. "a new version is available". */
   badge?: boolean
   iconStyle?: React.CSSProperties
+  /** labiia_quali: the action's family, which colours its tile (sources,
+   *  coding, queries, analyses, lexical analyses…), always the same colour
+   *  in every tab. */
+  family?: RibbonFamily
+  /** labiia_quali: makes a split button, whose label opens these choices,
+   *  loaded each time the list opens. */
+  menu?: () => Promise<RibbonMenuItem[]>
+}
+
+export type RibbonFamily = 'sources' | 'coding' | 'query' | 'analysis' | 'lexical' | 'affect' | 'neutral'
+  | 'codes' | 'results' | 'reports' | 'explore' | 'structure' | 'keywords'
+
+export interface RibbonMenuItem {
+  id: string
+  label: string
+  hint?: string
+  icon?: IconComponent
+  onClick: () => void
+  /** Starts a new section with a line above it. */
+  separated?: boolean
 }
 
 export interface RibbonGroupDef {
@@ -303,6 +324,11 @@ function labelWidthEm(label: HTMLElement): number | null {
 }
 
 function RibbonButton({ def, onDone }: { def: RibbonButtonDef; onDone: () => void }) {
+  if (def.menu) return <RibbonSplitButton def={def} onDone={onDone} />
+  return <RibbonPlainButton def={def} onDone={onDone} />
+}
+
+function RibbonPlainButton({ def, onDone }: { def: RibbonButtonDef; onDone: () => void }) {
   const labelRef = useRef<HTMLSpanElement>(null)
   useLayoutEffect(() => {
     const el = labelRef.current
@@ -317,6 +343,7 @@ function RibbonButton({ def, onDone }: { def: RibbonButtonDef; onDone: () => voi
       type="button"
       className="ribbon-btn"
       data-ribbon-id={def.id}
+      data-family={def.family}
       aria-pressed={def.pressed}
       aria-disabled={def.disabledReason ? true : undefined}
       title={def.disabledReason ?? def.title ?? def.label}
@@ -326,7 +353,7 @@ function RibbonButton({ def, onDone }: { def: RibbonButtonDef; onDone: () => voi
       }}
     >
       <span className="ribbon-tile">
-        {def.glyph ?? (def.icon && <Icon icon={def.icon} className={PALETTE_ICON_CLASS} style={def.iconStyle} />)}
+        {def.glyph ?? (def.icon && <Icon icon={def.icon} className={def.family ? undefined : PALETTE_ICON_CLASS} style={def.iconStyle} />)}
         {def.badge && <span className="ribbon-badge" aria-hidden />}
       </span>
       <span ref={labelRef} className="ribbon-label">{def.label}</span>

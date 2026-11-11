@@ -1,0 +1,109 @@
+/* Lexical analyses tab and R status. Built on the analysis tools' look
+   (.analysis-section cards, small secondary header buttons). */
+
+.lex-tab { height: 100%; display: flex; flex-direction: column; overflow: hidden; }
+
+.lex-header { padding: 14px 20px 6px; flex-shrink: 0; display: flex; align-items: center; gap: 8px; }
+.lex-header h2 { margin: 0; font-size: 18px; font-weight: 600; display: flex; align-items: center; gap: 8px; color: var(--text-secondary); }
+.lex-header-btn { font-size: 11px !important; padding: 4px 14px !important; }
+
+.lex-body { flex: 1; overflow: auto; padding: 8px 20px 24px; }
+.lex-description { margin: 0 0 12px; color: var(--text-muted); font-size: var(--font-size-sm); }
+
+.lex-section { margin-bottom: 14px; }
+.lex-section-toggle { display: flex; align-items: center; gap: 8px; cursor: pointer; user-select: none; }
+.lex-section-title { font-size: var(--font-size-lg); font-weight: 600; color: var(--text-secondary); }
+.lex-section-summary { margin-left: auto; color: var(--text-muted); font-size: var(--font-size-sm); }
+.lex-advanced-title { font-weight: 600; color: var(--text-secondary); font-size: var(--font-size-sm); }
+
+.lex-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 12px 18px; align-items: end; }
+.lex-field { display: flex; flex-direction: column; gap: 4px; font-size: var(--font-size-sm); min-width: 0; }
+.lex-field input[type="number"], .lex-field input[type="text"], .lex-field select { width: 100%; padding: 4px 8px; }
+.lex-field-check { flex-direction: row; align-items: center; gap: 8px; cursor: pointer; padding-bottom: 4px; }
+.lex-label { color: var(--text-secondary); font-weight: 500; }
+
+.lex-reset { margin-top: 14px; font-size: 11px !important; padding: 2px 10px !important; }
+
+.lex-note { display: flex; align-items: center; gap: 6px; margin-top: 10px; color: var(--text-muted); font-size: var(--font-size-sm); }
+.lex-note-error { color: var(--danger, #c0392b); }
+.lex-muted { color: var(--text-muted); font-size: var(--font-size-sm); }
+
+.lex-run-row { display: flex; align-items: center; gap: 12px; margin-top: 4px; }
+.lex-run { min-width: 120px; padding: 6px 22px !important; font-weight: 600; }
+.lex-run-note { color: var(--text-muted); font-size: var(--font-size-sm); }
+
+/* R status */
+.lex-r-panel { display: flex; flex-direction: column; gap: 8px; }
+.lex-r-line { display: flex; align-items: flex-start; gap: 8px; font-size: var(--font-size-sm); }
+.lex-r-line svg { flex-shrink: 0; margin-top: 2px; }
+.lex-r-ok { color: var(--success, #2e7d32); }
+.lex-r-bad { color: var(--warning, #b26a00); }
+.lex-r-actions { display: flex; flex-wrap: wrap; gap: 6px; }
+.lex-small-btn { font-size: 11px !important; padding: 3px 10px !important; align-self: flex-start; }
+
+.lex-install { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; font-size: var(--font-size-sm); }
+.lex-install-line { color: var(--text-secondary); }
+.lex-progress { width: 180px; height: 6px; border-radius: 3px; background: var(--bg-tertiary); overflow: hidden; }
+.lex-progress-bar { height: 100%; background: var(--accent); transition: width 0.2s; }
+
+.lex-r-settings h3 { margin: 0 0 6px; font-size: 15px; }
+.lex-r-settings h4 { margin: 18px 0 8px; font-size: 13px; color: var(--text-secondary); }
+.lex-r-row { display: flex; align-items: center; flex-wrap: wrap; gap: 8px 12px; margin-top: 10px; font-size: var(--font-size-sm); }
+.lex-r-row .lex-label { width: 130px; flex-shrink: 0; }
+.lex-r-row code, .lex-path { font-size: 11px; word-break: break-all; }
+.lex-pkg-grid { display: flex; flex-wrap: wrap; gap: 6px; }
+.lex-pkg { display: inline-flex; align-items: center; gap: 5px; padding: 2px 8px; border-radius: 10px; border: 1px solid var(--border-color); font-size: 11px; color: var(--text-secondary); }
+.lex-pkg.ok { color: var(--success, #2e7d32); }
+.lex-pkg.missing { color: var(--warning, #b26a00); border-color: currentColor; }
+
+/* Run progress (corpus preparation can take minutes). */
+.lex-progress-notice { display: flex; align-items: flex-start; gap: 14px; margin: 12px 0 14px; padding: 14px 16px; border: 1px solid var(--accent); border-radius: var(--radius-md); background: var(--selection-bg); }
+.lex-progress-title { font-weight: 600; margin-bottom: 4px; }
+.lex-progress-line { display: flex; align-items: center; gap: 10px; margin-top: 8px; }
+.lex-spinner { width: 18px; height: 18px; flex-shrink: 0; margin-top: 1px; border-radius: 50%; border: 2px solid var(--border-color); border-top-color: var(--accent); animation: lex-spin 0.9s linear infinite; }
+@keyframes lex-spin { to { transform: rotate(360deg); } }
+
+.lex-run-error { margin-top: 12px; }
+.lex-details { margin-top: 8px; font-size: 11px; }
+.lex-details pre { max-height: 220px; overflow: auto; white-space: pre-wrap; padding: 8px; background: var(--bg-tertiary); border-radius: var(--radius-sm); }
+.lex-note-warn { color: var(--warning, #b26a00); }
+
+/* Result */
+.lex-result { margin-top: 14px; }
+.lex-result-head { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; margin-bottom: 6px; }
+.lex-figures { display: flex; flex-wrap: wrap; gap: 4px 16px; margin: 6px 0 12px; color: var(--text-secondary); font-size: var(--font-size-sm); }
+.lex-figure { margin-top: 8px; }
+.lex-figure-tools { display: flex; align-items: center; gap: 6px; margin-bottom: 6px; }
+/* Fit: the whole figure visible at once. Actual size: full resolution, scrollable. */
+.lex-figure-frame { border: 1px solid var(--border-color); border-radius: var(--radius-sm); background: #fff; text-align: center; }
+.lex-figure-frame img { display: block; margin: 0 auto; max-width: 100%; max-height: 72vh; width: auto; height: auto; }
+.lex-figure-frame.actual { overflow: auto; max-height: 78vh; }
+.lex-figure-frame.actual img { max-width: none; max-height: none; }
+/* Hand tool on a zoomed picture larger than the view. */
+.lex-figure-frame.pannable { cursor: grab; }
+.lex-figure-frame.panning { cursor: grabbing; user-select: none; }
+.lex-figure-frame.pannable img, .lex-figure-frame.pannable svg { -webkit-user-drag: none; user-select: none; }
+.lex-table-block { margin-top: 16px; }
+.lex-table-wrap { max-height: 360px; overflow: auto; border: 1px solid var(--border-color); border-radius: var(--radius-sm); }
+.lex-table { width: 100%; border-collapse: collapse; font-size: var(--font-size-sm); }
+.lex-table th, .lex-table td { padding: 3px 10px; border-bottom: 1px solid var(--border-color); text-align: left; }
+.lex-table th { position: sticky; top: 0; background: var(--bg-panel); font-weight: 600; color: var(--text-secondary); }
+.lex-table td.num { text-align: right; font-variant-numeric: tabular-nums; }
+
+/* Figures drawn by the window (matplotlib-style charts). */
+/* Networks are wide: fit the width and let the page scroll, so labels stay legible. */
+.lex-figure-svg { display: block; margin: 0 auto; width: 100%; height: auto; }
+.lex-figure-frame.actual .lex-figure-svg { width: auto; max-height: none; }
+
+/* "Codes" source: chosen codes as removable chips. */
+.lex-codes-head { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
+.lex-chips { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 10px; }
+.lex-chip { display: inline-flex; align-items: center; gap: 4px; padding: 2px 4px 2px 8px; border: 1px solid var(--border); border-left-width: 4px; border-radius: 4px; font-size: var(--font-size-sm); background: var(--bg-secondary, transparent); }
+.lex-chip-x { border: none; background: none; padding: 0 4px; cursor: pointer; color: var(--text-muted); font-size: 14px; line-height: 1; }
+.lex-chip-x:hover { color: var(--text-primary); }
+/* How many passages a chosen code brings to its text. */
+.lex-chip-count { margin-left: 4px; color: var(--text-muted); font-size: 11px; }
+
+/* Zoom controls of a result picture. */
+.lex-zoom { display: inline-flex; align-items: center; gap: 4px; margin-right: 6px; }
+.lex-zoom-value { min-width: 52px; text-align: center; font-size: var(--font-size-sm); color: var(--text-secondary); font-variant-numeric: tabular-nums; }

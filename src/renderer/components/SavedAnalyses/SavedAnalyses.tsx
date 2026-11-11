@@ -12,6 +12,7 @@ import { makeMapTabId } from '../../utils/tab-ids'
 import { useClampedMenuPosition } from '../../utils/use-clamped-menu-position'
 import { useTranslation } from 'react-i18next'
 import { compareText, formatNumber } from '../../i18n'
+import { LEXICAL_TESTS, lexicalToolType } from '../Lexical/lexical-catalog'
 
 interface Props {
   onOpen: (toolType: AnalysisToolType, savedConfig: any) => void
@@ -39,7 +40,9 @@ const TOOL_ORDER: AnalysisToolType[] = [
   'code-orders',
   'word-frequencies',
   'word-combinations',
-  'relationship-map'
+  'relationship-map',
+  // labiia_quali: saved lexical analyses, in the catalogue's order.
+  ...LEXICAL_TESTS.map((d) => lexicalToolType(d.id))
 ]
 
 export function SavedAnalyses({ onOpen, onClose, onPopOut, isPoppedOut, findMemoGuidForAnalysis, onOpenAnalysisMemo }: Props) {

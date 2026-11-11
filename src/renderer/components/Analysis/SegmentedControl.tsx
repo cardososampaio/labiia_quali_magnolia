@@ -9,6 +9,8 @@ export interface SegmentOption<T extends string> {
   value: T
   label: string
   title?: string
+  /** labiia_quali: an option shown but not available (e.g. a source with nothing to read). */
+  disabled?: boolean
 }
 
 interface Props<T extends string> {
@@ -29,6 +31,7 @@ export function SegmentedControl<T extends string>({ options, value, onChange, l
           aria-checked={o.value === value}
           className={o.value === value ? 'active' : undefined}
           title={o.title}
+          disabled={o.disabled}
           onClick={() => onChange(o.value)}
         >
           {o.label}

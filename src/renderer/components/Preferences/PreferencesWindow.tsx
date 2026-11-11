@@ -17,6 +17,7 @@ import { useTranslation } from 'react-i18next'
 import { LANGUAGE_IDS, normaliseLanguagePreference, resolveLanguage, setLanguagePreference, setDigitsPreference, digitChoices, digitsSample, type LanguagePreference, type DigitsPreference } from '../../i18n'
 import { keyCombo } from '../../utils/keys'
 import { UPDATES_ENABLED } from '../../labiia/config'
+import { RSettingsPanel } from '../Lexical/RStatusPanel'
 
 interface FootPedalMappings {
   playPause: string
@@ -97,12 +98,14 @@ interface ThemeOption {
 }
 
 const THEME_OPTIONS: ThemeOption[] = [
+  { id: 'windows',       labelKey: 'labiia.prefs.themeWindows',     swatch: { bg: '#F3F4F6', surface: '#FFFFFF', accent: '#0F6CBD' } },
+  { id: 'windows-dark',  labelKey: 'labiia.prefs.themeWindowsDark', swatch: { bg: '#1F1F1F', surface: '#2B2B2B', accent: '#4CA3F0' } },
   { id: 'magnolia',      labelKey: 'prefs.theme.magnolia',      swatch: { bg: '#E9EDF3', surface: '#FFFFFF', accent: '#2563EB' } },
   { id: 'magnolia-dark', labelKey: 'prefs.theme.magnoliaDark', swatch: { bg: '#14181E', surface: '#252B35', accent: '#5B8FFF' } },
   { id: 'high-contrast', labelKey: 'prefs.theme.highContrast', swatch: { bg: '#000000', surface: '#ffffff', accent: '#ffff00' } }
 ]
 
-type CategoryId = 'appearance' | 'general' | 'media-playback' | 'paper-size' | 'updates' | 'support'
+type CategoryId = 'appearance' | 'general' | 'media-playback' | 'paper-size' | 'r' | 'updates' | 'support'
 
 interface Category {
   id: CategoryId
@@ -114,6 +117,7 @@ const CATEGORIES: Category[] = [
   { id: 'appearance',     labelKey: 'prefs.cat.appearance' },
   { id: 'media-playback', labelKey: 'prefs.cat.mediaPlayback' },
   { id: 'paper-size',     labelKey: 'prefs.cat.paperSize' },
+  { id: 'r',              labelKey: 'labiia.prefs.r' },
   { id: 'updates',        labelKey: 'prefs.cat.updates' },
   { id: 'support',        labelKey: 'prefs.cat.support' }
 ].filter((c) => UPDATES_ENABLED || c.id !== 'updates') as Category[]
@@ -883,6 +887,7 @@ export function PreferencesWindow({ onClose }: PreferencesWindowProps = {}) {
           {selected.id === 'paper-size' && (
             <PaperSizeSettings prefs={prefs} save={save} />
           )}
+          {selected.id === 'r' && <RSettingsPanel />}
           {selected.id === 'updates' && <UpdatesSettings />}
           {selected.id === 'support' && <SupportSettings />}
         </div>

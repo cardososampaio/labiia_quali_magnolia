@@ -5,6 +5,7 @@ import React from 'react'
 import ReactDOM from 'react-dom/client'
 import { LogbookWindow } from './components/Logbook/LogbookWindow'
 import './styles/global.css'
+import './labiia/labiia-shell.css'
 import { applyStoredAppearance, installAppearanceListeners } from './utils/apply-theme'
 
 // Prevent default drag/drop navigation

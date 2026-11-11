@@ -5,6 +5,7 @@ import React from 'react'
 import ReactDOM from 'react-dom/client'
 import App from './App'
 import './styles/global.css'
+import './labiia/labiia-shell.css'
 import { applyStoredAppearance, installAppearanceListeners } from './utils/apply-theme'
 // Initialize undo system (subscriptions activate on import)
 import './stores/undo-store'
