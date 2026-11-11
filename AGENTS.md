@@ -30,6 +30,8 @@ npm run build               # instalador em <pasta de compilação>/release/bund
 
 **Pasta de compilação.** Nesta máquina, o Rust compila em `C:\Users\cardo\AppData\Local\labiia-quali-build\target`. A configuração está em `.cargo/config.toml`, que não vai para o git. O motivo: a proteção contra ransomware do antivírus impede que o script de compilação do Tauri sobrescreva arquivos dentro da Área de Trabalho.
 
+**Agente rodando dentro do aplicativo Claude.** Tudo o que o agente grava em `AppData` vai para `AppData\Local\Packages\Claude_...\LocalCache`. Por isso o instalador gerado fica lá, e uma instalação feita pelo agente não é real. Copie o instalador para `instalador/` na pasta do projeto, que fica fora do git, e peça à pessoa que instale.
+
 ## Onde fica cada coisa
 
 | Parte | Pasta |
