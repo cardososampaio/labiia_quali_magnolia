@@ -101,6 +101,10 @@ import { t } from './i18n'
 import { isLetterKey } from './utils/keys'
 import { useCodebookImport } from './components/Codebook/CodebookOutlineDialog'
 import { labiiaRibbonTabs } from './labiia/ribbon-tabs'
+import { StartMenu } from './components/Toolbar/StartMenu'
+import { StatusBar } from './components/StatusBar'
+import labiiaIconUrl from './assets/labiia-icon.png'
+import { QuickCoding } from './components/QuickCoding/QuickCoding'
 
 /** Fold the survey-cell scope carried by an analysis cell-click into the
  *  documentFilter of the Query being generated, so it re-runs against the
@@ -2850,6 +2854,20 @@ function App() {
               pointerEvents: 'none'
             }}
           />}
+          {/* labiia_quali: the Start button and menu (new, open, save as,
+              import, merge, recent projects). */}
+          {useRibbonToolbar && (
+            <StartMenu
+              iconUrl={labiiaIconUrl}
+              onNewProject={() => void handleNewProject()}
+              onOpenProject={() => void handleOpenProject()}
+              onSaveProjectAs={() => void handleSaveProjectAs()}
+              onImportSources={() => void handleImportDocument()}
+              onMergeProject={() => void handleMergeProject()}
+              onOpenRecent={(path) => window.api.sendWelcomeAction(`open-recent:${path}`)}
+              importLockedReason={lockedReason}
+            />
+          )}
           {useRibbonToolbar ? (
             // With the ribbon, the Project Details button opens the
             // project's details, so the name is plain text.
@@ -3626,6 +3644,9 @@ function App() {
           }}
         />
       )}
+      {/* labiia_quali: coding without dragging, then save state along the bottom. */}
+      <QuickCoding />
+      <StatusBar />
       {codebookImportDialog}
     </div>
   )

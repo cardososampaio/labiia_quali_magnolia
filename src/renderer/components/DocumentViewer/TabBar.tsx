@@ -10,6 +10,7 @@ import { TOOL_REGISTRY } from '../../utils/tool-registry'
 import { sourceTypeFromFilename } from '../../utils/format-registry'
 import { useIconTint, iconTintKindForSourceType, PALETTE_ICON_CLASS } from '../../utils/icon-tint'
 import { useTranslation } from 'react-i18next'
+import { useTabBarScroll } from '../../labiia/use-tab-bar-scroll'
 
 interface TabBarProps {
   openTabs: string[]
@@ -24,6 +25,8 @@ export function TabBar({ openTabs, activeTab, sources, onSelectTab, onCloseTab, 
   const { t } = useTranslation()
   const [dragOverIdx, setDragOverIdx] = useState<number | null>(null)
   const dragGuidRef = useRef<string | null>(null)
+  // labiia_quali: active tab kept in view, mouse wheel scrolls the tabs.
+  const barRef = useTabBarScroll(activeTab, openTabs.length)
   const maps = useRelationshipMapStore((s) => s.maps)
   const setMapName = useRelationshipMapStore((s) => s.setName)
   // Inline-edit state: which map tab is being renamed, and the draft text.
@@ -201,6 +204,7 @@ export function TabBar({ openTabs, activeTab, sources, onSelectTab, onCloseTab, 
 
   return (
     <div
+      ref={barRef}
       className="tab-bar"
       onDragLeave={(e) => {
         if (!(e.currentTarget as HTMLElement).contains(e.relatedTarget as Node)) {

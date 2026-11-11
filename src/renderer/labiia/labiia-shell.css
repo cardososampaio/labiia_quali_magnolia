@@ -490,3 +490,11 @@ span.color-pip-category {
  * the colourful-icon palette in global.css, which loads after this file. */
 html:root[data-theme="windows"]:not([data-no-theme]) { --icon-folder: #C98A0A; --icon-folder-2: #F5C542; }
 html:root[data-theme="windows-dark"]:not([data-no-theme]) { --icon-folder: #E0A526; --icon-folder-2: #F8D56B; }
+
+/* ---------- Document tabs ---------- */
+/* A thin scrollbar shows that more tabs are hidden when they overflow
+ * (it takes no room when they fit). */
+.tab-bar { overflow-y: hidden; scrollbar-width: thin; }
+.tab-bar::-webkit-scrollbar { display: block; height: 4px; }
+.tab-bar::-webkit-scrollbar-thumb { background: var(--border-color); border-radius: 2px; }
+.tab-bar:hover::-webkit-scrollbar-thumb { background: var(--text-muted); }

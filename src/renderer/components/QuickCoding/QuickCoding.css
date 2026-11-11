@@ -1,0 +1,246 @@
+/* Quick coding: selection bubble, coding bar and code picker. Colours come
+   from the theme variables so every theme (light, dark, high contrast)
+   applies. Stacked below context menus and modal dialogs (z-index 1000). */
+
+/* Shared drop shadow: the same paired edge + lift as .context-menu. */
+.qc-bubble,
+.qc-bar {
+  font-family: var(--font-family);
+  z-index: 900;
+  animation: qc-pop 0.12s ease-out;
+}
+
+@keyframes qc-pop {
+  from { opacity: 0; transform: translateY(4px); }
+  to { opacity: 1; transform: none; }
+}
+
+/* The bubble is a primary button, like "Save Query" in the Query
+   Results pane, with a small secondary close button beside it. */
+.qc-bubble {
+  position: fixed;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.qc-bubble button {
+  font-size: 11px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08), 0 4px 12px rgba(0, 0, 0, 0.10);
+}
+
+.qc-bubble-main {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 3px 10px;
+}
+
+.qc-bubble-close {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 3px 5px;
+  font-size: 10px !important;
+  color: var(--text-muted);
+}
+
+/* The bar is a floating panel strip whose controls match the Query
+   Results toolbar: secondary buttons at 11px with 2px 8px padding. */
+.qc-bar {
+  position: fixed;
+  left: 50%;
+  bottom: 18px;
+  transform: translateX(-50%);
+  max-width: calc(100vw - 32px);
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 6px 8px;
+  background: var(--bg-panel);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-md);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08), 0 4px 12px rgba(0, 0, 0, 0.10);
+  font-size: 11px;
+  color: var(--text-primary);
+}
+
+.qc-position {
+  padding: 0 6px 0 2px;
+  color: var(--text-muted);
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+.qc-input {
+  height: 22px;
+  box-sizing: border-box;
+  padding: 0 8px;
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-sm);
+  background: var(--bg-input);
+  color: var(--text-primary);
+  font-family: inherit;
+  font-size: 11px;
+  outline: none;
+}
+
+.qc-input:focus { border-color: var(--accent); }
+.qc-search { position: relative; margin-right: 2px; }
+.qc-search .qc-input { width: 180px; }
+
+.qc-btn {
+  font-size: 11px;
+  padding: 2px 8px;
+  white-space: nowrap;
+}
+
+.qc-btn.pressed { background: var(--selection-bg); border-color: var(--accent); }
+
+.qc-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  max-width: 150px;
+}
+
+.qc-close {
+  margin-left: 2px;
+}
+
+/* Popups open upward because the bar sits at the bottom of the window. */
+.qc-suggestions,
+.qc-picker {
+  position: absolute;
+  bottom: calc(100% + 8px);
+  left: 0;
+  background: var(--bg-secondary);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-md);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08), 0 8px 24px rgba(0, 0, 0, 0.16);
+  overflow: hidden;
+}
+
+.qc-suggestions {
+  width: 280px;
+  padding: 4px 0;
+}
+
+.qc-suggestion,
+.qc-row-main,
+.qc-new {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+  padding: 6px 12px;
+  border: none;
+  background: none;
+  color: var(--text-primary);
+  font-family: inherit;
+  font-size: var(--font-size-sm);
+  text-align: left;
+  cursor: pointer;
+}
+
+.qc-suggestion.active,
+.qc-row:hover { background: var(--selection-bg); }
+.qc-create { color: var(--accent); }
+
+.qc-swatch { flex-shrink: 0; }
+
+.qc-name {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.qc-path {
+  margin-left: auto;
+  padding-left: 8px;
+  color: var(--text-muted);
+  font-size: 11px;
+  white-space: nowrap;
+}
+
+.qc-picker-anchor { position: relative; }
+
+.qc-picker {
+  width: 330px;
+  display: flex;
+  flex-direction: column;
+  max-height: min(440px, calc(100vh - 120px));
+}
+
+.qc-preview {
+  padding: 10px 12px 4px;
+  color: var(--text-secondary);
+  font-size: 12px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.qc-picker-search {
+  margin: 8px 12px;
+  height: 32px;
+}
+
+.qc-list {
+  flex: 1;
+  min-height: 60px;
+  overflow-y: auto;
+  border-top: 1px solid var(--border-color);
+  padding: 4px 0;
+}
+
+.qc-heading {
+  padding: 8px 12px 4px;
+  color: var(--text-muted);
+  font-size: 10.5px;
+  font-weight: 700;
+  letter-spacing: 0.6px;
+  text-transform: uppercase;
+}
+
+.qc-row {
+  display: flex;
+  align-items: center;
+  padding-right: 6px;
+}
+
+.qc-row-main { flex: 1; min-width: 0; padding-left: 0; }
+.qc-row-main:disabled { color: var(--text-muted); cursor: default; }
+
+.qc-icon {
+  flex-shrink: 0;
+  width: 24px;
+  height: 24px;
+  border: none;
+  border-radius: var(--radius-sm);
+  background: none;
+  color: var(--text-muted);
+  font-size: 13px;
+  cursor: pointer;
+  opacity: 0;
+}
+
+.qc-row:hover .qc-icon,
+.qc-icon:focus-visible { opacity: 1; }
+.qc-icon:hover { background: var(--bg-tertiary); color: var(--accent); }
+.qc-inline { flex: 1; height: 26px; margin: 2px 0; }
+
+.qc-empty {
+  padding: 12px;
+  color: var(--text-muted);
+  font-size: 12px;
+}
+
+.qc-new {
+  border-top: 1px solid var(--border-color);
+  padding: 10px 12px;
+  color: var(--accent);
+  font-weight: 600;
+}
+
+.qc-new:hover { background: var(--selection-bg); }

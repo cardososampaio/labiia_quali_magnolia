@@ -348,7 +348,10 @@ function CodeTreeItem({
         onClick={(e) => onToggleSelect(code.guid, e)}
         onDoubleClick={(e) => {
           e.stopPropagation()
-          onEditMemo(code.guid)
+          // labiia_quali: double-click lists every passage coded with this
+          // code, across all documents, in the Query Results pane, the
+          // quickest way to review a code. Editing stays in the right-click menu.
+          onQueryAllDocs(code.guid)
         }}
         onContextMenu={(e) => {
           e.preventDefault()
@@ -406,8 +409,8 @@ function CodeTreeItem({
           style={{ width: 14, flexShrink: 0, display: 'inline-flex', alignItems: 'center', justifyContent: 'center' }}
         >
           <span
-            className="color-pip"
-            style={{ background: code.color || '#888' }}
+            className={code.children.length > 0 ? 'color-pip color-pip-category' : 'color-pip'}
+            style={{ background: code.color || '#888', ['--pip' as string]: code.color || '#888' }}
           />
         </span>
         {editing ? (

@@ -17,6 +17,8 @@ import { isNotebook, noteData, sortNotes } from '../../utils/notes'
 import { makeNotebookTabId } from '../../utils/tab-ids'
 import { useTranslation } from 'react-i18next'
 import { formatNumber } from '../../i18n'
+import { SourceTypeTile, sourceTileKind } from './SourceTypeTile'
+import { describeImportErrors } from '../../utils/import-errors'
 
 // Prefer the source's declared type (set on import for audio/video/image/
 // pdf). Only fall back to sniffing the filename for sources whose type is
@@ -604,7 +606,8 @@ function DocItem({
           }}
         />
       )}
-      <Icon className={PALETTE_ICON_CLASS} icon={iconForSource(source)} style={{ fontSize: 13, opacity: 0.75, flexShrink: 0, width: 16, textAlign: 'center', color: 'var(--text-muted)', ...tint(iconTintKindForSourceType(resolvedSourceType(source))) }} />
+      {/* labiia_quali: a coloured tile per kind of source. */}
+      <SourceTypeTile kind={sourceTileKind(source.name, resolvedSourceType(source))} icon={iconForSource(source)} />
       <div style={{ flex: 1, minWidth: 0 }}>
         {editing ? (
           <input
@@ -952,7 +955,7 @@ function SurveyItem({
         {/* No chevron on the survey root — surveys are always
             expanded, so the survey icon aligns with peer DocItems
             at the same depth. */}
-        <Icon className={PALETTE_ICON_CLASS} icon={SURVEY_ICON} style={{ fontSize: 14, opacity: 0.85, flexShrink: 0, width: 16, color: 'var(--text-muted)', ...tint('survey') }} />
+        <SourceTypeTile kind="survey" icon={SURVEY_ICON} />
         <div style={{ flex: 1, minWidth: 0 }}>
           {editing ? (
             <input
@@ -2607,7 +2610,7 @@ export function DocumentBrowser({ onImport, onSurveyImport, showManageDocTags, o
       }
     }
     if (errors.length > 0) {
-      window.alert(t('documents.importFailed', { count: errors.length, errors: errors.join('\n') }))
+      window.alert(t('documents.importFailed', { count: errors.length, errors: describeImportErrors(errors) }))
     }
   }, [addSource, onSurveyImport])
 
@@ -2655,6 +2658,19 @@ export function DocumentBrowser({ onImport, onSurveyImport, showManageDocTags, o
             <Icon icon={docSearchOpen ? faXmark : faMagnifyingGlass} />
           </button>
         )}
+        {/* labiia_quali: import sources from the panel's header. */}
+        <button
+          className="panel-header-add"
+          onClick={() => {
+            if (lockedBy) { promptCheckoutLocked(); return }
+            onImport()
+          }}
+          title={lockedBy ? checkoutLockedTitle(lockedBy) : t('toolbar.importTitle')}
+          aria-label={t('toolbar.importTitle')}
+          style={lockedBy ? { opacity: 0.4 } : undefined}
+        >
+          <Icon icon={faPlus} />
+        </button>
         <button
           className="panel-header-add"
           onClick={() => {

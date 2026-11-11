@@ -2124,6 +2124,68 @@
       "smaller": "Smaller",
       "smallerTitle": "Make the interface smaller",
       "manualTitle": "Open the labiia_quali user manual in your browser."
+    },
+    "start": {
+      "newProject": "New project",
+      "startAnEmptyProject": "Start an empty project",
+      "openProject": "Open project…",
+      "openAQdpxFile": "Open a .qdpx file",
+      "saveAs": "Save as…",
+      "saveACopyUnderAnother": "Save a copy under another name",
+      "importSources": "Import sources…",
+      "textsPdfsImagesAudioVideo": "Texts, PDFs, images, audio, video and surveys",
+      "mergeProjects": "Merge projects…",
+      "bringAnotherCopySWork": "Bring another copy's work into this project",
+      "startAltHome": "Start (Alt+Home)",
+      "start": "Start",
+      "recentProjects": "Recent projects",
+      "projectsYouOpenAppearHere": "Projects you open appear here."
+    },
+    "status": {
+      "notSavedYet": "Not saved yet",
+      "edited": "Edited",
+      "saved": "Saved",
+      "source_one": "{{count}} source",
+      "source_other": "{{count}} sources",
+      "code_one": "{{count}} code",
+      "code_other": "{{count}} codes"
+    },
+    "sourceTile": {},
+    "quickCoding": {
+      "applyCode": "Apply code",
+      "close": "Close",
+      "codingBar": "Coding bar",
+      "positionOfTheSelection": "Position of the selection",
+      "searchCode": "Search code",
+      "createCode": "+ Create code “{{name}}”",
+      "codeIn": "Code in…",
+      "applyAgain": "Apply “{{name}}” again",
+      "noCodeAppliedYet": "No code applied yet",
+      "last": "Last",
+      "createANewCodeAnd": "Create a new code and apply it to the selection",
+      "new": "New",
+      "createACodeNamedAnd": "Create a code named “{{name}}” and apply it",
+      "newInVivo": "New in vivo",
+      "apply": "Apply “{{name}}”",
+      "closeCodingBar": "Close coding bar",
+      "codeName": "Code name",
+      "thisCodeIsACategory": "This code is a category and cannot be applied",
+      "rename": "Rename",
+      "rename2": "Rename “{{name}}”",
+      "newSubcode": "New subcode",
+      "newSubcodeOf": "New subcode of “{{name}}”",
+      "subcodeName": "Subcode name",
+      "codes": "Codes",
+      "searchCode2": "search code...",
+      "recent": "Recent",
+      "allCodes": "All codes",
+      "noCodesYet": "No codes yet.",
+      "noCodeMatchesThisSearch": "No code matches this search.",
+      "createNewCode": "+ Create new code"
+    },
+    "importErrors": {
+      "accessDeniedByWindows": "access denied by Windows",
+      "windowsDidNotLetLabiia": "Windows did not let labiia_quali open these files. This is usually an antivirus protecting documents in folders such as the Desktop or Documents (in Avast: Protection → Sensitive Data Shield or Ransomware Shield). Allow labiia_quali in the antivirus, or copy the files to another folder, and import again."
     }
   }
 }
