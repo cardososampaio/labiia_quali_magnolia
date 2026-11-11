@@ -306,6 +306,10 @@ pub fn open_main(app: &AppHandle) -> Option<WebviewWindow> {
     let handle = app.clone();
     w.on_window_event(move |e| match e {
         WindowEvent::CloseRequested { api, .. } => {
+            // labiia_quali: ask before closing; closing ends the program.
+            if crate::labiia::close::intercept(&handle, MAIN, api) {
+                return;
+            }
             let mut ui = state(&handle).ui.lock().unwrap();
             if ui.flush_pending {
                 return;

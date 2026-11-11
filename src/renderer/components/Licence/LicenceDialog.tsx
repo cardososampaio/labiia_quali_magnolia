@@ -1,5 +1,6 @@
 import { Trans, useTranslation } from 'react-i18next'
 import { Icon, faUpRightFromSquare } from '../Icon'
+import { LabiiaCredits } from '../../labiia/LabiiaCredits'
 
 interface Props {
   open: boolean
@@ -127,6 +128,9 @@ export function LicenceDialog({ open, onClose }: Props) {
           >
             {t('licence.viewAttributions')} <Icon icon={faUpRightFromSquare} style={{ fontSize: 10 }} />
           </button>
+
+          {/* labiia_quali: lexical analyses, their resources and R. */}
+          <LabiiaCredits />
         </div>
 
         <div className="modal-actions" style={{ marginTop: 12 }}>

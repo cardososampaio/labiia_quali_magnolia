@@ -1017,6 +1017,12 @@ pub async fn welcome_action(
                 .opener()
                 .open_url("https://github.com/sponsors/caledavis", None::<&str>);
         }
+        // labiia_quali: the welcome window's credit to this version's author.
+        "author" => {
+            let _ = app
+                .opener()
+                .open_url("https://www.linkedin.com/in/rafael-cardoso-sampaio-4a8b3822/", None::<&str>);
+        }
         "new-project" => {
             if let Some((file_path, project_name)) = new_project_file(&app, &window)? {
                 storage::track_recent_project(&project_name, &file_path);

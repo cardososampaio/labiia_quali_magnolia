@@ -5,6 +5,7 @@
 //! Kept in a module of its own so a new Magnolia release merges with few
 //! conflicts: Magnolia's files only call into here.
 
+pub mod close;
 pub mod codebook;
 pub mod helper;
 pub mod lexical;

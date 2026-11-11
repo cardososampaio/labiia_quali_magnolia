@@ -5,8 +5,7 @@ import { useTranslation } from 'react-i18next'
 // Welcome background lives in graphic_files/ alongside the icon sources so
 // all app artwork is in one place. Replace that one file (1440×1040 ideal)
 // to change the welcome image.
-import welcomeBgUrl from '../../../../graphic_files/welcome-bg.png'
-import magnoliaUrl from '../../assets/magnoliaqda-welcome.svg'
+import { WelcomeArt } from './WelcomeArt'
 
 export function WelcomeScreen() {
   const { t } = useTranslation()
@@ -30,9 +29,6 @@ export function WelcomeScreen() {
       width: '100vw',
       display: 'grid',
       gridTemplateColumns: '1fr 1fr',
-      backgroundImage: `url("${welcomeBgUrl}")`,
-      backgroundSize: 'cover',
-      backgroundPosition: 'center',
       fontFamily: 'var(--font-family)',
       color: 'var(--text-primary)',
       userSelect: 'none'
@@ -42,7 +38,7 @@ export function WelcomeScreen() {
         // No bottom padding: the sponsor link's flex:1 region extends to the
         // true window bottom so it centres between the buttons and that edge.
         padding: '40px 48px 0',
-        boxShadow: '16px 0 60px rgba(0,0,0,0.18), 4px 0 16px rgba(0,0,0,0.10)',
+        borderInlineEnd: '1px solid var(--border-color)',
         height: '100vh',
         display: 'flex',
         flexDirection: 'column',
@@ -59,26 +55,14 @@ export function WelcomeScreen() {
             shorter magnolia.svg variant. Both take their colour from
             --text-secondary so the brand reads consistently across
             surfaces. */}
-        <div style={{ textAlign: 'center', marginBottom: 28 }}>
-          <div
-            aria-label="Magnolia"
-            style={{
-              display: 'inline-block',
-              width: 240,
-              height: 45,
-              // Same hue as the toolbar wordmark (--text-secondary) so
-              // the brand reads consistently across welcome and main app.
-              background: 'var(--text-secondary)',
-              WebkitMaskImage: `url("${magnoliaUrl}")`,
-              maskImage: `url("${magnoliaUrl}")`,
-              WebkitMaskRepeat: 'no-repeat',
-              maskRepeat: 'no-repeat',
-              WebkitMaskSize: 'contain',
-              maskSize: 'contain',
-              WebkitMaskPosition: 'center',
-              maskPosition: 'center'
-            }}
-          />
+        {/* labiia_quali: the wordmark is set in text; Magnolia's logo
+            belongs to the original project. */}
+        <div style={{ textAlign: 'center', marginBottom: 28, color: 'var(--text-secondary)' }}>
+          {/* i18n-ignore: the program's name */}
+          <div style={{ fontSize: 30, fontWeight: 700, letterSpacing: '-0.5px', lineHeight: 1.1 }}>labiia_quali</div>
+          <div style={{ fontSize: 10.5, fontWeight: 600, letterSpacing: '1.4px', textTransform: 'uppercase', marginTop: 4 }}>
+            {t('labiia.welcome.tagline')}
+          </div>
         </div>
 
         <div style={{ marginBottom: 20 }}>
@@ -200,14 +184,27 @@ export function WelcomeScreen() {
             onMouseLeave={(e) => (e.currentTarget.style.color = 'var(--text-secondary)')}
           >
             <span aria-hidden>♥</span>
-            {t('welcome.sponsor')}
+            {t('labiia.welcome.basedOnMagnolia')}
           </span>
           <span style={{ fontSize: 11.5, color: 'var(--text-secondary)', textAlign: 'center' }}>
-            {t('welcome.ownRisk')}
+            {t('labiia.welcome.developedBy')}{' '}
+            <a
+              href="https://www.linkedin.com/in/rafael-cardoso-sampaio-4a8b3822/"
+              onClick={(e) => { e.preventDefault(); window.api.sendWelcomeAction('author') }}
+              style={{ color: 'var(--accent)', textDecoration: 'underline', cursor: 'pointer' }}
+            >
+              {/* i18n-ignore: a person's name */}
+              Rafael Sampaio
+            </a>
+            {/* i18n-ignore: a university's acronym */}
+            {' '}(UFPE)
+          </span>
+          <span style={{ fontSize: 11.5, color: 'var(--text-secondary)', textAlign: 'center' }}>
+            {t('labiia.welcome.programmedWithClaude')}
           </span>
         </div>
       </div>
-      <div />
+      <WelcomeArt />
 
       {/* App version — bottom-right corner, over the welcome artwork.
           White with a soft shadow so it stays legible on any image. */}
@@ -217,8 +214,7 @@ export function WelcomeScreen() {
         insetInlineEnd: 14,
         fontSize: 11,
         fontWeight: 500,
-        color: 'rgba(255, 255, 255, 0.9)',
-        textShadow: '0 1px 3px rgba(0, 0, 0, 0.55)',
+        color: 'var(--text-muted)',
         letterSpacing: 0.2,
         pointerEvents: 'none'
       }}>
