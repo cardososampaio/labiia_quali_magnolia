@@ -1,154 +1,207 @@
-<p align="center">
-  <img src="magnoliaicon.png" alt="Magnolia" width="160">
-</p>
+# labiia_quali
 
-# Magnolia: Free and powerful qualitative data analysis software
+Software livre de análise de dados qualitativos (QDA) para pesquisadores
+brasileiros, construído sobre o [Magnolia](https://github.com/caledavis/Magnolia),
+de Cale Davis. O README original do Magnolia, com a descrição completa dos
+recursos herdados, está em [README.magnolia.md](README.magnolia.md).
 
-**Official website:** [www.caledavis.eu/magnolia.html](https://www.caledavis.eu/magnolia.html)
+## O que muda em relação ao Magnolia
 
-**Download the latest version:**
+- **Interface em português brasileiro**, com opção de inglês em
+  Preferências → Geral → Idioma, e os termos Características e Atributos no
+  lugar de Etiquetas e Categorias.
+- **Contagem de palavras em português**: vem do Magnolia 2.1, que lê
+  palavras acentuadas inteiras e traz uma lista de palavras vazias em
+  português, editável na ferramenta Frequência de palavras. Números e datas
+  seguem o formato da região do computador.
+- **Codificação sem arrastar**: ao selecionar um trecho (texto, área de PDF ou
+  imagem, linhas da transcrição de vídeo, respostas de questionário) aparece o
+  balão "aplicar código". Ele abre a barra de codificação com a posição da
+  seleção, busca de código, "Codificar em" (janela com todos os códigos),
+  "Último", "Novo in vivo" e atalhos para os códigos usados recentemente.
+  Arrastar códigos, arrastar a seleção até um código e os atalhos continuam
+  funcionando.
+- **Seleção manual em vez de arrastar**: o botão "Selecionar manualmente…"
+  escolhe itens numa lista na Consulta, no seletor de documentos, em "Agrupar
+  por", na Matriz de síntese, em Relatórios e no Mapa de relações.
+- **Visual Windows**: faixa de opções com cores por família de ação, botão
+  Iniciar, barra de status e tema Windows claro ou escuro.
+- **Fechar pergunta antes**: fechar a janela do projeto pergunta se deve
+  encerrar o programa; o projeto é salvo automaticamente.
+- **Atualização automática desligada**: o atualizador herdado instalaria
+  versões do Magnolia por cima do labiia_quali. Ele volta a ser ligado quando
+  o labiia_quali tiver um canal de lançamentos próprio.
 
-- [macOS — Apple Silicon](https://github.com/caledavis/Magnolia/releases/latest/download/Magnolia-mac-arm64.dmg)
-- [macOS — Intel](https://github.com/caledavis/Magnolia/releases/latest/download/Magnolia-mac-x64.dmg)
-- [Windows](https://github.com/caledavis/Magnolia/releases/latest/download/Magnolia-win-x64.exe) (installs for your user account — no admin rights needed, so it works on managed or work computers)
-- [Linux — AppImage](https://github.com/caledavis/Magnolia/releases/latest/download/Magnolia-linux-x86_64.AppImage) (see [Troubleshooting](#troubleshooting) if it fails to launch)
-- [Linux — .deb](https://github.com/caledavis/Magnolia/releases/latest/download/Magnolia-linux-amd64.deb) (Debian/Ubuntu)
-- [Linux — .rpm](https://github.com/caledavis/Magnolia/releases/latest/download/Magnolia-linux-x86_64.rpm) (Fedora/openSUSE/RHEL)
+## Análises léxicas
 
-Magnolia is free and open-source qualitative data analysis software released under the European Union Public Licence (EUPL).
+O ícone **Análises léxicas** da barra reúne doze testes vindos do
+[labiia_lex](https://github.com/cardososampaio/labiia_lex): Nuvem de palavras,
+CHD (método Reinert), Análise de similitude, Emoções, Associações de
+palavras-chave, Tópicos LDA, Mapa temático, YAKE, Sentimento, Word Tree,
+Bigramas e Trigramas. Cada teste abre numa aba com o seletor de documentos, o
+idioma do corpus (português, inglês ou espanhol) e os parâmetros do labiia_lex,
+com os mesmos padrões. Os resultados (imagens, tabelas e resumo) podem ser
+exportados em PNG, SVG e CSV e ficam guardados dentro do arquivo do projeto.
 
-<p align="center">
-  <img src="screenshot-interface.webp" alt="The Magnolia interface, with a coded interview open" width="49%">
-  <img src="screenshot-codedpdf.webp" alt="A coded PDF in Magnolia" width="49%">
-</p>
+**Como funciona**
 
-It is designed to be powerful, while also intuitive.
+- **Preparação do corpus** (TypeScript, num processo de fundo): cada
+  documento é um texto, cortado em segmentos de cerca de 40 palavras, e as
+  palavras são lematizadas com os dicionários do IRaMuTeQ. Todos os testes
+  usam os mesmos segmentos e as mesmas palavras do labiia_lex, para que o
+  mesmo corpus dê os mesmos resultados: só contam para os 40 as palavras que
+  o labiia_lex mantém (fora da lista Snowball; palavras com pontuação
+  interna, como "1.1" ou "o.com", contam inteiras); os documentos são lidos
+  em ordem alfabética de nome (a CHD, o LDA e o Mapa temático mudam conforme a
+  ordem, e assim o resultado não depende da ordem de importação); e uma linha
+  que começa com `****` ou `-*` é tratada como cabeçalho do formato do
+  IRaMuTeQ: fica de fora e o corte recomeça depois dela. As stopwords
+  apagadas pelo labiia_lex ficam no texto dos segmentos mostrados, para que
+  continuem legíveis, mas os testes não as leem. O corpus preparado vai para um cache em disco:
+  a segunda execução com os mesmos documentos começa direto.
+- **Motores R**: Nuvem, Similitude, Emoções, LDA e CHD usam os mesmos scripts
+  R do labiia_lex e do IRaMuTeQ. O R (4.0 ou mais recente) precisa estar
+  instalado; os pacotes que faltam são instalados, com confirmação, numa pasta
+  própria do labiia_quali (`%LOCALAPPDATA%\labiia_quali\R\library`).
+- **Demais cálculos e gráficos** são feitos em TypeScript, reproduzindo os
+  algoritmos e o desenho (matplotlib) do labiia_lex.
 
-Most existing qualitative data analysis software suffers from one of two problems. It is either:
-- prohibitively expensive for many researchers and requires a subscription (costing upwards of 240 EUR per year!); or, 
-- lacking the tools researchers need to analyse the data in the way they want.
+Conferido no corpus "Grupos focais - politica" do labiia_lex: Nuvem (imagem
+idêntica pixel a pixel), Bigramas, Trigramas, Word Tree, Associações, CHD e
+Mapa temático dão os mesmos números do labiia_lex.
 
-Magnolia aims to address both of these problems. The principles of open science are not advanced if the tools people need to research are available only to those who can afford them.
+**Diferenças em relação ao labiia_lex**, escolhidas para corrigir erros:
 
-Hopefully, Magnolia will allow you to regain some digital sovereignty over your research!
+- Quebras de linha escritas como "\n" no texto não viram palavras falsas
+  ("neu", "nolha").
+- Os documentos aparecem com o nome, não como "Doc_0", "Doc_1".
+- YAKE conta as ocorrências reais de cada expressão e lê cada segmento como
+  uma frase (o labiia_lex lhe entrega o corpus como uma frase só, e as notas
+  empatam).
+- Similitude escolhe as palavras pela frequência do lema (o labiia_lex usava
+  a frequência da forma escrita igual ao lema e perdia verbos frequentes,
+  como "achar").
+- Sentimento e Emoções também leem as palavras que o labiia_lex apaga antes
+  dos testes ("mesmo", "são").
+- Uma linha `****` dentro de um documento não o divide em dois documentos no
+  LDA e no Mapa temático.
+- O dendrograma com palavras da CHD usa a árvore que a CHD construiu.
+- Os segmentos típicos da CHD são encontrados pelos lemas.
+- A classificação dupla da CHD segue o método do IRaMuTeQ.
+- Similitude, CHD e as AFCs usam semente fixa: o mesmo corpus dá sempre a
+  mesma figura.
 
-## Licence
+**Desempenho medido** com um corpus de cerca de 1 milhão de palavras:
+preparação em 1,5 a 3 segundos, leitura do cache em menos de 0,1 segundo e a
+maioria dos testes em menos de 2 segundos (YAKE em 5 a 12 segundos, conforme a
+carga do computador; os testes em R dependem do R). Pico de memória de cerca
+de 350 MB.
 
-Magnolia is free and released under the European Union Public Licence. This means that everyone is free to use Magnolia, reproduce it, change it, and make their changes available to others (among other things). Importantly, if Magnolia or a derivative of it is distributed, it must also be done under the EUPL licence and the source code must be made freely available.
+**Variáveis dos documentos**: cada característica de um documento vira uma
+variável no formato do IRaMuTeQ (`*atributo_valor`, ou `*caracteristica_nome`
+para características sem atributo), assim como a pasta (`*pasta_nome`). A CHD
+mostra as variáveis mais associadas a cada classe (tabela "Variáveis por
+classe" e AFC das variáveis). Uma característica num atributo do tipo **data**
+dá a data do
+documento (dd/mm/aaaa, mm/aaaa, aaaa ou aaaa-mm-dd); com datas, o Sentimento e
+o LDA ganham a linha do tempo. Documentos sem data ficam fora das linhas do
+tempo.
 
-This ensures that Magnolia remains free for everyone, and disincentivises companies from profiting off it.
+**Origem "Códigos"**: em vez dos documentos inteiros, os testes podem rodar
+sobre os trechos codificados. Escolha os códigos (com ou sem subcódigos) e cada
+trecho codificado dos documentos selecionados vira um texto, que herda as
+variáveis e a data do seu documento e ganha a variável `*codigo_nome`. Um mesmo
+trecho codificado com vários códigos entra uma vez só, com todas as variáveis
+de código. Na CHD, os trechos continuam agrupados pelo documento de origem.
+Trechos sem texto (áreas de imagem ou de PDF) ficam de fora, com aviso.
 
-## Powerful coding, powerful queries
+Os créditos dos dicionários, léxicos e scripts incluídos estão em
+[resources/lexical/README.md](resources/lexical/README.md).
 
-<p align="center">
-  <img src="screenshot-queryresults.webp" alt="Query results in Magnolia, listing the matching passages in each document" width="100%">
-</p>
+## Importar livro de códigos
 
-Magnolia's intuitive, graphical query builder lets you build powerful queries to explore your data.
+Em Livro de códigos → **Importar livro de códigos** entram arquivos REFI-QDA
+(`.qdc`) e livros de códigos escritos em Word (`.docx` e `.doc`), OpenDocument
+(`.odt`), RTF (`.rtf`) e Markdown (`.md`). Categorias são os códigos pais;
+códigos são os filhos, netos e assim por diante. Num documento, o programa
+reconhece três jeitos de escrever, um por documento:
 
-You can save your queries for later, and see the results update in real-time—even while coding data.
+- **Títulos do Word**: Título 1 é categoria, Título 2 é código, Título 3 é
+  subcódigo (em Markdown, `#`, `##`, `###`);
+- **Negrito e número**: uma linha inteira em negrito que começa com número
+  ("1. Nível de reflexão") é categoria; as linhas numeradas sem negrito
+  ("0. nenhuma", "1. opinião") são os códigos dela;
+- **Numeração**: "1." é categoria, "1.1" é código, "1.1.1" é subcódigo, ou o
+  nível de uma lista numerada.
 
-You can selectively apply queries to specific documents, types of documents, documents in specific folders, and/or documents with specific tags. 
+O texto logo abaixo de um item vira a descrição dele; o que vem antes da
+primeira categoria é tratado como introdução e fica de fora, e um título único
+no topo é o nome do livro. O jeito que melhor explica o documento é escolhido
+sozinho, e nada entra no projeto antes da prévia: nela dá para trocar o jeito
+de leitura, desmarcar linhas, subir ou descer um item de nível e manter ou
+tirar os números dos nomes. O `.doc` é convertido antes pelo Word ou, sem ele,
+pelo LibreOffice; sem nenhum dos dois, o programa pede para salvá-lo como
+`.docx`. Tabelas dentro do documento não são lidas.
 
-## A rich suite of analysis tools
+## Base técnica
 
-<p align="center">
-  <img src="screenshot-codecooccurrences.webp" alt="A code co-occurrence grid in Magnolia" width="750">
-</p>
+Desde a versão 0.2.0 o labiia_quali roda sobre a base do Magnolia 2.1:
+Tauri, com o núcleo escrito em Rust, e a interface em React. O motor das
+análises léxicas continua em TypeScript, sem mudança de lógica, e roda num
+programa auxiliar Node embutido no instalador, que chama o R. Os projetos
+da versão 0.1 abrem na 0.2.0 com tudo, inclusive os resultados léxicos
+salvos, e o contrário também vale.
 
-Magnolia's rich suite of analytical tools allow you to interrogate your data. You can selectively apply these tools to specific documents, types of documents, documents in specific folders, and/or documents with specific tags.  
+## Como rodar em desenvolvimento
 
-- **Relationships:** Map anything and everything. Just drag it to the canvas! Everything on your canvas is interactive; just double-click and you will be taken there. You can even export your map as an SVG file.
+Requisitos: Windows 10 ou 11, Node.js 24 ou mais novo, Rust (rustup, MSVC) e,
+para as cinco análises que usam R, o R 4.5 ou mais novo.
 
-- **Codes in Documents:** Easily see which codes exist in which documents.
-
-- **Framework Matrix:** Summarise coded information in a Framework Matrix, 
-
-- **Results in Documents:** Want to see how different queries produce different results? Easily see how many results different queries produce for each document in your project. 
-
-- **Code Co-Occurrences:** See which codes overlap with each other. 
-
-- **Code Orders:** Explore the order codes appear in your data. 
-
-- **Code Frequencies:** Easily see how much of each document is covered by particular codes.
-
-- **Word Frequencies:** See which words appear how often, in whole documents or only in the passages coded with particular codes. See the data displayed as a chart or a word cloud.
-
-- **Word Combinations:** See which words go together: phrases that repeat, the words that tend to appear in the same sentences as a word you choose, and a word tree of everything that comes before and after it.
-
-- **Reports:** Combine analysis results, documents, queries, and more into a PDF report.
-
-## Easily transcribe audio and video
-
-Transcribing audio and video makes it much easier to code.
-
-Magnolia lets you transcribe audio and video. Naturally, you can do this with a foot pedal. Simply map keys to your foot pedal's buttons and then tell Magnolia that those keys are used to play, fast-forward, and rewind. Easy! There's no need for separate software.
-
-Magnolia does not include AI transcription.
-
-<p align="center">
-  <img src="screenshot-transcript.webp" alt="An audio transcript being coded in Magnolia" width="750">
-</p>
-
-## Intuitive video coding
-
-Qualitative researchers know that videos capture more than just words. The picture is also important! Because of this, Magnolia syncs your video codes to timestamps. 
-
-This means that when you code a transcript, your codes also appear in the video timeline. If you code in the video timeline, your codes also appear in the transcript. The transcript and the video are linked!
-
-## Support for survey data
-
-<p align="center">
-  <img src="screenshot-surveys.webp" alt="The survey summary page in Magnolia" width="750">
-</p>
-
-Other QDA software breaks your survey responses into individual documents. Magnolia doesn't!
-
-Magnolia's survey summary page allows you to easily see the results of your survey at a glance. See which percentage of respondents answered each question, or selected which options. Numerical data is presented as box plots (with the number of respondents, the mean, median, and mode). Go deeper into each respondent's answers, or compare how different respondents answered a question. 
-
-You can also export a report with all your survey data.
-
-## Native QDPX support
-
-Magnolia reads and writes the QDPX format as standard. This is the open standard for qualitative data analysis. Other software defaults to proprietary formats. Magnolia does not!
-
-Of course, there are some features in Magnolia which the QDPX format does not support. Magnolia overcomes this problem by including the Magnolia-specific features in a special part of the QDPX file. This means that other software (such as Atlas.ti and MAXQDA) can open Magnolia files without any problem, and will just ignore the Magnolia-specific features. 
-
-## Supported document types
-
-- Text: .txt, .md, .markdown, .pdf, .docx, .rtf, .odt (Magnolia converts .docx, .rtf, and .odt files to .pdf when they are imported)
-- Images: .jpg, .jpeg, .png, .gif, .webp, .tif, .tiff, .heic, .heif 
-- Audio: .wav, .mp3, .ogg, .flac, .m4a, .aac
-- Video: .mp4, .mov, .avi
-- Surveys: .csv, .xlsx
-
-## No AI, no cloud, no subscription
-
-Magnolia does not contain any AI features. There's no AI analysis, and no AI transcription. You are the researcher!
-
-There's no cloud, so you can save your data where you want: locally, or on a network drive (multiple simultaneous users are not yet supported).
-
-There is nothing in Magnolia which requires a subscription. 
-
-## Troubleshooting
-
-### Linux AppImage fails with "error loading libfuse.so.2"
-
-AppImages need **libfuse2** to mount themselves at launch. Several recent
-distros (Fedora 41+, Ubuntu 24.04+, and others) no longer ship it by default,
-so the AppImage fails immediately with:
-
+```bash
+npm ci
+npm run prepare:helper   # Node do ajudante (versão fixa, conferida) e empacotamento
+npm run dev
 ```
-dlopen(): error loading libfuse.so.2
-AppImages require FUSE to run.
+
+Testes: `npm run typecheck`, `npx vitest run` e `cargo test --workspace`.
+Detalhes para quem programa em [AGENTS.md](AGENTS.md).
+
+## Gerar o instalador do Windows
+
+```bash
+npm run build
 ```
 
-Two ways to fix it:
+Gera `target/release/bundle/nsis/labiia_quali_<versão>_x64-setup.exe`, o
+assistente em português. Depois de copiar os arquivos, ele procura o R e
+pergunta se deve instalar o que falta: os pacotes, se encontrar um R 4.5 ou
+mais novo, ou o R 4.6.1 do CRAN (conferido por SHA-256, só para o usuário,
+sem senha de administrador) e os pacotes, se não encontrar. O programa
+funciona sem o R; as análises que precisam dele avisam.
 
-- **Use the .deb or .rpm package instead** — they install their own
-  dependencies automatically and don't need FUSE. See the download links
-  above.
-- **Or install libfuse2** and keep using the AppImage:
-  - Fedora/RHEL: `sudo dnf install fuse-libs`
-  - Ubuntu/Debian: `sudo apt install libfuse2`
-  - Arch: `sudo pacman -S fuse2`
+Para instalar sem telas: `labiia_quali_<versão>_x64-setup.exe /S /R=packages`
+(ou `/R=install-r`, `/R=skip`).
+
+## Traduções
+
+A interface usa o sistema de tradução do Magnolia: cada texto tem uma chave
+(`t('labiia.lexical.run')`) e as traduções ficam em
+`src/renderer/locales/pt-BR.json` e `en.json`. Os termos do labiia_quali
+(Características e Atributos no lugar de Etiquetas e Categorias, e o nome
+do programa) ficam numa sobreposição própria, em `src/renderer/locales/labiia/`,
+para que as versões novas do Magnolia entrem sem conflito.
+
+## Licença
+
+O Magnolia é distribuído sob a [EUPL-1.2](LICENSE). Por ser uma obra derivada,
+o labiia_quali deve ser distribuído sob a EUPL-1.2 ou uma das licenças
+compatíveis listadas no anexo da EUPL, com o código-fonte disponível e
+mantendo os avisos de autoria e licença do Magnolia. A escolha final da
+licença de lançamento ainda está em aberto. As análises léxicas vêm do
+labiia_lex (GPL-3.0 ou posterior) e incluem obras com licenças próprias
+(scripts e dicionários do IRaMuTeQ sob GPL, YAKE sob LGPL-3.0, OpLexicon),
+listadas em [resources/lexical/README.md](resources/lexical/README.md). O
+léxico de emoções NRC, usado pelo pacote R syuzhet no teste Emoções, é livre
+para pesquisa e ensino; o uso comercial exige licença do National Research
+Council Canada. O R e os pacotes do CRAN não vão dentro do programa e têm
+cada um a sua licença (a lista está em Ajuda → Licença).

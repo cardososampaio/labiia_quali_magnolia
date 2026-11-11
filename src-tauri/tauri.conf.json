@@ -6,7 +6,7 @@
   "build": {
     "beforeDevCommand": "npm run prepare:helper && npm run dev:web",
     "devUrl": "http://localhost:5173",
-    "beforeBuildCommand": "npm run prepare:helper && npm run build:web",
+    "beforeBuildCommand": "node scripts/write-r-packages.mjs && npm run prepare:helper && npm run build:web",
     "frontendDist": "../out/renderer"
   },
   "app": {
@@ -37,7 +37,8 @@
       "../LICENSE": "LICENSE",
       "../THIRD-PARTY-LICENSES.txt": "THIRD-PARTY-LICENSES.txt",
       "../helper/dist/": "helper/",
-      "../resources/lexical/": "lexical/"
+      "../resources/lexical/": "lexical/",
+      "../build/installer/": "installer/"
     },
     "fileAssociations": [
       {
@@ -61,12 +62,21 @@
     ],
     "windows": {
       "nsis": {
-        "installMode": "currentUser"
+        "installMode": "currentUser",
+        "languages": [
+          "PortugueseBR"
+        ],
+        "installerHooks": "windows/hooks.nsh",
+        "sidebarImage": "../build/installerSidebar.bmp",
+        "installerIcon": "icons/icon.ico",
+        "startMenuFolder": "labiia_quali"
       }
     },
     "externalBin": [
       "binaries/labiia-node"
-    ]
+    ],
+    "licenseFile": "../build/license.txt",
+    "publisher": "labiia_quali"
   },
   "plugins": {
     "updater": {

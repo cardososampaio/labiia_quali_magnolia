@@ -12,3 +12,9 @@ resources/lexical/** -text
 
 # Codebook samples are binary documents and must stay byte for byte.
 test/fixtures/codebooks/** -text
+
+# Installer scripts: byte for byte (the PowerShell scripts need their UTF-8 BOM).
+build/installer/** -text
+
+# Installer hooks keep their UTF-8 BOM and Windows line endings (NSIS).
+src-tauri/windows/*.nsh -text
