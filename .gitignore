@@ -38,3 +38,6 @@ src-tauri/binaries/
 
 # Per-computer Cargo settings (e.g. a build folder outside protected folders)
 .cargo/
+
+# Installers copied here for testing (built artifacts, not source)
+instalador/
