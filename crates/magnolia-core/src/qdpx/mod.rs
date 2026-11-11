@@ -4,6 +4,7 @@ pub mod archive;
 pub mod archive_write;
 pub mod checkout;
 pub mod codebook;
+pub mod codebook_outline;
 pub mod deserializer;
 pub mod graph_refi;
 pub mod labiia_lexical;
