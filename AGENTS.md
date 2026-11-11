@@ -23,7 +23,7 @@ npm run dev                 # abre o programa em modo de desenvolvimento
 npm run typecheck           # tipos da interface e do ajudante
 npx vitest run              # testes da interface e do motor léxico
 cargo test --workspace      # testes do Rust (projetos, livro de códigos, resultados léxicos)
-npm run build               # instalador em target/release/bundle/nsis/labiia_quali_<versão>_x64-setup.exe
+npm run build               # instalador em <pasta de compilação>/release/bundle/nsis/labiia_quali_<versão>_x64-setup.exe (o executável é labiia_quali.exe)
 ```
 
 `test/helper/parity.local.test.ts` só roda com `PARITY_DIR` definido. Ele compara as 12 análises com outra versão; veja o cabeçalho do arquivo.
@@ -94,6 +94,7 @@ npm run build               # instalador em target/release/bundle/nsis/labiia_qu
 - **Programa da pessoa:** não feche o labiia_quali nem o Magnolia que a pessoa está usando.
   - Ao terminar, encerre só os processos cujo executável está em `labiia-quali-build`.
 - **Projetos de teste:** use sempre cópias, nunca os projetos originais da pessoa.
+- **Testar o pacote sem instalar:** extraia o instalador com o 7-Zip numa pasta temporária, de preferência com acento e espaço no nome, e rode `labiia_quali.exe` de lá, com `LABIIA_DATA_DIR`. A pasta extraída tem a mesma disposição da instalada: executável, `labiia-node.exe`, `helper/`, `lexical/` e `installer/`.
 - **R:** não rode a instalação real do R só para testar.
   - Para testar os pacotes, aponte `LOCALAPPDATA` para uma pasta vazia e rode `installer\r-setup.ps1 -Action packages`.
   - Para testar o instalador sem R, use `/SIMULARSEMR`.
