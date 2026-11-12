@@ -11,7 +11,7 @@
   <nav class="lateral" aria-label="Páginas do manual">
     <div class="marca">
       <strong>labiia_quali — Manual</strong>
-      <span>Versão 0.2.0 · Windows</span>
+      <span>Versão 0.2.1 · Windows</span>
     </div>
     <ul>
       <li><a href="index.html" class="atual" aria-current="page">Início</a></li>
@@ -40,14 +40,21 @@
       <p>Além disso, o programa traz <strong>análises léxicas</strong>, que olham para as palavras do texto como dados: nuvens de palavras, classificações de segmentos, redes de coocorrência, tópicos e análises de emoções. Essas análises foram trazidas do labiia_lex, programa de análise lexical de texto.</p>
       <p>O labiia_quali é baseado no Magnolia, programa de Cale Davis. A versão em português, com as análises léxicas, foi desenvolvida por Rafael Sampaio, na UFPE. Os créditos completos estão na página <a href="sobre.html">Sobre e créditos</a>.</p>
 
-      <h2 id="novidades">O que mudou na versão 0.2.0</h2>
+      <h2 id="novidades">O que mudou na versão 0.2.1</h2>
+      <ul>
+        <li><strong>Rede textual.</strong> Uma nova análise léxica: a rede de palavras no estilo do Gephi, igual à do labiia_lex, sem precisar de Java nem de R. Dá para aproximar, arrastar, buscar palavras, ver os segmentos de cada uma, mudar cores e filtros no painel <span class="botao-ui f-lexicas">Estilo e rede</span> e exportar a figura e os dados. Veja <a href="analises-lexicas.html">Análises léxicas</a>.</li>
+        <li><strong>Preparar corpus.</strong> Junta o que o dicionário deixa separado: plurais que ele não lista, grafias diferentes da mesma palavra, equivalências suas e expressões compostas. Vale para as 13 análises léxicas e vem desligado. Veja <a href="analises-lexicas.html#preparar-corpus">Preparar corpus</a>.</li>
+        <li><strong>Botão para codificar a seleção.</strong> Depois de selecionar um trecho, clique no botão que aparece no fim da seleção para escolher o código.</li>
+        <li><strong>Correções.</strong> A janela de terminal não abre mais junto com o programa; a CHD e as outras análises com R voltam a rodar no programa instalado; o texto dos PDFs não se perde ao abrir um projeto depois de outro.</li>
+      </ul>
+
+      <h2>O que mudou na versão 0.2.0</h2>
       <p>O labiia_quali passou para a base nova do Magnolia (versão 2.1), que roda sobre o Tauri, com o núcleo escrito em Rust. As análises léxicas, o livro de códigos a partir de documentos e o visual continuam os mesmos, e os projetos da versão 0.1 abrem na 0.2.0 com tudo, inclusive os resultados léxicos salvos.</p>
       <ul>
         <li><strong>Programa menor e mais rápido.</strong> O instalador ficou bem menor, e o programa abre mais depressa.</li>
         <li><strong>Cadernos de notas.</strong> No painel Documentos, o botão de caderno cria um caderno de notas de campo com data e hora, que também podem ser codificadas.</li>
         <li><strong>Janela de memos.</strong> Em Início, o botão <span class="botao-ui">Memos</span> abre todos os memos numa janela própria.</li>
         <li><strong>PDF com os códigos.</strong> Cada documento tem o menu Exportar, com a opção de gerar um PDF que mostra as marcas dos códigos.</li>
-        <li><strong>Arrastar a seleção até um código.</strong> Depois de selecionar um trecho, arraste a alça que aparece ao lado da seleção até um código no painel Códigos.</li>
         <li><strong>Frequência de palavras nos trechos codificados.</strong> A ferramenta Frequência de palavras também conta só os trechos codificados.</li>
       </ul>
 
