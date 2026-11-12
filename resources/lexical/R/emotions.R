@@ -11,9 +11,21 @@ if (nzchar(lib)) .libPaths(c(lib, .libPaths()))
 suppressPackageStartupMessages(library(jsonlite))
 p <- fromJSON(commandArgs(trailingOnly = TRUE)[1])
 
-# Figures are drawn with cairo, as on Windows. A Mac's R has cairo only when
-# XQuartz is installed; without it, R's own Quartz device draws them.
-png_type <- if (isTRUE(suppressWarnings(capabilities("cairo")))) "cairo" else "quartz"
+# Figures are drawn with cairo, as on Windows. A Mac's R can use cairo only
+# when XQuartz is installed (it still reports cairo without it), so a small
+# figure is tried first; when that fails, R's own Quartz device draws them.
+png_type <- if (.Platform$OS.type == "windows") "cairo" else local({
+    probe <- tempfile(fileext = ".png")
+    ok <- tryCatch({
+        png(probe, width = 10, height = 10, type = "cairo")
+        plot.new()
+        dev.off()
+        file.exists(probe)
+    }, warning = function(w) FALSE, error = function(e) FALSE)
+    while (dev.cur() > 1) dev.off()
+    unlink(probe)
+    if (ok) "cairo" else "quartz"
+})
 
 # labiia_quali installs packages itself (with the user's consent), never from inside a run.
 .lexi_install_pkg <- function(pkg, ...) stop(paste("Pacote R ausente:", pkg))
