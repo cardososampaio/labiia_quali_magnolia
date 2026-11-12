@@ -13,6 +13,10 @@
 .labiia_lib <- Sys.getenv("LABIIA_R_LIBS")
 if (nzchar(.labiia_lib)) .libPaths(c(.labiia_lib, .libPaths()))
 
+# Figures are drawn with cairo, as on Windows. A Mac's R has cairo only when
+# XQuartz is installed; without it, R's own Quartz device draws them.
+png_type <- if (isTRUE(suppressWarnings(capabilities("cairo")))) "cairo" else "quartz"
+
 suppressPackageStartupMessages({
     library(igraph)
     library(sna)
@@ -327,7 +331,7 @@ render_similitude <- function(params) {
     message("Rendering to ", output_file, " (", width, "x", height, ")...")
     curved_val <- if (edge_curved) 0.3 else FALSE
 
-    png(output_file, width = width, height = height, res = dpi, pointsize = 8, type = "cairo",
+    png(output_file, width = width, height = height, res = dpi, pointsize = 8, type = png_type,
         antialias = "subpixel", bg = "white")
     par(mar = c(2, 2, 2, 2), bg = "white")
 

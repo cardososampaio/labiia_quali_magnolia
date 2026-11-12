@@ -11,6 +11,10 @@ if (nzchar(lib)) .libPaths(c(lib, .libPaths()))
 suppressPackageStartupMessages(library(jsonlite))
 p <- fromJSON(commandArgs(trailingOnly = TRUE)[1])
 
+# Figures are drawn with cairo, as on Windows. A Mac's R has cairo only when
+# XQuartz is installed; without it, R's own Quartz device draws them.
+png_type <- if (isTRUE(suppressWarnings(capabilities("cairo")))) "cairo" else "quartz"
+
 # labiia_quali installs packages itself (with the user's consent), never from inside a run.
 .lexi_install_pkg <- function(pkg, ...) stop(paste("Pacote R ausente:", pkg))
 
@@ -176,7 +180,7 @@ png(bar_out,
     width  = width_px,
     height = height_px,
     res    = 150,
-    type   = "cairo")
+    type   = png_type)
 par(mar = c(7, 5, 4, 4), family = "Arial", col.axis = "#111111", col.lab = "#111111",
     col.main = "#111111", font.lab = 2)  # fonte firme: o padrao Cairo saia palida
 emo_labels_pt <- unlist(p$emotion_labels)
@@ -221,7 +225,7 @@ png(radar_out,
     width  = width_px,
     height = height_px,
     res    = 150,
-    type   = "cairo")
+    type   = png_type)
 par(mar = c(3, 3, 5, 3))
 
 if (has_fmsb) {
@@ -331,7 +335,7 @@ png(polarity_out,
     width  = width_px,
     height = height_px,
     res    = 150,
-    type   = "cairo")
+    type   = png_type)
 par(mar = c(7, 5, 4, 4), family = "Arial", col.axis = "#111111", col.lab = "#111111",
     col.main = "#111111", font.lab = 2)  # fonte firme: o padrao Cairo saia palida
 polarity_labels_pt <- unlist(p$polarity_labels)

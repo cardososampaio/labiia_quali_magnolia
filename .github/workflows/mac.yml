@@ -95,7 +95,7 @@ jobs:
           set -x
           DMG=$(ls target/aarch64-apple-darwin/release/bundle/dmg/*.dmg)
           ls -la "$DMG"
-          hdiutil attach -nobrowse -mountpoint /tmp/labiia-dmg "$DMG"
+          yes | hdiutil attach -nobrowse -mountpoint /tmp/labiia-dmg "$DMG"
           ls -la /tmp/labiia-dmg
           rm -rf /Applications/labiia_quali.app
           cp -R /tmp/labiia-dmg/labiia_quali.app /Applications/

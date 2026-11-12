@@ -9,6 +9,7 @@
       "icons/icon.png",
       "icons/icon.icns"
     ],
+    "licenseFile": null,
     "resources": {
       "../build/installer/": null
     },
