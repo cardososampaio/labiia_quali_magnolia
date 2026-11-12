@@ -42,7 +42,12 @@ export const useLexicalRStore = create<LexicalRState>((set, get) => ({
 
   setPath: async (path) => {
     set({ checking: true })
-    const status = await window.api.lexical.setRPath(path)
+    let status: RStatusInfo
+    try {
+      status = await window.api.lexical.setRPath(path)
+    } catch (err) {
+      status = { found: false, configuredPath: path, problem: String(err) }
+    }
     statusRequest = Promise.resolve(status)
     set({ status, checking: false, packages: {} })
   },
@@ -50,7 +55,7 @@ export const useLexicalRStore = create<LexicalRState>((set, get) => ({
   checkPackages: async (packages) => {
     const status = get().status ?? await get().refresh()
     if (!status.found) return
-    const res = await window.api.lexical.checkPackages(packages)
+    const res = await window.api.lexical.checkPackages(packages).catch((err) => ({ status: undefined, error: String(err) }))
     if (res.status) set((s) => ({ packages: { ...s.packages, ...res.status } }))
   },
 
@@ -64,6 +69,9 @@ export const useLexicalRStore = create<LexicalRState>((set, get) => ({
       const res = await window.api.lexical.installPackages(packages)
       if ('error' in res) set({ install: { running: false, error: res.error } })
       else set({ install: { running: false, result: res } })
+    } catch (err) {
+      // The helper failed: the panel shows why instead of waiting forever.
+      set({ install: { running: false, error: String(err) } })
     } finally {
       off()
       await get().checkPackages(packages)

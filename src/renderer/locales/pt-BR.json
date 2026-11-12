@@ -184,7 +184,9 @@
       "closeTitle": "Fechar o labiia_quali?",
       "closeDetail": "O projeto é salvo automaticamente antes de fechar.",
       "closeYes": "Sim",
-      "closeCancel": "Cancelar"
+      "closeCancel": "Cancelar",
+      "macPrivacyBlocked": "O macOS não deixou o labiia_quali abrir este arquivo. Em Ajustes do Sistema → Privacidade e Segurança → Arquivos e Pastas (ou Acesso Total ao Disco), permita o labiia_quali, ou copie o arquivo para outra pasta, e importe de novo.",
+      "diagnostics": "Diagnóstico do programa…"
     }
   },
   "tools": {
@@ -2360,7 +2362,10 @@
         "order": "Ordem: expressões, equivalências, variantes, plurais e, por fim, o dicionário.",
         "applied": "Preparação: {{plurals}} plurais, {{variants}} variantes, {{equivalences}} equivalências, {{expressions}} expressões",
         "appliedHelp": "O que a preparação do corpus trocou nesta execução, para descrever o método."
-      }
+      },
+      "dragToMoveThePictureMac": "Arraste para mover a imagem · ⌘ + roda do mouse ou pinça no trackpad muda o zoom",
+      "cmdMouseWheelZooms": "⌘ + roda do mouse ou pinça no trackpad muda o zoom",
+      "downloadRMac": "Baixar o R para Mac"
     },
     "prefs": {
       "r": "R (análises léxicas)",
@@ -2395,7 +2400,8 @@
       "largerTitle": "Aumentar o tamanho da interface",
       "smaller": "Diminuir",
       "smallerTitle": "Diminuir o tamanho da interface",
-      "manualTitle": "Abre no navegador o manual do labiia_quali."
+      "manualTitle": "Abre no navegador o manual do labiia_quali.",
+      "browseHintMac": "Abre a janela de arquivos do Finder"
     },
     "start": {
       "newProject": "Novo projeto",
@@ -2459,7 +2465,9 @@
     },
     "importErrors": {
       "accessDeniedByWindows": "acesso negado pelo Windows",
-      "windowsDidNotLetLabiia": "O Windows não deixou o labiia_quali abrir estes arquivos. Em geral é o antivírus protegendo documentos de pastas como a Área de Trabalho ou Documentos (no Avast: Proteção → Escudo de dados confidenciais ou Escudo contra ransomware). Permita o labiia_quali no antivírus, ou copie os arquivos para outra pasta, e importe de novo."
+      "windowsDidNotLetLabiia": "O Windows não deixou o labiia_quali abrir estes arquivos. Em geral é o antivírus protegendo documentos de pastas como a Área de Trabalho ou Documentos (no Avast: Proteção → Escudo de dados confidenciais ou Escudo contra ransomware). Permita o labiia_quali no antivírus, ou copie os arquivos para outra pasta, e importe de novo.",
+      "accessDeniedByMac": "acesso negado pelo macOS",
+      "macDidNotLetLabiia": "O macOS não deixou o labiia_quali abrir estes arquivos. Em Ajustes do Sistema → Privacidade e Segurança → Arquivos e Pastas (ou Acesso Total ao Disco), permita o labiia_quali, ou copie os arquivos para outra pasta, e importe de novo."
     },
     "welcome": {
       "aNetworkOfRelatedWords": "Uma rede de palavras relacionadas, como a desenhada pela Análise de similitude",
@@ -2545,7 +2553,8 @@
       "forceAtlas2Role": "o layout da rede textual, ForceAtlas2 (Jacomy, Venturini, Heymann e Bastian, 2014), com os ajustes que o labiia_lex usa no Gephi",
       "louvainRole": "as comunidades da rede textual (Blondel et al., 2008), portadas com os mesmos passos e a mesma ordem aleatória",
       "sigmaRole": "desenho e interação da rede textual (sigma.js, graphology, layout ForceAtlas2)",
-      "openRefineRole": "os métodos que agrupam variantes de grafia em \"Preparar corpus\" (impressão digital, n-gramas de letras, distância de edição), reimplementados a partir da documentação, como no labiia_lex, sem copiar código"
+      "openRefineRole": "os métodos que agrupam variantes de grafia em \"Preparar corpus\" (impressão digital, n-gramas de letras, distância de edição), reimplementados a partir da documentação, como no labiia_lex, sem copiar código",
+      "rIntroMac": "Nuvem de palavras, CHD, Similitude, Emoções e LDA rodam no R com estes pacotes do CRAN. Eles não vão dentro do programa: o próprio programa os baixa do CRAN, cada um com sua licença."
     },
     "docSelector": {
       "manual": "Manual",
@@ -2564,6 +2573,59 @@
       "containingText": "…e que contenham este texto (opcional)",
       "textToSearch": "Texto a buscar (opcional)",
       "replaceQuery": "Substituir a consulta atual por esta seleção?"
+    },
+    "diagnostics": {
+      "title": "Diagnóstico do programa",
+      "startHint": "Confere cada parte e gera um relatório",
+      "intro": "Esta janela confere cada parte do labiia_quali neste computador. Se algo estiver marcado com ✗, siga a orientação, ou copie o relatório e envie para quem dá suporte ao programa. O relatório traz versões, caminhos de pastas e mensagens de erro, mas nenhum texto dos seus projetos.",
+      "checking": "Conferindo… (o R pode levar um minuto)",
+      "program": "Programa",
+      "dataFolder": "Pasta de dados",
+      "dataFolderNotWritable": "O programa não consegue gravar nesta pasta, então as preferências e o cache das análises não ficam guardados. Confira as permissões da pasta ou libere espaço no disco.",
+      "helper": "Componente das análises léxicas",
+      "helperRunning": "Funcionando (Node {{version}})",
+      "nodeMissing": "O componente que roda as análises léxicas não está na instalação.",
+      "helperFilesMissing": "Faltam na instalação arquivos de que as análises léxicas precisam.",
+      "reinstall": "A instalação está incompleta. Instale o labiia_quali de novo; se o problema continuar, envie o relatório.",
+      "helperBlockedMac": "O macOS impediu o componente de rodar. Abra Ajustes do Sistema → Privacidade e Segurança, role até o fim e clique em \"Abrir mesmo assim\" se aparecer o labiia_quali ou o labiia-node. Se não aparecer, apague o labiia_quali de Aplicativos e instale de novo a partir do .dmg.",
+      "helperBlockedWindows": "O Windows ou o antivírus impediu o componente de rodar. Permita o labiia_quali no antivírus e abra o programa de novo.",
+      "resources": "Dicionários e scripts do R",
+      "resourcesMissing": "Faltam: {{list}}",
+      "tempFolder": "Pasta temporária",
+      "tempFolderNotWritable": "As análises não conseguem gravar seus arquivos temporários aqui. Libere espaço no disco e tente de novo.",
+      "rNotChecked": "Não conferido: o componente das análises léxicas não iniciou.",
+      "rPackages": "Pacotes do R",
+      "packagesMissing": "Faltam ({{n}}): {{list}}",
+      "packagesAllPresent": "Todos instalados",
+      "packagesAdvice": "Instale em Preferências → R (Instalar pacotes que faltam). Só as análises que usam esses pacotes precisam deles.",
+      "rNotFound": "O R não foi encontrado ({{places}} lugares conferidos; a lista está no relatório).",
+      "rAdviceMac": "Instale o R para Mac pelo site oficial (Baixar o R para Mac, no painel do R de uma análise léxica), escolhendo o instalador para Apple silicon (arm64), e clique em Procurar de novo. Enquanto isso, as análises que não usam o R funcionam.",
+      "rAdviceWindows": "Instale o R (o instalador do labiia_quali oferece isso) ou escolha onde ele está em Preferências → R. Enquanto isso, as análises que não usam o R funcionam.",
+      "libreOfficeMissing": "Não encontrado. Só é necessário para importar livros de códigos no formato antigo do Word (.doc).",
+      "lastCrash": "Fechamento inesperado",
+      "lastCrashAdvice": "A causa está no relatório. Envie-o, para que o problema possa ser corrigido.",
+      "reportTitle": "labiia_quali — diagnóstico do programa",
+      "rLookedIn": "Onde o R foi procurado:",
+      "nodeLookedIn": "Onde o componente foi procurado:",
+      "programLog": "registro do programa",
+      "helperLog": "registro das análises léxicas",
+      "technicalData": "dados técnicos",
+      "seeDiagnostics": "Ver diagnóstico",
+      "copyReport": "Copiar relatório",
+      "copied": "Relatório copiado. Cole num e-mail ou numa mensagem.",
+      "copyFailed": "Não foi possível copiar o relatório. Use Salvar relatório…",
+      "saveReport": "Salvar relatório…",
+      "saved": "Relatório salvo.",
+      "openLogs": "Abrir pasta dos registros",
+      "checkAgain": "Conferir de novo",
+      "close": "Fechar",
+      "startupProblem": "Uma parte do programa não pôde ser iniciada",
+      "startupProblemText": "As análises léxicas não vão funcionar até isso ser resolvido. O diagnóstico mostra o que aconteceu.",
+      "startupCrash": "O programa fechou inesperadamente da última vez",
+      "startupCrashText": "A causa ficou registrada. Enviar o relatório ajuda a corrigir.",
+      "dontShowAgain": "Não mostrar de novo",
+      "helperDidNotStart": "O componente que roda as análises léxicas não iniciou, então o R não pôde ser procurado. Veja o diagnóstico. ({{error}})",
+      "helperFailedRun": "O componente que roda as análises léxicas não iniciou ou parou. Veja o diagnóstico. ({{error}})"
     }
   }
 }

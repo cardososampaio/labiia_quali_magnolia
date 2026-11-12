@@ -49,14 +49,27 @@ export function missingOutputs(files: string[]): string[] {
   })
 }
 
-/** Stops R and every process it started. */
+/**
+ * Stops R and every process it started. On Windows `taskkill /T` follows
+ * the process tree; elsewhere R runs as the leader of its own process group
+ * (see `detached` below) and the whole group is stopped.
+ */
 function killTree(child: ChildProcess): void {
   if (child.pid === undefined || child.exitCode !== null) return
   if (process.platform === 'win32') {
     execFile('taskkill', ['/PID', String(child.pid), '/T', '/F'], { windowsHide: true }, () => { /* already gone */ })
-  } else {
+    return
+  }
+  try {
+    process.kill(-child.pid, 'SIGKILL')
+  } catch {
     child.kill('SIGKILL')
   }
+}
+
+/** Stops every R still running: the app is quitting, so none may be left behind. */
+export function stopAllRuns(): void {
+  for (const child of running.values()) killTree(child)
 }
 
 export function cancelRun(runId: string): boolean {
@@ -73,7 +86,9 @@ export function runRScript(r: RInstallation, runId: string, opts: RRunOptions): 
     const child = spawn(r.rscript, ['--vanilla', opts.script, ...(opts.args ?? [])], {
       cwd: opts.cwd,
       env: rEnvironment(r.libDir),
-      windowsHide: true
+      windowsHide: true,
+      // Its own process group outside Windows, so a Cancel also stops what R started.
+      detached: process.platform !== 'win32'
     })
     running.set(runId, child)
     let stdout = ''

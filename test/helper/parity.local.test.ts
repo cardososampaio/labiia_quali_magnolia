@@ -7,6 +7,11 @@
 //   PARITY_CATALOG  lexical-catalog.ts whose default parameters are used
 //   PARITY_TESTS    comma list (default: all 12)
 //   PARITY_PARAMS   JSON merged over the defaults
+//   PARITY_RESOURCES folder holding lexical/ (default: the repository's
+//                   resources/; an installed app's own to check its files)
+//   PARITY_DATA     the helper's data folder (default: a new temporary one)
+//   PARITY_INSTALL  1 = first install the tests' R packages through the
+//                   helper, as the R panel does (checks installing works)
 //
 // Two ways to run:
 //   PARITY_ENGINE=<…/lexical folder>   call that engine's test runners in
@@ -22,7 +27,7 @@ import { join } from 'path'
 import { tmpdir } from 'os'
 import { pathToFileURL } from 'url'
 
-const RES = join(__dirname, '..', '..', 'resources')
+const RES = process.env.PARITY_RESOURCES || join(__dirname, '..', '..', 'resources')
 const TESTS = ['wordcloud', 'bigrams', 'trigrams', 'word-tree', 'yake', 'keyword-associations', 'sentiment', 'emotions', 'similitude', 'lda', 'thematic-map', 'chd']
 
 type Result = { ok?: boolean; files?: { name: string; data?: string }[]; summary?: unknown; error?: string; detail?: string }
@@ -54,7 +59,9 @@ it.skipIf(!process.env.PARITY_DIR)('parity run', async () => {
   const wanted = (process.env.PARITY_TESTS ?? TESTS.join(',')).split(',')
 
   if (process.env.PARITY_HELPER) {
-    const child = spawn(process.env.PARITY_NODE ?? process.execPath, [process.env.PARITY_HELPER, '--resources', RES, '--data', mkdtempSync(join(tmpdir(), 'parity-data-'))], { stdio: ['pipe', 'pipe', 'inherit'] })
+    const data = process.env.PARITY_DATA || mkdtempSync(join(tmpdir(), 'parity-data-'))
+    mkdirSync(data, { recursive: true })
+    const child = spawn(process.env.PARITY_NODE ?? process.execPath, [process.env.PARITY_HELPER, '--resources', RES, '--data', data], { stdio: ['pipe', 'pipe', 'inherit'] })
     const waiting = new Map<number, (r: { ok: boolean; result?: Result; error?: string }) => void>()
     let buf = ''
     child.stdout.on('data', (d: Buffer) => {
@@ -74,6 +81,15 @@ it.skipIf(!process.env.PARITY_DIR)('parity run', async () => {
         waiting.set(n, resolve)
         child.stdin.write(JSON.stringify({ id: n, method, params: p }) + '\n')
       })
+    if (process.env.PARITY_INSTALL === '1') {
+      const { LEXICAL_R_PACKAGES } = await import('../../src/renderer/models/lexical-api')
+      const packages = [...new Set(Object.values(LEXICAL_R_PACKAGES).flat())]
+      const t0 = Date.now()
+      const r = await call('lexical.installPackages', { packages })
+      console.log('install', JSON.stringify({ ...(r.result ?? {}), log: undefined }), r.error ?? '', Date.now() - t0, 'ms')
+      mkdirSync(out, { recursive: true })
+      writeFileSync(join(out, '_install.json'), JSON.stringify(r, null, 1))
+    }
     for (const testId of wanted) {
       const t1 = Date.now()
       const r = await call('lexical.run', { runId: `parity-${testId}`, testId, language: 'pt', params: params[testId], units })

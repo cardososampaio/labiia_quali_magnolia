@@ -276,6 +276,9 @@ export function runErrorText(error: string, detail?: string, missing?: string[])
     case 'r-timeout': return t('labiia.lexical.rTookLongerThanThe')
     case 'r-failed': return t('labiia.lexical.rCouldNotFinishThe')
     case 'not-available': return t('labiia.lexical.thisTestIsStillBeing')
-    default: return detail ? t('labiia.lexical.theTestCouldNotFinish', { error: detail.slice(0, 300) }) : t('labiia.lexical.theTestCouldNotFinish2')
+    default:
+      // The bundled helper did not start or stopped: say so plainly, with the whole error for the report.
+      if (detail?.startsWith('helper-') || error.startsWith('helper-')) return t('labiia.diagnostics.helperFailedRun', { error: detail ?? error })
+      return detail ? t('labiia.lexical.theTestCouldNotFinish', { error: detail }) : t('labiia.lexical.theTestCouldNotFinish2')
   }
 }

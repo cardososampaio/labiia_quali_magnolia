@@ -40,6 +40,16 @@
         <p>Se a mensagem na tela não estiver no quadro abaixo, anote o texto exato e o que você estava fazendo logo antes. Isso ajuda a achar a causa mais depressa.</p>
       </div>
 
+      <h2 id="diagnostico">Diagnóstico do programa</h2>
+      <p>Quando algo não funciona, o próprio labiia_quali confere cada parte dele e diz o que fazer. Abra o <span class="botao-ui">Iniciar</span> e escolha <strong>Diagnóstico do programa</strong>. No Mac, ele também fica no menu <strong>Ajuda</strong>. As mensagens de erro das análises léxicas trazem o botão <span class="botao-ui">Ver diagnóstico</span>.</p>
+      <ul>
+        <li><strong>✓</strong> a parte funciona; <strong>!</strong> funciona, com uma ressalva (por exemplo, faltam pacotes do R que só algumas análises usam); <strong>✗</strong> não funciona, e a linha diz o que fazer.</li>
+        <li>O diagnóstico confere o programa e o sistema, a pasta de dados, o componente que roda as análises léxicas, os dicionários, o R (e todos os lugares onde ele foi procurado), os pacotes do R e o LibreOffice.</li>
+        <li><span class="botao-ui">Copiar relatório</span> copia tudo isso, com as últimas linhas dos registros do programa, para você colar num e-mail para quem dá suporte. <span class="botao-ui">Salvar relatório…</span> grava o mesmo texto num arquivo.</li>
+        <li>O relatório traz versões, caminhos de pastas e mensagens de erro. Ele <strong>não</strong> traz nenhum texto dos seus projetos.</li>
+      </ul>
+      <p>Se o programa fechar de repente, a causa fica registrada. Na próxima abertura aparece o aviso "O programa fechou inesperadamente da última vez", com o botão para ver o diagnóstico. Se uma parte do programa não iniciar (por exemplo, uma instalação incompleta), o aviso "Uma parte do programa não pôde ser iniciada" aparece logo ao abrir um projeto.</p>
+
       <h2>Instalação e R</h2>
 
       <p>Algumas análises léxicas usam o R, um programa gratuito de estatística. São cinco: Nuvem de palavras, CHD, Similitude, Emoções e Tópicos LDA. As outras análises léxicas e todo o restante do programa funcionam sem o R.</p>

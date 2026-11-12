@@ -498,3 +498,33 @@ html:root[data-theme="windows-dark"]:not([data-no-theme]) { --icon-folder: #E0A5
 .tab-bar::-webkit-scrollbar { display: block; height: 4px; }
 .tab-bar::-webkit-scrollbar-thumb { background: var(--border-color); border-radius: 2px; }
 .tab-bar:hover::-webkit-scrollbar-thumb { background: var(--text-muted); }
+
+/* Program diagnostics (labiia/Diagnostics.tsx): the checklist window and
+   the notice along the top when a part of the program did not start. */
+.labiia-diag { width: 640px; max-height: 86vh; display: flex; flex-direction: column; }
+.labiia-diag-intro, .labiia-diag-wait { color: var(--text-muted); font-size: var(--font-size-sm); margin: 0 0 10px; }
+.labiia-diag-list { list-style: none; margin: 0; padding: 0; overflow-y: auto; flex: 1; border-top: 1px solid var(--border-color); }
+.labiia-diag-item { display: flex; gap: 10px; padding: 8px 2px; border-bottom: 1px solid var(--border-color); }
+.labiia-diag-mark { width: 20px; height: 20px; flex-shrink: 0; border-radius: 50%; display: inline-flex; align-items: center; justify-content: center; font-weight: 700; font-size: 12px; color: #fff; }
+.labiia-diag-ok .labiia-diag-mark { background: #2e7d32; }
+.labiia-diag-warn .labiia-diag-mark { background: #b26a00; }
+.labiia-diag-bad .labiia-diag-mark { background: #c0392b; }
+.labiia-diag-text { min-width: 0; flex: 1; }
+.labiia-diag-title { font-weight: 600; }
+.labiia-diag-detail { font-size: var(--font-size-sm); color: var(--text-secondary, var(--text-muted)); overflow-wrap: anywhere; }
+.labiia-diag-advice { font-size: var(--font-size-sm); margin-top: 2px; }
+.labiia-diag-bad, .labiia-diag-note { font-size: var(--font-size-sm); }
+p.labiia-diag-bad { color: var(--danger, #c0392b); overflow-wrap: anywhere; }
+.labiia-diag-note { margin: 8px 0 0; color: var(--text-muted); }
+.labiia-diag-buttons { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 14px; align-items: center; }
+
+.labiia-startup-notice {
+  position: fixed; top: 8px; left: 50%; transform: translateX(-50%); z-index: 9000;
+  width: min(640px, calc(100vw - 32px)); display: flex; align-items: center; gap: 10px;
+  background: #fff7ed; border: 1px solid #fdba74; border-radius: 8px; padding: 10px 12px;
+  box-shadow: 0 6px 24px rgba(0, 0, 0, 0.18); color: #7c2d12; font-size: 13px;
+}
+.labiia-startup-notice.is-bad { background: #fef2f2; border-color: #fca5a5; color: #7f1d1d; }
+.labiia-startup-mark { font-size: 16px; }
+.labiia-startup-text { flex: 1; display: flex; flex-direction: column; gap: 2px; }
+.labiia-startup-notice button { flex-shrink: 0; }

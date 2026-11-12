@@ -8,6 +8,7 @@
 pub mod close;
 pub mod codebook;
 pub mod corpus_prep;
+pub mod diagnostics;
 pub mod helper;
 pub mod lexical;
 pub mod prefs;

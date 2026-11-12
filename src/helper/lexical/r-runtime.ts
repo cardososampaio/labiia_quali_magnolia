@@ -1,7 +1,8 @@
 /**
  * Finding R and preparing the environment the lexical analyses run it in.
  *
- * The app does not install R itself (the Windows installer offers to): it
+ * The app does not install R itself (the Windows installer offers to; on a
+ * Mac the R panel links to CRAN's installer): it
  * uses the newest R (4.0 or later) on the computer, or the Rscript the user
  * picked in Preferences. CRAN packages go to a library of labiia_quali's own, so
  * installing them never changes the user's other R projects, and a new R
@@ -10,6 +11,7 @@
 import { app } from 'electron'
 import { execFile } from 'child_process'
 import { existsSync, readdirSync, readFileSync, writeFileSync, mkdirSync } from 'fs'
+import { homedir } from 'os'
 import { join, dirname } from 'path'
 
 export interface RInstallation {
@@ -27,6 +29,8 @@ export interface RStatus {
   configuredPath: string
   /** Why the configured or detected R could not be used. */
   problem?: string
+  /** Every Rscript looked at and what came of it, for the program's diagnostics. */
+  searched?: Array<{ path: string; version: string | null }>
 }
 
 const MIN_VERSION = [4, 0, 0]
@@ -50,9 +54,17 @@ export function writeConfiguredRPath(path: string): void {
   cached = null
 }
 
-/** Accepts the Rscript executable, R's bin folder or R's home folder. */
-function rscriptFromUserPath(p: string): string | null {
-  const candidates = [p, join(p, RSCRIPT), join(p, 'bin', RSCRIPT), join(p, 'bin', 'x64', RSCRIPT)]
+/** The R a Mac's R.app runs: CRAN's installer puts both in place. */
+const MAC_FRAMEWORK_RSCRIPT = '/Library/Frameworks/R.framework/Resources/bin/Rscript'
+
+/**
+ * Accepts the Rscript executable, R's bin folder or R's home folder; on a
+ * Mac also R.app (which runs the R framework's R) and the R.framework folder.
+ */
+export function rscriptFromUserPath(p: string): string | null {
+  const candidates = [p, join(p, RSCRIPT), join(p, 'bin', RSCRIPT), join(p, 'bin', 'x64', RSCRIPT),
+    join(p, 'Resources', 'bin', RSCRIPT)]
+  if (/\.app\/?$/i.test(p)) candidates.push(MAC_FRAMEWORK_RSCRIPT)
   return candidates.find((c) => c.toLowerCase().endsWith(RSCRIPT.toLowerCase()) && existsSync(c)) ?? null
 }
 
@@ -101,8 +113,16 @@ function folderCandidates(): string[] {
     if (process.env.LOCALAPPDATA) roots.push(join(process.env.LOCALAPPDATA, 'Programs', 'R'), join(process.env.LOCALAPPDATA, 'R'))
     roots.push('C:\\R', 'C:\\tools\\R')
   } else {
-    return ['/usr/local/bin/Rscript', '/usr/bin/Rscript', '/opt/homebrew/bin/Rscript',
-      '/Library/Frameworks/R.framework/Resources/bin/Rscript']
+    // CRAN's Mac installer (the current R and every version kept beside it,
+    // as rig installs them), Homebrew, MacPorts, user installs and Linux.
+    const out = [MAC_FRAMEWORK_RSCRIPT]
+    const versions = '/Library/Frameworks/R.framework/Versions'
+    try {
+      for (const v of readdirSync(versions)) if (v !== 'Current') out.push(join(versions, v, 'Resources', 'bin', RSCRIPT))
+    } catch { /* no R framework */ }
+    out.push('/opt/homebrew/bin/Rscript', '/usr/local/bin/Rscript', '/opt/local/bin/Rscript',
+      join(homedir(), '.local', 'bin', RSCRIPT), '/usr/bin/Rscript')
+    return out
   }
   const out: string[] = []
   for (const root of roots) {
@@ -116,7 +136,14 @@ function folderCandidates(): string[] {
 
 async function pathCandidates(): Promise<string[]> {
   const { stdout } = await run(process.platform === 'win32' ? 'where' : 'which', [RSCRIPT], 5000)
-  return stdout.split(/\r?\n/).map((s) => s.trim()).filter(Boolean)
+  const out = stdout.split(/\r?\n/).map((s) => s.trim()).filter(Boolean)
+  // A Mac program opened from the Finder gets a short PATH, without what the
+  // Terminal adds (Homebrew, conda…): ask the login shell where Rscript is.
+  if (process.platform === 'darwin' && existsSync('/bin/zsh')) {
+    const login = await run('/bin/zsh', ['-lc', 'command -v Rscript'], 5000)
+    out.push(...login.stdout.split(/\r?\n/).map((s) => s.trim()).filter((s) => s.startsWith('/')))
+  }
+  return out
 }
 
 function parseVersion(text: string): string | null {
@@ -183,25 +210,30 @@ export async function resolveR(refresh = false): Promise<RStatus> {
     if (!seen.has(key)) { seen.add(key); candidates.push(c) }
   }
   let best: { rscript: string; version: string } | null = null
+  const searched: NonNullable<RStatus['searched']> = []
   for (const rscript of candidates) {
     const version = await probe(rscript)
+    searched.push({ path: rscript, version })
     if (!version || !versionAtLeast(version, MIN_VERSION)) continue
     if (!best || compareVersions(version, best.version) > 0) best = { rscript, version }
   }
   cached = best
-    ? { found: true, configuredPath, installation: { ...best, libDir: libDirFor(best.version) } }
-    : { found: false, configuredPath, problem: 'not-found' }
+    ? { found: true, configuredPath, installation: { ...best, libDir: libDirFor(best.version) }, searched }
+    : { found: false, configuredPath, problem: 'not-found', searched }
   return cached
 }
 
 /**
  * Environment for Rscript. R on Windows cannot read UTF-8 scripts under the
  * Unix-only "C.UTF-8" locale that some terminals pass down, so that value is
- * dropped there; every other variable is kept.
+ * dropped there. A Mac program opened from the Finder gets no locale at
+ * all, and R would then read the corpus' accents as plain bytes, so a UTF-8
+ * one is set. Every other variable is kept.
  */
-export function rEnvironment(libDir?: string): NodeJS.ProcessEnv {
+export function rEnvironment(libDir?: string, platform: NodeJS.Platform = process.platform): NodeJS.ProcessEnv {
   const env: NodeJS.ProcessEnv = { ...process.env }
-  if (process.platform === 'win32') {
+  if (platform === 'darwin' && !env.LC_ALL && !env.LC_CTYPE && !env.LANG) env.LANG = 'en_US.UTF-8'
+  if (platform === 'win32') {
     for (const k of Object.keys(env)) {
       if ((k === 'LANG' || k.startsWith('LC_')) && /^c\.utf-?8$/i.test(env[k] ?? '')) delete env[k]
     }

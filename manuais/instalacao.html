@@ -37,7 +37,7 @@
 
       <h2>Requisitos</h2>
       <ul>
-        <li><strong>Sistema:</strong> Windows 10 ou Windows 11.</li>
+        <li><strong>Sistema:</strong> Windows 10 ou Windows 11. Há também uma versão de teste para Mac com chip Apple (veja <a href="#mac">No Mac</a>).</li>
         <li><strong>Para o programa em si:</strong> nada além do Windows. A maior parte das funções funciona sem o R.</li>
         <li><strong>Para as análises léxicas que usam o R:</strong> o R, versão 4.0 ou mais recente, e os <em>pacotes</em> dele (extensões que trazem funções prontas para as análises). Os pacotes são instalados numa pasta própria do labiia_quali.</li>
         <li><strong>Internet:</strong> necessária para baixar o R, caso você precise dele, e os pacotes.</li>
@@ -220,6 +220,41 @@
       <div class="atencao">
         <strong>Atenção</strong>
         <p>Se a instalação dos pacotes falhar por causa da internet, o programa avisa e você pode tentar de novo depois. O registro da etapa do R fica no arquivo <code>instalador-r.log</code>, dentro da pasta <code>AppData\Local\labiia_quali\logs</code>. Ele ajuda a descobrir o que aconteceu.</p>
+      </div>
+
+      <h2 id="mac">No Mac (versão de teste)</h2>
+      <p>A versão para Mac é nova e foi testada em Macs virtuais, ainda não no Mac de alguém. Se algo não funcionar, o próprio programa ajuda a descobrir o motivo (veja <a href="problemas.html#diagnostico">Diagnóstico do programa</a>).</p>
+      <ul>
+        <li><strong>Qual Mac serve:</strong> os que têm chip Apple (M1, M2, M3 ou mais novo), com macOS 13 (Ventura) ou mais recente. Para conferir, abra o menu da maçã → <strong>Sobre Este Mac</strong> e veja a linha <strong>Chip</strong>. Macs com processador Intel não são atendidos.</li>
+        <li><strong>Arquivo:</strong> <code>labiia_quali_&lt;versão&gt;_aarch64.dmg</code>, na página de lançamentos do GitHub.</li>
+      </ul>
+
+      <ol class="passos">
+        <li>
+          <strong>Abra o arquivo .dmg</strong>
+          <p>Dê dois cliques no arquivo baixado. Abre uma janela com o labiia_quali e a pasta Aplicativos.</p>
+        </li>
+        <li>
+          <strong>Arraste o labiia_quali para Aplicativos</strong>
+          <p>Depois, você pode ejetar o disco "labiia_quali" na barra lateral do Finder.</p>
+        </li>
+        <li>
+          <strong>Libere o programa na primeira vez</strong>
+          <p>O programa não tem a assinatura paga da Apple, então o macOS o bloqueia na primeira abertura, com um aviso de que não pôde verificar o programa. Clique em <span class="botao-ui">Concluído</span> (ou <span class="botao-ui">OK</span>). Depois abra <strong>Ajustes do Sistema → Privacidade e Segurança</strong>, role até o fim e clique em <span class="botao-ui">Abrir Mesmo Assim</span> ao lado do nome labiia_quali. Confirme com a senha do Mac. Isso só é preciso uma vez.</p>
+        </li>
+        <li>
+          <strong>Instale o R, se for usar as análises que dependem dele</strong>
+          <p>No Mac não há etapa do R durante a instalação. Abra uma análise léxica que use o R, como a Nuvem de palavras: se o R faltar, o painel do R mostra o botão <span class="botao-ui">Baixar o R para Mac</span>, que abre o site oficial do R. Baixe o instalador para <strong>Apple silicon (arm64)</strong>, instale e volte ao labiia_quali. Clique em <span class="botao-ui">Procurar de novo</span>.</p>
+        </li>
+        <li>
+          <strong>Instale os pacotes do R pelo programa</strong>
+          <p>Com o R encontrado, o mesmo painel oferece <span class="botao-ui">Instalar pacotes que faltam</span>. Os pacotes vão para uma pasta do labiia_quali, em <code>~/Library/Application Support/labiia_quali/R</code>.</p>
+        </li>
+      </ol>
+
+      <div class="dica">
+        <strong>Dica</strong>
+        <p>Se o macOS não deixar o programa abrir um arquivo da Mesa ou de Documentos, permita o labiia_quali em <strong>Ajustes do Sistema → Privacidade e Segurança → Arquivos e Pastas</strong>. No Mac, os atalhos usam ⌘ no lugar de Ctrl.</p>
       </div>
 
       <h2 id="primeira-abertura">Primeira abertura</h2>

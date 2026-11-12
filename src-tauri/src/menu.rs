@@ -233,7 +233,10 @@ fn build(app: &AppHandle) -> tauri::Result<Menu<Wry>> {
 
     let mut help = SubmenuBuilder::new(app, t("menu.help"))
         .item(&item(app, "github", &t("menu.github"), None)?)
-        .item(&item(app, "sponsor", &t("menu.sponsor"), None)?);
+        .item(&item(app, "sponsor", &t("menu.sponsor"), None)?)
+        // labiia_quali: the program's diagnostics (src/renderer/labiia/Diagnostics.tsx).
+        .item(&sep()?)
+        .item(&action(app, "labiia-diagnostics", &t("labiia.diagnostics"), None)?);
     if !mac {
         help = help.item(&sep()?);
         if crate::labiia::UPDATES_ENABLED {

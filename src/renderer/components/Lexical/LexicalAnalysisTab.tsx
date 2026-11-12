@@ -34,6 +34,7 @@ import { CONNECTED_TESTS } from './lexical-catalog'
 import type { LexicalRunProgress, PreparationTable } from '../../models/lexical-api'
 import { CorpusPreparationDialog } from './CorpusPreparationDialog'
 import { preparationActive, setCorpusPreparation, useCorpusPreparation } from '../../labiia/corpus-prep-store'
+import { DiagnosticsButton } from '../../labiia/Diagnostics'
 import './Lexical.css'
 
 export interface LexicalSavedConfig {
@@ -63,6 +64,13 @@ interface Props {
   }
 }
 
+
+/** Failures that come from the program or R rather than from the chosen
+ *  texts or settings: those messages offer the program's diagnostics. */
+function needsDiagnostics(error: string): boolean {
+  return ['failed', 'r-failed', 'r-not-found', 'r-timeout'].includes(error) || error.startsWith('helper-')
+}
+
 export function LexicalAnalysisTab({ test, data: propData, savedConfig, inTab }: Props) {
   const live = useLiveAnalysisData()
   const data = useMemo(() => ({ ...propData, ...live }), [propData, live])
@@ -87,7 +95,7 @@ export function LexicalAnalysisTab({ test, data: propData, savedConfig, inTab }:
   const [result, setResult] = useState<StoredLexicalResult | undefined>(savedConfig?.result)
   const [running, setRunning] = useState<string | null>(null)
   const [progress, setProgress] = useState<LexicalRunProgress | null>(null)
-  const [runError, setRunError] = useState<{ text: string; detail?: string } | null>(null)
+  const [runError, setRunError] = useState<{ text: string; detail?: string; diagnose?: boolean } | null>(null)
   const runIdRef = useRef<string | null>(null)
   const resultRef = useRef<HTMLDivElement>(null)
   const scrollToResult = useRef(false)
@@ -175,11 +183,15 @@ export function LexicalAnalysisTab({ test, data: propData, savedConfig, inTab }:
         setResult({ files: res.files, summary: res.summary, corpus: res.corpus, ranWith: runSignature, ranAt: new Date().toISOString() })
         scrollToResult.current = true
       } else if (res.error !== 'cancelled') {
-        setRunError({ text: runErrorText(res.error ?? 'failed', res.detail, res.missingPackages), detail: res.error === 'r-failed' ? res.detail : undefined })
+        setRunError({
+          text: runErrorText(res.error ?? 'failed', res.detail, res.missingPackages),
+          detail: res.error === 'r-failed' ? res.detail : undefined,
+          diagnose: needsDiagnostics(res.error ?? 'failed')
+        })
         if (res.error === 'r-packages-missing') void useLexicalRStore.getState().checkPackages(test.rPackages)
       }
     } catch (err) {
-      setRunError({ text: runErrorText('failed', String(err)) })
+      setRunError({ text: runErrorText('failed', String(err)), diagnose: true })
     } finally {
       if (runIdRef.current === runId) {
         runIdRef.current = null
@@ -446,6 +458,7 @@ export function LexicalAnalysisTab({ test, data: propData, savedConfig, inTab }:
                 <pre>{runError.detail}</pre>
               </details>
             )}
+            {runError.diagnose && <div className="lex-r-actions"><DiagnosticsButton /></div>}
           </div>
         )}
         <div ref={resultRef}>

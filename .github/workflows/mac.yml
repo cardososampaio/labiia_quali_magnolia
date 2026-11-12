@@ -1,0 +1,253 @@
+# Builds and checks labiia_quali for Macs with Apple chips, on GitHub's own
+# Macs: nobody on the team has one, so everything a person would check by
+# hand is checked here, and photos of the program are kept with the run.
+#
+#   mac          tests; the 13 lexical analyses through the helper (with R
+#                packages installed the way the program installs them);
+#                the .dmg, and inside it the .app's files, signature and
+#                chip; the same analyses with the .app's own Node and files;
+#                the program opened on a project, with photos; and two
+#                counter-checks: without R, and with the helper removed,
+#                the program must say so plainly
+#   windows      the same analyses on Windows, for comparison
+#   compare      the rule: the same corpus gives the same results on both
+#
+# Runs on pushes to the mac branch and by hand (Actions → Mac → Run workflow).
+# The .dmg and the report (photos, logs, results) are kept as the run's
+# artifacts for 30 days.
+
+name: Mac
+
+on:
+  push:
+    branches: [mac]
+  workflow_dispatch:
+
+concurrency:
+  group: mac-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  CORPUS: ${{ github.workspace }}/mac-check-report/corpus
+  TESTS: wordcloud,bigrams,trigrams,word-tree,yake,keyword-associations,sentiment,emotions,similitude,lda,thematic-map,chd,network-text
+  CATALOG: src/renderer/components/Lexical/lexical-catalog.ts
+
+jobs:
+  mac:
+    runs-on: macos-latest
+    timeout-minutes: 150
+    env:
+      REPORT: ${{ github.workspace }}/mac-check-report
+      LABIIA_DATA: ${{ github.workspace }}/mac-check-report/data
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+
+      - uses: dtolnay/rust-toolchain@stable
+        with:
+          targets: aarch64-apple-darwin
+
+      - uses: Swatinem/rust-cache@v2
+
+      # The official R for Mac (CRAN's installer, in /Library/Frameworks), as
+      # a researcher installs it. No packages: the program installs them.
+      - uses: r-lib/actions/setup-r@v2
+        with:
+          r-version: release
+          use-public-rspm: false
+
+      - name: System
+        run: |
+          sw_vers; uname -m; sysctl -n machdep.cpu.brand_string
+          Rscript --version; which Rscript
+          mkdir -p "$REPORT"
+
+      - run: npm ci
+
+      - name: Helper (Node for Apple chips and the lexical engine)
+        run: npm run prepare:helper
+
+      - name: Interface and helper typecheck and tests
+        run: |
+          npm run typecheck
+          npx vitest run
+
+      - name: Rust tests
+        run: cargo test --workspace
+
+      - name: Lexical analyses through the helper (installs the R packages first)
+        run: |
+          node scripts/mac-check/corpus.mjs "$CORPUS"
+          PARITY_DIR="$CORPUS" PARITY_OUT="$REPORT/runs/mac-source" PARITY_CATALOG="$CATALOG" \
+          PARITY_HELPER=helper/dist/labiia-helper.cjs PARITY_NODE=src-tauri/binaries/labiia-node-aarch64-apple-darwin \
+          PARITY_DATA="$LABIIA_DATA" PARITY_INSTALL=1 PARITY_TESTS="$TESTS" \
+            npx vitest run test/helper/parity.local.test.ts 2>&1 | tee "$REPORT/analyses-source.log"
+
+      - name: Build the .dmg
+        run: npx tauri build --target aarch64-apple-darwin 2>&1 | tee "$REPORT/build.log"
+
+      - name: Check the .app inside the .dmg
+        run: |
+          set -x
+          DMG=$(ls target/aarch64-apple-darwin/release/bundle/dmg/*.dmg)
+          ls -la "$DMG"
+          hdiutil attach -nobrowse -mountpoint /tmp/labiia-dmg "$DMG"
+          ls -la /tmp/labiia-dmg
+          rm -rf /Applications/labiia_quali.app
+          cp -R /tmp/labiia-dmg/labiia_quali.app /Applications/
+          hdiutil detach /tmp/labiia-dmg
+          APP=/Applications/labiia_quali.app
+          {
+            echo "## .app"
+            find "$APP/Contents" -maxdepth 2 | sort
+            echo; echo "## chip"; lipo -info "$APP/Contents/MacOS/labiia_quali"; lipo -info "$APP/Contents/MacOS/labiia-node"
+            echo; echo "## signature"; codesign --verify --deep --strict --verbose=2 "$APP" 2>&1
+            codesign -dv "$APP" 2>&1
+            echo; echo "## Info.plist"; plutil -p "$APP/Contents/Info.plist"
+            echo; echo "## Gatekeeper (an unsigned app is expected to be rejected until the person allows it)"
+            spctl --assess --type execute -vv "$APP" 2>&1 || true
+          } | tee "$REPORT/app.txt"
+          test -x "$APP/Contents/MacOS/labiia-node"
+          test -f "$APP/Contents/Resources/helper/labiia-helper.cjs"
+          test -f "$APP/Contents/Resources/lexical/dictionaries/lexique_pt.txt"
+          test -f "$APP/Contents/Resources/document-icon.icns"
+          test ! -e "$APP/Contents/Resources/installer"
+          "$APP/Contents/MacOS/labiia-node" --version
+
+      - name: Lexical analyses with the .app's own Node and files
+        run: |
+          APP=/Applications/labiia_quali.app
+          PARITY_DIR="$CORPUS" PARITY_OUT="$REPORT/runs/mac-app" PARITY_CATALOG="$CATALOG" \
+          PARITY_HELPER="$APP/Contents/Resources/helper/labiia-helper.cjs" PARITY_NODE="$APP/Contents/MacOS/labiia-node" \
+          PARITY_RESOURCES="$APP/Contents/Resources" PARITY_DATA="$LABIIA_DATA" PARITY_TESTS="$TESTS" \
+            npx vitest run test/helper/parity.local.test.ts 2>&1 | tee "$REPORT/analyses-app.log"
+          node scripts/mac-check/compare-runs.mjs "$REPORT/runs/mac-source" "$REPORT/runs/mac-app" "$REPORT/compare-source-app.md"
+
+      - name: The program on screen (development build, with photos)
+        run: node scripts/mac-check/ui-check.mjs --out "$REPORT/ui" --data "$LABIIA_DATA"
+
+      - name: The installed program opens a project
+        run: |
+          APP=/Applications/labiia_quali.app
+          LOGS="$HOME/Library/Application Support/labiia_quali/logs"
+          rm -rf "$LOGS"
+          cp "$REPORT/ui/run/Teste do Mac.qdpx" "$RUNNER_TEMP/Projeto.qdpx"
+          open -a "$APP" "$RUNNER_TEMP/Projeto.qdpx"
+          sleep 40
+          screencapture -x "$REPORT/06-programa-instalado.png" || true
+          pgrep -fl labiia_quali | tee "$REPORT/processes.txt"
+          pgrep -fl labiia-node | tee -a "$REPORT/processes.txt"
+          cp -R "$LOGS" "$REPORT/logs-installed" || true
+          cat "$LOGS"/*.log || true
+          osascript -e 'tell application "labiia_quali" to quit' || true
+          sleep 5; pkill -f labiia_quali || true
+          pgrep -f labiia-node && { echo "::error::the helper was left running after the program closed"; exit 1; } || true
+          # The startup check opened the helper; the log says when it could not.
+          if grep -q "startup check:" "$LOGS/labiia_quali.log"; then echo "::error::the installed program reported a problem at startup"; exit 1; fi
+          grep -q "starting helper" "$LOGS/helper.log"
+
+      - name: Counter-check — without R, the program says R is missing and how to get it
+        run: |
+          sudo mv /Library/Frameworks/R.framework /Library/Frameworks/R.framework.off
+          node scripts/mac-check/ui-check.mjs --skip-build --mode no-r --out "$REPORT/ui-no-r" --data "$RUNNER_TEMP/data-no-r" || status=$?
+          sudo mv /Library/Frameworks/R.framework.off /Library/Frameworks/R.framework
+          exit ${status:-0}
+
+      - name: Counter-check — with the helper removed, the program says the installation is incomplete
+        run: |
+          BROKEN="$RUNNER_TEMP/broken/labiia_quali.app"
+          mkdir -p "$RUNNER_TEMP/broken"
+          cp -R /Applications/labiia_quali.app "$BROKEN"
+          rm "$BROKEN/Contents/MacOS/labiia-node"
+          LOGS="$HOME/Library/Application Support/labiia_quali/logs"
+          rm -rf "$LOGS"
+          open -a "$BROKEN" "$RUNNER_TEMP/Projeto.qdpx"
+          sleep 40
+          screencapture -x "$REPORT/07-sem-componente.png" || true
+          osascript -e 'tell application "labiia_quali" to quit' || true
+          sleep 5; pkill -f labiia_quali || true
+          cp -R "$LOGS" "$REPORT/logs-broken" || true
+          cat "$LOGS"/*.log || true
+          grep -q "startup check: helper-unavailable" "$LOGS/labiia_quali.log"
+
+      - name: Keep the .dmg
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: labiia_quali-mac-dmg
+          path: target/aarch64-apple-darwin/release/bundle/dmg/*.dmg
+          retention-days: 30
+          if-no-files-found: ignore
+
+      - name: Keep the report (photos, logs, results)
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: mac-check-report
+          path: |
+            mac-check-report
+            !mac-check-report/data
+            !mac-check-report/ui/userdata
+            !mac-check-report/ui/run/fixture.json
+          retention-days: 30
+
+  windows:
+    runs-on: windows-latest
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+
+      - uses: r-lib/actions/setup-r@v2
+        with:
+          r-version: release
+          use-public-rspm: false
+
+      - run: npm ci
+
+      - run: npm run prepare:helper
+
+      - name: Lexical analyses through the helper
+        shell: bash
+        run: |
+          node scripts/mac-check/corpus.mjs "$CORPUS"
+          PARITY_DIR="$CORPUS" PARITY_OUT="$GITHUB_WORKSPACE/runs/windows" PARITY_CATALOG="$CATALOG" \
+          PARITY_HELPER=helper/dist/labiia-helper.cjs PARITY_NODE=src-tauri/binaries/labiia-node-x86_64-pc-windows-msvc.exe \
+          PARITY_DATA="$RUNNER_TEMP/labiia-data" PARITY_INSTALL=1 PARITY_TESTS="$TESTS" \
+            npx vitest run test/helper/parity.local.test.ts
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: windows-runs
+          path: runs
+          retention-days: 30
+
+  compare:
+    needs: [mac, windows]
+    if: always()
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/download-artifact@v4
+        with:
+          path: artifacts
+      - name: Same corpus, same results on Mac and Windows
+        run: |
+          node scripts/mac-check/compare-runs.mjs artifacts/windows-runs/windows artifacts/mac-check-report/runs/mac-app compare.md
+          status=$?
+          cat compare.md >> "$GITHUB_STEP_SUMMARY"
+          exit $status
+        shell: bash {0}
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: compare-mac-windows
+          path: compare.md

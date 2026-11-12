@@ -69,6 +69,7 @@ import { isAnalysisTab, isMapTab, isQueryBuilderTab, isMergeTab, isNotebookTab, 
 import { requestPreferencesCategory } from './components/Preferences/PreferencesWindow'
 import type { PersistedTab, PersistedTabState, MissingBinary, CheckoutMarker } from './models/types'
 import { MissingBinariesBanner } from './components/MissingBinariesBanner'
+import { LabiiaDiagnostics } from './labiia/Diagnostics' // labiia_quali
 import { CheckoutConflictDialog } from './components/CheckoutConflictDialog'
 import { StealBackDialog } from './components/StealBackDialog'
 import { NameGateOverlay } from './components/NameGateOverlay'
@@ -3658,6 +3659,8 @@ function App() {
       {/* labiia_quali: coding without dragging, then save state along the bottom. */}
       <QuickCoding />
       <StatusBar />
+      {/* labiia_quali: Help → Program diagnostics, and the notice when a part did not start. */}
+      <LabiiaDiagnostics />
       {codebookImportDialog}
     </div>
   )

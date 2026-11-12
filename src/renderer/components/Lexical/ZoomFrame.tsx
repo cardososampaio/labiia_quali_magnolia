@@ -8,6 +8,7 @@
  */
 import { useEffect, useLayoutEffect, useRef, useState, type CSSProperties, type ReactNode } from 'react'
 import { t } from '../../i18n'
+import { isMac } from '../../utils/platform'
 
 const STEPS = [0.1, 0.25, 0.33, 0.5, 0.67, 0.75, 0.9, 1, 1.1, 1.25, 1.5, 1.75, 2, 2.5, 3, 4, 5]
 
@@ -42,14 +43,15 @@ export function ZoomFrame({ natural, tools, children }: {
     setZoom(next ?? (dir > 0 ? STEPS[STEPS.length - 1] : STEPS[0]))
   }
 
-  // Ctrl + wheel zooms the picture instead of the page.
+  // Ctrl + wheel (Cmd + wheel on a Mac, where a trackpad pinch also arrives
+  // as Ctrl + wheel) zooms the picture instead of the page.
   const stepRef = useRef(step)
   stepRef.current = step
   useEffect(() => {
     const el = frameRef.current
     if (!el) return
     const onWheel = (e: WheelEvent): void => {
-      if (!e.ctrlKey) return
+      if (!e.ctrlKey && !e.metaKey) return
       e.preventDefault()
       stepRef.current(e.deltaY < 0 ? 1 : -1)
     }
@@ -122,7 +124,9 @@ export function ZoomFrame({ natural, tools, children }: {
       <div
         ref={frameRef}
         className={`lex-figure-frame${zoom !== null ? ' actual' : ''}${canPan ? ' pannable' : ''}${panning ? ' panning' : ''}`}
-        title={canPan ? t('labiia.lexical.dragToMoveThePicture') : t('labiia.lexical.ctrlMouseWheelZooms')}
+        title={isMac
+          ? (canPan ? t('labiia.lexical.dragToMoveThePictureMac') : t('labiia.lexical.cmdMouseWheelZooms'))
+          : (canPan ? t('labiia.lexical.dragToMoveThePicture') : t('labiia.lexical.ctrlMouseWheelZooms'))}
         onPointerDown={onPointerDown}
         onPointerMove={onPointerMove}
         onPointerUp={endDrag}

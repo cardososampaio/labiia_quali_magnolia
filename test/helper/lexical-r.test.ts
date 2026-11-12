@@ -32,6 +32,20 @@ describe('R environment', () => {
     else process.env.LC_ALL = before
   })
 
+  it('gives R a UTF-8 locale on a Mac opened from the Finder, which passes none', () => {
+    const saved = { LANG: process.env.LANG, LC_ALL: process.env.LC_ALL, LC_CTYPE: process.env.LC_CTYPE }
+    delete process.env.LANG
+    delete process.env.LC_ALL
+    delete process.env.LC_CTYPE
+    expect(rEnvironment(undefined, 'darwin').LANG).toBe('en_US.UTF-8')
+    process.env.LANG = 'pt_BR.UTF-8'
+    expect(rEnvironment(undefined, 'darwin').LANG).toBe('pt_BR.UTF-8')
+    for (const [k, v] of Object.entries(saved)) {
+      if (v === undefined) delete process.env[k]
+      else process.env[k] = v
+    }
+  })
+
   it('keeps one package folder per R minor version', () => {
     expect(libDirFor('4.6.1')).toMatch(/[\\/]R[\\/]library[\\/]4\.6$/)
     expect(libDirFor('4.6.2')).toBe(libDirFor('4.6.1'))

@@ -7,10 +7,11 @@
  */
 import { useEffect, useRef, useState } from 'react'
 import {
-  Icon, faFilePlus, faFolderOpen, faSaveAll, faSquareArrowRightEnter, faGitMerge, faFileAlt,
+  Icon, faFilePlus, faFolderOpen, faSaveAll, faSquareArrowRightEnter, faGitMerge, faFileAlt, faCircleInfo,
   type IconComponent
 } from '../Icon'
 import { t } from '../../i18n'
+import { openDiagnostics } from '../../labiia/Diagnostics'
 
 interface Props {
   iconUrl: string
@@ -86,7 +87,8 @@ export function StartMenu(props: Props): JSX.Element {
     { id: 'save-as', label: t('labiia.start.saveAs'), hint: t('labiia.start.saveACopyUnderAnother'), icon: faSaveAll, family: 'neutral', run: props.onSaveProjectAs },
     { id: 'import', label: t('labiia.start.importSources'), hint: props.importLockedReason ?? t('labiia.start.textsPdfsImagesAudioVideo'), icon: faSquareArrowRightEnter, family: 'sources', run: props.onImportSources },
     // git-merge flipped both ways: projects merge toward the open project.
-    { id: 'merge', label: t('labiia.start.mergeProjects'), hint: t('labiia.start.bringAnotherCopySWork'), icon: faGitMerge, family: 'query', run: props.onMergeProject, iconStyle: { transform: 'scale(-1, -1)' } }
+    { id: 'merge', label: t('labiia.start.mergeProjects'), hint: t('labiia.start.bringAnotherCopySWork'), icon: faGitMerge, family: 'query', run: props.onMergeProject, iconStyle: { transform: 'scale(-1, -1)' } },
+    { id: 'diagnostics', label: t('labiia.diagnostics.title'), hint: t('labiia.diagnostics.startHint'), icon: faCircleInfo, family: 'neutral', run: openDiagnostics }
   ]
 
   return (

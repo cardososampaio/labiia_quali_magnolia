@@ -32,7 +32,7 @@
       <key>CFBundleTypeIconFile</key>
       <string>document-icon.icns</string>
       <key>CFBundleTypeName</key>
-      <string>QDPX Project</string>
+      <string>Projeto QDPX</string>
       <key>CFBundleTypeRole</key>
       <string>Editor</string>
       <key>LSHandlerRank</key>
@@ -44,7 +44,7 @@
       <key>CFBundleTypeIconFile</key>
       <string>codebook-icon.icns</string>
       <key>CFBundleTypeName</key>
-      <string>QDC Codebook</string>
+      <string>Livro de códigos QDC</string>
       <key>CFBundleTypeRole</key>
       <string>Viewer</string>
       <key>LSHandlerRank</key>

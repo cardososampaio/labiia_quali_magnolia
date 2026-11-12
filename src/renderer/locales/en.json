@@ -181,7 +181,9 @@
       "closeTitle": "Close labiia_quali?",
       "closeDetail": "The project is saved automatically before closing.",
       "closeYes": "Yes",
-      "closeCancel": "Cancel"
+      "closeCancel": "Cancel",
+      "macPrivacyBlocked": "macOS did not let labiia_quali open this file. In System Settings → Privacy & Security → Files and Folders (or Full Disk Access), allow labiia_quali, or copy the file to another folder, and import again.",
+      "diagnostics": "Program Diagnostics…"
     }
   },
   "tools": {
@@ -2266,7 +2268,10 @@
         "order": "Order: expressions, equivalences, variants, plurals, then the dictionary.",
         "applied": "Preparation: {{plurals}} plurals, {{variants}} variants, {{equivalences}} equivalences, {{expressions}} expressions",
         "appliedHelp": "What the corpus preparation replaced in this run, for the method description."
-      }
+      },
+      "dragToMoveThePictureMac": "Drag to move the picture · ⌘ + mouse wheel or a trackpad pinch zooms",
+      "cmdMouseWheelZooms": "⌘ + mouse wheel or a trackpad pinch zooms",
+      "downloadRMac": "Download R for Mac"
     },
     "prefs": {
       "r": "R (lexical analyses)",
@@ -2301,7 +2306,8 @@
       "largerTitle": "Make the interface larger",
       "smaller": "Smaller",
       "smallerTitle": "Make the interface smaller",
-      "manualTitle": "Open the labiia_quali user manual in your browser."
+      "manualTitle": "Open the labiia_quali user manual in your browser.",
+      "browseHintMac": "Open the Finder file picker"
     },
     "start": {
       "newProject": "New project",
@@ -2363,7 +2369,9 @@
     },
     "importErrors": {
       "accessDeniedByWindows": "access denied by Windows",
-      "windowsDidNotLetLabiia": "Windows did not let labiia_quali open these files. This is usually an antivirus protecting documents in folders such as the Desktop or Documents (in Avast: Protection → Sensitive Data Shield or Ransomware Shield). Allow labiia_quali in the antivirus, or copy the files to another folder, and import again."
+      "windowsDidNotLetLabiia": "Windows did not let labiia_quali open these files. This is usually an antivirus protecting documents in folders such as the Desktop or Documents (in Avast: Protection → Sensitive Data Shield or Ransomware Shield). Allow labiia_quali in the antivirus, or copy the files to another folder, and import again.",
+      "accessDeniedByMac": "access denied by macOS",
+      "macDidNotLetLabiia": "macOS did not let labiia_quali open these files. In System Settings → Privacy & Security → Files and Folders (or Full Disk Access), allow labiia_quali, or copy the files to another folder, and import again."
     },
     "welcome": {
       "aNetworkOfRelatedWords": "A network of related words, as drawn by the Similitude analysis",
@@ -2449,7 +2457,8 @@
       "forceAtlas2Role": "the text network layout, ForceAtlas2 (Jacomy, Venturini, Heymann & Bastian, 2014), with the settings labiia_lex uses in Gephi",
       "louvainRole": "the communities of the text network (Blondel et al., 2008), ported with the same steps and random order",
       "sigmaRole": "drawing and interaction of the text network (sigma.js, graphology, ForceAtlas2 layout)",
-      "openRefineRole": "the methods that group spelling variants in \"Prepare corpus\" (fingerprint, character n-grams, edit distance), reimplemented from its documentation as labiia_lex does; no code copied"
+      "openRefineRole": "the methods that group spelling variants in \"Prepare corpus\" (fingerprint, character n-grams, edit distance), reimplemented from its documentation as labiia_lex does; no code copied",
+      "rIntroMac": "Word cloud, CHD, Similitude, Emotions and LDA run in R with these CRAN packages. They are not bundled: the program downloads them from CRAN, each under its own licence."
     },
     "docSelector": {
       "manual": "Manual",
@@ -2468,6 +2477,59 @@
       "containingText": "…and containing this text (optional)",
       "textToSearch": "Text to search for (optional)",
       "replaceQuery": "Replace the current query with this selection?"
+    },
+    "diagnostics": {
+      "title": "Program diagnostics",
+      "startHint": "Check every part works and copy a report",
+      "intro": "This window checks each part of labiia_quali on this computer. When something is marked ✗, follow the advice, or copy the report and send it to whoever supports you. The report holds versions, folder paths and error messages, but no text from your projects.",
+      "checking": "Checking… (R may take a minute)",
+      "program": "Program",
+      "dataFolder": "Data folder",
+      "dataFolderNotWritable": "The program cannot write to this folder, so preferences and the analyses' cache are not kept. Check the folder's permissions, or free some disk space.",
+      "helper": "Lexical analyses component",
+      "helperRunning": "Running (Node {{version}})",
+      "nodeMissing": "The component that runs the lexical analyses is missing from the installation.",
+      "helperFilesMissing": "Files the lexical analyses need are missing from the installation.",
+      "reinstall": "The installation is incomplete. Install labiia_quali again; if the problem stays, send the report.",
+      "helperBlockedMac": "macOS stopped the component from running. Open System Settings → Privacy & Security, scroll to the end and click \"Open Anyway\" if labiia_quali or labiia-node is listed. Otherwise, delete labiia_quali from Applications and install it again from the .dmg.",
+      "helperBlockedWindows": "Windows or the antivirus stopped the component from running. Allow labiia_quali in the antivirus and open the program again.",
+      "resources": "Dictionaries and R scripts",
+      "resourcesMissing": "Missing: {{list}}",
+      "tempFolder": "Temporary folder",
+      "tempFolderNotWritable": "The analyses cannot write their temporary files here. Free some disk space and try again.",
+      "rNotChecked": "Not checked: the lexical analyses component did not start.",
+      "rPackages": "R packages",
+      "packagesMissing": "Missing ({{n}}): {{list}}",
+      "packagesAllPresent": "All installed",
+      "packagesAdvice": "Install them from Preferences → R (Install missing packages). Only the analyses that use them need them.",
+      "rNotFound": "R was not found ({{places}} places checked; the list is in the report).",
+      "rAdviceMac": "Install R for Mac from its official site (Download R for Mac, in a lexical analysis' R panel), choosing the installer for Apple silicon (arm64), then click Look again. Word frequencies and other analyses without R work meanwhile.",
+      "rAdviceWindows": "Install R (the labiia_quali installer offers to) or choose where it is in Preferences → R. Analyses without R work meanwhile.",
+      "libreOfficeMissing": "Not found. Only needed to import codebooks saved in the old Word format (.doc).",
+      "lastCrash": "Unexpected close",
+      "lastCrashAdvice": "The cause is in the report. Send it, so the problem can be fixed.",
+      "reportTitle": "labiia_quali — program diagnostics",
+      "rLookedIn": "Where R was looked for:",
+      "nodeLookedIn": "Where the component was looked for:",
+      "programLog": "program log",
+      "helperLog": "lexical analyses log",
+      "technicalData": "technical data",
+      "seeDiagnostics": "See diagnostics",
+      "copyReport": "Copy report",
+      "copied": "Report copied. Paste it into an email or message.",
+      "copyFailed": "The report could not be copied. Use Save report… instead.",
+      "saveReport": "Save report…",
+      "saved": "Report saved.",
+      "openLogs": "Open logs folder",
+      "checkAgain": "Check again",
+      "close": "Close",
+      "startupProblem": "A part of the program could not be started",
+      "startupProblemText": "The lexical analyses will not work until this is solved. The diagnostics say what happened.",
+      "startupCrash": "The program closed unexpectedly last time",
+      "startupCrashText": "The cause was recorded. Sending the report helps fix it.",
+      "dontShowAgain": "Don't show again",
+      "helperDidNotStart": "The component that runs the lexical analyses did not start, so R could not be looked for. See the diagnostics. ({{error}})",
+      "helperFailedRun": "The component that runs the lexical analyses did not start or stopped. See the diagnostics. ({{error}})"
     }
   }
 }

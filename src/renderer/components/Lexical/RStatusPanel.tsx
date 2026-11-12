@@ -15,12 +15,20 @@ import { LEXICAL_TESTS } from './lexical-catalog'
 import { requestPreferencesCategory } from '../Preferences/PreferencesWindow'
 import { useDocumentStore } from '../../stores/document-store'
 import { PREFERENCES_TAB_ID } from '../../utils/tab-ids'
+import { isMac } from '../../utils/platform'
+import { DiagnosticsButton } from '../../labiia/Diagnostics'
 
-const R_DOWNLOAD_URL = 'https://cran.r-project.org/'
+// On a Mac, CRAN's page with the installer for Apple chips.
+const R_DOWNLOAD_URL = isMac ? 'https://cloud.r-project.org/bin/macosx/' : 'https://cran.r-project.org/'
+const downloadRLabel = (): string => t(isMac ? 'labiia.lexical.downloadRMac' : 'labiia.lexical.downloadR')
+
+/** Problems R itself has; anything else means the helper that looks for R did not answer. */
+const R_PROBLEMS = new Set(['not-found', 'not-runnable', 'too-old'])
 
 function problemText(problem?: string): string {
   if (problem === 'not-runnable') return t('labiia.lexical.theRscriptChosenInPreferences')
   if (problem === 'too-old') return t('labiia.lexical.thisRIsTooOld')
+  if (problem && !R_PROBLEMS.has(problem)) return t('labiia.diagnostics.helperDidNotStart', { error: problem })
   return t('labiia.lexical.rWasNotFoundOn')
 }
 
@@ -105,8 +113,10 @@ export function RStatusPanel({ packages }: { packages: string[] }) {
           <span>{problemText(status.problem)}</span>
         </div>
         <div className="lex-r-actions">
-          <button className="secondary lex-small-btn" onClick={() => window.open(R_DOWNLOAD_URL)}>{t('labiia.lexical.downloadR')}</button>
+          <button className="secondary lex-small-btn" onClick={() => window.open(R_DOWNLOAD_URL)}>{downloadRLabel()}</button>
+          <button className="secondary lex-small-btn" onClick={() => void useLexicalRStore.getState().refresh(true)}>{t('labiia.lexical.lookAgain')}</button>
           <button className="secondary lex-small-btn" onClick={openRPreferences}>{t('labiia.lexical.chooseWhereRIs')}</button>
+          <DiagnosticsButton />
         </div>
       </>
     )
@@ -203,7 +213,8 @@ export function RSettingsPanel() {
       )}
       {!status?.found && !checking && (
         <div className="lex-r-actions" style={{ marginTop: 10 }}>
-          <button className="lex-small-btn" onClick={() => window.open(R_DOWNLOAD_URL)}>{t('labiia.lexical.downloadR')}</button>
+          <button className="lex-small-btn" onClick={() => window.open(R_DOWNLOAD_URL)}>{downloadRLabel()}</button>
+          <DiagnosticsButton />
         </div>
       )}
     </div>

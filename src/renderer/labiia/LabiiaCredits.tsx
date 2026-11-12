@@ -7,6 +7,7 @@
  */
 import { useTranslation } from 'react-i18next'
 import { LEXICAL_CREDITS, R_CREDITS, type CreditRow } from '../components/Licence/credits'
+import { isMac } from '../utils/platform'
 
 function SectionTitle({ children }: { children: string }) {
   return <h3 style={{ margin: '20px 0 4px', fontSize: 13, fontWeight: 600, color: 'var(--text-primary)' }}>{children}</h3>
@@ -56,7 +57,7 @@ export function LabiiaCredits() {
       <CreditTable rows={LEXICAL_CREDITS} />
 
       <SectionTitle>{t('labiia.credits.rTitle')}</SectionTitle>
-      <SectionIntro>{t('labiia.credits.rIntro')}</SectionIntro>
+      <SectionIntro>{t(isMac ? 'labiia.credits.rIntroMac' : 'labiia.credits.rIntro')}</SectionIntro>
       <CreditTable rows={R_CREDITS} />
     </>
   )

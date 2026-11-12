@@ -41,3 +41,6 @@ src-tauri/binaries/
 
 # Installers copied here for testing (built artifacts, not source)
 instalador/
+
+# Reports of scripts/mac-check (photos, logs, results of a run)
+mac-check-report/

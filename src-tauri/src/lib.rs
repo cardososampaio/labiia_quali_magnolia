@@ -164,9 +164,15 @@ pub fn run() {
             labiia::lexical::lexical_save_file,
             labiia::corpus_prep::corpus_prep_suggest,
             labiia::corpus_prep::corpus_prep_build,
+            labiia::diagnostics::labiia_startup_check,
+            labiia::diagnostics::labiia_diagnostics,
+            labiia::diagnostics::labiia_dismiss_crash,
+            labiia::diagnostics::labiia_open_logs_folder,
         ])
         .setup(|app| {
             storage::init(app.handle());
+            // labiia_quali: the log file and the crash record (Help → Program diagnostics).
+            labiia::diagnostics::init(app.handle());
             i18n::init_from_preferences(&storage::load_preferences());
             i18n::install_core_translator();
             updater::preview_at_launch(app.handle());

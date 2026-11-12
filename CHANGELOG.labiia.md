@@ -3,6 +3,30 @@
 As novidades do Magnolia, em que o labiia_quali se baseia, estão em
 [CHANGELOG.md](CHANGELOG.md).
 
+## Próxima versão
+
+### Novidades
+- **Versão para Mac** com chip Apple (M1 em diante, macOS 13 ou mais novo),
+  como versão de teste. Sem a assinatura paga da Apple: na primeira abertura,
+  o programa é liberado uma vez em Ajustes do Sistema → Privacidade e
+  Segurança. O R não vem com o instalador: o painel do R leva ao instalador
+  oficial e depois instala os pacotes. A versão é compilada e testada em Macs
+  do GitHub, que rodam as 13 análises e conferem que dão os mesmos
+  resultados do Windows.
+- **Diagnóstico do programa** (Iniciar; no Mac também no menu Ajuda): confere
+  cada parte do programa (pasta de dados, componente das análises léxicas,
+  dicionários, R e os lugares onde foi procurado, pacotes do R, LibreOffice)
+  e diz o que fazer. O relatório pode ser copiado ou salvo para enviar a
+  quem dá suporte, sem nenhum texto dos projetos.
+- Ao abrir um projeto, um aviso mostra quando uma parte do programa não
+  iniciou, ou quando o programa fechou de repente na vez anterior. Os erros
+  do programa passam a ficar registrados em `logs/labiia_quali.log`.
+
+### Correções
+- Uma análise que falha mostra a mensagem de erro inteira, com o botão
+  "Ver diagnóstico", e o painel do R distingue "o R não foi encontrado" de
+  "o componente das análises não iniciou".
+
 ## 0.2.1
 
 ### Novidades

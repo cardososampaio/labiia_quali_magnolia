@@ -1,6 +1,6 @@
 # AGENTS.md: instruções para agentes de código
 
-O labiia_quali é um programa de análise qualitativa de dados para Windows, em português do Brasil. Ele deriva do [Magnolia](https://github.com/caledavis/Magnolia), de Cale Davis, e incorpora as análises léxicas do labiia_lex. Desde a versão 0.2.0 roda sobre a base do Magnolia 2.1:
+O labiia_quali é um programa de análise qualitativa de dados para Windows (e, em teste, para Mac com chip Apple), em português do Brasil. Ele deriva do [Magnolia](https://github.com/caledavis/Magnolia), de Cale Davis, e incorpora as análises léxicas do labiia_lex. Desde a versão 0.2.0 roda sobre a base do Magnolia 2.1:
 
 - **Tauri e Rust:** janelas, leitura e gravação de projetos e livros de códigos;
 - **React e TypeScript:** a interface;
@@ -51,6 +51,9 @@ npm run build               # instalador em <pasta de compilação>/release/bund
 | Dicionários, léxicos e scripts R | `resources/lexical/` |
 | Instalador: etapa do R | `src-tauri/windows/hooks.nsh`, `build/installer/` |
 | Manual do usuário (HTML publicado no GitHub Pages) | `manuais/` |
+| Diagnóstico do programa (registro de erros, causa de fechamento, verificações, relatório) | `src-tauri/src/labiia/diagnostics.rs`, `src/helper/diagnostics.ts`, `src/renderer/labiia/Diagnostics.tsx`, `diagnostics-report.ts` |
+| Versão para Mac: configuração, ícones, Node do ajudante | `src-tauri/tauri.macos.conf.json`, `src-tauri/icons/*.icns`, `scripts/helper-node.json` |
+| Testes nos Macs do GitHub: corpus de teste, teste na tela, comparação Mac × Windows | `.github/workflows/mac.yml`, `scripts/mac-check/` |
 | Testes | `test/renderer/`, `test/helper/`, `crates/magnolia-core/tests/` |
 
 ## Regras do projeto
@@ -92,6 +95,15 @@ npm run build               # instalador em <pasta de compilação>/release/bund
 ### Comentários e testes
 - Comentários e nomes de teste dizem a regra que o programa segue e por quê.
 - Não registre ali nomes de pessoas, datas de decisão nem etapas do fluxo de trabalho.
+
+## Mac
+
+- **Ninguém da equipe tem Mac.** A versão para Mac só é compilada e testada no GitHub, em `.github/workflows/mac.yml`, que roda nos envios ao ramo `mac` e quando é acionado à mão. Ele guarda o `.dmg` e um relatório com fotos da tela, registros e resultados (artefatos da execução).
+  - O teste na tela (`scripts/mac-check/ui-check.mjs`) também roda no Windows, sem as fotos, para conferir os cliques antes de enviar.
+  - A comparação (`scripts/mac-check/compare-runs.mjs`) segue a regra: o mesmo corpus dá os mesmos resultados no Mac e no Windows; só as figuras podem diferir.
+- **Diferenças entre os sistemas** ficam no código com `cfg(target_os = "macos")`/`cfg(unix)` no Rust e `process.platform === 'darwin'` ou `isMac` na interface. Textos que citam o Windows têm uma versão para Mac (chaves terminadas em `Mac`).
+- **Sem assinatura da Apple:** `signingIdentity: "-"` (assinatura local, que o chip Apple exige) e `hardenedRuntime: false`, para o Node do ajudante rodar sem permissões especiais.
+- **Quando alguém relatar um erro**, peça primeiro o relatório do Diagnóstico do programa (Iniciar → Diagnóstico do programa → Copiar relatório). Ele traz o sistema, o que foi encontrado, onde o R foi procurado e o fim dos registros.
 
 ## Cuidados ao testar
 

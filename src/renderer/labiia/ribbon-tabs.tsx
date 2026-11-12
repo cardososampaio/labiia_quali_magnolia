@@ -35,6 +35,7 @@ import {
 } from '../components/Icon'
 import { t } from '../i18n'
 import { MANUAL_URL } from './config'
+import { isMac } from '../utils/platform'
 
 export type LabiiaPanel = 'documents' | 'codes' | 'queries' | 'memos' | 'quotes' | 'analyses'
 
@@ -105,7 +106,7 @@ async function recentProjectsMenu(openProject: () => void): Promise<RibbonMenuIt
   items.push({
     id: 'browse',
     label: t('labiia.ribbon.browseForProject'),
-    hint: t('labiia.ribbon.browseHint'),
+    hint: t(isMac ? 'labiia.ribbon.browseHintMac' : 'labiia.ribbon.browseHint'),
     icon: faFolderOpen,
     separated: true,
     onClick: openProject

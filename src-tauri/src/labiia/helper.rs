@@ -76,13 +76,35 @@ fn repo_root() -> Option<PathBuf> {
     cfg!(debug_assertions).then(|| Path::new(env!("CARGO_MANIFEST_DIR")).join(".."))
 }
 
-fn node_exe() -> Option<PathBuf> {
-    let exe_dir = std::env::current_exe().ok()?.parent()?.to_path_buf();
-    let mut c = vec![exe_dir.join("labiia-node.exe"), exe_dir.join("labiia-node")];
-    if let Some(root) = repo_root() {
-        c.push(root.join("src-tauri/binaries/labiia-node-x86_64-pc-windows-msvc.exe"));
+/// Where the bundled Node is looked for, in order: next to the program (the
+/// installed app; on a Mac that is `Contents/MacOS`), then, in development
+/// builds, where `npm run prepare:helper` put it for this system.
+pub(crate) fn node_candidates() -> Vec<PathBuf> {
+    let mut c = Vec::new();
+    if let Some(exe_dir) = std::env::current_exe().ok().and_then(|e| e.parent().map(Path::to_path_buf)) {
+        c.push(exe_dir.join(NODE_NAME));
     }
-    first_existing(c)
+    if let Some(root) = repo_root() {
+        c.push(root.join(format!("src-tauri/binaries/labiia-node-{}{}", TARGET_TRIPLE, std::env::consts::EXE_SUFFIX)));
+    }
+    c
+}
+
+const NODE_NAME: &str = if cfg!(windows) { "labiia-node.exe" } else { "labiia-node" };
+
+/// The system this program was built for, in Tauri's sidecar naming.
+const TARGET_TRIPLE: &str = if cfg!(all(target_os = "macos", target_arch = "aarch64")) {
+    "aarch64-apple-darwin"
+} else if cfg!(all(target_os = "macos", target_arch = "x86_64")) {
+    "x86_64-apple-darwin"
+} else if cfg!(windows) {
+    "x86_64-pc-windows-msvc"
+} else {
+    "x86_64-unknown-linux-gnu"
+};
+
+fn node_exe() -> Option<PathBuf> {
+    first_existing(node_candidates())
 }
 
 /// The folder that holds `helper/` and `lexical/` in an installed app.
@@ -94,7 +116,7 @@ fn resource_dirs(app: &AppHandle) -> Vec<PathBuf> {
     dirs
 }
 
-fn helper_script(app: &AppHandle) -> Option<PathBuf> {
+pub(crate) fn helper_script(app: &AppHandle) -> Option<PathBuf> {
     first_existing(
         resource_dirs(app)
             .into_iter()
@@ -113,7 +135,7 @@ pub(crate) fn lexical_resources(app: &AppHandle) -> Option<PathBuf> {
     )
 }
 
-fn log_path() -> PathBuf {
+pub(crate) fn log_path() -> PathBuf {
     crate::storage::user_data_dir().join("logs").join("helper.log")
 }
 
@@ -137,9 +159,25 @@ fn log_line(text: &str) {
 }
 
 fn start(app: &AppHandle) -> Result<Running, String> {
-    let node = node_exe().ok_or("helper-unavailable: labiia-node.exe not found next to the app")?;
-    let script = plain_path(helper_script(app).ok_or("helper-unavailable: helper/labiia-helper.cjs not found")?);
-    let resources = plain_path(lexical_resources(app).ok_or("helper-unavailable: lexical resources not found")?);
+    let node = node_exe().ok_or_else(|| {
+        let msg = format!(
+            "helper-unavailable: {NODE_NAME} not found (looked in: {})",
+            node_candidates().iter().map(|p| p.display().to_string()).collect::<Vec<_>>().join("; ")
+        );
+        log_line(&msg);
+        msg
+    })?;
+    let looked = || resource_dirs(app).iter().map(|p| p.display().to_string()).collect::<Vec<_>>().join("; ");
+    let script = plain_path(helper_script(app).ok_or_else(|| {
+        let msg = format!("helper-unavailable: helper/labiia-helper.cjs not found (looked in: {})", looked());
+        log_line(&msg);
+        msg
+    })?);
+    let resources = plain_path(lexical_resources(app).ok_or_else(|| {
+        let msg = format!("helper-unavailable: lexical resources not found (looked in: {})", looked());
+        log_line(&msg);
+        msg
+    })?);
     let data = plain_path(crate::storage::user_data_dir().to_path_buf());
 
     let mut cmd = Command::new(&node);
@@ -152,6 +190,13 @@ fn start(app: &AppHandle) -> Result<Running, String> {
         .stdout(Stdio::piped())
         .stderr(Stdio::piped());
     hide_window(&mut cmd);
+    // Outside Windows the helper leads its own process group, so quitting
+    // can stop it and everything it started (see `shutdown`).
+    #[cfg(unix)]
+    {
+        use std::os::unix::process::CommandExt;
+        cmd.process_group(0);
+    }
     log_line(&format!("starting helper: {} {}", node.display(), script.display()));
     let mut child = cmd.spawn().map_err(|e| {
         let msg = format!("helper-unavailable: {e}");
@@ -276,6 +321,21 @@ pub fn shutdown() {
         kill.args(["/PID", &pid.to_string(), "/T", "/F"]).stdout(Stdio::null()).stderr(Stdio::null());
         hide_window(&mut kill);
         let _ = kill.status();
+    }
+    // Elsewhere the helper is asked to stop first: it stops the R runs it
+    // started (each in its own process group) and leaves. If it is still
+    // there after a moment, its whole group is stopped.
+    #[cfg(unix)]
+    {
+        let pid = pid as libc::pid_t;
+        unsafe { libc::kill(pid, libc::SIGTERM) };
+        for _ in 0..20 {
+            if matches!(r.child.try_wait(), Ok(Some(_))) {
+                break;
+            }
+            std::thread::sleep(std::time::Duration::from_millis(50));
+        }
+        unsafe { libc::killpg(pid, libc::SIGKILL) };
     }
     let _ = r.child.kill();
     let _ = r.child.wait();

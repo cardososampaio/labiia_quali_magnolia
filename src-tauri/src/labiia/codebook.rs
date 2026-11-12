@@ -25,11 +25,13 @@ fn error(message: String) -> Value {
     json!({ "kind": "error", "message": message })
 }
 
-/// Windows refuses to open the file: usually an antivirus guarding the
-/// Desktop or Documents. The message says what to do about it.
+/// The system refuses to open the file. On Windows that is usually an
+/// antivirus guarding the Desktop or Documents; on a Mac, the privacy
+/// setting that lets each program reach those folders. The message says
+/// what to do about it.
 fn read_error(e: &std::io::Error) -> String {
     if e.kind() == std::io::ErrorKind::PermissionDenied {
-        t("labiia.antivirusBlocked")
+        t(if cfg!(target_os = "macos") { "labiia.macPrivacyBlocked" } else { "labiia.antivirusBlocked" })
     } else {
         e.to_string()
     }
@@ -69,12 +71,31 @@ const WORD_SCRIPT: &str = "$ErrorActionPreference = \"Stop\"; $w = New-Object -C
 $w.Visible = $false; $w.DisplayAlerts = 0; try {   $d = $w.Documents.Open($env:LABIIA_IN, $false, $true, $false);   \
 $d.SaveAs2($env:LABIIA_OUT, 16);   $d.Close($false) } finally { $w.Quit() }";
 
-fn soffice() -> Option<PathBuf> {
-    ["ProgramFiles", "ProgramW6432", "ProgramFiles(x86)"]
+/// Where LibreOffice's converter may be: its Windows installer's folder, the
+/// Mac app in Applications (system-wide or the user's own), Homebrew, and
+/// the folders on PATH.
+pub(crate) fn soffice_candidates() -> Vec<PathBuf> {
+    let mut c: Vec<PathBuf> = ["ProgramFiles", "ProgramW6432", "ProgramFiles(x86)"]
         .iter()
         .filter_map(|v| std::env::var_os(v))
         .map(|root| PathBuf::from(root).join("LibreOffice/program/soffice.exe"))
-        .find(|p| p.exists())
+        .collect();
+    if cfg!(target_os = "macos") {
+        c.push(PathBuf::from("/Applications/LibreOffice.app/Contents/MacOS/soffice"));
+        if let Some(home) = std::env::var_os("HOME") {
+            c.push(PathBuf::from(home).join("Applications/LibreOffice.app/Contents/MacOS/soffice"));
+        }
+        c.push(PathBuf::from("/opt/homebrew/bin/soffice"));
+    }
+    if let Some(path) = std::env::var_os("PATH") {
+        let name = if cfg!(windows) { "soffice.exe" } else { "soffice" };
+        c.extend(std::env::split_paths(&path).map(|d| d.join(name)));
+    }
+    c
+}
+
+pub(crate) fn soffice() -> Option<PathBuf> {
+    soffice_candidates().into_iter().find(|p| p.is_file())
 }
 
 /// The old Word format is closed and binary: Word converts it to .docx, or
