@@ -107,3 +107,76 @@
 /* Zoom controls of a result picture. */
 .lex-zoom { display: inline-flex; align-items: center; gap: 4px; margin-right: 6px; }
 .lex-zoom-value { min-width: 52px; text-align: center; font-size: var(--font-size-sm); color: var(--text-secondary); font-variant-numeric: tabular-nums; }
+
+/* Text network: interactive graph with a side panel for the clicked word. */
+.lex-network { margin-bottom: 16px; }
+.lex-network-tools { flex-wrap: wrap; }
+.lex-network-search { display: flex; align-items: center; gap: 4px; color: var(--text-muted); }
+.lex-network-search input { width: 150px; }
+.lex-network-slider { display: flex; align-items: center; gap: 6px; font-size: 12px; color: var(--text-secondary); }
+.lex-network-slider input { width: 110px; }
+.lex-network-communities { display: flex; flex-wrap: wrap; gap: 4px; margin-bottom: 6px; }
+.lex-network-chip { display: inline-flex; align-items: center; gap: 4px; padding: 2px 8px; border: 1px solid var(--border-color); border-radius: 999px; background: var(--bg-panel); color: var(--text-primary); font-size: 11px; cursor: pointer; }
+.lex-network-chip.off { opacity: 0.45; text-decoration: line-through; }
+.lex-network-dot { width: 8px; height: 8px; border-radius: 50%; display: inline-block; }
+.lex-network-body { display: flex; gap: 8px; height: 70vh; min-height: 420px; }
+.lex-network-canvas { flex: 1; min-width: 0; overflow: hidden; border: 1px solid var(--border-color); border-radius: var(--radius-sm); background: #fff; position: relative; }
+.lex-network-panel { width: 290px; flex-shrink: 0; overflow-y: auto; border: 1px solid var(--border-color); border-radius: var(--radius-sm); padding: 10px; background: var(--bg-panel); font-size: 12px; }
+.lex-network-word { font-size: 18px; font-weight: 700; margin-bottom: 6px; }
+.lex-network-metrics { width: 100%; margin-bottom: 8px; border-collapse: collapse; }
+.lex-network-metrics td { padding: 2px 0; }
+.lex-network-metrics td:last-child { text-align: right; font-variant-numeric: tabular-nums; }
+.lex-network-neighbours { display: flex; flex-wrap: wrap; gap: 4px; margin: 4px 0 10px; }
+.lex-network-segment { padding: 6px 0; border-top: 1px solid var(--border-color); line-height: 1.45; }
+.lex-network-segment mark { background: #FFE58A; color: inherit; padding: 0 1px; border-radius: 2px; }
+.lex-network-stats { margin-top: 4px; font-size: 11px; }
+
+/* Text network: "Style and network" panel. */
+.lex-network-style { width: 280px; display: flex; flex-direction: column; gap: 8px; }
+.lex-network-tabs { display: flex; gap: 2px; border-bottom: 1px solid var(--border-color); margin: -4px -4px 4px; }
+.lex-network-tabs button { flex: 1; padding: 5px 2px; border: none; border-bottom: 2px solid transparent; background: none; color: var(--text-secondary); font-size: 11px; cursor: pointer; }
+.lex-network-tabs button.on { border-bottom-color: var(--accent-color, #0F6CBD); color: var(--text-primary); font-weight: 600; }
+.lex-network-section { display: flex; flex-direction: column; gap: 8px; }
+.lex-network-field { display: flex; flex-direction: column; gap: 3px; font-size: 12px; color: var(--text-secondary); }
+.lex-network-field b { color: var(--text-primary); font-weight: 600; }
+.lex-network-field select, .lex-network-field input:not([type]) { width: 100%; }
+.lex-network-check { display: flex; align-items: center; gap: 6px; font-size: 12px; }
+.lex-network-help { font-size: 11px; line-height: 1.4; }
+.lex-network-swatches { display: flex; flex-direction: column; gap: 3px; max-height: 180px; overflow-y: auto; }
+.lex-network-swatch { display: flex; align-items: center; gap: 6px; font-size: 11px; cursor: pointer; }
+.lex-network-swatch input[type="color"] { width: 26px; height: 18px; padding: 0; border: 1px solid var(--border-color); background: none; }
+.lex-network-row { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
+.lex-network-community { border-top: 1px solid var(--border-color); padding-top: 6px; display: flex; flex-direction: column; gap: 4px; }
+.lex-network-name { flex: 1; min-width: 0; font-size: 12px; }
+.lex-network-words { font-size: 11px; }
+.lex-network-reset { margin-top: auto; }
+
+/* Text network: zoom in percent of the fitted view. */
+.lex-network-zoom { display: inline-flex; align-items: center; gap: 2px; }
+.lex-network-zoom input { width: 52px; text-align: center; font-size: 12px; padding: 2px 4px; }
+
+/* "Preparar corpus": four sections, each with its own switch and a list to review. */
+.modal.lex-prep {
+  width: min(760px, 92vw);
+  max-height: 88vh;
+  display: flex;
+  flex-direction: column;
+}
+.lex-prep-master { margin: 6px 0 10px; font-weight: 600; }
+.lex-prep-body { overflow: auto; flex: 1; display: flex; flex-direction: column; gap: 8px; }
+.lex-prep-section { border: 1px solid var(--border); border-radius: 6px; padding: 8px 10px; }
+.lex-prep-head { display: flex; align-items: center; gap: 10px; }
+.lex-prep-title { font-weight: 600; }
+.lex-prep-content { margin-top: 8px; display: flex; flex-direction: column; gap: 8px; }
+.lex-prep-content p { margin: 0; }
+.lex-prep-inline { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+.lex-prep-inline input[type='text'] { flex: 1; min-width: 140px; }
+.lex-prep-list { max-height: 220px; overflow: auto; border-top: 1px solid var(--border); padding-top: 6px; display: flex; flex-direction: column; gap: 2px; }
+.lex-prep-subtitle { font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--text-muted); margin-top: 4px; }
+.lex-prep-row { display: flex; align-items: center; gap: 8px; padding: 2px 0; }
+.lex-prep-row > span:first-of-type { flex: 1; }
+.lex-prep-variant { flex-wrap: wrap; border-bottom: 1px dashed var(--border); padding: 4px 0; }
+.lex-prep-variant-words { display: flex; flex-wrap: wrap; gap: 4px 12px; flex: 1; }
+.lex-prep-order { margin: 10px 0 0; font-size: 12px; }
+.lex-prep .lex-field-check { display: inline-flex; align-items: center; gap: 6px; }
+.lex-prep-variant > span.lex-prep-arrow { flex: none; }

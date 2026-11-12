@@ -19,6 +19,8 @@
   "include": [
     "src/renderer/**/*",
     "src/renderer/locales/*.json",
-    "src/renderer/locales/labiia/*.json"
+    "src/renderer/locales/labiia/*.json",
+    "src/helper/lexical/analyses/graph.ts",
+    "src/helper/lexical/plot/random.ts"
   ]
 }

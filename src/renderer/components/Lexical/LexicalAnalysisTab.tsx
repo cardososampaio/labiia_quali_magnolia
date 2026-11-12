@@ -1,6 +1,6 @@
 /**
  * One lexical analysis in a tab: which documents, which language, the
- * test's settings, and Run. Shared by all twelve tests; what differs
+ * test's settings, and Run. Shared by all the tests; what differs
  * between them (settings, engine, result view) comes from the catalog.
  */
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
@@ -31,7 +31,9 @@ import { RStatusPanel } from './RStatusPanel'
 import { LexicalResultView, RunProgressNotice, runErrorText, type StoredLexicalResult } from './LexicalResultView'
 import { useLexicalRStore } from './lexical-r-store'
 import { CONNECTED_TESTS } from './lexical-catalog'
-import type { LexicalRunProgress } from '../../models/lexical-api'
+import type { LexicalRunProgress, PreparationTable } from '../../models/lexical-api'
+import { CorpusPreparationDialog } from './CorpusPreparationDialog'
+import { preparationActive, setCorpusPreparation, useCorpusPreparation } from '../../labiia/corpus-prep-store'
 import './Lexical.css'
 
 export interface LexicalSavedConfig {
@@ -42,6 +44,8 @@ export interface LexicalSavedConfig {
   includeSubcodes?: boolean
   language: CorpusLanguage
   params: Record<string, LexicalParamValue>
+  /** Whether this analysis uses the project's corpus preparation (when the project has one). */
+  usePreparation?: boolean
   result?: StoredLexicalResult
   guid: string
   name: string
@@ -70,6 +74,11 @@ export function LexicalAnalysisTab({ test, data: propData, savedConfig, inTab }:
   const [includeSubcodes, setIncludeSubcodes] = useState(savedConfig?.includeSubcodes ?? true)
   const [language, setLanguage] = useState<CorpusLanguage>(savedConfig?.language ?? 'pt')
   const [params, setParams] = useState(() => defaultParams(test, savedConfig?.params))
+  const [usePreparation, setUsePreparation] = useState(savedConfig?.usePreparation ?? true)
+  const [showPreparation, setShowPreparation] = useState(false)
+  const preparation = useCorpusPreparation()
+  // The project's preparation applies unless this analysis turned it off.
+  const prepApplies = usePreparation && preparationActive(preparation)
   const [showAdvanced, setShowAdvanced] = useState(false)
   const [analysisGuid] = useState(savedConfig?.guid ?? generateGuid())
   const [analysisName, setAnalysisName] = useState(savedConfig?.name ?? '')
@@ -85,7 +94,7 @@ export function LexicalAnalysisTab({ test, data: propData, savedConfig, inTab }:
   const connected = CONNECTED_TESTS.has(test.id)
 
   // The result's run time stands for the result in dirty tracking (comparing images would be slow).
-  const currentConfig = useMemo(() => ({ docFilter, source, codeGuids, includeSubcodes, language, params, ranAt: result?.ranAt ?? '' }), [docFilter, source, codeGuids, includeSubcodes, language, params, result])
+  const currentConfig = useMemo(() => ({ docFilter, source, codeGuids, includeSubcodes, language, params, usePreparation, ranAt: resultStamp(result) }), [docFilter, source, codeGuids, includeSubcodes, language, params, usePreparation, result])
   const initialBaseline = useMemo(() => ({
     docFilter: savedConfig?.docFilter ?? emptyDocumentFilter(),
     source: (savedConfig?.source ?? 'documents') as LexicalSource,
@@ -93,7 +102,8 @@ export function LexicalAnalysisTab({ test, data: propData, savedConfig, inTab }:
     includeSubcodes: savedConfig?.includeSubcodes ?? true,
     language: savedConfig?.language ?? ('pt' as CorpusLanguage),
     params: defaultParams(test, savedConfig?.params),
-    ranAt: savedConfig?.result?.ranAt ?? ''
+    usePreparation: savedConfig?.usePreparation ?? true,
+    ranAt: resultStamp(savedConfig?.result)
   }), [])
   const { dirty, baseline, setBaseline } = useToolDirtyState(currentConfig, initialBaseline, inTab)
 
@@ -104,6 +114,7 @@ export function LexicalAnalysisTab({ test, data: propData, savedConfig, inTab }:
     setIncludeSubcodes(baseline.includeSubcodes)
     setLanguage(baseline.language)
     setParams(baseline.params)
+    setUsePreparation(baseline.usePreparation)
     setResult(savedConfig?.result)
   }, [baseline])
 
@@ -123,9 +134,13 @@ export function LexicalAnalysisTab({ test, data: propData, savedConfig, inTab }:
   const skipped = codeTexts ? [] : docUnits.skipped
   const wordEstimate = useMemo(() => units.reduce((n, u) => n + countWords(u.text), 0), [units])
 
-  // What a result depends on: which documents, the language and the settings.
+  // What a result depends on: which documents, the language, the settings and the corpus preparation.
   // Variables and dates change CHD profiles and timelines: a change marks the result as outdated.
-  const runSignature = useMemo(() => JSON.stringify({ docs: units.map((u) => [u.id, u.variables, u.date]), language, params }), [units, language, params])
+  // Without a preparation the signature is as before, so earlier results do not look outdated.
+  const runSignature = useMemo(
+    () => JSON.stringify({ docs: units.map((u) => [u.id, u.variables, u.date]), language, params, ...(prepApplies ? { preparation } : {}) }),
+    [units, language, params, prepApplies, preparation]
+  )
 
   const rStatus = useLexicalRStore((s) => s.status)
   const rPackages = useLexicalRStore((s) => s.packages)
@@ -143,12 +158,17 @@ export function LexicalAnalysisTab({ test, data: propData, savedConfig, inTab }:
     setProgress(null)
     setRunError(null)
     try {
+      // The project's choices become a table of replacements for these texts (plurals are found in them).
+      let table: PreparationTable | undefined
+      if (prepApplies) table = await window.api.lexical.prepBuild(language, units.map((u) => u.text), preparation)
+      if (runIdRef.current !== runId) return
       const res = await window.api.lexical.run({
         runId,
         testId: test.id,
         language,
         params,
-        units: units.map((u) => ({ id: u.id, name: u.name, document: u.document, text: u.text, parts: u.parts, kind: u.kind, variables: u.variables, date: u.date }))
+        units: units.map((u) => ({ id: u.id, name: u.name, document: u.document, text: u.text, parts: u.parts, kind: u.kind, variables: u.variables, date: u.date })),
+        ...(table ? { preparation: table } : {})
       })
       if (runIdRef.current !== runId) return
       if (res.ok && res.files) {
@@ -167,7 +187,7 @@ export function LexicalAnalysisTab({ test, data: propData, savedConfig, inTab }:
         setProgress(null)
       }
     }
-  }, [test, language, params, units, runSignature])
+  }, [test, language, params, units, runSignature, prepApplies, preparation])
 
   // A fresh result sits below the settings: bring it into view once it is drawn.
   useEffect(() => {
@@ -198,11 +218,11 @@ export function LexicalAnalysisTab({ test, data: propData, savedConfig, inTab }:
       guid: analysisGuid,
       toolType: lexicalToolType(test.id),
       name,
-      config: { docFilter, source, codeGuids, includeSubcodes, language, params, result }
+      config: { docFilter, source, codeGuids, includeSubcodes, language, params, usePreparation, result }
     })
-    setBaseline({ docFilter, source, codeGuids, includeSubcodes, language, params, ranAt: result?.ranAt ?? '' })
+    setBaseline({ docFilter, source, codeGuids, includeSubcodes, language, params, usePreparation, ranAt: resultStamp(result) })
     if (inTab) inTab.onSaved(analysisGuid, name)
-  }, [analysisGuid, test.id, docFilter, source, codeGuids, includeSubcodes, language, params, result, inTab, setBaseline])
+  }, [analysisGuid, test.id, docFilter, source, codeGuids, includeSubcodes, language, params, usePreparation, result, inTab, setBaseline])
 
   useRegisterToolSave(inTab?.tabId, () => {
     if (isExisting) {
@@ -217,6 +237,9 @@ export function LexicalAnalysisTab({ test, data: propData, savedConfig, inTab }:
   const advanced = new Set(test.advanced ?? [])
   const mainParams = test.params.filter((p) => !advanced.has(p.key))
   const advancedParams = test.params.filter((p) => advanced.has(p.key))
+  // Settings the test chooses itself while its automatic switch is on.
+  const automaticKeys = test.automatic && params[test.automatic.switch] === true ? new Set(test.automatic.keys) : null
+  const isAutomatic = (key: string): boolean => automaticKeys?.has(key) ?? false
 
   return (
     <div className="lex-tab">
@@ -273,7 +296,33 @@ export function LexicalAnalysisTab({ test, data: propData, savedConfig, inTab }:
               {CORPUS_LANGUAGES.map((l) => <option key={l.value} value={l.value}>{l.label}</option>)}
             </select>
           </label>
+          <div className="lex-field">
+            <span className="lex-label">{t('labiia.lexical.prep.title')}</span>
+            <div className="lex-prep-inline">
+              <button className="secondary lex-small-btn" onClick={() => setShowPreparation(true)}>{t('labiia.lexical.prep.open')}</button>
+              <span className="lex-muted">{preparationActive(preparation) ? t('labiia.lexical.prep.statusOn') : t('labiia.lexical.prep.statusOff')}</span>
+            </div>
+            {preparationActive(preparation) && (
+              <label className="lex-field-check" title={t('labiia.lexical.prep.useHelp')}>
+                <input type="checkbox" checked={usePreparation} onChange={(e) => setUsePreparation(e.target.checked)} />
+                <span>{t('labiia.lexical.prep.useInAnalysis')}</span>
+              </label>
+            )}
+          </div>
         </div>
+
+        {showPreparation && (
+          <CorpusPreparationDialog
+            initial={preparation}
+            language={language}
+            texts={units.map((u) => u.text)}
+            onCancel={() => setShowPreparation(false)}
+            onSave={(p) => {
+              setCorpusPreparation(p)
+              setShowPreparation(false)
+            }}
+          />
+        )}
 
         {codeTexts && (
           <div className="analysis-section lex-section">
@@ -358,7 +407,7 @@ export function LexicalAnalysisTab({ test, data: propData, savedConfig, inTab }:
           <div className="analysis-section lex-section">
             <div className="lex-section-title" style={{ marginBottom: 10 }}>{t('labiia.lexical.settings')}</div>
             <div className="lex-grid">
-              {mainParams.map((p) => <ParamField key={p.key} param={p} value={params[p.key]} onChange={setParam} />)}
+              {mainParams.map((p) => <ParamField key={p.key} param={p} value={params[p.key]} onChange={setParam} automatic={isAutomatic(p.key)} />)}
             </div>
             {advancedParams.length > 0 && (
               <>
@@ -368,7 +417,7 @@ export function LexicalAnalysisTab({ test, data: propData, savedConfig, inTab }:
                 </div>
                 {showAdvanced && (
                   <div className="lex-grid" style={{ marginTop: 10 }}>
-                    {advancedParams.map((p) => <ParamField key={p.key} param={p} value={params[p.key]} onChange={setParam} />)}
+                    {advancedParams.map((p) => <ParamField key={p.key} param={p} value={params[p.key]} onChange={setParam} automatic={isAutomatic(p.key)} />)}
                   </div>
                 )}
               </>
@@ -400,34 +449,49 @@ export function LexicalAnalysisTab({ test, data: propData, savedConfig, inTab }:
           </div>
         )}
         <div ref={resultRef}>
-          {result && !running && <LexicalResultView result={result} stale={result.ranWith !== runSignature} title={test.label} />}
+          {result && !running && (
+            <LexicalResultView
+              result={result}
+              stale={result.ranWith !== runSignature}
+              title={test.label}
+              onChangeFile={(name, data) => setResult((r) => r && { ...r, editedAt: new Date().toISOString(), files: r.files.map((f) => (f.name === name ? { ...f, data } : f)) })}
+            />
+          )}
         </div>
       </div>
     </div>
   )
 }
 
-function ParamField({ param, value, onChange }: { param: LexicalParam; value: LexicalParamValue; onChange: (key: string, v: LexicalParamValue) => void }) {
+/** A result's identity for dirty tracking: when it ran and when it was last changed in place. */
+function resultStamp(result: StoredLexicalResult | undefined): string {
+  return result ? `${result.ranAt}${result.editedAt ? `|${result.editedAt}` : ''}` : ''
+}
+
+function ParamField({ param, value, onChange, automatic = false }: { param: LexicalParam; value: LexicalParamValue; onChange: (key: string, v: LexicalParamValue) => void; automatic?: boolean }) {
+  // A setting chosen automatically stays visible but cannot be edited, and says why.
+  const title = automatic ? t('labiia.lexical.chosenAutomatically') : param.help
   if (param.kind === 'bool') {
     return (
-      <label className="lex-field lex-field-check" title={param.help}>
-        <input type="checkbox" checked={value === true} onChange={(e) => onChange(param.key, e.target.checked)} />
+      <label className="lex-field lex-field-check" title={title} style={automatic ? { opacity: 0.55 } : undefined}>
+        <input type="checkbox" checked={value === true} disabled={automatic} onChange={(e) => onChange(param.key, e.target.checked)} />
         <span>{param.label}</span>
       </label>
     )
   }
   return (
-    <label className="lex-field" title={param.help}>
+    <label className="lex-field" title={title} style={automatic ? { opacity: 0.55 } : undefined}>
       <span className="lex-label">{param.label}</span>
       {param.kind === 'select' ? (
-        <select value={String(value)} onChange={(e) => onChange(param.key, e.target.value)}>
+        <select value={String(value)} disabled={automatic} onChange={(e) => onChange(param.key, e.target.value)}>
           {param.options.map((o) => <option key={o.value} value={o.value}>{o.label}</option>)}
         </select>
       ) : param.kind === 'text' ? (
-        <input type="text" value={String(value)} placeholder={param.placeholder} onChange={(e) => onChange(param.key, e.target.value)} />
+        <input type="text" value={String(value)} disabled={automatic} placeholder={param.placeholder} onChange={(e) => onChange(param.key, e.target.value)} />
       ) : (
         <input
           type="number"
+          disabled={automatic}
           min={param.min}
           max={param.max}
           step={param.kind === 'number' ? param.step : (param.step ?? 1)}

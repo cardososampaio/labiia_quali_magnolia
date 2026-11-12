@@ -21,6 +21,7 @@ import {
   faListTree,
   faSpline,
   faWorkflow,
+  faChartNetwork,
   type IconComponent
 } from '../Icon'
 import { t } from '../../i18n'
@@ -50,6 +51,8 @@ export interface LexicalTestDef {
   params: LexicalParam[]
   /** Settings shown under "More settings" instead of up front. */
   advanced?: string[]
+  /** Settings chosen by the test itself while the `switch` setting is on (shown greyed out). */
+  automatic?: { switch: string; keys: string[] }
 }
 
 const opt = (value: string, label: string) => ({ value, label })
@@ -147,6 +150,31 @@ export const LEXICAL_TESTS: LexicalTestDef[] = [
       USE_LEMMAS
     ],
     advanced: ['layout', 'arbremax', 'use_lemmas']
+  },
+  {
+    // labiia_lex's "Rede Textual" (Gephi mode), with real co-occurrence counts: its minimum
+    // co-occurrence of 2 (doubled counts) is 1 here.
+    id: 'network-text',
+    get label() { return t('labiia.lexical.network.title') },
+    get description() { return t('labiia.lexical.network.description') },
+    icon: faChartNetwork,
+    color: '#7B3FB8',
+    engine: 'app',
+    rPackages: LEXICAL_R_PACKAGES['network-text'],
+    params: [
+      { key: 'auto_tune', get label() { return t('labiia.lexical.network.autoTune') }, kind: 'bool', default: true, get help() { return t('labiia.lexical.network.autoTuneHelp') } },
+      { key: 'min_freq', get label() { return t('labiia.lexical.minimumFrequency') }, kind: 'int', default: 3, min: 1, max: 30 },
+      { key: 'min_cooc', get label() { return t('labiia.lexical.network.minCooc') }, kind: 'int', default: 1, min: 1, max: 15, get help() { return t('labiia.lexical.network.minCoocHelp') } },
+      { key: 'max_nodes', get label() { return t('labiia.lexical.network.maxNodes') }, kind: 'int', default: 300, min: 50, max: 1000 },
+      { key: 'resolution', get label() { return t('labiia.lexical.network.resolution') }, kind: 'number', default: 1, min: 0.1, max: 3, step: 0.1, get help() { return t('labiia.lexical.network.resolutionHelp') } },
+      { key: 'max_tree', get label() { return t('labiia.lexical.maximumTree') }, kind: 'bool', default: false },
+      { key: 'iterations', get label() { return t('labiia.lexical.network.iterations') }, kind: 'int', default: 3000, min: 100, max: 5000, step: 100 },
+      { key: 'gravity', get label() { return t('labiia.lexical.network.gravity') }, kind: 'number', default: 0.8, min: 0.1, max: 10, step: 0.1 },
+      { key: 'scaling', get label() { return t('labiia.lexical.network.scaling') }, kind: 'number', default: 50, min: 1, max: 150, step: 1 },
+      { key: 'normalize_centralities', get label() { return t('labiia.lexical.network.normalize') }, kind: 'bool', default: false }
+    ],
+    advanced: ['resolution', 'max_tree', 'iterations', 'gravity', 'scaling', 'normalize_centralities'],
+    automatic: { switch: 'auto_tune', keys: ['min_freq', 'min_cooc', 'max_nodes', 'max_tree', 'gravity', 'scaling'] }
   },
   {
     id: 'emotions',
@@ -299,7 +327,7 @@ export const LEXICAL_TESTS: LexicalTestDef[] = [
 ]
 
 /** Tests whose engine is connected; the others show their settings but cannot run yet. */
-export const CONNECTED_TESTS = new Set<LexicalTestId>(['wordcloud', 'bigrams', 'trigrams', 'word-tree', 'yake', 'keyword-associations', 'sentiment', 'emotions', 'similitude', 'lda', 'thematic-map', 'chd'])
+export const CONNECTED_TESTS = new Set<LexicalTestId>(['wordcloud', 'bigrams', 'trigrams', 'word-tree', 'yake', 'keyword-associations', 'sentiment', 'emotions', 'similitude', 'lda', 'thematic-map', 'chd', 'network-text'])
 
 export const LEXICAL_TOOL_PREFIX = 'lexical-'
 

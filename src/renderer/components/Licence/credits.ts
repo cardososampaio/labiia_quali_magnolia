@@ -38,7 +38,11 @@ export const LEXICAL_CREDITS: CreditRow[] = [
   { name: 'LDAvis', get role() { return t('labiia.credits.intertopicDistanceMapAndTerm') }, licence: 'MIT' },
   { name: 'bibliometrix', get role() { return t('labiia.credits.thematicMapAxesAndTheme') }, licence: 'GPL-3.0' },
   { name: 'Textometrica, Voyant Tools, Lexos', get role() { return t('labiia.credits.connectedConceptsWordTreeAnd') }, licence: '—' },
-  { name: 'DejaVu Sans', get role() { return t('labiia.credits.dejavuRole') }, licence: 'Bitstream Vera' }
+  { name: 'DejaVu Sans', get role() { return t('labiia.credits.dejavuRole') }, licence: 'Bitstream Vera' },
+  { name: 'Gephi, ForceAtlas2', get role() { return t('labiia.credits.forceAtlas2Role') }, licence: 'GPL-3.0 / CDDL-1.0' },
+  { name: 'python-louvain', get role() { return t('labiia.credits.louvainRole') }, licence: 'BSD-3-Clause' },
+  { name: 'sigma.js, graphology', get role() { return t('labiia.credits.sigmaRole') }, licence: 'MIT' },
+  { name: 'OpenRefine', get role() { return t('labiia.credits.openRefineRole') }, licence: 'BSD-3-Clause' }
 ]
 
 export const R_CREDITS: CreditRow[] = [

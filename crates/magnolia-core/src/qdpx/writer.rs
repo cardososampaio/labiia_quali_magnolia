@@ -268,6 +268,8 @@ pub fn write_qdpx(
         )?;
         json_entry(&mut zip, "magnolia-analyses.json", &analyses)?;
     }
+    // labiia_quali: the project's corpus preparation for the lexical analyses.
+    super::labiia_lexical::write_preparation(project, &mut zip)?;
     if let Some(tabs) = project.get("tabState").filter(|t| truthy(t)) {
         let has_tabs = !get_arr(tabs, "openTabs").is_empty();
         let has_counters = tabs

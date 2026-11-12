@@ -189,7 +189,7 @@ export function AnalysisPopover({ onSelect }: Props) {
               )
             })}
           </div>
-          {/* labiia_quali: the twelve lexical analyses. */}
+          {/* labiia_quali: the lexical analyses. */}
           <LexicalPopoverSection onSelect={handleSelect} />
           </div>
         </div>,

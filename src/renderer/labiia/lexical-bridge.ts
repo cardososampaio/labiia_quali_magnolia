@@ -9,13 +9,19 @@
 import { invoke } from '@tauri-apps/api/core'
 import { getCurrentWebviewWindow } from '@tauri-apps/api/webviewWindow'
 import type {
+  CompoundSuggestion,
+  CorpusPreparation,
   LexicalApi,
   LexicalRunProgress,
   LexicalRunRequest,
   LexicalRunResult,
+  PluralSuggestion,
+  PreparationTable,
   RInstallProgress,
   RInstallResult,
-  RStatusInfo
+  RStatusInfo,
+  VariantMethod,
+  VariantSuggestion
 } from '../models/lexical-api'
 
 function listen<T>(event: string, callback: (payload: T) => void): () => void {
@@ -35,6 +41,15 @@ function listen<T>(event: string, callback: (payload: T) => void): () => void {
 
 export const lexicalApi: LexicalApi = {
   rStatus: (refresh?: boolean) => invoke<RStatusInfo>('lexical_r_status', { refresh: refresh === true }),
+  // "Preparar corpus": found and built in Rust (src-tauri/src/labiia/corpus_prep.rs, crates/labiia-prep).
+  prepSuggestPlurals: (language: string, texts: string[]) =>
+    invoke<PluralSuggestion[]>('corpus_prep_suggest', { kind: 'plurals', language, texts }),
+  prepSuggestVariants: (language: string, texts: string[], method: VariantMethod) =>
+    invoke<VariantSuggestion[]>('corpus_prep_suggest', { kind: 'variants', language, texts, options: { method } }),
+  prepSuggestCompounds: (language: string, texts: string[], minFreq: number) =>
+    invoke<CompoundSuggestion[]>('corpus_prep_suggest', { kind: 'compounds', language, texts, options: { minFreq } }),
+  prepBuild: (language: string, texts: string[], choices: CorpusPreparation) =>
+    invoke<PreparationTable>('corpus_prep_build', { language, texts, choices }),
   setRPath: (path: string) => invoke<RStatusInfo>('lexical_r_set_path', { path }),
   pickRPath: () => invoke<string | null>('lexical_r_pick_path'),
   checkPackages: (packages: string[]) =>

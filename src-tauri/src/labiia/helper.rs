@@ -103,7 +103,7 @@ fn helper_script(app: &AppHandle) -> Option<PathBuf> {
     )
 }
 
-fn lexical_resources(app: &AppHandle) -> Option<PathBuf> {
+pub(crate) fn lexical_resources(app: &AppHandle) -> Option<PathBuf> {
     first_existing(
         resource_dirs(app)
             .into_iter()

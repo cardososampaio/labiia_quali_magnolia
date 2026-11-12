@@ -2,7 +2,7 @@
  * The lexical analyses inside the compact toolbar's "Analyse" menu.
  *
  * With the compact toolbar (Preferences → toolbar style), this menu is the
- * only way to reach the analyses, so it must list the twelve lexical
+ * only way to reach the analyses, so it must list the lexical
  * analyses as well as Magnolia's own tools. The tiles show only the name to
  * keep the menu short; the description is the tooltip.
  */
@@ -16,7 +16,7 @@ import type { LexicalTestId } from '../models/lexical-api'
 /** Same order as the ribbon's Lexical tab: exploration, structure, keywords. */
 const ORDER: LexicalTestId[] = [
   'wordcloud', 'word-tree', 'bigrams', 'trigrams',
-  'chd', 'similitude', 'thematic-map', 'lda',
+  'chd', 'similitude', 'network-text', 'thematic-map', 'lda',
   'yake', 'keyword-associations', 'sentiment', 'emotions'
 ]
 

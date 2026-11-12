@@ -9,7 +9,7 @@ import { existsSync, mkdirSync, mkdtempSync, rmSync } from 'fs'
 import { join } from 'path'
 import workerPath from './lexical-worker?modulePath'
 import { corpusKey, hasCachedCorpus } from './corpus/cache'
-import { sortByDocumentName, type PrepareOptions, type TextUnitInput } from './corpus/prepare'
+import { hasPreparation, sortByDocumentName, type PrepareOptions, type TextUnitInput } from './corpus/prepare'
 import type { WorkerMessage, WorkerRequest, PrepareResult } from './lexical-worker'
 import { cancelRun } from './r-runner'
 import { resolveR, type RInstallation } from './r-runtime'
@@ -26,6 +26,7 @@ import { runSimilitude } from './tests/similitude'
 import { runLda } from './tests/lda'
 import { runThematicMap } from './tests/thematic-map'
 import { runChd } from './tests/chd'
+import { runNetworkText } from './tests/network-text'
 
 /** Bundled R scripts, dictionaries and stopword lists. */
 export function lexicalResourcesDir(): string {
@@ -107,6 +108,7 @@ const TESTS: Record<string, { runner: TestRunner; rPackages: string[] }> = {
   similitude: { runner: runSimilitude, rPackages: LEXICAL_R_PACKAGES.similitude },
   lda: { runner: runLda, rPackages: LEXICAL_R_PACKAGES.lda },
   'thematic-map': { runner: runThematicMap, rPackages: [] },
+  'network-text': { runner: runNetworkText, rPackages: [] },
   chd: { runner: runChd, rPackages: ['Matrix', 'ape', 'wordcloud', 'irlba', 'ca'] }
 }
 
@@ -146,7 +148,13 @@ export async function runLexicalTest(req: LexicalRunRequest, send: (p: LexicalRu
   const cacheDir = lexicalCacheDir()
   // Every test reads the segments labiia_lex cuts (counting only the words it keeps), so one
   // preparation serves them all and each gives labiia_lex's result on the same corpus.
-  const options: PrepareOptions = { language: req.language, uceSize: 40, segmentCount: 'content' }
+  const preparation = req.preparation && hasPreparation(req.preparation) ? req.preparation : undefined
+  const options: PrepareOptions = {
+    language: req.language,
+    uceSize: 40,
+    segmentCount: 'content',
+    ...(preparation ? { preparation: { expressions: preparation.expressions, forms: preparation.forms } } : {})
+  }
   const key = corpusKey(units, options)
   const progress = (p: Omit<LexicalRunProgress, 'runId'>): void => send({ runId: req.runId, ...p })
 
@@ -175,7 +183,9 @@ export async function runLexicalTest(req: LexicalRunRequest, send: (p: LexicalRu
       isCancelled: () => cancelled.has(req.runId)
     })
     if (cancelled.has(req.runId)) return { ok: false, error: 'cancelled' }
-    return { ok: !out.error, corpus: { ...prepared.stats, fromCache: prepared.fromCache }, ...out }
+    // The result records what the preparation replaced, so the method can be described.
+    const corpus = { ...prepared.stats, fromCache: prepared.fromCache, ...(preparation ? { preparation: preparation.summary } : {}) }
+    return { ok: !out.error, corpus, ...out }
   } catch (err) {
     if (cancelled.has(req.runId)) return { ok: false, error: 'cancelled' }
     return { ok: false, error: 'failed', detail: err instanceof Error ? err.message : String(err) }

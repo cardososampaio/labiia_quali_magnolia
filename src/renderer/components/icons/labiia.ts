@@ -17,6 +17,7 @@ import {
   ListTree,
   Spline,
   Workflow,
+  ChartNetwork,
   TextSearch,
   FilePlus,
   FolderOpen,
@@ -35,6 +36,7 @@ export const faPen = Pencil
 
 /** Lexical analyses (ribbon buttons and the tests' tiles). */
 export const faTextSearch = TextSearch
+export const faChartNetwork = ChartNetwork
 export const faCloud = Cloud
 export const faGitFork = GitFork
 export const faWaypoints = Waypoints

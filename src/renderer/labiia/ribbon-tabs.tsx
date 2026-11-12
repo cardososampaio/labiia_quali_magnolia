@@ -207,7 +207,7 @@ export function labiiaRibbonTabs(a: RibbonActions): RibbonTabDef[] {
       label: t('labiia.ribbon.tabLexical'),
       groups: [
         { label: t('labiia.ribbon.groupExploration'), buttons: (['wordcloud', 'word-tree', 'bigrams', 'trigrams'] as LexicalTestId[]).map(lexicalButton('explore')) },
-        { label: t('labiia.ribbon.groupStructure'), buttons: (['chd', 'similitude', 'thematic-map', 'lda'] as LexicalTestId[]).map(lexicalButton('structure')) },
+        { label: t('labiia.ribbon.groupStructure'), buttons: (['chd', 'similitude', 'network-text', 'thematic-map', 'lda'] as LexicalTestId[]).map(lexicalButton('structure')) },
         { label: t('labiia.ribbon.groupKeywords'), buttons: (['yake', 'keyword-associations', 'sentiment', 'emotions'] as LexicalTestId[]).map(lexicalButton('keywords')) }
       ]
     },

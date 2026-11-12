@@ -735,6 +735,8 @@ fn restore_side_tables(
         super::labiia_lexical::unpack(&mut v, zip);
         project["savedAnalyses"] = v;
     }
+    // labiia_quali: the project's corpus preparation for the lexical analyses.
+    super::labiia_lexical::read_preparation(project, zip);
 
     // Rebuild maps from <Graph>s that have no side-table analysis.
     let graphs = get_arr(project, "_refiGraphs").to_vec();

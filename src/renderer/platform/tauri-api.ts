@@ -11,6 +11,7 @@
  * before any component touches it.
  */
 import { invoke } from '@tauri-apps/api/core'
+import { rememberOpenedPreparation, withPreparation } from '../labiia/corpus-prep-state' // labiia_quali
 import { emit, emitTo } from '@tauri-apps/api/event'
 import { getCurrentWebview } from '@tauri-apps/api/webview'
 import { getCurrentWebviewWindow } from '@tauri-apps/api/webviewWindow'
@@ -125,7 +126,14 @@ async function readMedia(handle: string): Promise<ArrayBuffer> {
 
 async function openedProject(data: any): Promise<any> {
   if (!data) return data
-  return completeProjectPdfText(data, async (h) => new Uint8Array(await readMedia(h)))
+  // labiia_quali: read the PDFs from the project being opened. The active
+  // path still names the previous project until the window takes this one,
+  // so reading through it lost the text of every PDF (and of every .docx,
+  // converted to PDF) when a project was opened after another.
+  const archivePath = data.filePath ?? activeProjectPath
+  // labiia_quali: the project's "Preparar corpus" choices for the lexical analyses.
+  rememberOpenedPreparation(data)
+  return completeProjectPdfText(data, async (h) => new Uint8Array(await invoke<ArrayBuffer>('read_media', { handle: h, archivePath })))
 }
 
 // ── OS file drops ─────────────────────────────────────────────────────
@@ -262,9 +270,9 @@ const api: MagnoliaAPI = {
     const buf = await invoke<ArrayBuffer>('read_compare_binary', { comparisonFilePath, handle })
     return buf.byteLength ? new Uint8Array(buf) : null
   },
-  saveProject: (data) => invoke('save_project', { data }),
-  saveProjectAs: (data) => invoke('save_project_as', { data }),
-  createProjectCopy: (data) => invoke('create_project_copy', { data }),
+  saveProject: (data) => invoke('save_project', { data: withPreparation(data) }), // labiia_quali: + corpus preparation
+  saveProjectAs: (data) => invoke('save_project_as', { data: withPreparation(data) }), // labiia_quali: + corpus preparation
+  createProjectCopy: (data) => invoke('create_project_copy', { data: withPreparation(data) }), // labiia_quali: + corpus preparation
   createNewProjectFile: () => invoke('create_new_project_file'),
   importTextFile: async () => completeImports(await invoke('import_text_file')),
   readTextFiles: async (filePaths) => {

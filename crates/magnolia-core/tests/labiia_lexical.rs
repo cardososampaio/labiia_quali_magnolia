@@ -112,3 +112,24 @@ fn a_project_saved_by_the_electron_build_opens_with_its_results() {
     let back = read_qdpx(&path, None).unwrap();
     assert_eq!(back["savedAnalyses"][0]["config"]["result"]["files"][0]["data"], STANDARD.encode(PNG));
 }
+
+/// The corpus preparation chosen for the lexical analyses travels with the
+/// project: it is saved in its own entry and comes back when the project opens.
+#[test]
+fn the_corpus_preparation_is_saved_and_reopened_with_the_project() {
+    let d = temp();
+    let path = p(&d, "prep.qdpx");
+    let prep = json!({ "enabled": true, "plurals": { "enabled": true, "excluded": ["slams"] },
+        "equivalences": { "enabled": true, "pairs": [{ "from": "docente", "to": "professor" }] } });
+    let mut proj = project();
+    proj["labiiaCorpusPreparation"] = prep.clone();
+    write_qdpx(&path, &mut proj, &Map::new(), &opts()).unwrap();
+    assert!(zip_entry(&path, "labiia-lexical/preparacao.json").is_some());
+    assert_eq!(read_qdpx(&path, None).unwrap()["labiiaCorpusPreparation"], prep);
+
+    // A project without a preparation gets no entry and opens without one.
+    let plain = p(&d, "plain.qdpx");
+    write_qdpx(&plain, &mut project(), &Map::new(), &opts()).unwrap();
+    assert!(zip_entry(&plain, "labiia-lexical/preparacao.json").is_none());
+    assert!(read_qdpx(&plain, None).unwrap().get("labiiaCorpusPreparation").is_none());
+}

@@ -7,10 +7,10 @@ import { documentUnits } from '../../src/renderer/components/Lexical/lexical-uni
 // fall outside a test's range are pulled back inside it.
 
 describe('lexical catalog', () => {
-  it('lists the twelve tests once each', () => {
+  it('lists the thirteen tests once each (the twelve of 0.1 and the text network)', () => {
     const ids = LEXICAL_TESTS.map((d) => d.id)
-    expect(ids).toHaveLength(12)
-    expect(new Set(ids).size).toBe(12)
+    expect(ids).toHaveLength(13)
+    expect(new Set(ids).size).toBe(13)
   })
 
   it('keeps labiia_lex defaults', () => {
@@ -20,6 +20,8 @@ describe('lexical catalog', () => {
     expect(p('similitude')).toMatchObject({ max_words: 200, min_freq: 3, coefficient: 'cooccurrence', layout: 'frutch', arbremax: true })
     expect(p('lda')).toMatchObject({ k: 6, method: 'VEM', seed: 42, max_features: 2000 })
     expect(p('thematic-map')).toMatchObject({ top_edges: 160, max_nodes: 120, resolution: 0.5 })
+    // labiia_lex's minimum co-occurrence of 2 counted every pair twice: 1 real co-occurrence here.
+    expect(p('network-text')).toMatchObject({ auto_tune: true, min_freq: 3, min_cooc: 1, max_nodes: 300, resolution: 1, iterations: 3000, gravity: 0.8, scaling: 50 })
     expect(p('yake')).toMatchObject({ top_n: 50, max_tokens: 3, dedup_threshold: 0.9 })
     expect(p('word-tree')).toMatchObject({ max_depth: 4, top_branches: 120, min_branch_freq: 2 })
     expect(p('bigrams')).toMatchObject({ min_freq: 2, top_edges: 120 })

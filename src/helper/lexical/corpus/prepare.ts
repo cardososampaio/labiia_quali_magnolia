@@ -62,6 +62,45 @@ export interface PrepareOptions {
    * their stopwords, flagged in tokenKept.
    */
   segmentCount?: 'all' | 'content'
+  /**
+   * The project's corpus preparation ("Preparar corpus", built in Rust by
+   * crates/labiia-prep): phrases that become one word, and words replaced by
+   * another. Absent or empty, the corpus is exactly as without it.
+   */
+  preparation?: CorpusPreparationTable
+}
+
+export interface CorpusPreparationTable {
+  /** Phrase (words separated by one space) → the single word it becomes. */
+  expressions: [string, string][]
+  /** Word → the word it is counted as (already the end of any chain). */
+  forms: Record<string, string>
+}
+
+/** Whether a preparation changes anything (an empty one leaves the corpus and its cache key as before). */
+export function hasPreparation(p: CorpusPreparationTable | undefined): p is CorpusPreparationTable {
+  return !!p && (p.expressions.length > 0 || Object.keys(p.forms).length > 0)
+}
+
+const escapeRegExp = (s: string): string => s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
+/** Letters, marks, digits and "_": what a phrase may not touch on either side. */
+const WORD_EDGE = '\\p{L}\\p{M}\\p{N}_'
+
+/**
+ * Joins the preparation's phrases into one word in a text, before it is cut
+ * into words: "Política pública" and "política  pública" become
+ * "política_pública". Words match whole, without regard to case, and may be
+ * separated by spaces, hyphens or apostrophes (the engine splits words there).
+ */
+export function expressionJoiner(expressions: [string, string][]): (text: string) => string {
+  const rules = expressions
+    .filter(([phrase, target]) => phrase.trim() && target)
+    .map(([phrase, target]) => ({
+      re: new RegExp(`(?<![${WORD_EDGE}])${phrase.trim().split(/\s+/).map(escapeRegExp).join("[\\s'’\\-]+")}(?![${WORD_EDGE}])`, 'giu'),
+      target
+    }))
+  if (rules.length === 0) return (t) => t
+  return (text) => rules.reduce((t, r) => t.replace(r.re, () => r.target), text)
 }
 
 export interface PreparedCorpus {
@@ -395,6 +434,11 @@ export function prepareCorpus(
   }
 
   const uceSize = Math.max(20, Math.min(200, Math.round(options.uceSize || 40)))
+  const prep = hasPreparation(options.preparation) ? options.preparation : null
+  const joinExpressions = expressionJoiner(prep?.expressions ?? [])
+  const replaced = new Map(Object.entries(prep?.forms ?? {}))
+  // Replaced words are what the segments show and every test counts.
+  const replace = (words: string[]): string[] => (replaced.size ? words.map((w) => replaced.get(w) ?? w) : words)
   for (let u = 0; u < units.length; u++) {
     if (isCancelled?.()) throw new Error('cancelled')
     const segments: { words: string[]; kept: boolean[]; newText: boolean }[] = []
@@ -404,7 +448,7 @@ export function prepareCorpus(
     // A code's passages are cut one by one; a document is one passage.
     for (const passage of units[u].parts ?? [units[u].text]) {
       // The lines of a text are one stream, as in IRaMuTeQ: segments may span line breaks.
-      const lines = repairExtraction(passage).split('\n').map((l) => l.trim()).filter(Boolean)
+      const lines = joinExpressions(repairExtraction(passage)).split('\n').map((l) => l.trim()).filter(Boolean)
       if (options.segmentCount === 'content') {
         // labiia_lex reads texts in IRaMuTeQ's format: a line starting with "****" (a text)
         // or "-*" (a theme) is a heading, so it is left out and the cutting starts again after it.
@@ -417,10 +461,11 @@ export function prepareCorpus(
       }
     }
     for (const seg of segments) {
+      const words = replace(seg.words)
       uceUnit.push(u)
       uceNewText.push(seg.newText ? 1 : 0)
-      uceText.push(seg.words.join(' '))
-      seg.words.forEach((w, i) => {
+      uceText.push(words.join(' '))
+      words.forEach((w, i) => {
         const id = formId(w)
         tokens.push(id)
         tokenKept.push(seg.kept[i] ? 1 : 0)

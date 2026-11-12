@@ -74,6 +74,7 @@
             <tr><td>Trigramas</td><td>Exploração</td><td>Não</td></tr>
             <tr><td>CHD</td><td>Estrutura</td><td>Sim</td></tr>
             <tr><td>Similitude</td><td>Estrutura</td><td>Sim</td></tr>
+            <tr><td>Rede textual</td><td>Estrutura</td><td>Não</td></tr>
             <tr><td>Mapa temático</td><td>Estrutura</td><td>Não</td></tr>
             <tr><td>Tópicos LDA</td><td>Estrutura</td><td>Sim</td></tr>
             <tr><td>YAKE</td><td>Palavras-chave e afeto</td><td>Não</td></tr>
@@ -191,6 +192,28 @@
 
       <h3>Expressões compostas</h3>
       <p>Algumas expressões funcionam como um conceito só, como "a contrário de" ou "políticas públicas". O programa traz uma lista de expressões compostas para cada idioma. Quando encontra uma delas no texto, junta as palavras com um traço de sublinhado antes da análise. Assim, a expressão conta como uma única palavra. Se um conceito do seu tema não estiver na lista, ele continua separado em palavras.</p>
+
+      <h3 id="preparar-corpus">Preparar corpus: juntar o que o dicionário deixa separado</h3>
+      <p>O dicionário só junta as formas que ele conhece. "Casas" vira "casa" porque "casas" está no dicionário. Já um plural que ele não lista ("preprints", "influenciadores"), uma grafia sem acento ("inteligencia") ou um sinônimo que você considera a mesma coisa ("docente" e "professor") continuam contando separados. O botão <span class="botao-ui f-lexicas">Preparar corpus…</span>, ao lado do idioma do corpus, abre uma janela com quatro recursos para juntar essas palavras:</p>
+      <ul>
+        <li><strong>Plural e singular.</strong> Um plural que o dicionário não lista passa a contar como o singular, desde que esse singular exista no dicionário ou no próprio corpus. As regras valem para português (-ões, -ães e -ãos → -ão, -ais → -al, -eis → -el, -óis → -ol, -is → -il, -ns → -m, -res, -zes e -ses, -s), inglês (-ies → -y, -ves → -f, -es, -s) e espanhol (-ces → -z, -es, -s). Palavras que só terminam em "s", como "lápis" e "ônibus", ficam como estão. Clique em <span class="botao-ui f-lexicas">Ver os plurais encontrados</span> para ver a lista e desmarque os pares que não são plural e singular, como siglas ("ufms" → "ufm").</li>
+        <li><strong>Variantes próximas.</strong> Agrupa grafias da mesma palavra, como "inteligencia" e "inteligência" ou um erro de digitação. Há cinco métodos, os mesmos do "Normalizar formas" do labiia_lex, que vêm do OpenRefine: mesma palavra sem acentos, mesmos pares de letras, mesmos trios de letras e até 1 ou 2 letras de diferença. Só entram palavras com 4 letras ou mais que aparecem pelo menos 2 vezes. Cada grupo propõe a grafia mais frequente, e você escolhe a forma final e aceita o grupo. Nenhum grupo entra sozinho.</li>
+        <li><strong>Equivalências.</strong> Uma lista sua do tipo "trocar → por", por exemplo "docente → professor" ou "sistema único de saúde → sus". Você pode digitar os pares ou importar um arquivo .txt ou .csv com um par por linha ("docente;professor"). A lista também pode ser exportada.</li>
+        <li><strong>Expressões compostas.</strong> <span class="botao-ui f-lexicas">Sugerir expressões</span> procura expressões de duas ou três palavras que aparecem pelo menos 3 vezes, em pelo menos 2 textos, e que não começam nem terminam em palavra vazia. As sugestões vêm ordenadas por uma pontuação que considera a frequência e a raridade das palavras. Cada expressão marcada vira uma palavra só: "política pública" → <code>política_pública</code>. Você também pode digitar uma expressão.</li>
+      </ul>
+      <p>Cada recurso tem sua própria caixa, e todos começam desligados. Para valer, marque também <strong>Usar a preparação do corpus neste projeto</strong> e clique em <span class="botao-ui f-lexicas">Salvar</span>. As escolhas ficam salvas no arquivo do projeto e valem para todas as análises léxicas dele. Os plurais são procurados de novo a cada execução, nos textos daquela análise.</p>
+      <p>A ordem de aplicação é sempre a mesma: expressões, equivalências, variantes, plurais e, por fim, o dicionário. Se uma palavra aparece em mais de um recurso, vale o primeiro. As trocas também se encadeiam: uma palavra corrigida pela variante ("regulatorias" → "regulatórias") ainda pode ser juntada ao singular e, depois, passa pelo dicionário como qualquer outra.</p>
+      <p>Cada análise mostra a caixa <strong>Usar a preparação do corpus</strong>, marcada, enquanto a preparação do projeto estiver ligada. Desmarque-a para rodar aquela análise sem a preparação e comparar os resultados. O resultado registra o que foi trocado, por exemplo "Preparação: 33 plurais, 4 variantes, 1 equivalências, 2 expressões". Se você mudar a preparação depois, o resultado passa a mostrar o aviso de que precisa ser executado de novo.</p>
+
+      <div class="cuidado">
+        <strong>Descreva a preparação no seu método</strong>
+        <p>A preparação muda o que é contado. Para que outra pessoa possa refazer a análise, registre no texto da pesquisa quais recursos você usou, as equivalências e as expressões escolhidas. Use o botão <span class="botao-ui f-lexicas">Exportar lista…</span> para guardar as equivalências. Sem a preparação, os resultados são os mesmos do labiia_lex e da versão 0.1.1.</p>
+      </div>
+
+      <div class="dica">
+        <strong>Duas palavras diferentes podem parecer variantes</strong>
+        <p>"Pais" e "país", "esta" e "está" ou "marco" e "março" são palavras diferentes, mas os métodos de variantes as agrupam. Por isso, aceite só os grupos que são de fato a mesma palavra.</p>
+      </div>
 
       <h3>Variáveis estreladas</h3>
       <p>Cada documento pode ter informações sobre quem é ou de onde vem: sexo, região, rodada, data etc. Essas informações são as <strong>características</strong> e os <strong>atributos</strong> que você já cadastrou no projeto. Na análise, elas viram <strong>variáveis estreladas</strong>, que começam com asterisco, e servem para comparar grupos.</p>
@@ -578,6 +601,66 @@
           <li>Uma ligação mostra que as palavras aparecem juntas, não que uma causa a outra.</li>
           <li>Uma palavra no centro da rede é a que mais se liga às outras. Isso não quer dizer que ela seja a mais importante para o seu argumento.</li>
           <li>Ao relatar, informe o índice usado. Índices diferentes podem destacar palavras diferentes.</li>
+        </ul>
+      </div>
+
+      <h3><span class="botao-ui f-lexicas">Rede textual</span></h3>
+      <h4>Para que serve</h4>
+      <p>Desenha a rede das palavras que aparecem perto umas das outras no texto, no estilo dos grafos do Gephi: centenas de palavras, do tamanho da força de suas ligações, sobre um tecido de linhas coloridas pela comunidade. É a Rede Textual do labiia_lex, sem precisar do Gephi nem do R.</p>
+      <h4>Quando usar</h4>
+      <p>Para ver de uma vez o vocabulário de um corpus e como ele se agrupa: quais palavras são centrais, quais grupos de palavras andam juntos e quais palavras fazem a ponte entre grupos.</p>
+      <h4>Como ler o resultado</h4>
+      <ul>
+        <li><strong>Ligação.</strong> Duas palavras ficam ligadas quando aparecem a até cinco palavras de conteúdo uma da outra, dentro de um segmento. O peso da ligação é o número de vezes que isso acontece.</li>
+        <li><strong>Tamanho da palavra.</strong> Cresce com a força: a soma dos pesos das ligações da palavra.</li>
+        <li><strong>Cores.</strong> Cada cor é uma comunidade (método de Louvain): palavras mais ligadas entre si do que com o resto. Os botões acima do desenho mostram e escondem cada comunidade.</li>
+        <li><strong>Posição.</strong> O desenho é feito pelo ForceAtlas2, o mesmo do Gephi: palavras muito ligadas ficam perto. A distância exata não tem valor estatístico.</li>
+      </ul>
+      <h4>O que dá para fazer no desenho</h4>
+      <ul>
+        <li>Girar a roda do mouse para aproximar, ou usar o zoom em porcentagem da barra (− e +, ou digitar o valor e teclar Enter; 100% mostra a rede inteira); arrastar o fundo para mover; arrastar uma palavra para mudá-la de lugar.</li>
+        <li>Passar o mouse sobre uma palavra mostra só as ligações dela. Clicar abre um painel com as métricas, as ligações mais fortes e os segmentos em que a palavra aparece, com a palavra destacada.</li>
+        <li><span class="botao-ui f-lexicas">Buscar palavra</span> destaca as palavras que contêm o texto digitado.</li>
+        <li>A barra <em>Ligações com ao menos N coocorrências</em> esconde as ligações fracas no desenho. A rede e as métricas não mudam.</li>
+        <li><span class="botao-ui f-lexicas">Continuar layout</span> retoma o ForceAtlas2 a partir das posições atuais; <span class="botao-ui f-lexicas">Afastar palavras</span> separa as palavras sobrepostas; <span class="botao-ui f-lexicas">Ajustar à tela</span> enquadra a rede.</li>
+        <li>As posições alteradas ficam guardadas na análise quando ela é salva ou atualizada.</li>
+        <li>Exporta PNG e SVG do desenho; as tabelas de palavras e de ligações saem em CSV; o arquivo GEXF abre no Gephi com as comunidades, as métricas e as posições.</li>
+      </ul>
+      <h4>Estilo e rede</h4>
+      <p>O botão <span class="botao-ui f-lexicas">Estilo e rede</span> abre um painel com quatro abas. Tudo muda na hora, fica salvo com a análise e entra nas exportações.</p>
+      <ul>
+        <li><strong>Aparência.</strong> Paleta de cores (Gephi, pastel, segura para daltonismo, tons de cinza) e a cor de cada comunidade; cor das ligações (pela primeira palavra, mistura das duas ou cinza), espessura e intensidade; fundo branco ou escuro; tamanho das palavras pela força, frequência, grau, intermediação ou autovetor, com menor e maior tamanho; cor das palavras; quantas palavras têm rótulo; cortar palavras longas.</li>
+        <li><strong>Filtros.</strong> Só as palavras numa faixa de uma medida; só a vizinhança de uma palavra, a até 3 passos; só o núcleo mais denso (palavras com ao menos N ligações entre as que ficam); só o maior grupo conectado. Os filtros escondem palavras no desenho: as métricas não mudam.</li>
+        <li><strong>Layout.</strong> Gravidade, escala, lentidão, gravidade forte, LinLog, dissuadir hubs e evitar sobreposição do ForceAtlas2. Mudar um ajuste com o layout rodando o reinicia com o ajuste novo. No painel da palavra, <span class="botao-ui f-lexicas">Fixar no lugar</span> impede que o layout a mova (a palavra fica sublinhada).</li>
+        <li><strong>Comunidades.</strong> Recalcular as comunidades com outra resolução do Louvain, dar nome a cada comunidade e juntar uma comunidade com outra. No painel da palavra, dá para levá-la a outra comunidade. Quando as comunidades deixam de ser as da análise, a tela avisa, mostra a modularidade nova e as exportações registram as comunidades como aparecem.</li>
+      </ul>
+      <p><span class="botao-ui f-lexicas">Restaurar estilo padrão</span> volta ao visual inicial. Os botões <span class="botao-ui f-lexicas">GEXF</span> e <span class="botao-ui f-lexicas">CSV</span> exportam a rede como está na tela, com as cores, os nomes das comunidades e as posições.</p>
+
+      <h4>Parâmetros principais</h4>
+      <div class="tabela">
+        <table>
+          <caption>Parâmetros da Rede textual</caption>
+          <thead>
+            <tr><th scope="col">Nome na tela</th><th scope="col">Padrão</th><th scope="col">Efeito</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>Seleção automática pelo tamanho do corpus</td><td>Ligado</td><td>Escolhe a frequência mínima, a coocorrência mínima, até 450 palavras e a força do layout pelo tamanho do corpus, como o labiia_lex. Enquanto estiver ligado, esses campos ficam acinzentados.</td></tr>
+            <tr><td>Frequência mínima</td><td>3</td><td>Palavras menos frequentes ficam de fora.</td></tr>
+            <tr><td>Coocorrência mínima</td><td>1</td><td>Quantas vezes duas palavras precisam aparecer perto para ficarem ligadas.</td></tr>
+            <tr><td>Máximo de palavras</td><td>300</td><td>Ficam as palavras de maior força.</td></tr>
+            <tr><td>Resolução das comunidades (em Mais parâmetros)</td><td>1,0</td><td>Valores maiores dão mais comunidades, menores.</td></tr>
+            <tr><td>Árvore máxima (em Mais parâmetros)</td><td>Desligado</td><td>Mostra só as ligações mais fortes que conectam a rede (só sem a seleção automática).</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <h4>Diferenças em relação ao labiia_lex</h4>
+      <p>As palavras, as ligações e as comunidades são as mesmas do labiia_lex no mesmo corpus. Duas correções: o peso de uma ligação é o número real de coocorrências (o labiia_lex contava cada par duas vezes, e os limiares foram convertidos para a rede continuar a mesma); e a intermediação e a proximidade tratam as palavras mais ligadas como mais próximas (distância = 1 ÷ peso). O desenho é equivalente, não idêntico.</p>
+      <h4>Cuidados de interpretação</h4>
+      <div class="cuidado">
+        <strong>Cuidados</strong>
+        <ul>
+          <li>Aparecer perto não é ter o mesmo sentido; leia os segmentos antes de concluir.</li>
+          <li>As comunidades dependem da resolução. Ao relatar, informe a resolução, a coocorrência mínima e o número de palavras.</li>
         </ul>
       </div>
 

@@ -13,7 +13,7 @@ import { createHash } from 'crypto'
 import { existsSync, mkdirSync, readdirSync, readFileSync, statSync, unlinkSync, utimesSync, writeFileSync, renameSync } from 'fs'
 import { join } from 'path'
 import { serialize, deserialize } from 'v8'
-import { PREPARATION_VERSION, type PreparedCorpus, type PrepareOptions, type TextUnitInput } from './prepare'
+import { PREPARATION_VERSION, hasPreparation, type PreparedCorpus, type PrepareOptions, type TextUnitInput } from './prepare'
 
 export const CACHE_LIMIT_BYTES = 2 * 1024 ** 3
 
@@ -22,6 +22,10 @@ export function corpusKey(units: TextUnitInput[], options: PrepareOptions): stri
   h.update(`v${PREPARATION_VERSION}\u0000${options.language}\u0000${options.uceSize}\u0000${units.length}\u0000`)
   // Content-word segments are a different corpus; the default keeps the earlier keys.
   if (options.segmentCount === 'content') h.update('segments:content\u0000')
+  // A corpus prepared with "Preparar corpus" is another corpus; without one, the keys stay as before.
+  if (hasPreparation(options.preparation)) {
+    h.update(`preparation:${JSON.stringify([options.preparation.expressions, Object.entries(options.preparation.forms).sort()])}\u0000`)
+  }
   for (const u of units) {
     // Lengths before each field keep "ab"+"c" and "a"+"bc" apart.
     for (const field of [u.id, u.name, u.text, (u.variables ?? []).join(' '), u.date ?? '', u.document ?? '']) {

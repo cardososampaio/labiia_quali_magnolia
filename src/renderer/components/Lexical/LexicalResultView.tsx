@@ -9,6 +9,7 @@ import { t, formatNumber, formatDateTime } from '../../i18n'
 import { FigureView } from './FigureView'
 import { ZoomFrame } from './ZoomFrame'
 import type { LexicalFigure } from '../../models/lexical-figures'
+import { NetworkTextView, type NetworkData } from './network/NetworkTextView'
 
 export interface StoredLexicalResult {
   files: LexicalFile[]
@@ -17,6 +18,8 @@ export interface StoredLexicalResult {
   /** Settings the result was produced with, to tell when it is out of date. */
   ranWith: string
   ranAt: string
+  /** When the researcher last changed the result in place (text network positions). */
+  editedAt?: string
 }
 
 export function RunProgressNotice({ progress, onCancel }: { progress: LexicalRunProgress | null; onCancel: () => void }) {
@@ -61,6 +64,16 @@ export function CorpusFigures({ corpus }: { corpus: LexicalCorpusStats }) {
       <span>{t('labiia.lexical.occurrence', { count: corpus.occurrences })}</span>
       <span>{t('labiia.lexical.form', { count: corpus.forms })}</span>
       <span>{t('labiia.lexical.hapax', { count: corpus.hapax })}</span>
+      {corpus.preparation && (
+        <span title={t('labiia.lexical.prep.appliedHelp')}>
+          {t('labiia.lexical.prep.applied', {
+            plurals: corpus.preparation.plurals,
+            variants: corpus.preparation.variants,
+            equivalences: corpus.preparation.equivalences,
+            expressions: corpus.preparation.expressions
+          })}
+        </span>
+      )}
     </div>
   )
 }
@@ -68,6 +81,13 @@ export function CorpusFigures({ corpus }: { corpus: LexicalCorpusStats }) {
 function decodeText(data: string): string {
   const bytes = Uint8Array.from(atob(data), (c) => c.charCodeAt(0))
   return new TextDecoder('utf-8').decode(bytes)
+}
+
+function encodeText(text: string): string {
+  const bytes = new TextEncoder().encode(text)
+  let bin = ''
+  for (let i = 0; i < bytes.length; i += 0x8000) bin += String.fromCharCode(...bytes.subarray(i, i + 0x8000))
+  return btoa(bin)
 }
 
 /** One line of a ;-separated file; "quoted" cells may contain ; and doubled quotes. */
@@ -140,12 +160,21 @@ function columnLabel(h: string): string {
   if (h === 'error') return t('labiia.lexical.error')
   if (h === 'document') return t('labiia.lexical.documentColumn')
   if (h === 'text') return t('labiia.lexical.text2')
+  if (h === 'degree') return t('labiia.lexical.network.degree')
+  if (h === 'strength') return t('labiia.lexical.network.strength')
+  if (h === 'betweenness') return t('labiia.lexical.network.betweenness')
+  if (h === 'closeness') return t('labiia.lexical.network.closeness')
+  if (h === 'eigenvector') return t('labiia.lexical.network.eigenvector')
+  if (h === 'community') return t('labiia.lexical.network.communityLabel')
+  if (h === 'source') return t('labiia.lexical.network.source')
+  if (h === 'target') return t('labiia.lexical.network.target')
+  if (h === 'weight') return t('labiia.lexical.network.weight')
   const m = h.match(/^word_(\d)$/)
   if (m) return t('labiia.lexical.word2', { n: m[1] })
   return h
 }
 
-export function LexicalResultView({ result, stale, title }: { result: StoredLexicalResult; stale: boolean; title: string }) {
+export function LexicalResultView({ result, stale, title, onChangeFile }: { result: StoredLexicalResult; stale: boolean; title: string; onChangeFile?: (name: string, data: string) => void }) {
   // Pictures (R images and window-drawn figures) in the order the test lists them.
   type Visual = { kind: 'image'; file: LexicalFile } | { kind: 'figure'; file: LexicalFile; name: string; figure: LexicalFigure }
   const visuals = useMemo(() => result.files.flatMap<Visual>((f) => {
@@ -155,6 +184,11 @@ export function LexicalResultView({ result, stale, title }: { result: StoredLexi
     try { return [{ kind: 'figure' as const, file: f, name: f.name.replace(/\.json$/, ''), figure: JSON.parse(decodeText(f.data)) as LexicalFigure }] } catch { return [] }
   }), [result.files])
   const tables = result.files.filter((f) => f.role === 'table' && f.data)
+  const networkFile = result.files.find((f) => f.role === 'network' && f.data)
+  const network = useMemo(() => {
+    if (!networkFile?.data) return null
+    try { return JSON.parse(decodeText(networkFile.data)) as NetworkData } catch { return null }
+  }, [networkFile?.data])
   const save = (f: LexicalFile): void => { void window.api.lexical.saveFile({ name: f.name, mime: f.mime, data: f.data! }) }
 
   return (
@@ -172,6 +206,10 @@ export function LexicalResultView({ result, stale, title }: { result: StoredLexi
         </ZoomFrame>
       ))}
 
+      {network && networkFile && (
+        <NetworkTextView key={result.ranAt} data={network} onChange={onChangeFile ? (next) => onChangeFile(networkFile.name, encodeText(JSON.stringify(next))) : undefined} />
+      )}
+
       {tables.map((f) => (
         <div key={f.name} className="lex-table-block">
           <div className="lex-figure-tools">
@@ -188,6 +226,8 @@ export function LexicalResultView({ result, stale, title }: { result: StoredLexi
 
 function tableTitle(f: LexicalFile): string {
   if (f.title === 'Bigrams') return t('labiia.lexical.bigrams')
+  if (f.title === 'NetworkNodes') return t('labiia.lexical.network.nodesTable')
+  if (f.title === 'NetworkEdges') return t('labiia.lexical.network.edgesTable')
   if (f.title === 'Trigrams') return t('labiia.lexical.trigrams')
   if (f.title === 'Branches') return t('labiia.lexical.branches')
   if (f.title === 'Keyphrases') return t('labiia.lexical.keyExpressions')
@@ -230,6 +270,7 @@ export function runErrorText(error: string, detail?: string, missing?: string[])
     case 'focal-not-found': return t('labiia.lexical.noneOfTheseKeywordsIs', { list: detail ?? '' })
     case 'no-keyphrases': return t('labiia.lexical.noKeyExpressionPassedThe')
     case 'no-ngrams': return t('labiia.lexical.noSequenceOfWordsReaches')
+    case 'no-network': return t('labiia.lexical.network.empty')
     case 'r-not-found': return t('labiia.lexical.rWasNotFoundOn')
     case 'r-packages-missing': return t('labiia.lexical.theseRPackagesAreMissing', { list: (missing ?? []).join(', ') })
     case 'r-timeout': return t('labiia.lexical.rTookLongerThanThe')

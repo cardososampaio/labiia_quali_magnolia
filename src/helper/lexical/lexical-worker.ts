@@ -21,6 +21,7 @@ import { thematicMap, type ThematicOptions } from './analyses/thematic-map'
 import { writeChdMatrix, writeChdProfileTables, type ChdMatrixOptions } from './analyses/chd'
 import { keywordAssociations, type Collocate } from './analyses/keyword-associations'
 import { associationBars, associationRadial } from './plot/association-figures'
+import { networkText, type NetworkTextOptions } from './analyses/network-text'
 
 export interface YakeRun { keyphrases: Keyphrase[]; figure: BarFigure }
 
@@ -49,6 +50,7 @@ export type WorkerRequest =
   | { id: number; type: 'lda-input'; key: string; resourcesDir: string; options: { minFreq: number; maxFeatures: number; useLemmas: boolean } }
   | { id: number; type: 'similitude-matrix'; key: string; resourcesDir: string; options: { minFreq: number; maxTerms: number; useLemmas: boolean; coefficient: string } }
   | { id: number; type: 'sentiment'; key: string; resourcesDir: string; topWords: number }
+  | { id: number; type: 'network-text'; key: string; resourcesDir: string; options: NetworkTextOptions }
   | { id: number; type: 'yake'; key: string; resourcesDir: string; options: { minTokens: number; maxTokens: number; minFreq: number; topN: number; dedupThreshold: number; windowSize: number } }
 
 export type WorkerMessage =
@@ -149,6 +151,10 @@ export function handle(msg: WorkerRequest, post: (m: WorkerMessage) => void): un
   if (msg.type === 'lda-input') {
     const c = corpusFor(msg.key)
     return ldaInput(c, lexiconFor(c.language, msg.resourcesDir), msg.options)
+  }
+  if (msg.type === 'network-text') {
+    const c = corpusFor(msg.key)
+    return networkText(c, lexiconFor(c.language, msg.resourcesDir), msg.options)
   }
   if (msg.type === 'corpus-text') {
     return { text: corpusFor(msg.key).uceText.join('\n') } satisfies CorpusText

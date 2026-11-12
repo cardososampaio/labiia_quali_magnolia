@@ -26,7 +26,7 @@ cargo test --workspace      # testes do Rust (projetos, livro de códigos, resul
 npm run build               # instalador em <pasta de compilação>/release/bundle/nsis/labiia_quali_<versão>_x64-setup.exe (o executável é labiia_quali.exe)
 ```
 
-`test/helper/parity.local.test.ts` só roda com `PARITY_DIR` definido. Ele compara as 12 análises com outra versão; veja o cabeçalho do arquivo.
+`test/helper/parity.local.test.ts` só roda com `PARITY_DIR` definido. Ele compara as 12 análises da 0.1 com outra versão; veja o cabeçalho do arquivo. `test/helper/network-text.parity.local.test.ts` compara a Rede textual com o labiia_lex (`NET_PARITY_*`, ver o cabeçalho).
 
 **Pasta de compilação.** Nesta máquina, o Rust compila em `C:\Users\cardo\AppData\Local\labiia-quali-build\target`. A configuração está em `.cargo/config.toml`, que não vai para o git. O motivo: a proteção contra ransomware do antivírus impede que o script de compilação do Tauri sobrescreva arquivos dentro da Área de Trabalho.
 
@@ -41,6 +41,7 @@ npm run build               # instalador em <pasta de compilação>/release/bund
 | Leitura de livro de códigos em Word, ODT, RTF e Markdown | `crates/magnolia-core/src/qdpx/codebook_outline/` |
 | Ajudante Node: protocolo, métodos, pastas | `src/helper/` |
 | Motor das análises léxicas (sem mudança de lógica em relação à 0.1) | `src/helper/lexical/` |
+| Preparar corpus (plurais, variantes, equivalências, expressões), em Rust | `crates/labiia-prep/`, `src-tauri/src/labiia/corpus_prep.rs`, `components/Lexical/CorpusPreparationDialog.tsx` |
 | Ponte da interface com as análises (`window.api.lexical`) | `src/renderer/labiia/lexical-bridge.ts` |
 | Faixa, botão com menu, tema Windows, termos, configurações | `src/renderer/labiia/` |
 | Telas das análises léxicas | `src/renderer/components/Lexical/` |
@@ -74,6 +75,11 @@ npm run build               # instalador em <pasta de compilação>/release/bund
 - **Unidade de análise:** as análises leem "unidades de texto" (`components/Lexical/lexical-units.ts`).
   - Em **Documentos**, cada documento é uma unidade. As notas dos cadernos são fontes de texto e entram como documentos.
   - Em **Códigos**, cada código escolhido é uma unidade, com todos os seus trechos. Os subcódigos somam no código-pai.
+- **Preparar corpus:** plurais fora do dicionário, variantes, equivalências e expressões compostas.
+  - Os mecanismos ficam em Rust, em `crates/labiia-prep`, e os comandos em `src-tauri/src/labiia/corpus_prep.rs`.
+  - O motor só aplica a tabela de trocas que recebe (`preparation` em `lexical.run`, ver `corpus/prepare.ts`).
+  - As escolhas ficam no projeto (`labiia-lexical/preparacao.json`).
+  - Tudo vem desligado. Sem tabela, o corpus e a chave do cache são os de antes, e a paridade continua valendo.
 - **Mudança no preparo do corpus:** quando o mesmo texto passar a dar um resultado diferente, aumente `PREPARATION_VERSION`.
 - **Pacotes R:** a lista fica em `LEXICAL_R_PACKAGES` (`src/renderer/models/lexical-api.ts`). O build gera `build/installer/r_packages.txt` a partir dela (`scripts/write-r-packages.mjs`). Ao mudar a lista, atualize também `components/Licence/credits.ts`.
 - **Cache dos corpora:** fica em `<dados>\lexical-cache-v2`, separado do cache da 0.1, porque é gravado pelo V8 do Node que o criou.

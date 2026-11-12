@@ -16,6 +16,7 @@ tauri-build = { version = "2", features = [] }
 
 [dependencies]
 magnolia-core = { path = "../crates/magnolia-core" }
+labiia-prep = { path = "../crates/labiia-prep" }
 tauri = { version = "2.12", features = [] }
 tauri-plugin-dialog = "2"
 tauri-plugin-opener = "2"

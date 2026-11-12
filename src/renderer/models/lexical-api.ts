@@ -17,6 +17,7 @@ export type LexicalTestId =
   | 'word-tree'
   | 'bigrams'
   | 'trigrams'
+  | 'network-text'
 
 export type LexicalToolType = `lexical-${LexicalTestId}`
 
@@ -33,8 +34,12 @@ export const LEXICAL_R_PACKAGES: Record<LexicalTestId, string[]> = {
   sentiment: [],
   'word-tree': [],
   bigrams: [],
-  trigrams: []
+  trigrams: [],
+  'network-text': []
 }
+
+/** labiia_lex's community colours for the text network (Gephi-like, strong on white). */
+export const COMMUNITY_PALETTE = ['#8E24AA', '#2E9E3F', '#1E78D2', '#F07F0A', '#D7263D', '#0097A7', '#C2187A', '#7CA81B', '#5B3FD1', '#E0561C', '#00897B', '#B7860B', '#3F51B5', '#AD1457', '#558B2F', '#6D4C41']
 
 export interface RInstallationInfo {
   rscript: string
@@ -87,7 +92,48 @@ export interface LexicalRunRequest {
   language: 'pt' | 'en' | 'es'
   params: Record<string, number | string | boolean>
   units: LexicalUnit[]
+  /** The project's corpus preparation for this run (built by prepBuild); absent = none. */
+  preparation?: PreparationTable
 }
+
+/**
+ * "Preparar corpus": the researcher's choices, saved with the project. Each
+ * part has its own switch; nothing applies while `enabled` is off.
+ */
+export interface CorpusPreparation {
+  enabled: boolean
+  plurals: { enabled: boolean; excluded: string[] }
+  variants: { enabled: boolean; groups: { canonical: string; variants: string[] }[] }
+  equivalences: { enabled: boolean; pairs: { from: string; to: string }[] }
+  expressions: { enabled: boolean; items: string[] }
+}
+
+export interface PreparationSummary {
+  expressions: number
+  equivalences: number
+  variants: number
+  plurals: number
+}
+
+/** The replacements the engine applies: phrases that become one word, and words replaced by another. */
+export interface PreparationTable {
+  expressions: [string, string][]
+  forms: Record<string, string>
+  summary: PreparationSummary
+}
+
+export interface PluralSuggestion { plural: string; singular: string; frequency: number }
+export interface VariantSuggestion { canonical: string; variants: { word: string; frequency: number }[]; frequency: number }
+export interface CompoundSuggestion {
+  expression: string
+  replacement: string
+  frequency: number
+  documents: number
+  score: number
+  relative: number
+  examples: string[]
+}
+export type VariantMethod = 'fingerprint' | 'ngram2' | 'ngram3' | 'levenshtein1' | 'levenshtein2'
 
 export interface LexicalRunProgress {
   runId: string
@@ -107,8 +153,8 @@ export interface LexicalFile {
   data?: string
   /** Where the file is stored inside the project file. */
   path?: string
-  /** figure: a LexicalFigure as JSON, drawn by the window. */
-  role: 'image' | 'figure' | 'table' | 'data'
+  /** figure: a LexicalFigure as JSON, drawn by the window; network: a text network (network.json) drawn as an interactive graph. */
+  role: 'image' | 'figure' | 'table' | 'data' | 'network'
   title?: string
 }
 
@@ -120,6 +166,8 @@ export interface LexicalCorpusStats {
   lemmas: number
   hapax: number
   fromCache: boolean
+  /** What the corpus preparation replaced, when the run used one. */
+  preparation?: PreparationSummary
 }
 
 export interface LexicalRunResult {
@@ -140,6 +188,12 @@ export interface LexicalApi {
   /** Saves a result file where the user chooses. */
   saveFile: (file: { name: string; mime: string; data: string }) => Promise<boolean>
   rStatus: (refresh?: boolean) => Promise<RStatusInfo>
+  /** Suggestions for "Preparar corpus", found in the given texts. */
+  prepSuggestPlurals: (language: string, texts: string[]) => Promise<PluralSuggestion[]>
+  prepSuggestVariants: (language: string, texts: string[], method: VariantMethod) => Promise<VariantSuggestion[]>
+  prepSuggestCompounds: (language: string, texts: string[], minFreq: number) => Promise<CompoundSuggestion[]>
+  /** The table of replacements for a run on these texts. */
+  prepBuild: (language: string, texts: string[], choices: CorpusPreparation) => Promise<PreparationTable>
   setRPath: (path: string) => Promise<RStatusInfo>
   pickRPath: () => Promise<string | null>
   checkPackages: (packages: string[]) => Promise<{ status?: Record<string, boolean>; error?: string }>

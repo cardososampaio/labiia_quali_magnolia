@@ -17,6 +17,35 @@ use std::path::Path;
 
 pub const FOLDER: &str = "labiia-lexical";
 
+/// The project's "Preparar corpus" choices (plurals, variants, equivalences,
+/// expressions), kept in the project file so they travel with it and apply
+/// to every lexical analysis of the project.
+pub const PREPARATION_ENTRY: &str = "labiia-lexical/preparacao.json";
+/// Where the interface keeps those choices in the project it saves and opens.
+pub const PREPARATION_FIELD: &str = "labiiaCorpusPreparation";
+
+/// Writes the corpus preparation choices, when the project has any.
+pub fn write_preparation(project: &Value, zip: &mut AtomicZip) -> std::io::Result<()> {
+    match project.get(PREPARATION_FIELD).filter(|v| v.is_object()) {
+        Some(v) => zip.add(PREPARATION_ENTRY, v.to_string().as_bytes()),
+        None => Ok(()),
+    }
+}
+
+/// Reads the corpus preparation choices back into the project, when saved.
+pub fn read_preparation(project: &mut Value, zip: &mut Archive) {
+    let Some(v) = zip
+        .read(PREPARATION_ENTRY)
+        .and_then(|b| serde_json::from_slice::<Value>(&b).ok())
+        .filter(Value::is_object)
+    else {
+        return;
+    };
+    if let Some(o) = project.as_object_mut() {
+        o.insert(PREPARATION_FIELD.into(), v);
+    }
+}
+
 fn is_lexical(a: &Value) -> bool {
     a.get("toolType")
         .and_then(Value::as_str)
