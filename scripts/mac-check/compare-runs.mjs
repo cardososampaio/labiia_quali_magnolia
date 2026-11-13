@@ -10,7 +10,11 @@
  * test must finish on both; its tables and data files must match, numbers
  * allowed to differ only in the last digits (different maths libraries
  * round differently). Figures (PNG, SVG) are drawn by each system's fonts,
- * so only their presence is compared. Exits with 1 when a rule is broken.
+ * so only their presence is compared; so are drawing positions (a network's
+ * layout comes from a random start each system computes slightly
+ * differently). A CHD's classes must be the same, while the left-to-right
+ * order its dendrogram draws them in may differ. Exits with 1 when a rule
+ * is broken.
  */
 import fs from 'node:fs'
 import path from 'node:path'
@@ -22,7 +26,38 @@ if (!a || !b) {
 }
 
 const FIGURES = new Set(['.png', '.svg', '.jpg', '.jpeg', '.pdf'])
-const NUMBER = /-?\d+(?:\.\d+)?(?:e[-+]?\d+)?/gi
+/** Drawing positions: compared like figures. */
+const LAYOUTS = /^layout.*\.json$/i
+// Decimal point or decimal comma (R writes "0,935" in the Portuguese tables).
+const NUMBER = /-?\d+(?:[.,]\d+)?(?:e[-+]?\d+)?/gi
+const num = (t) => Number(t.replace(',', '.'))
+
+/** A Newick tree with every node's children in a fixed order. */
+function canonicalTree(text) {
+  let i = 0
+  const s = text.trim().replace(/;$/, '')
+  const node = () => {
+    if (s[i] === '(') {
+      i++
+      const kids = [node()]
+      while (s[i] === ',') { i++; kids.push(node()) }
+      i++ // ')'
+      let label = ''
+      while (i < s.length && !',)'.includes(s[i])) label += s[i++]
+      return '(' + kids.sort().join(',') + ')' + label
+    }
+    let label = ''
+    while (i < s.length && !',)'.includes(s[i])) label += s[i++]
+    return label
+  }
+  return node()
+}
+
+/** A CHD dendrogram's classes, without the order they are drawn in. */
+function chdClasses(text) {
+  const j = JSON.parse(text)
+  return JSON.stringify((j.classes ?? []).map(({ x, color, ...c }) => c).sort((p, q) => p.id - q.id))
+}
 
 /** Equal text, or equal once numbers are compared with a small tolerance. */
 function sameText(x, y) {
@@ -36,8 +71,8 @@ function sameText(x, y) {
   const ny = y.match(NUMBER) ?? []
   let worst = 0
   for (let i = 0; i < nx.length; i++) {
-    const p = Number(nx[i])
-    const q = Number(ny[i])
+    const p = num(nx[i])
+    const q = num(ny[i])
     const diff = Math.abs(p - q) / Math.max(1, Math.abs(p), Math.abs(q))
     worst = Math.max(worst, diff)
   }
@@ -67,14 +102,18 @@ for (const test of tests) {
   for (const f of [...new Set([...fa, ...fb])].sort()) {
     if (!fa.includes(f) || !fb.includes(f)) { problems.push(`${f} only in ${fa.includes(f) ? 'A' : 'B'}`); continue }
     const ext = path.extname(f).toLowerCase()
-    if (FIGURES.has(ext)) {
+    if (FIGURES.has(ext) || LAYOUTS.test(f)) {
       const za = fs.statSync(path.join(da, f)).size
       const zb = fs.statSync(path.join(db, f)).size
       if (!za || !zb) problems.push(`${f} is empty`)
       else notes.push(`${f}: figure (${za} / ${zb} bytes)`)
       continue
     }
-    const r = sameText(fs.readFileSync(path.join(da, f), 'utf8'), fs.readFileSync(path.join(db, f), 'utf8'))
+    let ta = fs.readFileSync(path.join(da, f), 'utf8')
+    let tb = fs.readFileSync(path.join(db, f), 'utf8')
+    if (ext === '.nwk') { ta = canonicalTree(ta); tb = canonicalTree(tb) }
+    if (f === 'chd_dendrogram.json') { ta = chdClasses(ta); tb = chdClasses(tb) }
+    const r = sameText(ta, tb)
     if (!r.same) problems.push(`${f}: ${r.why}`)
     else if (r.note) notes.push(`${f}: ${r.note}`)
   }
