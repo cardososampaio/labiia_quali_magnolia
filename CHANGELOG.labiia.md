@@ -3,7 +3,7 @@
 As novidades do Magnolia, em que o labiia_quali se baseia, estão em
 [CHANGELOG.md](CHANGELOG.md).
 
-## Próxima versão
+## 0.2.2
 
 ### Novidades
 - **Versão para Mac** com chip Apple (M1 em diante, macOS 13 ou mais novo),

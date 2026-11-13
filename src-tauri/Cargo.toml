@@ -1,6 +1,6 @@
 [package]
 name = "magnolia"
-version = "0.2.1"
+version = "0.2.2"
 description = "labiia_quali: qualitative data analysis, based on Magnolia"
 authors = ["Cale Davis <cale@caledavis.eu>"]
 license = "EUPL-1.2"
