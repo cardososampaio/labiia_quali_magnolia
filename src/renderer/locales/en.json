@@ -1745,6 +1745,8 @@
   },
   "labiia": {
     "clustering": {
+      "calculating": "Calculating coding clusters…",
+      "calculationError": "The coding clusters could not be calculated.",
       "moreReferences": "Show more references",
       "documentFilter": "Document filter",
       "matrixHelp": "Select a cell to inspect references to shared features within the current scope.",

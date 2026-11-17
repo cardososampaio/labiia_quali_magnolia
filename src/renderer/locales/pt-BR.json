@@ -1813,6 +1813,8 @@
   },
   "labiia": {
     "clustering": {
+      "calculating": "Calculando agrupamentos…",
+      "calculationError": "Não foi possível calcular os agrupamentos.",
       "moreReferences": "Mostrar mais referências",
       "documentFilter": "Recorte de documentos",
       "matrixHelp": "Selecione uma célula para consultar as referências em comum no recorte atual.",

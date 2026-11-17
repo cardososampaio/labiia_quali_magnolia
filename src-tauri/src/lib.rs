@@ -162,6 +162,7 @@ pub fn run() {
             labiia::lexical::lexical_run,
             labiia::lexical::lexical_cancel_run,
             labiia::lexical::lexical_save_file,
+            labiia::clustering::cluster_coding_profiles,
             labiia::corpus_prep::corpus_prep_suggest,
             labiia::corpus_prep::corpus_prep_build,
             labiia::diagnostics::labiia_startup_check,

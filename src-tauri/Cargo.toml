@@ -15,6 +15,7 @@ crate-type = ["staticlib", "cdylib", "rlib"]
 tauri-build = { version = "2", features = [] }
 
 [dependencies]
+labiia-analysis = { path = "../crates/labiia-analysis" }
 magnolia-core = { path = "../crates/magnolia-core" }
 labiia-prep = { path = "../crates/labiia-prep" }
 tauri = { version = "2.12", features = [] }

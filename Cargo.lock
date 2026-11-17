@@ -2548,6 +2548,13 @@ dependencies = [
 ]
 
 [[package]]
+name = "labiia-analysis"
+version = "0.1.0"
+dependencies = [
+ "serde",
+]
+
+[[package]]
 name = "labiia-prep"
 version = "0.1.0"
 dependencies = [
@@ -2742,6 +2749,7 @@ dependencies = [
  "icu_decimal",
  "icu_locale_core",
  "icu_plurals",
+ "labiia-analysis",
  "labiia-prep",
  "libc",
  "log",

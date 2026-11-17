@@ -6,6 +6,7 @@
 //! conflicts: Magnolia's files only call into here.
 
 pub mod close;
+pub mod clustering;
 pub mod codebook;
 pub mod corpus_prep;
 pub mod diagnostics;

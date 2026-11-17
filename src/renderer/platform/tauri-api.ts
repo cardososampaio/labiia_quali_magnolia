@@ -394,6 +394,7 @@ const api: MagnoliaAPI = {
   sendAnalysisAction: (action, ...args) => toMain('analysis-action', { action, args }),
   onAnalysisAction: (callback) => on<any>('analysis-action', (p) => callback(p.action, ...p.args)),
 
+  clusterCodingProfiles: (request) => invoke('cluster_coding_profiles', { request }), // labiia_quali
   exportCsv: (content, defaultName) => invoke('export_csv', { content, defaultName }),
   exportSvg: (content, defaultName) => invoke('export_svg', { content, defaultName }),
   focusWindow: () => void invoke('raise_other_windows'),

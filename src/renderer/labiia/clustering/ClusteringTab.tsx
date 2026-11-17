@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import type { AnalysisInitData } from '../../models/types'
 import { DocumentsSection } from '../../components/Analysis/DocumentsSection'
@@ -6,7 +6,7 @@ import { applySurveyCellScope, resolveFilteredSources, toCsv } from '../../compo
 import { useLiveAnalysisData } from '../../components/Analysis/use-live-analysis-data'
 import { emptyDocumentFilter } from '../../components/DocumentSelector/DocumentSelector'
 import { ManualSelectButton } from '../../components/ItemPicker/ManualSelectButton'
-import { CLUSTER_LIMIT, clusterLeaves, clusterProfiles, codingProfiles, cutClusters, sharedReferences, type ClusterNode, type ClusterTarget, type SimilarityMeasure } from './model'
+import { clusterLeaves, sharedReferences, type ClusterNode, type ClusterRequest, type ClusterResult, type ClusterTarget, type SimilarityMeasure } from './model'
 import { ClusterReferences } from './ClusterReferences'
 import './clustering.css'
 
@@ -17,7 +17,7 @@ function Dendrogram({ root, order, names, groups, label }: {
   root: ClusterNode
   order: number[]
   names: string[]
-  groups: Map<number, number>
+  groups: number[]
   label: string
 }) {
   const row = new Map(order.map((leaf, index) => [leaf, (index + 0.5) * ROW_HEIGHT]))
@@ -37,7 +37,7 @@ function Dendrogram({ root, order, names, groups, label }: {
         <g fill="none" stroke="currentColor">{branches}</g>
       </svg>
       <ol>
-        {order.map((leaf) => <li key={leaf} title={names[leaf]}>{groups.get(leaf)} · {names[leaf]}</li>)}
+        {order.map((leaf) => <li key={leaf} title={names[leaf]}>{groups[leaf]} · {names[leaf]}</li>)}
       </ol>
     </div>
   )
@@ -61,24 +61,54 @@ export function ClusteringTab({ data: snapshot }: { data: AnalysisInitData }) {
     return data.sources.filter(({ guid }) => included.has(guid)).map(({ guid }) => guid)
   }, [data, filter])
   const codes = useMemo(() => data.codes.filter(({ guid, isCodable }) => isCodable && selectedCodes.includes(guid)), [data.codes, selectedCodes])
-  const profiles = useMemo(
-    () => codingProfiles(scoped.sourceSelections, sources, codes.map(({ guid }) => guid), target),
-    [scoped.sourceSelections, sources, codes, target]
-  )
-  const result = useMemo(() => clusterProfiles(profiles, measure), [profiles, measure])
+  const request = useMemo<ClusterRequest>(() => {
+    const codeGuids = codes.map(({ guid }) => guid)
+    const selected = new Set(codeGuids)
+    return {
+      target,
+      measure,
+      codes: codeGuids,
+      documents: codeGuids.length ? sources.map((guid) => ({
+        guid,
+        selections: (scoped.sourceSelections[guid] ?? []).flatMap(({ codings }) => {
+          const assigned = codings.flatMap(({ codeGuid }) => selected.has(codeGuid) ? [codeGuid] : [])
+          return assigned.length ? [assigned] : []
+        })
+      })) : []
+    }
+  }, [sources, scoped.sourceSelections, codes, target, measure])
+  const [response, setResponse] = useState<{ request: ClusterRequest; result?: ClusterResult }>()
+  useEffect(() => {
+    if (!request.codes.length) return
+    let active = true
+    const timer = window.setTimeout(async () => {
+      try {
+        const result = await window.api.clusterCodingProfiles(request)
+        if (active) setResponse({ request, result })
+      } catch {
+        if (active) setResponse({ request })
+      }
+    }, 120)
+    return () => {
+      active = false
+      window.clearTimeout(timer)
+    }
+  }, [request])
+  const current = response?.request === request ? response : undefined
+  const result = current?.result
   const sourceNames = useMemo(() => new Map(data.sources.map(({ guid, name }) => [guid, name])), [data.sources])
   const codeNames = useMemo(() => new Map(data.codes.map(({ guid, name }) => [guid, name])), [data.codes])
   const nameByGuid = target === 'codes' ? codeNames : sourceNames
-  const first = pair && result.items.find(({ guid }) => guid === pair[0])
-  const second = pair && result.items.find(({ guid }) => guid === pair[1])
+  const first = pair && result?.items.find(({ guid }) => guid === pair[0])
+  const second = pair && result?.items.find(({ guid }) => guid === pair[1])
   const references = useMemo(() => first && second
     ? sharedReferences(scoped.sourceSelections, target, first, second)
     : null, [scoped.sourceSelections, target, first, second])
-  const names = result.items.map(({ guid }) => nameByGuid.get(guid) ?? guid)
-  const root = result.limited ? undefined : result.root
+  const names = result?.items.map(({ guid }) => nameByGuid.get(guid) ?? guid) ?? []
+  const root = result && !result.limited ? result.root : undefined
   const order = root ? clusterLeaves(root) : []
   const count = Math.min(groupCount, order.length)
-  const groups = new Map(root ? cutClusters(root, count).flatMap((group, index) => group.map((leaf) => [leaf, index + 1] as const)) : [])
+  const groups = result && !result.limited ? result.groupsByCut[count - 1] ?? [] : []
   const number = new Intl.NumberFormat(i18n.language, { minimumFractionDigits: 3, maximumFractionDigits: 3 })
   const measureLabel = {
     cosine: t('labiia.clustering.cosine'),
@@ -87,7 +117,7 @@ export function ClusteringTab({ data: snapshot }: { data: AnalysisInitData }) {
   }[measure]
 
   async function exportResults() {
-    if (result.limited || !root) return
+    if (!result || result.limited || !root) return
     setExportError(false)
     const { similarities } = result
     const rows = [
@@ -100,7 +130,7 @@ export function ClusteringTab({ data: snapshot }: { data: AnalysisInitData }) {
       [],
       [t('labiia.clustering.name'), 'GUID', t('labiia.clustering.group'), ...order.map((column) => names[column])],
       ...order.map((row) => [
-        names[row], result.items[row].guid, String(groups.get(row)),
+        names[row], result.items[row].guid, String(groups[row]),
         ...order.map((column) => String(similarities[row][column]))
       ])
     ]
@@ -156,7 +186,7 @@ export function ClusteringTab({ data: snapshot }: { data: AnalysisInitData }) {
         <p>{target === 'codes' ? t('labiia.clustering.codeProfileHelp') : t('labiia.clustering.documentProfileHelp')}</p>
         <p>{measure === 'cosine' ? t('labiia.clustering.cosineHelp') : t('labiia.clustering.binaryHelp')} {t('labiia.clustering.linkageHelp')}</p>
       </div>
-      {!!codes.length && !!result.excluded.length && (
+      {!!result?.excluded.length && (
         <details>
           <summary>{t('labiia.clustering.excludedCount', { count: result.excluded.length })}</summary>
           <ul>{result.excluded.map((guid) => <li key={guid}>{nameByGuid.get(guid) ?? guid}</li>)}</ul>
@@ -164,8 +194,12 @@ export function ClusteringTab({ data: snapshot }: { data: AnalysisInitData }) {
       )}
       {!codes.length
         ? <p>{t('labiia.clustering.choosePrompt')}</p>
+        : !result
+          ? (current
+            ? <p role="alert">{t('labiia.clustering.calculationError')}</p>
+            : <p role="status">{t('labiia.clustering.calculating')}</p>)
         : result.limited
-          ? <p>{t('labiia.clustering.limit', { limit: CLUSTER_LIMIT })}</p>
+          ? <p>{t('labiia.clustering.limit', { limit: result.limit })}</p>
           : !root || order.length < 2
             ? <p>{t('labiia.clustering.tooFew')}</p>
             : (

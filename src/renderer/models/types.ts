@@ -543,6 +543,8 @@ export interface EditorInfo {
 
 // IPC API exposed to renderer
 export interface MagnoliaAPI {
+  /** labiia_quali: coding-profile analysis in the native backend. */
+  clusterCodingProfiles: (request: import('../labiia/clustering/model').ClusterRequest) => Promise<import('../labiia/clustering/model').ClusterResult>
   /** labiia_quali's lexical analyses (src/renderer/labiia/lexical-bridge.ts). */
   lexical: import('./lexical-api').LexicalApi
   getFileSize: (filePath: string) => Promise<number | null>

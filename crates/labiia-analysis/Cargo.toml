@@ -1,0 +1,8 @@
+[package]
+name = "labiia-analysis"
+version = "0.1.0"
+edition = "2024"
+description = "Analysis of qualitative coding profiles for labiia_quali"
+
+[dependencies]
+serde = { version = "1", features = ["derive"] }
