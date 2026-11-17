@@ -33,6 +33,7 @@ export type ToolKind =
   | 'framework-matrix'
   | 'results-in-documents'
   | 'code-frequencies'
+  | 'coding-clusters' // labiia_quali
   | 'code-orders'
   | 'word-frequencies'
   | 'word-combinations'

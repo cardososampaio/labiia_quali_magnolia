@@ -60,6 +60,12 @@ export const TOOL_REGISTRY: Record<string, ToolDef> = {
   'word-combinations':     tool('wordCombinations',   faWholeWord,        '#C83C3C'), // crimson
   'relationship-map':      tool('relationshipMap',    faCircleNodes,      '#A830D0'), // violet
   'reports':               tool('reports',            faNotebookTabs,     '#607080'), // slate
+  'coding-clusters': { // labiia_quali
+    icon: faBarsStaggered,
+    color: '#4659A6',
+    get label() { return t('labiia.clustering.label') },
+    get description() { return t('labiia.clustering.description') }
+  },
   // labiia_quali: one entry per lexical analysis, labels read when shown.
   ...Object.fromEntries(
     LEXICAL_TESTS.map((d) => [

@@ -29,6 +29,7 @@ import { CodeCoOccurrences } from './CodeCoOccurrences'
 import { CodesInDocuments } from './CodesInDocuments'
 import { FrameworkMatrix } from './FrameworkMatrix'
 import { CodeFrequencies } from './CodeFrequencies'
+import { ClusteringTab } from '../../labiia/clustering/ClusteringTab' // labiia_quali
 import { CodeOrders } from './CodeOrders'
 import { WordFrequencies } from './WordFrequencies'
 import { WordCombinations } from './WordCombinations'
@@ -196,6 +197,8 @@ function dispatch(
       return <FrameworkMatrix data={data} savedConfig={savedConfig} inTab={inTab} />
     case 'results-in-documents':
       return <ResultsInDocuments data={data} savedConfig={savedConfig} inTab={inTab} />
+    case 'coding-clusters': // labiia_quali
+      return <ClusteringTab data={data} />
     case 'code-frequencies':
       return <CodeFrequencies data={data} savedConfig={savedConfig} inTab={inTab} />
     case 'code-orders':

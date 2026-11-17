@@ -39,6 +39,7 @@ const ANALYSIS_TOOL_ORDER: AnalysisToolType[] = [
   'code-cooccurrences',
   'code-orders',
   'code-frequencies',
+  'coding-clusters', // labiia_quali
   'word-frequencies',
   'word-combinations',
   'relationship-map',

@@ -198,7 +198,7 @@ export function labiiaRibbonTabs(a: RibbonActions): RibbonTabDef[] {
       id: 'analyses',
       label: t('labiia.ribbon.tabAnalyses'),
       groups: [
-        { label: t('toolbar.groupCodes'), buttons: (['codes-in-documents', 'framework-matrix', 'code-cooccurrences', 'code-orders', 'code-frequencies'] as AnalysisToolType[]).map(analysisButton('codes')) },
+        { label: t('toolbar.groupCodes'), buttons: (['codes-in-documents', 'framework-matrix', 'code-cooccurrences', 'code-orders', 'code-frequencies', 'coding-clusters'] as AnalysisToolType[]).map(analysisButton('codes')) },
         { label: t('labiia.ribbon.groupResultsWords'), buttons: (['results-in-documents', 'word-frequencies', 'word-combinations', 'relationship-map'] as AnalysisToolType[]).map(analysisButton('results')) },
         { label: t('labiia.ribbon.groupReports'), buttons: (['reports'] as AnalysisToolType[]).map(analysisButton('reports')) }
       ]

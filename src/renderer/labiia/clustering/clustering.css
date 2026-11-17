@@ -1,0 +1,67 @@
+.labiia-clustering {
+  flex: 1;
+  min-height: 0;
+  padding: 16px;
+  overflow: auto;
+}
+
+.labiia-cluster-controls,
+.labiia-cluster-controls label {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.labiia-cluster-controls {
+  gap: 12px;
+}
+
+.labiia-cluster-controls input {
+  width: 5em;
+}
+
+.labiia-cluster-codes {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  padding: 0;
+  list-style: none;
+}
+
+.labiia-cluster-results {
+  margin-top: 12px;
+  overflow-x: auto;
+}
+
+.labiia-cluster-tree {
+  display: flex;
+  min-width: max-content;
+}
+
+.labiia-cluster-tree ol {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.labiia-cluster-tree li {
+  height: 24px;
+  line-height: 24px;
+}
+
+.labiia-cluster-matrix {
+  border-collapse: collapse;
+  font-variant-numeric: tabular-nums;
+}
+
+.labiia-cluster-matrix th,
+.labiia-cluster-matrix td {
+  max-width: 160px;
+  padding: 4px 8px;
+  overflow: hidden;
+  border: 1px solid var(--border-color);
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  text-align: end;
+}
