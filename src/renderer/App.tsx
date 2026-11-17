@@ -669,7 +669,9 @@ function App() {
   const collectProject = useCallback((): Project => {
     const ats = useAnalysisTabsStore.getState()
     const ds = useDocumentStore.getState()
-    const persistedTabs: PersistedTab[] = ds.openTabs.map((id): PersistedTab => {
+    // labiia_quali: experimental clustering tabs are session-only for older project readers.
+    const isClusteringTab = (id: string) => parseAnalysisTabId(id)?.toolType === 'coding-clusters'
+    const persistedTabs: PersistedTab[] = ds.openTabs.filter((id) => !isClusteringTab(id)).map((id): PersistedTab => {
       if (isMapTab(id)) {
         return { id, kind: 'map', mapGuid: mapGuidFromTabId(id) ?? '' }
       }
@@ -703,8 +705,8 @@ function App() {
     })
     const tabState: PersistedTabState = {
       openTabs: persistedTabs,
-      activeTabId: ds.viewedDocumentGuid,
-      perToolCounters: ats.perToolCounters
+      activeTabId: ds.viewedDocumentGuid && isClusteringTab(ds.viewedDocumentGuid) ? null : ds.viewedDocumentGuid,
+      perToolCounters: Object.fromEntries(Object.entries(ats.perToolCounters).filter(([tool]) => tool !== 'coding-clusters'))
     }
     return {
       name: projectStore.name,
