@@ -1745,6 +1745,16 @@
   },
   "labiia": {
     "clustering": {
+      "moreReferences": "Show more references",
+      "documentFilter": "Document filter",
+      "matrixHelp": "Select a cell to inspect references to shared features within the current scope.",
+      "inspectCell": "{{first}} and {{second}} · {{score}} · Inspect references",
+      "sharedTitle": "Shared references · {{first}} and {{second}}",
+      "closeReferences": "Close references",
+      "noSharedReferences": "These items share no features within the current scope.",
+      "referenceCount": "Showing {{shown}} of {{total}} selections. Select a reference to open it in its source.",
+      "openReference": "Open reference in {{document}}",
+      "openNamedReference": "{{document}} · {{selection}}",
       "label": "Coding clusters",
       "description": "Compare documents or codes by their coding profiles.",
       "chooseCodes": "Select codes",

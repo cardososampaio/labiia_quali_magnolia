@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest'
 import type { PlainTextSelection } from '../../src/renderer/models/types'
-import { clusterProfiles, codingProfiles, cutClusters } from '../../src/renderer/labiia/clustering/model'
+import { clusterProfiles, codingProfiles, cutClusters, sharedReferences } from '../../src/renderer/labiia/clustering/model'
 
 const ref = (...codes: string[]) => ({
   codings: codes.map((codeGuid) => ({ codeGuid }))
@@ -49,6 +49,18 @@ describe('clustering coding profiles', () => {
     expect(result.root?.height).toBeCloseTo((2 / 3 + 2 / 3 + 1 / 2) / 3)
     expect(cutClusters(result.root!, 3)).toEqual([[0, 1], [2], [3]])
     expect(cutClusters(result.root!, 2)).toEqual([[0, 1, 2], [3]])
+  })
+
+  it('retrieves exactly the scoped references to shared features for either target', () => {
+    const [firstCode, secondCode] = codingProfiles(selections, documents, codes, 'codes')
+    expect(sharedReferences(selections, 'codes', firstCode, secondCode).map(({ document, codes: matches }) => [document, matches])).toEqual([
+      ['a', ['x']], ['a', ['x']], ['a', ['y']]
+    ])
+    const [firstDocument, secondDocument, thirdDocument] = codingProfiles(selections, documents, codes, 'documents')
+    expect(sharedReferences(selections, 'documents', firstDocument, secondDocument).map(({ document, codes: matches }) => [document, matches])).toEqual([
+      ['a', ['y']], ['b', ['y']]
+    ])
+    expect(sharedReferences(selections, 'documents', firstDocument, thirdDocument)).toEqual([])
   })
 
   it('bounds the number of objects before computing pairwise similarities', () => {

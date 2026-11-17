@@ -131,3 +131,22 @@ export function cutClusters(root: ClusterNode, groupCount: number): number[][] {
   }
   return groups.map(clusterLeaves)
 }
+
+/** Only references to shared features contribute to the numerator of
+ *  the comparison. Codes need only occur in the same document. */
+export function sharedReferences(
+  sourceSelections: Readonly<Record<string, readonly PlainTextSelection[]>>,
+  target: ClusterTarget,
+  first: ClusterItem,
+  second: ClusterItem
+) {
+  const shared = [...first.profile.keys()].filter((feature) => second.profile.has(feature))
+  const documents = target === 'codes' ? shared : [...new Set([first.guid, second.guid])]
+  const codes = new Set(target === 'codes' ? [first.guid, second.guid] : shared)
+  return documents.flatMap((document) =>
+    (sourceSelections[document] ?? []).flatMap((selection) => {
+      const matchingCodes = [...new Set(selection.codings.map(({ codeGuid }) => codeGuid).filter((guid) => codes.has(guid)))]
+      return matchingCodes.length ? [{ document, selection, codes: matchingCodes }] : []
+    })
+  )
+}

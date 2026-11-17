@@ -65,3 +65,23 @@
   white-space: nowrap;
   text-align: end;
 }
+
+.labiia-cluster-matrix td {
+  padding: 0;
+}
+
+.labiia-cluster-matrix td button {
+  display: block;
+  width: 100%;
+  padding: 4px 8px;
+  border: 0;
+  background: transparent;
+  color: inherit;
+  font: inherit;
+  text-align: end;
+}
+
+.labiia-cluster-matrix td button:hover,
+.labiia-cluster-matrix td button:focus-visible {
+  text-decoration: underline;
+}

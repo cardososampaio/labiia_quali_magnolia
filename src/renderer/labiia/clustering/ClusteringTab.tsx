@@ -6,7 +6,8 @@ import { applySurveyCellScope, resolveFilteredSources, toCsv } from '../../compo
 import { useLiveAnalysisData } from '../../components/Analysis/use-live-analysis-data'
 import { emptyDocumentFilter } from '../../components/DocumentSelector/DocumentSelector'
 import { ManualSelectButton } from '../../components/ItemPicker/ManualSelectButton'
-import { CLUSTER_LIMIT, clusterLeaves, clusterProfiles, codingProfiles, cutClusters, type ClusterNode, type ClusterTarget, type SimilarityMeasure } from './model'
+import { CLUSTER_LIMIT, clusterLeaves, clusterProfiles, codingProfiles, cutClusters, sharedReferences, type ClusterNode, type ClusterTarget, type SimilarityMeasure } from './model'
+import { ClusterReferences } from './ClusterReferences'
 import './clustering.css'
 
 const ROW_HEIGHT = 24
@@ -51,6 +52,7 @@ export function ClusteringTab({ data: snapshot }: { data: AnalysisInitData }) {
   const [selectedCodes, setSelectedCodes] = useState<string[]>([])
   const [groupCount, setGroupCount] = useState(2)
   const [view, setView] = useState<'tree' | 'matrix'>('tree')
+  const [pair, setPair] = useState<[string, string] | null>(null)
   const [exportError, setExportError] = useState(false)
   const data = useMemo(() => ({ ...snapshot, ...live }), [snapshot, live])
   const scoped = useMemo(() => applySurveyCellScope(data, filter), [data, filter])
@@ -64,7 +66,14 @@ export function ClusteringTab({ data: snapshot }: { data: AnalysisInitData }) {
     [scoped.sourceSelections, sources, codes, target]
   )
   const result = useMemo(() => clusterProfiles(profiles, measure), [profiles, measure])
-  const nameByGuid = new Map((target === 'codes' ? data.codes : data.sources).map(({ guid, name }) => [guid, name]))
+  const sourceNames = useMemo(() => new Map(data.sources.map(({ guid, name }) => [guid, name])), [data.sources])
+  const codeNames = useMemo(() => new Map(data.codes.map(({ guid, name }) => [guid, name])), [data.codes])
+  const nameByGuid = target === 'codes' ? codeNames : sourceNames
+  const first = pair && result.items.find(({ guid }) => guid === pair[0])
+  const second = pair && result.items.find(({ guid }) => guid === pair[1])
+  const references = useMemo(() => first && second
+    ? sharedReferences(scoped.sourceSelections, target, first, second)
+    : null, [scoped.sourceSelections, target, first, second])
   const names = result.items.map(({ guid }) => nameByGuid.get(guid) ?? guid)
   const root = result.limited ? undefined : result.root
   const order = root ? clusterLeaves(root) : []
@@ -87,6 +96,7 @@ export function ClusteringTab({ data: snapshot }: { data: AnalysisInitData }) {
       [t('labiia.clustering.documents'), ...sources],
       [t('labiia.clustering.codes'), ...codes.map(({ guid }) => guid)],
       [t('labiia.clustering.excluded'), ...result.excluded],
+      [t('labiia.clustering.documentFilter'), JSON.stringify(filter)],
       [],
       [t('labiia.clustering.name'), 'GUID', t('labiia.clustering.group'), ...order.map((column) => names[column])],
       ...order.map((row) => [
@@ -126,7 +136,10 @@ export function ClusteringTab({ data: snapshot }: { data: AnalysisInitData }) {
         <div className="labiia-cluster-controls">
           <label>
             {t('labiia.clustering.target')}
-            <select value={target} onChange={(event) => setTarget(event.target.value as ClusterTarget)}>
+            <select value={target} onChange={(event) => {
+              setPair(null)
+              setTarget(event.target.value as ClusterTarget)
+            }}>
               <option value="documents">{t('labiia.clustering.documents')}</option>
               <option value="codes">{t('labiia.clustering.codes')}</option>
             </select>
@@ -182,6 +195,8 @@ export function ClusteringTab({ data: snapshot }: { data: AnalysisInitData }) {
                       <Dendrogram root={root} order={order} names={names} groups={groups} label={t('labiia.clustering.tree')} />
                     </>
                   ) : (
+                    <>
+                    <p>{t('labiia.clustering.matrixHelp')}</p>
                     <table className="labiia-cluster-matrix" aria-label={t('labiia.clustering.matrix')}>
                       <thead><tr><th scope="col">{t('labiia.clustering.name')}</th>{order.map((column) => <th key={column} scope="col" title={names[column]}>{names[column]}</th>)}</tr></thead>
                       <tbody>
@@ -190,14 +205,36 @@ export function ClusteringTab({ data: snapshot }: { data: AnalysisInitData }) {
                             <th scope="row" title={names[row]}>{names[row]}</th>
                             {order.map((column) => {
                               const score = result.similarities[row][column]
-                              return <td key={column} style={{ background: `color-mix(in srgb, currentColor ${score * 21}%, var(--bg-primary))` }}>{number.format(score)}</td>
+                              return (
+                                <td key={column} style={{ background: `rgba(89, 108, 212, ${score * 0.3})` }}>
+                                  <button
+                                    type="button"
+                                    aria-label={t('labiia.clustering.inspectCell', { first: names[row], second: names[column], score: number.format(score) })}
+                                    onClick={() => setPair([result.items[row].guid, result.items[column].guid])}
+                                  >
+                                    {number.format(score)}
+                                  </button>
+                                </td>
+                              )
                             })}
                           </tr>
                         ))}
                       </tbody>
                     </table>
+                    </>
                   )}
                 </div>
+                {view === 'matrix' && first && second && references && (
+                  <ClusterReferences
+                    key={JSON.stringify(pair)}
+                    first={nameByGuid.get(first.guid) ?? first.guid}
+                    second={nameByGuid.get(second.guid) ?? second.guid}
+                    references={references}
+                    sourceNames={sourceNames}
+                    codeNames={codeNames}
+                    onClose={() => setPair(null)}
+                  />
+                )}
               </div>
             )}
     </section>

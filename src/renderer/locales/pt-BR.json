@@ -1813,6 +1813,16 @@
   },
   "labiia": {
     "clustering": {
+      "moreReferences": "Mostrar mais referências",
+      "documentFilter": "Recorte de documentos",
+      "matrixHelp": "Selecione uma célula para consultar as referências em comum no recorte atual.",
+      "inspectCell": "{{first}} e {{second}} · {{score}} · Consultar referências",
+      "sharedTitle": "Referências em comum · {{first}} e {{second}}",
+      "closeReferences": "Fechar referências",
+      "noSharedReferences": "Esses itens não compartilham referências no recorte atual.",
+      "referenceCount": "Exibindo {{shown}} de {{total}} seleções. Clique em uma referência para abri-la na fonte.",
+      "openReference": "Abrir referência em {{document}}",
+      "openNamedReference": "{{document}} · {{selection}}",
       "label": "Agrupamento por codificação",
       "description": "Compare documentos ou códigos pelos seus perfis de codificação.",
       "chooseCodes": "Selecionar códigos",
