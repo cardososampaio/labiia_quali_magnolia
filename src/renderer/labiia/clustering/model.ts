@@ -2,12 +2,14 @@ import type { PlainTextSelection } from '../../models/types'
 
 export type SimilarityMeasure = 'cosine' | 'jaccard' | 'dice'
 export type ClusterTarget = 'codes' | 'documents'
+export type ClusterLinkage = 'average' | 'complete'
 
 export interface ClusterRequest {
   documents: { guid: string; selections: string[][] }[]
   codes: string[]
   target: ClusterTarget
   measure: SimilarityMeasure
+  linkage: ClusterLinkage
 }
 
 interface ClusterItem {

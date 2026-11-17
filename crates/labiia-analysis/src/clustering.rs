@@ -18,6 +18,14 @@ pub enum Measure {
     Dice,
 }
 
+#[derive(Clone, Copy, Default, Deserialize)]
+#[serde(rename_all = "lowercase")]
+pub enum Linkage {
+    #[default]
+    Average,
+    Complete,
+}
+
 #[derive(Deserialize)]
 pub struct Document {
     guid: String,
@@ -31,6 +39,8 @@ pub struct Request {
     codes: Vec<String>,
     target: Target,
     measure: Measure,
+    #[serde(default)]
+    linkage: Linkage,
 }
 
 type Profile = BTreeMap<String, u64>;
@@ -132,7 +142,7 @@ pub fn analyze(request: Request) -> Result {
     };
     if !result.limited {
         let similarities = similarities(&result.items, request.measure);
-        result.root = average_linkage(&similarities);
+        result.root = agglomerate(&similarities, request.linkage);
         result.groups_by_cut = Some(result.root.as_ref().map(groups_by_cut).unwrap_or_default());
         result.similarities = Some(similarities);
     }
@@ -179,7 +189,7 @@ fn similarities(items: &[Item], measure: Measure) -> Vec<Vec<f64>> {
     matrix
 }
 
-fn average_linkage(similarities: &[Vec<f64>]) -> Option<Node> {
+fn agglomerate(similarities: &[Vec<f64>], linkage: Linkage) -> Option<Node> {
     let n = similarities.len();
     let mut distances: Vec<Vec<_>> = similarities
         .iter()
@@ -215,9 +225,13 @@ fn average_linkage(similarities: &[Vec<f64>]) -> Option<Node> {
             if node.is_none() {
                 continue;
             }
-            let distance = (left.size as f64 * distances[a][i]
-                + right.size as f64 * distances[b][i])
-                / size as f64;
+            let distance = match linkage {
+                Linkage::Average => {
+                    (left.size as f64 * distances[a][i] + right.size as f64 * distances[b][i])
+                        / size as f64
+                }
+                Linkage::Complete => distances[a][i].max(distances[b][i]),
+            };
             distances[a][i] = distance;
             distances[i][a] = distance;
         }
@@ -293,6 +307,7 @@ mod tests {
             codes: ["x", "y", "z", "parent"].map(String::from).to_vec(),
             target,
             measure,
+            linkage: Linkage::Average,
         }
     }
 
@@ -350,6 +365,7 @@ mod tests {
             codes: ["x", "y", "z"].map(String::from).to_vec(),
             target: Target::Documents,
             measure: Measure::Jaccard,
+            linkage: Linkage::Average,
         };
         let result = analyze(request);
         assert_eq!(
@@ -433,27 +449,29 @@ mod tests {
             }
         }
 
-        let root = average_linkage(&matrices[0]).unwrap();
-        let mut heights = Vec::new();
-        visit(&root, &mut heights);
-        heights.sort_by(f64::total_cmp);
-        let expected = rows.next().unwrap();
-        assert_eq!(expected.len(), heights.len());
-        for (actual, expected) in heights.into_iter().zip(expected) {
-            close(actual, expected);
-        }
+        for linkage in [Linkage::Average, Linkage::Complete] {
+            let root = agglomerate(&matrices[0], linkage).unwrap();
+            let mut heights = Vec::new();
+            visit(&root, &mut heights);
+            heights.sort_by(f64::total_cmp);
+            let expected = rows.next().unwrap();
+            assert_eq!(expected.len(), heights.len());
+            for (actual, expected) in heights.into_iter().zip(expected) {
+                close(actual, expected);
+            }
 
-        let cuts = groups_by_cut(&root);
-        let labels = &cuts[4];
-        let expected = rows.next().unwrap();
-        assert_eq!(expected.len(), labels.len());
-        for i in 0..labels.len() {
-            for j in 0..i {
-                assert_eq!(
-                    labels[i] == labels[j],
-                    expected[i] == expected[j],
-                    "pair ({i}, {j})"
-                );
+            let cuts = groups_by_cut(&root);
+            let labels = &cuts[4];
+            let expected = rows.next().unwrap();
+            assert_eq!(expected.len(), labels.len());
+            for i in 0..labels.len() {
+                for j in 0..i {
+                    assert_eq!(
+                        labels[i] == labels[j],
+                        expected[i] == expected[j],
+                        "pair ({i}, {j})"
+                    );
+                }
             }
         }
     }

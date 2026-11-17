@@ -6,7 +6,7 @@ import { applySurveyCellScope, resolveFilteredSources, toCsv } from '../../compo
 import { useLiveAnalysisData } from '../../components/Analysis/use-live-analysis-data'
 import { emptyDocumentFilter } from '../../components/DocumentSelector/DocumentSelector'
 import { ManualSelectButton } from '../../components/ItemPicker/ManualSelectButton'
-import { clusterLeaves, sharedReferences, type ClusterNode, type ClusterRequest, type ClusterResult, type ClusterTarget, type SimilarityMeasure } from './model'
+import { clusterLeaves, sharedReferences, type ClusterLinkage, type ClusterNode, type ClusterRequest, type ClusterResult, type ClusterTarget, type SimilarityMeasure } from './model'
 import { ClusterReferences } from './ClusterReferences'
 import './clustering.css'
 
@@ -49,6 +49,7 @@ export function ClusteringTab({ data: snapshot }: { data: AnalysisInitData }) {
   const [filter, setFilter] = useState(emptyDocumentFilter)
   const [target, setTarget] = useState<ClusterTarget>('documents')
   const [measure, setMeasure] = useState<SimilarityMeasure>('cosine')
+  const [linkage, setLinkage] = useState<ClusterLinkage>('average')
   const [selectedCodes, setSelectedCodes] = useState<string[]>([])
   const [groupCount, setGroupCount] = useState(2)
   const [view, setView] = useState<'tree' | 'matrix'>('tree')
@@ -67,6 +68,7 @@ export function ClusteringTab({ data: snapshot }: { data: AnalysisInitData }) {
     return {
       target,
       measure,
+      linkage,
       codes: codeGuids,
       documents: codeGuids.length ? sources.map((guid) => ({
         guid,
@@ -76,7 +78,7 @@ export function ClusteringTab({ data: snapshot }: { data: AnalysisInitData }) {
         })
       })) : []
     }
-  }, [sources, scoped.sourceSelections, codes, target, measure])
+  }, [sources, scoped.sourceSelections, codes, target, measure, linkage])
   const [response, setResponse] = useState<{ request: ClusterRequest; result?: ClusterResult }>()
   useEffect(() => {
     if (!request.codes.length) return
@@ -115,13 +117,15 @@ export function ClusteringTab({ data: snapshot }: { data: AnalysisInitData }) {
     jaccard: t('labiia.clustering.jaccard'),
     dice: t('labiia.clustering.dice')
   }[measure]
+  const linkageLabel = linkage === 'average' ? t('labiia.clustering.average') : t('labiia.clustering.complete')
 
   async function exportResults() {
     if (!result || result.limited || !root) return
     setExportError(false)
     const { similarities } = result
     const rows = [
-      [t('labiia.clustering.method'), measureLabel, t('labiia.clustering.average')],
+      [t('labiia.clustering.method'), measureLabel],
+      [t('labiia.clustering.linkage'), linkageLabel],
       [t('labiia.clustering.target'), target === 'codes' ? t('labiia.clustering.codes') : t('labiia.clustering.documents')],
       [t('labiia.clustering.documents'), ...sources],
       [t('labiia.clustering.codes'), ...codes.map(({ guid }) => guid)],
@@ -182,9 +186,16 @@ export function ClusteringTab({ data: snapshot }: { data: AnalysisInitData }) {
               <option value="dice">{t('labiia.clustering.dice')}</option>
             </select>
           </label>
+          <label>
+            {t('labiia.clustering.linkage')}
+            <select value={linkage} onChange={(event) => setLinkage(event.target.value === 'complete' ? 'complete' : 'average')}>
+              <option value="average">{t('labiia.clustering.average')}</option>
+              <option value="complete">{t('labiia.clustering.complete')}</option>
+            </select>
+          </label>
         </div>
         <p>{target === 'codes' ? t('labiia.clustering.codeProfileHelp') : t('labiia.clustering.documentProfileHelp')}</p>
-        <p>{measure === 'cosine' ? t('labiia.clustering.cosineHelp') : t('labiia.clustering.binaryHelp')} {t('labiia.clustering.linkageHelp')}</p>
+        <p>{measure === 'cosine' ? t('labiia.clustering.cosineHelp') : t('labiia.clustering.binaryHelp')} {linkage === 'average' ? t('labiia.clustering.linkageHelp') : t('labiia.clustering.completeHelp')}</p>
       </div>
       {!!result?.excluded.length && (
         <details>

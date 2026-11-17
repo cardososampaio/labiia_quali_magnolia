@@ -1745,6 +1745,9 @@
   },
   "labiia": {
     "clustering": {
+      "linkage": "Linkage",
+      "complete": "Complete linkage",
+      "completeHelp": "Branch height is the largest pairwise distance between the two groups at each merge. Distance equals 1 minus similarity.",
       "calculating": "Calculating coding clusters…",
       "calculationError": "The coding clusters could not be calculated.",
       "moreReferences": "Show more references",

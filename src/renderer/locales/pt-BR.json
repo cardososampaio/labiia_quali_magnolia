@@ -1813,6 +1813,9 @@
   },
   "labiia": {
     "clustering": {
+      "linkage": "Critério de ligação",
+      "complete": "Ligação completa",
+      "completeHelp": "A altura da junção corresponde à maior distância entre os pares dos dois grupos unidos. A distância é igual a 1 menos a similaridade.",
       "calculating": "Calculando agrupamentos…",
       "calculationError": "Não foi possível calcular os agrupamentos.",
       "moreReferences": "Mostrar mais referências",

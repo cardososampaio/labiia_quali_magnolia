@@ -6,7 +6,11 @@ shared <- tcrossprod(present)
 sizes <- outer(rowSums(present), rowSums(present), "+")
 jaccard <- shared / (sizes - shared)
 dice <- 2 * shared / sizes
-tree <- hclust(as.dist(1 - cosine), method = "average")
-for (values in list(t(cosine), t(jaccard), t(dice), tree$height, cutree(tree, k = 5))) {
+for (values in list(t(cosine), t(jaccard), t(dice))) {
   cat(sprintf("%.17g", values), "\n")
+}
+for (method in c("average", "complete")) {
+  tree <- hclust(as.dist(1 - cosine), method = method)
+  cat(sprintf("%.17g", tree$height), "\n")
+  cat(cutree(tree, k = 5), "\n")
 }
