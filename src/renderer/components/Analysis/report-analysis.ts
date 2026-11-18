@@ -28,6 +28,7 @@ import { buildWordTree, layoutWordTree, wordTreeSvg } from './word-tree'
 import { buildPhraseNetwork, layoutPhraseNetwork, phraseNetworkSvg } from './phrase-network'
 import { documentFilterFromConfig } from './documents-filter'
 import { runResultsQueries } from './ResultsInDocuments'
+import { codingClustersReportHtml } from '../../labiia/clustering/report-html' // labiia_quali
 import { escHtml } from '../../utils/pdf-export'
 import { visualBoxHex } from '../../utils/code-colours'
 import { TOOL_REGISTRY } from '../../utils/tool-registry'
@@ -778,6 +779,9 @@ export function renderAnalysisItemHtml(
         break
       case 'code-frequencies':
         inner = codeFrequenciesHtml(sa.config, item.options)
+        break
+      case 'coding-clusters': // labiia_quali
+        inner = codingClustersReportHtml(sa.config)
         break
       case 'code-cooccurrences':
         inner = codeCoOccurrencesHtml(sa.config, item.options)

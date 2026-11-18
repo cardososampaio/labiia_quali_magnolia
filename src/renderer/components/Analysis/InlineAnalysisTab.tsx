@@ -198,7 +198,7 @@ function dispatch(
     case 'results-in-documents':
       return <ResultsInDocuments data={data} savedConfig={savedConfig} inTab={inTab} />
     case 'coding-clusters': // labiia_quali
-      return <ClusteringTab data={data} />
+      return <ClusteringTab data={data} savedConfig={savedConfig} inTab={inTab} />
     case 'code-frequencies':
       return <CodeFrequencies data={data} savedConfig={savedConfig} inTab={inTab} />
     case 'code-orders':

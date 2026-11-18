@@ -1,7 +1,32 @@
+.labiia-clustering-shell {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.labiia-clustering-header {
+  padding: 14px 20px 6px;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.labiia-clustering-header h2 {
+  margin: 0;
+  font-size: 18px;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--text-secondary);
+}
+
 .labiia-clustering {
   flex: 1;
   min-height: 0;
-  padding: 16px;
+  padding: 14px 20px;
   overflow: auto;
 }
 
@@ -17,7 +42,7 @@
   gap: 12px;
 }
 
-.labiia-cluster-controls input {
+.labiia-cluster-controls input[type="number"] {
   width: 5em;
 }
 
@@ -27,6 +52,15 @@
   gap: 6px;
   padding: 0;
   list-style: none;
+}
+
+.labiia-cluster-notice {
+  margin: 8px 0;
+  padding: 8px 12px;
+  border-radius: var(--radius-md);
+  border: 1px solid var(--border-color);
+  background: color-mix(in srgb, var(--accent) 8%, transparent);
+  font-size: var(--font-size-sm);
 }
 
 .labiia-cluster-results {
@@ -48,6 +82,40 @@
 .labiia-cluster-tree li {
   height: 24px;
   line-height: 24px;
+}
+
+.labiia-cluster-leaf {
+  height: 24px;
+  padding: 0 8px;
+  border: 0;
+  border-radius: var(--radius-sm, 4px);
+  background: transparent;
+  color: inherit;
+  font: inherit;
+  cursor: pointer;
+  text-align: start;
+}
+
+.labiia-cluster-leaf:hover,
+.labiia-cluster-leaf:focus-visible {
+  text-decoration: underline;
+}
+
+.labiia-cluster-leaf.is-selected {
+  background: color-mix(in srgb, var(--accent) 16%, transparent);
+  font-weight: 600;
+}
+
+.labiia-cluster-junction {
+  fill: var(--bg-primary, #ffffff);
+  stroke: currentColor;
+  stroke-width: 1.5;
+  cursor: pointer;
+}
+
+.labiia-cluster-junction:hover,
+.labiia-cluster-junction:focus-visible {
+  fill: var(--accent, #4659a6);
 }
 
 .labiia-cluster-matrix {

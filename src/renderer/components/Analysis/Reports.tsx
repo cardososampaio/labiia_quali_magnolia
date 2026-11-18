@@ -75,6 +75,7 @@ const ANALYSIS_CAPS: Record<string, { totalsOnly?: boolean; binary?: boolean; vi
   'results-in-documents': { totalsOnly: true, binary: true, visual: true },
   'code-cooccurrences': { totalsOnly: true, binary: true, visual: true },
   'code-frequencies': {},
+  'coding-clusters': {}, // labiia_quali
   'code-orders': {},
   'word-frequencies': { barChart: true, wordCloud: true },
   'word-combinations': {},
