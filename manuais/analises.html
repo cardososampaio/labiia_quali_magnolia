@@ -11,7 +11,7 @@
   <nav class="lateral" aria-label="Páginas do manual">
     <div class="marca">
       <strong>labiia_quali — Manual</strong>
-      <span>Versão 0.2.2 · Windows e Mac</span>
+      <span>Versão 0.3.0 · Windows e Mac</span>
     </div>
     <ul>
       <li><a href="index.html">Início</a></li>
@@ -141,7 +141,7 @@
         </table>
       </div>
 
-      <p>Se a característica usar um atributo de data ou de número, aparecem os modos <strong>É</strong>, <strong>Entre</strong> e <strong>Fora do intervalo</strong>. Assim você filtra, por exemplo, as entrevistas feitas entre duas datas.</p>
+      <p>Se a característica usar um atributo de data ou de número, aparecem os modos <strong>É</strong>, <strong>Entre</strong> e <strong>Fora do intervalo</strong>. Assim você filtra, por exemplo, as entrevistas feitas entre duas datas. Num atributo de data, você pode digitar as datas (dia, mês e ano; só o ano já basta) ou escolher entre as que estão em uso. Deixe um dos lados vazio para um intervalo aberto.</p>
 
       <h3>Selecionar conteúdo</h3>
 
@@ -167,7 +167,7 @@
             </tr>
             <tr>
               <td><strong>Texto</strong></td>
-              <td>Procura uma palavra ou expressão no texto dos documentos. Há duas opções: <strong>Diferenciar maiúsculas</strong> (sem ela, a busca ignora maiúsculas e minúsculas) e <strong>Palavra inteira</strong> (a palavra precisa aparecer sozinha, e não como parte de outra).</td>
+              <td>Procura uma palavra ou expressão no texto dos documentos. Há duas opções: <strong>Diferenciar maiúsculas</strong> (sem ela, a busca ignora maiúsculas e minúsculas) e <strong>Palavra inteira</strong> (a palavra precisa aparecer sozinha, e não como parte de outra). Com <strong>Encontrar frases que contenham</strong>, cada resultado é a frase inteira em que a palavra aparece, uma vez por frase.</td>
             </tr>
             <tr>
               <td><strong>Operador lógico</strong></td>
@@ -304,7 +304,7 @@
 
       <h2>Aba Análises</h2>
 
-      <p>A aba <strong>Análises</strong> da faixa tem três grupos: <strong>Códigos</strong>, <strong>Resultados e palavras</strong> e <strong>Relatórios</strong>. Cada botão abre uma aba de análise no centro da tela, com o nome do tipo e um número (por exemplo, <em>Coocorrência de códigos (1)</em>). Você pode abrir várias ao mesmo tempo. Análises salvas aparecem no painel <strong>Análises salvas</strong> e podem ser abertas em janela própria.</p>
+      <p>A aba <strong>Análises</strong> da faixa tem quatro grupos: <strong>Códigos</strong>, <strong>Resultados e palavras</strong>, <strong>Equipe</strong> e <strong>Relatórios</strong>. Cada botão abre uma aba de análise no centro da tela, com o nome do tipo e um número (por exemplo, <em>Coocorrência de códigos (1)</em>). Você pode abrir várias ao mesmo tempo. Análises salvas aparecem no painel <strong>Análises salvas</strong> e podem ser abertas em janela própria.</p>
 
       <h3>Opções que se repetem em quase todas as análises</h3>
 
@@ -450,6 +450,39 @@
         <li>A barra de texto do mapa serve para legendas e títulos, com negrito, itálico, cor e tamanho.</li>
         <li>O painel lateral lista os itens do projeto, pode ser escondido e tem um campo <em>Filtrar&hellip;</em>. Use <span class="botao-ui f-analises">Centralizar</span> para encontrar o conteúdo se ele sair da tela.</li>
         <li>Salve com <span class="botao-ui f-analises">Salvar mapa de relações</span>. Para uma figura, use <span class="botao-ui f-analises">Exportar como SVG</span>.</li>
+      </ul>
+
+      <h3 id="concordancia">Grupo Equipe: Concordância entre codificadores</h3>
+      <p>Compara como duas ou mais pessoas codificaram os mesmos documentos, cada uma na sua cópia do projeto. Serve para conferir se a equipe aplica os códigos do mesmo jeito antes de dividir a codificação.</p>
+      <ol class="passos">
+        <li>
+          <strong>Adicione os projetos</strong>
+          <p>O projeto aberto já entra como o primeiro codificador. Clique em <span class="botao-ui f-analises">Adicionar projetos…</span> e escolha o arquivo <code>.qdpx</code> de cada colega. Cada um aparece com o nome de quem editou por último.</p>
+        </li>
+        <li>
+          <strong>Arraste documentos e códigos</strong>
+          <p>Arraste do painel Documentos os documentos a comparar (ou uma pasta) e do painel Códigos os códigos. Documentos e códigos são reconhecidos nos projetos dos colegas quando vieram da mesma cópia original do projeto.</p>
+        </li>
+        <li>
+          <strong>Escolha a medida</strong>
+          <p><strong>Caracteres</strong> compara cada caractere do texto (e cada momento das gravações e ponto das imagens) e dá, para cada par de pessoas, a % de concordância e o kappa de Cohen; com três ou mais pessoas, também o alfa de Krippendorff. <strong>Segmentos</strong> compara os trechos codificados inteiros, com a sobreposição mínima que você escolher, e dá a parte dos trechos que coincidem e o kappa de Brennan e Prediger.</p>
+        </li>
+        <li>
+          <strong>Leia e confira</strong>
+          <p>As cores seguem guias comuns de interpretação. Com três ou mais pessoas, <strong>Por codificador</strong> mostra quem está fora do passo do grupo. Clique num resultado para ver os trechos das duas pessoas lado a lado, com as diferenças marcadas. O botão ⓘ explica cada número. Os resultados podem ir para uma janela própria, para um segundo monitor.</p>
+        </li>
+      </ol>
+      <p>A análise pode ser salva, exportada em CSV ou levada para um relatório. Se o arquivo de um colega mudar de lugar, o programa avisa e o botão <strong>Localizar…</strong> encontra o arquivo de novo.</p>
+
+      <h3 id="resultados-mudaram">Resultados que mudaram na versão 0.3.0</h3>
+      <div class="atencao">
+        <strong>Atenção</strong>
+        <p>A versão 0.3.0 corrige como algumas análises de códigos calculam os resultados. As análises salvas são recalculadas ao abrir, então podem mostrar números diferentes dos que você já usou. Confira os números já citados em textos, principalmente com áudio, vídeo, imagens, caixas em PDF, colunas agrupadas e respondentes de questionário com características. As análises léxicas não mudaram.</p>
+      </div>
+      <ul>
+        <li><strong>Frequência de códigos:</strong> áudio e vídeo são medidos pelo tempo que a codificação cobre; caixas em imagens e PDFs, pela área. Uma codificação não passa mais de 100% do documento, e colunas que reúnem vários documentos mostram a média, marcada como tal.</li>
+        <li><strong>Coocorrência de códigos e operador de sobreposição da Consulta:</strong> caixas só contam juntas quando se sobrepõem na mesma página, e codificações de áudio e vídeo, quando se sobrepõem no tempo. As duas ferramentas sempre dão a mesma resposta.</li>
+        <li><strong>Códigos nos documentos e Resultados nos documentos:</strong> o total conta cada documento uma vez, mesmo quando ele está em mais de uma coluna. A coluna de uma característica inclui só as respostas de questionário que ela marca.</li>
       </ul>
 
       <h3>Grupo Relatórios</h3>

@@ -14,12 +14,16 @@ import {
   faNotebookPen,
   faTags,
   faSquareArrowRightEnter,
+  faBookOpenText,
   faGitMerge,
   faGear,
   faChevronsLeft,
   faChevronsRight
 } from './components/Icon'
 import { LicenceDialog } from './components/Licence/LicenceDialog'
+import { ImportProgressDialog } from './components/ImportProgressDialog'
+import { ZoteroImportDialog } from './components/ZoteroImportDialog'
+import { importZoteroItems, type ZoteroImport } from './utils/zotero-import'
 import { isMac } from './utils/platform'
 import { sourceTypeFromExtension } from './utils/format-registry'
 import { parseSurveyGrid, type SurveyFormat } from './utils/survey/survey-parser'
@@ -67,7 +71,7 @@ import { useSurveyViewStore } from './stores/survey-view-store'
 import { useAnalysisTabsStore } from './stores/analysis-tabs-store'
 import { isAnalysisTab, isMapTab, isQueryBuilderTab, isMergeTab, isNotebookTab, notebookGuidFromTabId, makeAnalysisTabId, makeMapTabId, makeQueryBuilderTabId, mapGuidFromTabId, parseAnalysisTabId, PREFERENCES_TAB_ID, MERGE_TAB_ID } from './utils/tab-ids'
 import { requestPreferencesCategory } from './components/Preferences/PreferencesWindow'
-import type { PersistedTab, PersistedTabState, MissingBinary, CheckoutMarker } from './models/types'
+import type { PersistedTab, PersistedTabState, MissingBinary, CheckoutMarker, ImportState } from './models/types'
 import { MissingBinariesBanner } from './components/MissingBinariesBanner'
 import { LabiiaDiagnostics } from './labiia/Diagnostics' // labiia_quali
 import { CheckoutConflictDialog } from './components/CheckoutConflictDialog'
@@ -133,7 +137,8 @@ function describeCondition(cond: CodeCondition, findCode: (guid: string) => Code
     case 'code':
       return cond.includeSubcodes ? t('queryDesc.inclSubcodes', { name: codeName(cond.codeGuid) }) : codeName(cond.codeGuid)
     case 'text':
-      return cond.searchText ? `"${cond.searchText}"` : t('queryBuilder.kind.text')
+      if (!cond.searchText) return t('queryBuilder.kind.text')
+      return cond.sentences ? t('queryDesc.sentencesWith', { text: cond.searchText }) : `"${cond.searchText}"`
     case 'and':
       return cond.conditions.map((c) => describeCondition(c, findCode, d + 1)).join(' AND ')
     case 'or':
@@ -361,6 +366,7 @@ function App() {
     []
   )
   const [showProjectDetails, setShowProjectDetails] = useState(false)
+  const [showZoteroImport, setShowZoteroImport] = useState(false)
   const [showLicenceDialog, setShowLicenceDialog] = useState(false)
   const [loadProgress, setLoadProgress] = useState<{ stage: string; current: number; total: number } | null>(null)
   // Documents whose binary content is missing from the just-opened .qdpx —
@@ -384,6 +390,52 @@ function App() {
 
   useEffect(() => {
     return window.api.onProjectLoadProgress((p) => setLoadProgress(p))
+  }, [])
+
+  // How an import is going, document by document. The dialog closes
+  // itself shortly after every document came in; if any couldn't, it stays
+  // open (listing why) until closed.
+  const [importState, setImportState] = useState<ImportState | null>(null)
+  useEffect(() => {
+    let timer: ReturnType<typeof setTimeout> | undefined
+    const unsubscribe = window.api.onImportProgress((s) => {
+      clearTimeout(timer)
+      setImportState(s)
+      if (s.finished && s.items.every((it) => it.stage === 'done')) timer = setTimeout(() => setImportState(null), 700)
+    })
+    return () => { clearTimeout(timer); unsubscribe() }
+  }, [])
+
+  // Files dragged over the window: show that dropping them imports them.
+  // Listened for on the window, in the capture phase, as panes with their
+  // own drop targets stop drag events reaching the app shell. dragover
+  // fires continuously while the drag is over the window, so its stopping
+  // (the drag left, or was cancelled) hides the cue too.
+  const [fileDrag, setFileDrag] = useState(false)
+  useEffect(() => {
+    let timer: ReturnType<typeof setTimeout> | undefined
+    const hasFiles = (e: DragEvent) => !!e.dataTransfer && Array.from(e.dataTransfer.types).includes('Files')
+    const hide = () => { clearTimeout(timer); setFileDrag(false) }
+    const over = (e: DragEvent) => {
+      if (!hasFiles(e)) return
+      setFileDrag(true)
+      clearTimeout(timer)
+      timer = setTimeout(hide, 400)
+    }
+    const leave = (e: DragEvent) => { if (hasFiles(e) && !e.relatedTarget) hide() }
+    window.addEventListener('dragenter', over, true)
+    window.addEventListener('dragover', over, true)
+    window.addEventListener('dragleave', leave, true)
+    window.addEventListener('drop', hide, true)
+    window.addEventListener('dragend', hide, true)
+    return () => {
+      clearTimeout(timer)
+      window.removeEventListener('dragenter', over, true)
+      window.removeEventListener('dragover', over, true)
+      window.removeEventListener('dragleave', leave, true)
+      window.removeEventListener('drop', hide, true)
+      window.removeEventListener('dragend', hide, true)
+    }
   }, [])
 
   // Preferences are normally loaded lazily, on first demand, by whichever
@@ -665,6 +717,18 @@ function App() {
     window.api.openQueryResultsWindow(initData)
     setQueryResultsPoppedOut(true)
   }, [codeStore.findCode, documentStore.sources, tagStore.tags])
+
+  // Pop Query Results out again if it was popped out when this window last
+  // closed — the window-state plugin puts it back where it was (e.g. on a
+  // second screen). Once per main window; it keeps its own state after.
+  const restoredPopOutRef = useRef(false)
+  useEffect(() => {
+    if (restoredPopOutRef.current || !projectStore.filePath) return
+    restoredPopOutRef.current = true
+    void window.api.wasQueryResultsPoppedOut().then((out) => {
+      if (out) popOutQueryResults()
+    })
+  }, [projectStore.filePath, popOutQueryResults])
 
   const collectProject = useCallback((): Project => {
     const ats = useAnalysisTabsStore.getState()
@@ -1403,13 +1467,10 @@ function App() {
     if (checkoutLockedBy) { setCheckoutConflict(); return }
     const files = await window.api.readTextFiles(filePaths)
     if (!files) return
-    const errors: string[] = []
     let addedDirect = false
     for (const f of files) {
-      if ((f as any).error) {
-        errors.push(`${f.name}: ${(f as any).error}`)
-        continue
-      }
+      // Files that couldn't be read are listed in the import dialog.
+      if ((f as any).error) continue
       const ext = (f as any).extension || f.name.split('.').pop()?.toLowerCase() || ''
       if (ext === 'csv' || ext === 'xlsx') {
         const suggestedName = f.name.replace(/\.(csv|xlsx)$/i, '')
@@ -1420,9 +1481,6 @@ function App() {
       const formatting = (f as any).formatting
       documentStore.addSource(f.name, f.content, sourceType !== 'text' ? sourceType : undefined, formatting)
       addedDirect = true
-    }
-    if (errors.length > 0) {
-      window.alert(t('documents.importFailed', { count: errors.length, errors: errors.join('\n') }))
     }
     flushImportSave(addedDirect)
   }, [documentStore, queueSurveyImport, flushImportSave, checkoutLockedBy, setCheckoutConflict])
@@ -1439,6 +1497,16 @@ function App() {
     await useMergeReviewStore.getState().openCompare(filePath)
   }, [])
 
+  const handleZoteroImport = useCallback(async (job: ZoteroImport) => {
+    setShowZoteroImport(false)
+    if (checkoutLockedBy) { setCheckoutConflict(); return }
+    try {
+      flushImportSave(await importZoteroItems((path) => window.api.zoteroGet(path), job))
+    } catch (err) {
+      console.error('[zotero-import] failed:', err)
+    }
+  }, [flushImportSave, checkoutLockedBy, setCheckoutConflict])
+
   const handleImportDocument = useCallback(async () => {
     // Enforced lock: importing adds documents, a mutation — refuse it
     // outright and surface the conflict dialog rather than let the file
@@ -1449,13 +1517,10 @@ function App() {
     const files = await window.api.importTextFile()
     if (!files) return
     const fileArray = Array.isArray(files) ? files : [files]
-    const errors: string[] = []
     let addedDirect = false
     for (const file of fileArray) {
-      if ((file as any).error) {
-        errors.push(`${file.name}: ${(file as any).error}`)
-        continue
-      }
+      // Files that couldn't be read are listed in the import dialog.
+      if ((file as any).error) continue
       const ext = (file as any).extension || file.name.split('.').pop()?.toLowerCase() || ''
       // CSV / XLSX → defer to the survey-import preview dialog
       // (queueSurveyImport handles parse errors itself). XLSX files
@@ -1470,9 +1535,6 @@ function App() {
       const formatting = (file as any).formatting
       documentStore.addSource(file.name, file.content, sourceType !== 'text' ? sourceType : undefined, formatting)
       addedDirect = true
-    }
-    if (errors.length > 0) {
-      window.alert(t('documents.importFailed', { count: errors.length, errors: errors.join('\n') }))
     }
     flushImportSave(addedDirect)
   }, [documentStore, queueSurveyImport, flushImportSave, checkoutLockedBy, setCheckoutConflict])
@@ -2755,6 +2817,7 @@ function App() {
     newProject: () => void handleNewProject(),
     openProject: () => void handleOpenProject(),
     importSources: () => void handleImportDocument(),
+    importZotero: () => { if (checkoutLockedBy) setCheckoutConflict(); else setShowZoteroImport(true) },
     newFolder: () => { if (!checkoutLockedBy) documentStore.addFolder(t('documents.defaultFolderName')) },
     mergeProjects: () => void handleMergeProject(),
     projectDetails: () => setShowProjectDetails(true),
@@ -3500,6 +3563,9 @@ function App() {
       )}
 
       <ProjectDetailsDialog open={showProjectDetails} onClose={() => setShowProjectDetails(false)} />
+      {showZoteroImport && (
+        <ZoteroImportDialog onClose={() => setShowZoteroImport(false)} onImport={(job) => void handleZoteroImport(job)} />
+      )}
       <LicenceDialog open={showLicenceDialog} onClose={() => setShowLicenceDialog(false)} />
       {/* !stealBackConflict guards against both rendering at once: they're
           set independently (markDirty's edit-time block calls
@@ -3561,6 +3627,20 @@ function App() {
         onDismiss={() => setMissingBinaries([])}
       />
 
+      {importState && <ImportProgressDialog state={importState} onClose={() => setImportState(null)} />}
+      {fileDrag && !loadProgress && !importState && (
+        // Only a cue: it lets events through, so drops still reach the
+        // Document Browser's folders as well as the rest of the window.
+        <div className="file-drop-cue" aria-hidden="true">
+          <div className="file-drop-cue-frame">
+            <div className="file-drop-cue-card">
+              <Icon icon={faSquareArrowRightEnter} style={{ fontSize: 28, color: 'var(--accent)' }} />
+              <div className="file-drop-cue-title">{checkoutLockedBy ? checkoutLockedTitle(checkoutLockedBy) : t('app.dropToImport')}</div>
+              {!checkoutLockedBy && <div className="file-drop-cue-hint">{t('app.dropToImportHint')}</div>}
+            </div>
+          </div>
+        </div>
+      )}
       {loadProgress && (
         <div
           style={{

@@ -61,10 +61,16 @@
         "noText_many": "O labiia_quali não vai substituir “{{file}}”: o projeto tem {{count}} documentos, mas o texto de nenhum deles está carregado. Isso geralmente significa que o projeto não abriu por completo, e salvar agora apagaria o texto dos documentos. Abra o projeto de novo e, se o problema continuar, restaure-o de um backup.",
         "noText_one": "O labiia_quali não vai substituir “{{file}}”: o projeto tem {{count}} documento, mas o texto dele não está carregado. Isso geralmente significa que o projeto não abriu por completo, e salvar agora apagaria o texto do documento. Abra o projeto de novo e, se o problema continuar, restaure-o de um backup.",
         "noText_other": "O labiia_quali não vai substituir “{{file}}”: o projeto tem {{count}} documentos, mas o texto de nenhum deles está carregado. Isso geralmente significa que o projeto não abriu por completo, e salvar agora apagaria o texto dos documentos. Abra o projeto de novo e, se o problema continuar, restaure-o de um backup."
-      }
+      },
+      "decodeTiff": "Esta imagem TIFF está danificada ou em um formato que o labiia_quali não consegue ler. Tente salvá-la novamente como PNG ou JPEG.",
+      "decodeHeic": "Esta foto HEIC está danificada ou em um formato que o labiia_quali não consegue ler. Tente exportá-la como JPEG.",
+      "heicColourSpace": "Esta foto HEIC está danificada ou em um formato que o labiia_quali não consegue ler. Tente exportá-la como JPEG.",
+      "heicMalformed": "Esta foto HEIC está danificada ou em um formato que o labiia_quali não consegue ler. Tente exportá-la como JPEG.",
+      "typesetFailed": "O labiia_quali não conseguiu diagramar este documento em páginas. Tente salvá-lo novamente no programa de origem, ou salvá-lo como PDF e importar esse arquivo."
     },
     "import": {
-      "unsupported": "O labiia_quali não pode importar arquivos .{{ext}}."
+      "unsupported": "O labiia_quali não pode importar arquivos .{{ext}}.",
+      "unreadable": "O labiia_quali não conseguiu abrir este arquivo. Verifique se ele ainda existe e se você consegue abri-lo."
     },
     "menu": {
       "about": "Sobre o labiia_quali",
@@ -134,7 +140,8 @@
     "licenceDescription": "A licença do labiia_quali (EUPL-1.2, a mesma do Magnolia, em que ele se baseia) e os créditos das bibliotecas incluídas.",
     "manualDescription": "Abra o manual do usuário do labiia_quali no navegador.",
     "tags": "Características",
-    "tagsTitle": "Gerenciar características"
+    "tagsTitle": "Gerenciar características",
+    "zoteroTitle": "Importar documentos do Zotero, com suas informações como características"
   },
   "update": {
     "availableHeading": "Uma nova versão do labiia_quali está disponível!",
@@ -147,5 +154,10 @@
   "welcome": {
     "ownRisk": "Use o labiia_quali por sua conta e risco.",
     "windowTitle": "Boas-vindas — labiia_quali"
+  },
+  "zotero": {
+    "notRunning": "O labiia_quali não consegue acessar o Zotero. Abra o Zotero neste computador e tente novamente.",
+    "tooOld": "Esta versão do Zotero não consegue compartilhar a biblioteca. O labiia_quali precisa do Zotero 7 ou posterior.",
+    "unsupportedFile": "O labiia_quali não consegue importar este tipo de arquivo"
   }
 }

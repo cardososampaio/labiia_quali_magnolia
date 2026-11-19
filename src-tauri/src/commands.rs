@@ -120,6 +120,19 @@ pub async fn pick_project_file(app: AppHandle, window: WebviewWindow) -> CmdResu
     Ok(pick_qdpx(&app, Some(&window)))
 }
 
+/// Several project files at once, for comparing coders' projects.
+#[tauri::command]
+pub async fn pick_project_files(app: AppHandle, window: WebviewWindow) -> CmdResult<Vec<String>> {
+    Ok(dialog(&app, Some(&window), &t("dialog.openProject"))
+        .add_filter(t("dialog.qdpxProjects"), &["qdpx"])
+        .blocking_pick_files()
+        .unwrap_or_default()
+        .into_iter()
+        .filter_map(to_path)
+        .map(|p| p.to_string_lossy().into_owned())
+        .collect())
+}
+
 #[tauri::command]
 pub async fn open_project_path(
     window: WebviewWindow,
@@ -214,6 +227,13 @@ pub async fn check_in_project(
 }
 
 // ── Merge ──
+
+/// The given files that no longer exist (moved, renamed or deleted), so
+/// a saved Inter-coder analysis can warn that a coder's project is missing.
+#[tauri::command]
+pub async fn missing_files(paths: Vec<String>) -> CmdResult<Vec<String>> {
+    Ok(paths.into_iter().filter(|p| !Path::new(p).is_file()).collect())
+}
 
 /// Load a second .qdpx for comparison without touching the active project.
 #[tauri::command]
@@ -505,8 +525,9 @@ fn ext_of(name: &str) -> String {
     }
 }
 
-/// A PDF-backed document for the renderer: it extracts the text with pdf.js
-/// (`_pendingPdfText`) — the same library its viewer uses, so offsets agree.
+/// A PDF-backed document for the renderer: it reads the text with pdf.js
+/// (`_pendingPdfText`), or from the PDF's own text layer when Magnolia
+/// typeset it — the same reading its viewer uses, so offsets agree.
 fn pdf_doc(name: &str, pdf: &[u8]) -> Value {
     json!({
         "name": name,
@@ -520,15 +541,15 @@ fn pdf_doc(name: &str, pdf: &[u8]) -> Value {
 /// Read one document for import. `bytes` is the file's content (read from
 /// disk, or sent by the renderer for an OS drag-and-drop).
 fn read_document(
-    app: &AppHandle,
     state: &AppState,
     name: &str,
     bytes: Vec<u8>,
 ) -> CmdResult<Value> {
     let ext = ext_of(name);
+    // Office documents are typeset as PDFs that carry their own text layer
+    // (convert::typeset), so their text reads back exactly in any script.
     let office_pdf = |html: Result<String, String>| -> CmdResult<Value> {
-        let doc = convert::html::print_document(&html?);
-        let pdf = print::html_to_pdf(app, &doc, &print::PdfOptions::import())?;
+        let pdf = convert::typeset::html_to_pdf(&html?)?;
         Ok(pdf_doc(name, &pdf))
     };
     match ext.as_str() {
@@ -580,11 +601,14 @@ fn file_name(p: &Path) -> String {
         .unwrap_or_default()
 }
 
-fn read_document_path(app: &AppHandle, state: &AppState, path: &Path) -> Value {
+fn read_document_path(state: &AppState, path: &Path) -> Value {
     let name = file_name(path);
     match std::fs::read(path)
-        .map_err(|e| e.to_string())
-        .and_then(|b| read_document(app, state, &name, b))
+        .map_err(|e| {
+            log::warn!("could not read {}: {e}", path.display());
+            t("import.unreadable")
+        })
+        .and_then(|b| read_document(state, &name, b))
     {
         Ok(v) => v,
         Err(e) => json!({ "name": name, "error": e }),
@@ -603,8 +627,11 @@ fn reject_reason(path: &Path) -> Option<String> {
     (!SUPPORTED.contains(&ext.as_str())).then(|| t_with("import.unsupported", &[("ext", &ext)]))
 }
 
+/// Ask for documents to import. Returns their paths (null if cancelled);
+/// the renderer reads them one at a time with `read_text_files`, so it can
+/// show how the import is going.
 #[tauri::command]
-pub async fn import_text_file(
+pub async fn pick_import_files(
     app: AppHandle,
     window: WebviewWindow,
     state: State<'_, AppState>,
@@ -624,7 +651,7 @@ pub async fn import_text_file(
     }
     Ok(paths
         .iter()
-        .map(|p| read_document_path(&app, &state, p))
+        .map(|p| p.to_string_lossy().into_owned())
         .collect::<Vec<_>>()
         .into())
 }
@@ -632,7 +659,6 @@ pub async fn import_text_file(
 /// Real filesystem paths (from a native source rather than a browser drop).
 #[tauri::command]
 pub async fn read_text_files(
-    app: AppHandle,
     state: State<'_, AppState>,
     file_paths: Vec<String>,
 ) -> CmdResult<Value> {
@@ -642,7 +668,7 @@ pub async fn read_text_files(
             let p = Path::new(fp);
             match reject_reason(p) {
                 Some(r) => json!({ "name": file_name(p), "error": r }),
-                None => read_document_path(&app, &state, p),
+                None => read_document_path(&state, p),
             }
         })
         .collect::<Vec<_>>()
@@ -654,7 +680,6 @@ pub async fn read_text_files(
 /// the `x-file-name` header (URI-encoded).
 #[tauri::command]
 pub async fn read_dropped_file(
-    app: AppHandle,
     state: State<'_, AppState>,
     request: Request<'_>,
 ) -> CmdResult<Value> {
@@ -680,7 +705,7 @@ pub async fn read_dropped_file(
         InvokeBody::Raw(b) => b.clone(),
         InvokeBody::Json(_) => return Err("expected raw file bytes".into()),
     };
-    Ok(match read_document(&app, &state, &name, bytes) {
+    Ok(match read_document(&state, &name, bytes) {
         Ok(v) => v,
         Err(e) => json!({ "name": name, "error": e }),
     })
@@ -714,7 +739,7 @@ pub async fn reimport_document(
     if let Some(dir) = path.parent() {
         storage::set_last_import_dir(project.as_deref(), dir);
     }
-    let mut doc = read_document_path(&app, &state, &path);
+    let mut doc = read_document_path(&state, &path);
     if let Some(f) = doc.get("formatting").cloned() {
         let handle = f
             .get("videoFilePath")
@@ -913,14 +938,36 @@ pub async fn open_child_window(app: AppHandle, kind: String, data: Value) -> Cmd
         "memos" => windows::open_memos(&app, data),
         "memo-edit" => windows::open_memo(&app, data),
         "query-results" => windows::open_query_results(&app, data),
+        "intercoder-results" => windows::open_intercoder_results(&app, data),
         _ => return Err(format!("unknown window kind {kind}")),
     }
     Ok(())
 }
 
+/// Whether Query Results was popped out when the main window last closed.
+#[tauri::command]
+pub fn query_results_popped_out() -> bool {
+    storage::query_results_popped_out()
+}
+
 #[tauri::command]
 pub async fn update_query_results_window(app: AppHandle, data: Value) -> CmdResult<()> {
     windows::update_query_results(&app, data);
+    Ok(())
+}
+
+#[tauri::command]
+pub async fn update_intercoder_results_window(app: AppHandle, data: Value) -> CmdResult<()> {
+    windows::update_intercoder_results(&app, data);
+    Ok(())
+}
+
+#[tauri::command]
+pub async fn close_child_window(app: AppHandle, kind: String) -> CmdResult<()> {
+    match kind.as_str() {
+        "intercoder-results" => windows::close_child(&app, windows::INTERCODER_RESULTS),
+        _ => return Err(format!("unknown window kind {kind}")),
+    }
     Ok(())
 }
 
@@ -1000,6 +1047,19 @@ pub async fn get_recent_projects() -> CmdResult<Vec<Value>> {
 #[tauri::command]
 pub async fn track_recent_project(name: String, file_path: String) -> CmdResult<()> {
     storage::track_recent_project(&name, &file_path);
+    Ok(())
+}
+
+/// Open a web or mail link in the system's default handler. The webview
+/// can't: `window.open` and `target="_blank"` links make no new window in
+/// Tauri, so they did nothing (the ribbon's Manual and Donate buttons).
+#[tauri::command]
+pub fn open_external(app: AppHandle, url: String) -> CmdResult<()> {
+    use tauri_plugin_opener::OpenerExt;
+    let lower = url.to_ascii_lowercase();
+    if lower.starts_with("https://") || lower.starts_with("http://") || lower.starts_with("mailto:") {
+        let _ = app.opener().open_url(url, None::<&str>);
+    }
     Ok(())
 }
 

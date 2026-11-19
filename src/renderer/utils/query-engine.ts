@@ -13,8 +13,10 @@ import { codepointSlice, getContext } from './unicode'
 import { buildCellText } from './survey/cell-text'
 import { sentenceSpans } from './sentences'
 import { resolveTagCellScope, tagMembershipFromTags, type TagCellScope } from './survey-cell-scope'
-import { t } from '../i18n'
 import { isWordBoundary, isWordEdge } from './words'
+import { deriveVideoTimeRange, transcriptTimeRange } from '../components/DocumentViewer/video-time-utils'
+
+type TextCondition = Extract<CodeCondition, { type: 'text' }>
 
 /** Resolve the text a selection actually points into.
  *
@@ -41,6 +43,9 @@ export function textForSelection(
  *  non-cell selection) — otherwise every cell's near-zero offsets falsely
  *  overlap every other cell's, exploding result counts. */
 function sameSpatialSpace(a: PlainTextSelection, b: PlainTextSelection): boolean {
+  // A recording's codings made on the timeline compare by time — with each
+  // other, and with codings made on the transcript (by their lines' times).
+  if (byTime(a, b)) return !!timeOf(a) && !!timeOf(b)
   const ac = a.surveyCell
   const bc = b.surveyCell
   if (ac || bc) {
@@ -50,6 +55,40 @@ function sameSpatialSpace(a: PlainTextSelection, b: PlainTextSelection): boolean
   // page geometry, which has no reliable mapping to the text stream — so a
   // box is only ever compared with another box, never with a text range.
   return !!a.pdfRegion === !!b.pdfRegion
+}
+
+/** A recording's coding placed in time (see placeInTime). */
+type Timed = { _time?: { startTime: number; endTime: number }; _onTimeline?: boolean }
+const timeOf = (s: PlainTextSelection) => (s as Timed)._time
+const byTime = (a: PlainTextSelection, b: PlainTextSelection) => !!((a as Timed)._onTimeline || (b as Timed)._onTimeline)
+
+/**
+ * A recording's codings, placed in time so the spatial operators can
+ * compare a coding made on the timeline with others by time. Each gets
+ * `_onTimeline` — made on the timeline (a time range of its own, not the
+ * one its transcript text gives) — and `_time`: its own time range, or for
+ * a coding made on the transcript, its lines' times (the last line running
+ * to the end of the recording). Other documents' selections are returned
+ * as they are.
+ */
+export function placeInTime<T extends PlainTextSelection>(
+  selections: T[],
+  recording: { sourceType?: string; lineTimes?: Record<string, number>; duration?: number },
+  content: string
+): (T & Timed)[] {
+  if (recording.sourceType !== 'audio' && recording.sourceType !== 'video') return selections
+  const { lineTimes, duration } = recording
+  return selections.map((s) => {
+    const span = s.endPosition > s.startPosition
+    const derived = span ? deriveVideoTimeRange(content, s.startPosition, s.endPosition, lineTimes) : undefined
+    const onText = !!s.timeRange && !!derived &&
+      Math.abs(derived.startTime - s.timeRange.startTime) < 5e-4 && Math.abs(derived.endTime - s.timeRange.endTime) < 5e-4
+    const onTimeline = !!s.timeRange && !onText
+    const time = onTimeline
+      ? (s.timeRange!.endTime > s.timeRange!.startTime ? s.timeRange : undefined)
+      : span ? transcriptTimeRange(content, s.startPosition, s.endPosition, lineTimes, duration) : undefined
+    return { ...s, _time: time && time.endTime > time.startTime ? time : undefined, _onTimeline: onTimeline }
+  })
 }
 
 /* ═══════════════════════════════════════════════════
@@ -64,7 +103,15 @@ function sameSpatialSpace(a: PlainTextSelection, b: PlainTextSelection): boolean
 function spatialIntersection(
   a: PlainTextSelection,
   b: PlainTextSelection
-): { start: number; end: number; region?: PdfRegionSelection } | null {
+): { start: number; end: number; region?: PdfRegionSelection; time?: { startTime: number; endTime: number } } | null {
+  if (byTime(a, b)) {
+    const ta = timeOf(a)
+    const tb = timeOf(b)
+    if (!ta || !tb) return null
+    const startTime = Math.max(ta.startTime, tb.startTime)
+    const endTime = Math.min(ta.endTime, tb.endTime)
+    return startTime < endTime ? { start: 0, end: 0, time: { startTime, endTime } } : null
+  }
   const ar = a.pdfRegion
   const br = b.pdfRegion
   if (ar && br) {
@@ -85,8 +132,21 @@ function spatiallyOverlaps(a: PlainTextSelection, b: PlainTextSelection): boolea
   return spatialIntersection(a, b) !== null
 }
 
+/** Whether two selections of one source overlap, as the overlap operator
+ *  judges it: text ranges by their offsets (within one survey cell), and
+ *  boxes by their rectangles on the same page. Shared with Code
+ *  Co-Occurrences, so a cell's count and the query it opens agree. */
+export function selectionsOverlap(a: PlainTextSelection, b: PlainTextSelection): boolean {
+  return sameSpatialSpace(a, b) && spatiallyOverlaps(a, b)
+}
+
 /** `inner` lies entirely within `outer`. */
 function spatiallyInside(inner: PlainTextSelection, outer: PlainTextSelection): boolean {
+  if (byTime(inner, outer)) {
+    const ti = timeOf(inner)
+    const to = timeOf(outer)
+    return !!ti && !!to && ti.startTime >= to.startTime && ti.endTime <= to.endTime
+  }
   const ir = inner.pdfRegion
   const or = outer.pdfRegion
   if (ir && or) {
@@ -104,6 +164,11 @@ function spatiallyInside(inner: PlainTextSelection, outer: PlainTextSelection): 
  *  top to bottom: a box precedes another on a later page, or one on the
  *  same page that starts at or below its bottom edge. */
 function spatiallyPrecedes(a: PlainTextSelection, b: PlainTextSelection): boolean {
+  if (byTime(a, b)) {
+    const ta = timeOf(a)
+    const tb = timeOf(b)
+    return !!ta && !!tb && ta.endTime <= tb.startTime
+  }
   const ar = a.pdfRegion
   const br = b.pdfRegion
   if (ar && br) {
@@ -116,6 +181,12 @@ function spatiallyPrecedes(a: PlainTextSelection, b: PlainTextSelection): boolea
 /** The same span: identical text range, or identical box. */
 function sameSpan(a: PlainTextSelection, b: PlainTextSelection): boolean {
   if (!sameSpatialSpace(a, b)) return false
+  if (byTime(a, b)) {
+    const ta = timeOf(a)!
+    const tb = timeOf(b)!
+    return !!(a as Timed)._onTimeline === !!(b as Timed)._onTimeline && ta.startTime === tb.startTime && ta.endTime === tb.endTime &&
+      a.startPosition === b.startPosition && a.endPosition === b.endPosition
+  }
   const ar = a.pdfRegion
   const br = b.pdfRegion
   if (ar && br) {
@@ -286,19 +357,21 @@ export function executeQuery(
     // Within a survey under a cell constraint, only keep selections whose
     // cell is in scope; non-survey selections always pass. Used as both
     // the iteration set and the allSelections set for spatial operators.
-    const scopedSelections = cellScope.hasConstraint
+    const inScope = cellScope.hasConstraint
       ? source.selections.filter(
           (sel) =>
             !sel.surveyCell ||
             cellScope.cellInScope(source.guid, sel.surveyCell.respondentId, sel.surveyCell.questionId)
         )
       : source.selections
+    const media = source.formatData as { lineTimes?: Record<string, number>; duration?: number } | undefined
+    const scopedSelections = placeInTime(inScope, { sourceType: source.sourceType, lineTimes: media?.lineTimes, duration: media?.duration }, content)
 
     const condType = codeCondition.type
 
     // Standalone text search: find all occurrences in the full document text
     if (condType === 'text') {
-      results.push(...textSearchDocument(codeCondition as { type: 'text'; searchText: string; caseSensitive?: boolean }, source, content, cellScope, keep))
+      results.push(...textSearchDocument(codeCondition as TextCondition, source, content, cellScope, keep))
       continue
     }
 
@@ -333,7 +406,9 @@ export function executeQuery(
     }
 
     if (condType === 'sameSentence') {
-      const evalSelections = buildSpatialSelections(scopedSelections, codeCondition, source, content, cellScope, keep)
+      // Same Sentence finds the sentences itself: its text operands are
+      // the occurrences, whatever their own sentences option says.
+      const evalSelections = buildSpatialSelections(scopedSelections, codeCondition, source, content, cellScope, keep, true)
       results.push(...findSameSentences(codeCondition as SameSentenceCondition, evalSelections, source, content, codeMap))
       continue
     }
@@ -407,8 +482,8 @@ function withinFilter(
     cell ? `${sourceGuid}\n${cell.respondentId}\n${cell.questionId}` : sourceGuid
   for (const q of queries) {
     for (const r of executeQuery({ ...q, within: undefined }, sources, sourceContents, codes, tags, sourceFolder, folders)) {
-      // Video results carry transcript line indexes, not text offsets.
-      if (r.timeRange) continue
+      // A video result with no transcript span holds no text.
+      if (r.timeRange && r.endPosition <= r.startPosition) continue
       const k = key(r.sourceGuid, r.surveyCell)
       let arr = spans.get(k)
       if (!arr) { arr = []; spans.set(k, arr) }
@@ -426,7 +501,7 @@ function withinFilter(
 
 /** Search full document for text occurrences */
 function textSearchDocument(
-  cond: { type: 'text'; searchText: string; caseSensitive?: boolean; wholeWord?: boolean },
+  cond: TextCondition,
   source: TextSource,
   content: string,
   cellScope?: TagCellScope,
@@ -515,7 +590,7 @@ function nextTextMatch(haystack: string, needle: string, wholeWord: boolean | un
 
 function findTextMatches(
   text: string,
-  cond: { searchText: string; caseSensitive?: boolean; wholeWord?: boolean }
+  cond: { searchText: string; caseSensitive?: boolean; wholeWord?: boolean; sentences?: boolean }
 ): TextMatch[] {
   const out: TextMatch[] = []
   const haystack = cond.caseSensitive ? text : text.toLowerCase()
@@ -531,6 +606,34 @@ function findTextMatches(
     out.push({ start: cpStart, end: cpEnd, matched, before, after })
     pos = idx + (cond.searchText.length || 1)
   }
+  return cond.sentences ? toSentences(text, out) : out
+}
+
+/** Widen each match to the sentence it occurs in (all the sentences, for
+ *  one that runs across a break), once per sentence. */
+function toSentences(text: string, matches: TextMatch[]): TextMatch[] {
+  if (matches.length === 0) return matches
+  const sentences = sentenceSpans(text)
+  const out: TextMatch[] = []
+  let i = 0
+  for (const m of matches) {
+    while (i < sentences.length && sentences[i].end <= m.start) i++
+    let j = i
+    while (j + 1 < sentences.length && sentences[j + 1].start < m.end) j++
+    const start = i < sentences.length ? Math.min(sentences[i].start, m.start) : m.start
+    const end = Math.max(j < sentences.length ? sentences[j].end : m.end, m.end)
+    const last = out[out.length - 1]
+    if (last && start < last.end) {
+      if (end > last.end) {
+        last.end = end
+        last.matched = codepointSlice(text, last.start, end)
+        last.after = getContext(text, last.start, end).after
+      }
+      continue
+    }
+    const { before, after } = getContext(text, start, end)
+    out.push({ start, end, matched: codepointSlice(text, start, end), before, after })
+  }
   return out
 }
 
@@ -538,7 +641,7 @@ function findTextMatches(
  *  (including inside logical and spatial operands). */
 function collectTextConditions(
   cond: CodeCondition
-): { type: 'text'; searchText: string; caseSensitive?: boolean; wholeWord?: boolean }[] {
+): TextCondition[] {
   switch (cond.type) {
     case 'text':
       return [cond]
@@ -581,9 +684,10 @@ function buildSpatialSelections(
   source: TextSource,
   content: string,
   cellScope: TagCellScope,
-  keep?: KeepMatch
+  keep?: KeepMatch,
+  occurrencesOnly = false
 ): EvalSelection[] {
-  const texts = collectTextConditions(cond)
+  const texts = collectTextConditions(cond).map((t) => (occurrencesOnly && t.sentences ? { ...t, sentences: false } : t))
   const survey = (source.formatData as SurveyFormatData | undefined)?.survey
 
   // Attach each base selection's indexable text for surveys (copied so we
@@ -653,7 +757,7 @@ function containsTextCondition(cond: CodeCondition): boolean {
 }
 
 /** Check if ALL leaves in a condition tree are text conditions */
-function isAllTextCondition(cond: CodeCondition): boolean {
+export function isAllTextCondition(cond: CodeCondition): boolean {
   switch (cond.type) {
     case 'text': return true
     case 'code': return false
@@ -671,36 +775,6 @@ function flattenOr(cond: CodeCondition): CodeCondition[] {
     return cond.conditions.flatMap((c) => flattenOr(c))
   }
   return [cond]
-}
-
-/** Validate a condition tree; returns an error message or null */
-export function validateCondition(cond: CodeCondition, nested = false): string | null {
-  if (cond.type === 'sameSentence' && nested) {
-    return t('queryValidate.sameSentence')
-  }
-  if (cond.type === 'and' || cond.type === 'xor') {
-    if (cond.conditions.every((c) => isAllTextCondition(c))) {
-      return t('queryValidate.textOnlyOr')
-    }
-    for (const c of cond.conditions) {
-      const err = validateCondition(c, true)
-      if (err) return err
-    }
-  }
-  if (cond.type === 'or') {
-    for (const c of cond.conditions) {
-      const err = validateCondition(c, true)
-      if (err) return err
-    }
-  }
-  if (cond.type === 'not') {
-    return validateCondition(cond.condition, true)
-  }
-  if ('condition1' in cond && 'condition2' in cond) {
-    const c = cond as { condition1: CodeCondition; condition2: CodeCondition }
-    return validateCondition(c.condition1, true) || validateCondition(c.condition2, true)
-  }
-  return null
 }
 
 function evaluateCondition(
@@ -747,7 +821,7 @@ function evaluateCondition(
       }
       return false
     case 'sameSentence':
-      // Only valid as the whole query (see validateCondition).
+      // Only valid as the whole query (see validateCondition in query-validate.ts).
       return false
   }
 }
@@ -923,7 +997,18 @@ function findOverlapIntersections(
     if (!sameSpatialSpace(selection, other)) continue
     const intersection = spatialIntersection(selection, other)
     if (!intersection) continue
-    const { start: intStart, end: intEnd, region } = intersection
+    const { start: intStart, end: intEnd, region, time } = intersection
+    if (time) {
+      // Compared by time: the moments both cover, read as the transcript
+      // lines in them.
+      const timeKey = `${source.guid}:time:${time.startTime}:${time.endTime}`
+      if (seenRanges.has(timeKey)) continue
+      seenRanges.add(timeKey)
+      const allCodes = new Set([...selection.codings.map((c) => c.codeGuid), ...other.codings.map((c) => c.codeGuid)])
+      const r = buildResult(source, { guid: selection.guid, startPosition: 0, endPosition: 0, timeRange: time, codings: [] }, content, allCodes, codeMap)
+      results.push({ ...r, matchedCodes: collectMatchedCodes(condition.condition1, allCodes, codeMap) })
+      continue
+    }
 
     // Deduplicate: same intersection range (or box) in the same source.
     // Boxes carry a 0–0 char range, so they key on the intersected
@@ -1106,7 +1191,8 @@ function findSameSentences(
   // or one survey cell.
   const groups = new Map<string, { text: string; cell?: PlainTextSelection['surveyCell']; s1: EvalSelection[]; s2: EvalSelection[] }>()
   for (const sel of allSelections) {
-    if (sel.pdfRegion || sel.timeRange) continue
+    // Boxes, and video codings with no transcript span, hold no text.
+    if (sel.pdfRegion || (sel.timeRange && sel.endPosition <= sel.startPosition)) continue
     const in1 = is1(sel)
     const in2 = is2(sel)
     if (!in1 && !in2) continue
@@ -1145,15 +1231,14 @@ function buildResult(
   codeGuids: Set<string>,
   codeMap: Map<string, Code>
 ): QueryResult {
-  // Video-anchored selections store startPosition/endPosition as LINE
-  // INDEXES, not codepoint offsets, so a plain codepointSlice would read
-  // a nonsensical byte range. Compute matchedText from transcript lines
-  // whose recorded lineTimes fall inside the selection's time range —
-  // that's the canonical "text this code covers" for a video.
+  // A video coding's text is its transcript span (code-point offsets, like
+  // any coding: exact for one coded on the text, the covered lines for one
+  // coded on the timeline). One with no span yet — no transcript timing
+  // when it was made — reads the lines whose time falls in its range.
   let matchedText: string
   let before = ''
   let after = ''
-  if (selection.timeRange) {
+  if (selection.timeRange && selection.endPosition <= selection.startPosition) {
     const lineTimes = (source.formatData as { lineTimes?: Record<string, number> } | undefined)?.lineTimes
     const lines = content.split('\n')
     const matched: string[] = []

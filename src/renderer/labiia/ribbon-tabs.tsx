@@ -1,6 +1,6 @@
 /**
  * labiia_quali's ribbon: the tabs and buttons, organised as in labiia_quali
- * 0.1 (Home, Analyses, Lexical analyses, View, Help), with Magnolia 2.1's
+ * 0.1 (Home, Analyses, Lexical analyses, View, Help), with Magnolia's
  * newer actions (the Memos window) in their place. A button's tile colour
  * says which family its action belongs to, the same colour in every tab.
  *
@@ -14,6 +14,7 @@ import { LEXICAL_TESTS, lexicalToolType } from '../components/Lexical/lexical-ca
 import { TOOL_REGISTRY } from '../utils/tool-registry'
 import {
   faBook,
+  faBookOpenText,
   faFileAlt,
   faFilePlus,
   faFolderOpen,
@@ -43,6 +44,7 @@ export interface RibbonActions {
   newProject: () => void
   openProject: () => void
   importSources: () => void
+  importZotero: () => void
   newFolder: () => void
   mergeProjects: () => void
   projectDetails: () => void
@@ -174,6 +176,7 @@ export function labiiaRibbonTabs(a: RibbonActions): RibbonTabDef[] {
           label: t('labiia.ribbon.groupSources'),
           buttons: [
             { id: 'import', label: t('toolbar.import'), title: t('toolbar.importTitle'), icon: faSquareArrowRightEnter, family: 'sources', disabledReason: a.lockedReason, onClick: a.importSources },
+            { id: 'zotero', label: t('toolbar.zotero'), title: t('toolbar.zoteroTitle'), icon: faBookOpenText, family: 'sources', disabledReason: a.lockedReason, onClick: a.importZotero },
             { id: 'folder', label: t('labiia.ribbon.newFolder'), icon: faFolderPlus, family: 'sources', disabledReason: a.lockedReason, onClick: a.newFolder }
           ]
         },
@@ -200,6 +203,7 @@ export function labiiaRibbonTabs(a: RibbonActions): RibbonTabDef[] {
       groups: [
         { label: t('toolbar.groupCodes'), buttons: (['codes-in-documents', 'framework-matrix', 'code-cooccurrences', 'code-orders', 'code-frequencies'] as AnalysisToolType[]).map(analysisButton('codes')) },
         { label: t('labiia.ribbon.groupResultsWords'), buttons: (['results-in-documents', 'word-frequencies', 'word-combinations', 'relationship-map'] as AnalysisToolType[]).map(analysisButton('results')) },
+        { label: t('toolbar.groupTeam'), buttons: (['intercoder-agreement'] as AnalysisToolType[]).map(analysisButton('codes')) },
         { label: t('labiia.ribbon.groupReports'), buttons: (['reports'] as AnalysisToolType[]).map(analysisButton('reports')) }
       ]
     },

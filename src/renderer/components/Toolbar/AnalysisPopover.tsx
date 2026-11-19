@@ -41,6 +41,7 @@ const ANALYSIS_TOOL_ORDER: AnalysisToolType[] = [
   'code-frequencies',
   'word-frequencies',
   'word-combinations',
+  'intercoder-agreement',
   'relationship-map',
   'reports'
 ]

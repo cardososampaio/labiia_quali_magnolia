@@ -178,9 +178,24 @@ describe('choosing the language', () => {
   })
 
   it("follows the computer's first language Magnolia has", () => {
-    expect(resolveLanguage('system', ['ja-JP', 'es-MX', 'en-GB'])).toBe('es')
+    expect(resolveLanguage('system', ['ko-KR', 'es-MX', 'en-GB'])).toBe('es')
     expect(resolveLanguage('system', ['nl-BE'])).toBe('nl')
     expect(resolveLanguage('system', ['en-AU', 'es-ES'])).toBe('en')
+  })
+
+  it('gives Japanese computers the Japanese catalogue', () => {
+    expect(resolveLanguage('system', ['ja-JP'])).toBe('ja')
+  })
+
+  it("gives Hebrew's old code the Hebrew catalogue", () => {
+    expect(resolveLanguage('system', ['he-IL'])).toBe('he')
+    expect(resolveLanguage('system', ['iw-IL'])).toBe('he')
+  })
+
+  it('gives Norwegian and Nynorsk the Bokmål catalogue', () => {
+    expect(resolveLanguage('system', ['nb-NO'])).toBe('nb')
+    expect(resolveLanguage('system', ['no'])).toBe('nb')
+    expect(resolveLanguage('system', ['nn-NO'])).toBe('nb')
   })
 
   it("matches the computer's variety of a language, else another variety", () => {
@@ -192,14 +207,14 @@ describe('choosing the language', () => {
   })
 
   it('falls back to English', () => {
-    expect(resolveLanguage('system', ['ja-JP', 'ko'])).toBe('en')
+    expect(resolveLanguage('system', ['th-TH', 'ko'])).toBe('en')
     expect(resolveLanguage('system', [])).toBe('en')
   })
 
   // labiia_quali is written for Brazilian researchers: with nothing saved, or
   // something unknown, it opens in Brazilian Portuguese; "system" stays a choice.
   it('reads an unknown saved preference as Brazilian Portuguese', () => {
-    expect(normaliseLanguagePreference('ja')).toBe('pt-BR')
+    expect(normaliseLanguagePreference('ko')).toBe('pt-BR')
     expect(normaliseLanguagePreference(undefined)).toBe('pt-BR')
     expect(normaliseLanguagePreference('system')).toBe('system')
     expect(normaliseLanguagePreference('en')).toBe('en')

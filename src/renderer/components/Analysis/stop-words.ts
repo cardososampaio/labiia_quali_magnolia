@@ -182,7 +182,123 @@ const LISTS = {
     teillä teiltä teissä teistä teitä tuo tuohon tuoksi tuolla tuolle
     tuolta tuon tuona tuossa tuosta tuota tähän täksi tälle tällä tältä
     tämä tämän tänä tässä tästä tätä vaan vai vaikka yli myös vain jo
-    hyvin aina sitten kuitenkin`
+    hyvin aina sitten kuitenkin`,
+  sv: `
+    alla allt att av blev bli blir blivit de dem den denna deras dess dessa
+    det detta dig din dina ditt du där då efter ej eller en er era ert ett
+    från för ha hade han hans har henne hennes hon honom hur här i icke
+    ingen inom inte jag ju kan kunde man med mellan men mig min mina mitt
+    mot mycket ni nu när någon något några och om oss på samma sedan sig
+    sin sina sitta själv skulle som så sådan sådana till under upp ut utan
+    vad var vara varför varit varje vars vart vem vi vid vilka vilkas
+    vilken vilket vår våra vårt än är åt över också bara mer där`,
+  nb: `
+    alle at av bare begge ble blei bli blir blitt både båe da de deg dei
+    deim deira deires dem den denne der dere deres det dette di din disse
+    ditt du dykk dykkar då eg ein eit eitt eller elles en enn er et ett
+    etter for fordi fra før ha hadde han hans har hennar henne hennes her
+    hjå ho hoe honom hoss hossen hun hva hvem hver hvilke hvilken hvis hvor
+    hvordan hvorfor i ikke ikkje ingen ingi inkje inn inni ja jeg kan kom
+    korleis korso kun kunne kva kvar kvarhelst kven kvi kvifor man mange me
+    med medan meg meget mellom men mi min mine mitt mot mykje ned no noe
+    noen noka noko nokon nokor nokre nå når og også om opp oss over på
+    samme seg selv si sia sidan siden sin sine sitt sjøl skal skulle slik
+    so som somme somt så sånn til um upp ut uten var vart varte ved vere
+    verte vi vil ville vore vors vort vår være vært`,
+  da: `
+    ad af alle alt anden at blev blive bliver da de dem den denne der
+    deres det dette dig din disse dog du efter eller en end er et for fra
+    ham han hans har havde have hende hendes her hos hun hvad hvis hvor i
+    ikke ind jeg jer jo kunne man mange med meget men mig min mine mit mod
+    ned noget nogle nu når og også om op os over på selv sig sin sine sit
+    skal skulle som sådan thi til ud under var vi vil ville vor være været
+    bare lige så alligevel altså andre begge bliver blevet dens dets egen
+    eller enhver fik få får hele her hvem hvilken hvilke hvordan hvorfor
+    ingen intet kan kom kommer lidt man mere mest måske nok nogen næste
+    sådan synes temmelig uden ville ved`,
+  tr: `
+    acaba ama aslında az bazı belki biri birkaç birşey biz bu çok çünkü da
+    daha de defa diye eğer en gibi hem hep hepsi her hiç için ile ise kez
+    ki kim mı mi mu mü nasıl ne neden nerde nerede nereye niçin niye o
+    sanki şey siz şu tüm ve veya ya yani bir ben sen onlar bunu şunu onu
+    bana sana ona bize size onlara benim senin onun bizim sizin onların
+    olan olarak oldu olduğu olmak var yok değil daha sonra kadar gibi
+    bunlar şunlar artık işte zaten yine ancak bile böyle böylece bunun
+    burada çünkü dolayı fakat gene göre hala hâlâ hangi hani hatta henüz
+    için kendi kendine mı mısın nedir nerede öyle önce sadece sonra şöyle
+    üzere yani yalnız yerine ayrıca biraz herkes herşey hiçbir`,
+  ca: `
+    a abans al algun alguna algunes alguns als amb ara aquell aquella
+    aquelles aquells aquest aquesta aquestes aquests així bé cada com
+    cap d de del dels des després doncs dues durant e el ell ella elles
+    ells els em en entre era eren es és està estan estava estar et fa fer
+    fins ha han havia hi i jo l la les li llur lo los més mateix me molt
+    molta moltes molts meu meva meus meves ni no nosaltres nostre nostra
+    o on per però perquè poc pot pel pels qual quan que què qui res s sa
+    se seu seva seus seves si sí sense ser sobre són sota també tan tant
+    te teu teva tinc tot tota totes tots un una unes uns va van vaig
+    vosaltres vostre ja`,
+  cs: `
+    a aby ale ani ano asi až bez bude budou by byl byla byli bylo být co
+    či článek do ho i já jak jako je jeho jej její jejich jemu jen jenž
+    ještě ji jí jiné již jsem jsi jsme jsou jste k kam kde kdo když ke
+    která které kterou který kteří ku ma mají máme máte mě mezi mi mít
+    mně mnou můj může my na nad nám námi nás náš ne nebo nebyl něco není
+    nějak nejsou než nic nich ním no o od on ona oni ono pak po pod podle
+    pokud pouze právě pro proč proto protože před při s se si sice své
+    svůj ta tak také tam te tedy ten tento této ti tím to tohle toho tom
+    tomto tomu toto tu tuto ty tyto u už v vám vámi vás váš ve více však
+    všechen vy z za zda zde ze že`,
+  uk: `
+    а або аж але б би біля бо був була були було бути в вам вас ваш ваша
+    ваше ваші весь вже ви від він вона вони воно все всі вся втім г геть
+    де для до досі є ж же з за звідки зі й його її їх і із інакше інший
+    його йому к коли кому крім куди ледве лише між мене мені ми мій мною
+    мого моє моєї моя на навіть над нам нас наш наша наше наші не неї
+    нею ним них ні ніби ніж ну о об од однак він па по поки при про
+    проте саме себе свій своє свої собі та так також там те теж ти тим
+    тих то тобі тобою того той тому треба тут у увесь уже усе усі хоч
+    хоча хто це цей ці цього цьому цю ця час чи чим чого чому що щоб
+    щось як який яка яке які якщо я`,
+  lt: `
+    aš ant apie ar arba be bei bet bus buvo būti čia dar del dėl iki iš
+    ir it jai jais jam jau ji jie jiems jis jo jos jog juk jų jūs kad
+    kai kaip kas kiek kodėl kol koks kur kuri kurie kuris man manęs mano
+    mes mus mūsų ne negu nei nes nors nuo o pagal pas per po prie prieš
+    sau save savo su tai taip tačiau tarp tas te tik to todėl tu tuo
+    tą tų už vis visi visa visas yra žinoma ten štai šis ši šie šios
+    šio šiuo šią tam tiek toks tokia mano tave tavo jūsų kurį kurią kuo
+    kurio kurios buvo bus būtų esu esi esame esate ar gal galbūt`,
+  he: `
+    אבל או אולי אז אחר אחרי איך אין איפה אל אלה אם אנחנו אני אנו את אתה
+    אתם אתן אף אפילו אצל אשר ב בגלל בין בלי גם דרך האם הוא היא היה היו
+    הם הן הנה הרבה ו וגם זאת זה זו זהו יש כאן כבר כדי כול כולם כי כך
+    כל כמו כן כש לא לאחר לה להם להן לו לי לך לכן לפי לפני מאוד מה מול
+    מי מן מעל עד עוד על עם פה רק של שלא שלה שלהם שלו שלי שלך שם תחת
+    כאשר אותו אותה אותם אותן היום ככה למה מתי איזה אילו אך אפוא בה בהם
+    בו בי בך בנו גם כן הזה הזאת האלה ההוא ההיא ממנו ממני ממך עליו עליה
+    אליו אליה כמה כלל שוב תמיד יותר פחות`,
+  el: `
+    αλλά αν από αυτά αυτές αυτή αυτό αυτοί αυτός αυτούς αυτών για δε δεν
+    εάν είμαι είναι είσαι είστε εκεί εμείς ενώ εσείς εσύ εγώ η θα και
+    κάθε κάποιος κάτι κι μα με μετά μη μην μια μιας μου μόνο να ο οι
+    όμως όπως ότι όταν ου ούτε πάνω παρά περί πια πιο πολύ που πού πριν
+    προς πως πώς σε σας στα στη στην στις στο στον στους στων σου τα
+    την της τι τις το τον τοτε τότε του τους των ως ένα ένας έναν ενός
+    είχε έχει έχουν ήταν ήδη επίσης εδώ τώρα όλα όλοι όσο οποίος οποία
+    οποίο ίδιο λοιπόν`,
+  ja: `
+    あそこ あっ あの あのかた あの人 あり あります ある あれ い いう います
+    いる う うち え お および おり おります か かつて から が き ここ こちら
+    こと この これ これら さ さらに し しかし する ず せ せる そこ そして
+    その その他 その後 それ それぞれ それで た ただし たち ため たり だ
+    だっ だれ つ て で でき できる です では でも と という といった とき
+    ところ として とともに とも と共に どこ どの な ない なお なかっ ながら
+    なく なっ など なに なら なり なる なん に において における について
+    にて によって により による に対して に対する に関する の ので のみ
+    は ば へ ほか ほとんど ほど ます また または まで も もの ものの や
+    よう より ら られ られる れ れる を ん 何 及び 彼 彼女 我々 特に 私
+    私達 貴方 貴方方`
 } satisfies Record<LanguageId, string> & Record<string, string>
 
 /** The languages with stop words: the interface languages, and others. */

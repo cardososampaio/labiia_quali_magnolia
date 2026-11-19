@@ -436,6 +436,7 @@ pub fn write_qdpx(
         .filter(|s| {
             get_nonempty(s, "sourceType").is_some_and(|t| t != "text")
                 || has(s, "formatData")
+                || has(s, "zoteroLink")
                 || get_arr(s, "selections")
                     .iter()
                     .any(|sel| has(sel, "pdfRegion"))
@@ -527,6 +528,10 @@ fn source_meta_for(s: &Value, written: &HashSet<String>) -> Value {
     if !st.is_empty() && st != "text" {
         meta.insert("sourceType".into(), st.into());
     }
+    // The Zotero item a document was imported from (zotero://select/…).
+    if let Some(link) = get_nonempty(s, "zoteroLink") {
+        meta.insert("zoteroLink".into(), link.into());
+    }
     // Image regions live in the XML as <PictureSelection>s instead.
     if st != "image" {
         let regions: Vec<Value> = get_arr(s, "selections")
@@ -603,6 +608,10 @@ fn source_meta_for(s: &Value, written: &HashSet<String>) -> Value {
                         "startChar": sel.get("startPosition").filter(|v| !v.is_null()).cloned().unwrap_or(0.into()),
                         "endChar": sel.get("endPosition").filter(|v| !v.is_null()).cloned().unwrap_or(0.into()),
                         "manuallyAnchored": sel.get("manuallyAnchored").is_some_and(truthy),
+                        // The exact range: a timeline coding whose text spans
+                        // lines is written to the XML as a TranscriptSelection,
+                        // which only keeps line-granular time.
+                        "timeRange": sel.get("timeRange").filter(|v| truthy(v)).cloned().unwrap_or(Value::Null),
                     })
                 })
                 .collect();

@@ -49,7 +49,8 @@
   },
   "native": {
     "import": {
-      "unsupported": "labiia_quali can't import .{{ext}} files."
+      "unsupported": "labiia_quali can't import .{{ext}} files.",
+      "unreadable": "labiia_quali couldn’t open this file. Check that it still exists and that you can open it."
     },
     "menu": {
       "about": "About labiia_quali",
@@ -65,6 +66,13 @@
     },
     "window": {
       "magnoliaUpdate": "labiia_quali Update"
+    },
+    "core": {
+      "decodeTiff": "This TIFF image is damaged or in a form labiia_quali can’t read. Try saving it again as a PNG or JPEG.",
+      "decodeHeic": "This HEIC photo is damaged or in a form labiia_quali can’t read. Try exporting it as a JPEG.",
+      "heicColourSpace": "This HEIC photo is damaged or in a form labiia_quali can’t read. Try exporting it as a JPEG.",
+      "heicMalformed": "This HEIC photo is damaged or in a form labiia_quali can’t read. Try exporting it as a JPEG.",
+      "typesetFailed": "labiia_quali couldn’t lay this document out as pages. Try saving it again in the program it came from, or saving it as a PDF and importing that."
     }
   },
   "preferences": {
@@ -114,7 +122,8 @@
     "licenceDescription": "The licence of labiia_quali (EUPL-1.2, the same as Magnolia, on which it is based) and the credits of the bundled libraries.",
     "manualDescription": "Open labiia_quali's user manual in your browser.",
     "tags": "Characteristics",
-    "tagsTitle": "Manage characteristics"
+    "tagsTitle": "Manage characteristics",
+    "zoteroTitle": "Import documents from Zotero, with their information as characteristics"
   },
   "update": {
     "availableHeading": "A new version of labiia_quali is available!",
@@ -127,5 +136,10 @@
   "welcome": {
     "ownRisk": "Use labiia_quali at your own risk.",
     "windowTitle": "Welcome — labiia_quali"
+  },
+  "zotero": {
+    "notRunning": "labiia_quali can’t reach Zotero. Open Zotero on this computer, then try again.",
+    "tooOld": "This version of Zotero can’t share its library. labiia_quali needs Zotero 7 or later.",
+    "unsupportedFile": "labiia_quali can’t import this kind of file"
   }
 }

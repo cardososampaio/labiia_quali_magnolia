@@ -11,6 +11,7 @@ mod state;
 mod storage;
 mod updater;
 mod windows;
+mod zotero;
 
 use state::AppState;
 use tauri::{AppHandle, Manager, RunEvent};
@@ -71,6 +72,13 @@ pub fn run() {
             }
         }))
     };
+    // Remember where windows sat — except under automation, whose
+    // screenshots need the same window every run.
+    let builder = if automation::active() {
+        builder
+    } else {
+        builder.plugin(windows::window_state_plugin())
+    };
     let app = builder
         .plugin(tauri_plugin_dialog::init())
         .plugin(tauri_plugin_opener::init())
@@ -90,8 +98,12 @@ pub fn run() {
         })
         .on_menu_event(|app, event| menu::handle_event(app, event.id().as_ref()))
         .invoke_handler(tauri::generate_handler![
+            commands::open_external,
             commands::open_project,
+            zotero::zotero_get,
+            zotero::zotero_file_path,
             commands::pick_project_file,
+            commands::pick_project_files,
             commands::open_project_path,
             commands::set_active_project_path,
             commands::get_file_size,
@@ -100,13 +112,14 @@ pub fn run() {
             commands::check_out_project,
             commands::check_in_project,
             commands::read_qdpx_for_compare,
+            commands::missing_files,
             commands::import_merge_binary,
             commands::read_compare_binary,
             commands::save_project,
             commands::save_project_as,
             commands::create_project_copy,
             commands::create_new_project_file,
-            commands::import_text_file,
+            commands::pick_import_files,
             commands::read_text_files,
             commands::read_dropped_file,
             commands::reimport_document,
@@ -120,6 +133,9 @@ pub fn run() {
             commands::open_acknowledgements,
             commands::open_child_window,
             commands::update_query_results_window,
+            commands::query_results_popped_out,
+            commands::update_intercoder_results_window,
+            commands::close_child_window,
             commands::update_memos_window,
             commands::get_window_data,
             commands::drain_queued_events,
@@ -168,6 +184,9 @@ pub fn run() {
             labiia::diagnostics::labiia_diagnostics,
             labiia::diagnostics::labiia_dismiss_crash,
             labiia::diagnostics::labiia_open_logs_folder,
+            automation::automation_input,
+            automation::automation_window_frame,
+            automation::automation_set_position,
         ])
         .setup(|app| {
             storage::init(app.handle());

@@ -1,11 +1,12 @@
 //! Window lifecycle: the welcome screen, the main project window and the
 //! pop-out child windows (codebook, logbook, the memos list, each memo,
-//! query results), plus the
+//! query results, inter-coder agreement results), plus the
 //! flush-on-close handshake and quitting.
 
 use crate::i18n;
 use crate::menu;
 use crate::state::AppState;
+use crate::storage;
 use serde_json::{Value, json};
 use std::time::Duration;
 use tauri::{
@@ -21,6 +22,7 @@ pub const LOGBOOK: &str = "logbook";
 /// own `memo-<guid>` window).
 pub const MEMOS: &str = "memos";
 pub const QUERY_RESULTS: &str = "query-results";
+pub const INTERCODER_RESULTS: &str = "intercoder-results";
 pub const UPDATE: &str = "update";
 const MEMO_PREFIX: &str = "memo-";
 
@@ -284,9 +286,10 @@ pub fn open_main(app: &AppHandle) -> Option<WebviewWindow> {
             height as f64 / m.scale_factor()
         })
         .unwrap_or(900.0);
+    let size = remembered_size(MAIN, (900.0, 600.0)).unwrap_or((1400.0, height));
     let b = base_builder(app, MAIN, "index.html")
         .title("Magnolia")
-        .inner_size(1400.0, height)
+        .inner_size(size.0, size.1)
         .min_inner_size(900.0, 600.0)
         .center();
     #[cfg(target_os = "macos")]
@@ -303,6 +306,7 @@ pub fn open_main(app: &AppHandle) -> Option<WebviewWindow> {
         }
     };
     keep_traffic_lights_placed(&w);
+    remember_size(&w);
     let handle = app.clone();
     w.on_window_event(move |e| match e {
         WindowEvent::CloseRequested { api, .. } => {
@@ -371,6 +375,7 @@ fn on_main_destroyed(app: &AppHandle) {
         ui.queued_events.retain(|(label, _), _| label != MAIN);
         (ui.is_quitting, ui.restart_after_quit)
     };
+    storage::set_query_results_popped_out(app.get_webview_window(QUERY_RESULTS).is_some());
     // The update window belongs to the app, not the project: it stays up
     // (showing "Installing…" during Install and Relaunch).
     for (label, w) in app.webview_windows() {
@@ -518,6 +523,72 @@ pub fn retitle(app: &AppHandle) {
     }
 }
 
+/// Windows whose place and size are remembered between runs, so a layout
+/// across two screens — the main window on one, Query Results on the
+/// other — comes back after quitting. Memo windows are one per memo, so
+/// they aren't kept.
+const REMEMBERED: [&str; 6] = [MAIN, QUERY_RESULTS, INTERCODER_RESULTS, CODEBOOK, LOGBOOK, MEMOS];
+
+/// Place (and true maximising) is the window-state plugin's. Size isn't:
+/// the plugin keeps no size for a window that reports itself maximized,
+/// and on macOS a window zoomed or tiled to fill a screen does — so it
+/// came back in place but at its old size. Sizes are kept below instead.
+pub fn window_state_plugin() -> tauri::plugin::TauriPlugin<tauri::Wry> {
+    use tauri_plugin_window_state::{Builder, StateFlags};
+    Builder::new()
+        // Not VISIBLE: windows show themselves once their page has loaded.
+        .with_state_flags(StateFlags::POSITION | StateFlags::MAXIMIZED)
+        .with_filter(|label| REMEMBERED.contains(&label))
+        .build()
+}
+
+/// Each remembered window's last size, in points.
+static SIZES: std::sync::LazyLock<std::sync::Mutex<serde_json::Map<String, Value>>> =
+    std::sync::LazyLock::new(|| std::sync::Mutex::new(storage::window_sizes()));
+
+fn remembers(label: &str) -> bool {
+    REMEMBERED.contains(&label) && !crate::automation::active()
+}
+
+/// The size `label` had when it was last open, no smaller than `min`.
+fn remembered_size(label: &str, min: (f64, f64)) -> Option<(f64, f64)> {
+    if !remembers(label) {
+        return None;
+    }
+    let sizes = SIZES.lock().unwrap();
+    let s = sizes.get(label)?;
+    let (w, h) = (s.get("width")?.as_f64()?, s.get("height")?.as_f64()?);
+    Some((w.max(min.0), h.max(min.1)))
+}
+
+/// Keep `w`'s size up to date as it changes (however it's resized:
+/// dragging, zooming or tiling), and on disk once it closes.
+fn remember_size(w: &WebviewWindow) {
+    let label = w.label().to_string();
+    if !remembers(&label) {
+        return;
+    }
+    let win = w.clone();
+    w.on_window_event(move |e| match e {
+        WindowEvent::Resized(size) => {
+            if size.width == 0
+                || size.height == 0
+                || win.is_minimized().unwrap_or(false)
+                || win.is_fullscreen().unwrap_or(false)
+            {
+                return;
+            }
+            let s = size.to_logical::<f64>(win.scale_factor().unwrap_or(1.0));
+            SIZES
+                .lock()
+                .unwrap()
+                .insert(label.clone(), json!({ "width": s.width.round(), "height": s.height.round() }));
+        }
+        WindowEvent::Destroyed => storage::save_window_sizes(&SIZES.lock().unwrap()),
+        _ => {}
+    });
+}
+
 struct ChildSpec {
     page: &'static str,
     /// The window title's key in the catalogues' `native` section.
@@ -539,9 +610,10 @@ fn open_child(app: &AppHandle, label: &str, spec: ChildSpec, data: Value) {
         emit_to(app, label, spec.init_event, data);
         return;
     }
+    let size = remembered_size(label, spec.min).unwrap_or(spec.size);
     let b = base_builder(app, label, spec.page)
         .title(i18n::t(spec.title))
-        .inner_size(spec.size.0, spec.size.1)
+        .inner_size(size.0, size.1)
         .min_inner_size(spec.min.0, spec.min.1);
     // A transparent title bar shows the window's background colour, which
     // the page keeps matched to its own (see syncWindowBackground in
@@ -550,6 +622,7 @@ fn open_child(app: &AppHandle, label: &str, spec: ChildSpec, data: Value) {
     let b = b.title_bar_style(tauri::TitleBarStyle::Transparent);
     match b.build() {
         Ok(w) => {
+            remember_size(&w);
             let handle = app.clone();
             let label = label.to_string();
             w.on_window_event(move |e| {
@@ -557,6 +630,9 @@ fn open_child(app: &AppHandle, label: &str, spec: ChildSpec, data: Value) {
                     state(&handle).ui.lock().unwrap().window_data.remove(&label);
                     if label == QUERY_RESULTS {
                         emit_to(&handle, MAIN, "query-results-window-closed", ());
+                    }
+                    if label == INTERCODER_RESULTS {
+                        emit_to(&handle, MAIN, "intercoder-results-window-closed", ());
                     }
                     menu::rebuild(&handle);
                 }
@@ -634,6 +710,40 @@ pub fn update_query_results(app: &AppHandle, data: Value) {
         .insert(QUERY_RESULTS.into(), data.clone());
     if app.get_webview_window(QUERY_RESULTS).is_some() {
         emit_to(app, QUERY_RESULTS, "query-results-init-data", data);
+    }
+}
+
+/// The Inter-coder Agreement results, popped out of their tool (to put
+/// them on a bigger screen, say).
+pub fn open_intercoder_results(app: &AppHandle, data: Value) {
+    let spec = ChildSpec {
+        page: "intercoder-results.html",
+        title: "window.intercoder",
+        size: (1100.0, 760.0),
+        min: (500.0, 300.0),
+        init_event: "intercoder-results-init-data",
+    };
+    open_child(app, INTERCODER_RESULTS, spec, data);
+}
+
+/// Refreshes the Inter-coder Agreement results window when it is open.
+pub fn update_intercoder_results(app: &AppHandle, data: Value) {
+    if app.get_webview_window(INTERCODER_RESULTS).is_none() {
+        return;
+    }
+    state(app)
+        .ui
+        .lock()
+        .unwrap()
+        .window_data
+        .insert(INTERCODER_RESULTS.into(), data.clone());
+    emit_to(app, INTERCODER_RESULTS, "intercoder-results-init-data", data);
+}
+
+/// Close a pop-out from the main window (its Pop back in button).
+pub fn close_child(app: &AppHandle, label: &str) {
+    if let Some(w) = app.get_webview_window(label) {
+        let _ = w.close();
     }
 }
 
