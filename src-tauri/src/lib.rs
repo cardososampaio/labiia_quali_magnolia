@@ -29,6 +29,28 @@ fn open_path(app: &AppHandle, path: String) {
     windows::open_project_in_main(app, &path);
 }
 
+/// labiia_quali: macOS hands over a project opened from the Finder before
+/// setup has run, when the data folder (where window sizes are kept) isn't
+/// known yet, so opening the window then made the program abort. Such
+/// projects wait here and open once setup is done.
+#[cfg(target_os = "macos")]
+static SETUP_DONE: std::sync::atomic::AtomicBool = std::sync::atomic::AtomicBool::new(false);
+#[cfg(target_os = "macos")]
+static FINDER_OPENS: std::sync::Mutex<Vec<String>> = std::sync::Mutex::new(Vec::new());
+
+/// Projects the Finder asked to open before setup ended.
+#[cfg(target_os = "macos")]
+fn finder_opens_before_setup() -> Vec<String> {
+    SETUP_DONE.store(true, std::sync::atomic::Ordering::SeqCst);
+    std::mem::take(&mut *FINDER_OPENS.lock().unwrap())
+}
+
+/// Elsewhere a project to open comes on the command line instead.
+#[cfg(not(target_os = "macos"))]
+fn finder_opens_before_setup() -> Vec<String> {
+    Vec::new()
+}
+
 /// Underline misspelt words as you type, in every window. WebKit checks
 /// spelling while typing only when its `WebContinuousSpellCheckingEnabled`
 /// default is on, which apps must ask for (Safari does). Registered as a
@@ -199,8 +221,15 @@ pub fn run() {
             // Launched by double-clicking a project (or with a path argument):
             // skip the welcome screen.
             let args: Vec<String> = std::env::args().collect();
+            let finder_opens = finder_opens_before_setup(); // labiia_quali
             match qdpx_from_args(&args) {
                 Some(path) => open_path(app.handle(), path),
+                // labiia_quali: a project opened from the Finder during launch.
+                None if !finder_opens.is_empty() => {
+                    for path in finder_opens {
+                        open_path(app.handle(), path);
+                    }
+                }
                 None => {
                     // macOS delivers Finder opens as RunEvent::Opened right
                     // after launch; give it a moment before showing welcome.
@@ -228,7 +257,13 @@ pub fn run() {
                         .extension()
                         .is_some_and(|e| e.eq_ignore_ascii_case("qdpx"))
                 {
-                    open_path(app, path.to_string_lossy().into_owned());
+                    let path = path.to_string_lossy().into_owned();
+                    // labiia_quali: before setup, wait for it (see FINDER_OPENS).
+                    if SETUP_DONE.load(std::sync::atomic::Ordering::SeqCst) {
+                        open_path(app, path);
+                    } else {
+                        FINDER_OPENS.lock().unwrap().push(path);
+                    }
                 }
             }
         }

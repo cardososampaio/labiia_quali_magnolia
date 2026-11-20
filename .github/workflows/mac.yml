@@ -153,6 +153,7 @@ jobs:
             echo "== started directly:"; cat "$REPORT/direct-start.txt"
             pgrep -fl "$APP/Contents/MacOS/labiia_quali" || echo "not running after 25 seconds"
             pkill -f "$APP/Contents/MacOS/labiia_quali" || true
+            exit 1
           fi
           cp -R "$LOGS" "$REPORT/logs-installed" || true
           cat "$LOGS"/*.log || true
