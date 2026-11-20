@@ -52,6 +52,7 @@ import {
   SquareSplitVertical,
   SquarePlus,
   SquareArrowRightEnter,
+  BookOpenText,
   Plus,
   Menu,
   Quote,
@@ -91,6 +92,7 @@ import {
   MessageSquare,
   Check,
   User,
+  Users,
   CircleQuestionMark,
   Scale,
   AppWindow,
@@ -208,6 +210,7 @@ export const faTableColumns = PanelLeft
 export const faSquareSplitVertical = SquareSplitVertical
 export const faSquarePlus = SquarePlus
 export const faSquareArrowRightEnter = SquareArrowRightEnter
+export const faBookOpenText = BookOpenText
 export const faPlus = Plus
 export const faBars = Menu
 export const faQuoteLeft = Quote
@@ -251,6 +254,7 @@ export const faMessageSquare = MessageSquare
 export const faClipboardPen = ClipboardPen
 export const faCheck = Check
 export const faUser = User
+export const faUsers = Users
 export const faQuestion = MessageCircleQuestionMark
 export const faCircleQuestion = CircleQuestionMark
 export const faScale = Scale

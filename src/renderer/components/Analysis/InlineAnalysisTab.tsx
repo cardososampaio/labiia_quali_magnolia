@@ -28,6 +28,7 @@ import { buildQueryBuilderInitData } from '../../utils/build-query-builder-init-
 import { CodeCoOccurrences } from './CodeCoOccurrences'
 import { CodesInDocuments } from './CodesInDocuments'
 import { FrameworkMatrix } from './FrameworkMatrix'
+import { IntercoderAgreement } from './intercoder/IntercoderAgreement'
 import { CodeFrequencies } from './CodeFrequencies'
 import { ClusteringTab } from '../../labiia/clustering/ClusteringTab' // labiia_quali
 import { CodeOrders } from './CodeOrders'
@@ -195,6 +196,8 @@ function dispatch(
       return <CodesInDocuments data={data} savedConfig={savedConfig} inTab={inTab} />
     case 'framework-matrix':
       return <FrameworkMatrix data={data} savedConfig={savedConfig} inTab={inTab} />
+    case 'intercoder-agreement':
+      return <IntercoderAgreement data={data} savedConfig={savedConfig} inTab={inTab} />
     case 'results-in-documents':
       return <ResultsInDocuments data={data} savedConfig={savedConfig} inTab={inTab} />
     case 'coding-clusters': // labiia_quali

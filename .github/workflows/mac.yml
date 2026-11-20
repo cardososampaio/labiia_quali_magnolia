@@ -141,6 +141,20 @@ jobs:
           screencapture -x "$REPORT/06-programa-instalado.png" || true
           pgrep -fl labiia_quali | tee "$REPORT/processes.txt"
           pgrep -fl labiia-node | tee -a "$REPORT/processes.txt"
+          # A program that closed on its own leaves no log of ours: show what
+          # macOS recorded and what the program says when started directly.
+          if ! pgrep -f "$APP/Contents/MacOS/labiia_quali" >/dev/null; then
+            echo "::error::the installed program was not running 40 seconds after opening a project"
+            ls -la ~/Library/Logs/DiagnosticReports/ 2>&1 | tail -20
+            for f in ~/Library/Logs/DiagnosticReports/labiia_quali*; do [ -f "$f" ] && { echo "== $f"; head -120 "$f"; cp "$f" "$REPORT/" ; }; done
+            log show --last 3m --style compact --predicate 'process == "labiia_quali" OR eventMessage CONTAINS "labiia_quali"' 2>&1 | tail -80
+            ( RUST_BACKTRACE=1 "$APP/Contents/MacOS/labiia_quali" "$RUNNER_TEMP/Projeto.qdpx" > "$REPORT/direct-start.txt" 2>&1 & echo $! > "$RUNNER_TEMP/direct.pid" )
+            sleep 25
+            echo "== started directly:"; cat "$REPORT/direct-start.txt"
+            pgrep -fl "$APP/Contents/MacOS/labiia_quali" || echo "not running after 25 seconds"
+            pkill -f "$APP/Contents/MacOS/labiia_quali" || true
+            exit 1
+          fi
           cp -R "$LOGS" "$REPORT/logs-installed" || true
           cat "$LOGS"/*.log || true
           osascript -e 'tell application "labiia_quali" to quit' || true

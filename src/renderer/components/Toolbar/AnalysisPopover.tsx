@@ -42,6 +42,7 @@ const ANALYSIS_TOOL_ORDER: AnalysisToolType[] = [
   'coding-clusters', // labiia_quali
   'word-frequencies',
   'word-combinations',
+  'intercoder-agreement',
   'relationship-map',
   'reports'
 ]

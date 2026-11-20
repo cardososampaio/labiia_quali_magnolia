@@ -34,6 +34,17 @@ const CATALOGUES: &[(&str, &str)] = &[
     ),
     ("de", include_str!("../../src/renderer/locales/de.json")),
     ("fi", include_str!("../../src/renderer/locales/fi.json")),
+    ("sv", include_str!("../../src/renderer/locales/sv.json")),
+    ("nb", include_str!("../../src/renderer/locales/nb.json")),
+    ("da", include_str!("../../src/renderer/locales/da.json")),
+    ("tr", include_str!("../../src/renderer/locales/tr.json")),
+    ("ca", include_str!("../../src/renderer/locales/ca.json")),
+    ("cs", include_str!("../../src/renderer/locales/cs.json")),
+    ("uk", include_str!("../../src/renderer/locales/uk.json")),
+    ("lt", include_str!("../../src/renderer/locales/lt.json")),
+    ("he", include_str!("../../src/renderer/locales/he.json")),
+    ("el", include_str!("../../src/renderer/locales/el.json")),
+    ("ja", include_str!("../../src/renderer/locales/ja.json")),
 ];
 
 static LANGUAGE: RwLock<String> = RwLock::new(String::new());

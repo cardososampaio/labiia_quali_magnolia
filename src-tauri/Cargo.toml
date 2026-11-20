@@ -1,6 +1,6 @@
 [package]
 name = "magnolia"
-version = "0.2.2"
+version = "0.3.0"
 description = "labiia_quali: qualitative data analysis, based on Magnolia"
 authors = ["Cale Davis <cale@caledavis.eu>"]
 license = "EUPL-1.2"
@@ -33,10 +33,12 @@ log = "0.4"
 lopdf = "0.46"
 resvg = "0.45"
 urlencoding = "2"
+encoding_rs = "0.8.42" # labiia_quali: plain-text files saved in the old Windows encoding
 icu_plurals = "2.4"
 icu_decimal = "2.4"
 icu_locale_core = "2.4"
 fixed_decimal = "0.7.3"
+tauri-plugin-window-state = "2"
 
 [target.'cfg(target_os = "macos")'.dependencies]
 objc2 = "0.6"

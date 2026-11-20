@@ -1,6 +1,6 @@
 # AGENTS.md: instruções para agentes de código
 
-O labiia_quali é um programa de análise qualitativa de dados para Windows (e, em teste, para Mac com chip Apple), em português do Brasil. Ele deriva do [Magnolia](https://github.com/caledavis/Magnolia), de Cale Davis, e incorpora as análises léxicas do labiia_lex. Desde a versão 0.2.0 roda sobre a base do Magnolia 2.1:
+O labiia_quali é um programa de análise qualitativa de dados para Windows (e, em teste, para Mac com chip Apple), em português do Brasil. Ele deriva do [Magnolia](https://github.com/caledavis/Magnolia), de Cale Davis, e incorpora as análises léxicas do labiia_lex. Roda sobre a base do Magnolia 2.2:
 
 - **Tauri e Rust:** janelas, leitura e gravação de projetos e livros de códigos;
 - **React e TypeScript:** a interface;

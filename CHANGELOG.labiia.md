@@ -3,6 +3,75 @@
 As novidades do Magnolia, em que o labiia_quali se baseia, estão em
 [CHANGELOG.md](CHANGELOG.md).
 
+## Próxima versão (ainda sem instalador)
+
+### Correções
+- **Textos com acentos salvos no padrão antigo do Windows** (.txt, .md,
+  legendas .srt e .vtt, .html) entram com os acentos certos. Antes, um texto
+  gravado pelo Bloco de Notas antigo ou exportado de sistemas mais velhos
+  aparecia com "�" no lugar de cada letra acentuada.
+
+## 0.3.0
+
+O labiia_quali passa para a base do Magnolia 2.2.0. As análises léxicas não
+mudam: o motor, os dicionários e os resultados são os mesmos da 0.2.2.
+
+### Mudanças nos resultados das análises de códigos
+O Magnolia corrigiu como alguns resultados são calculados. **Análises salvas
+em versões anteriores podem mostrar números diferentes ao serem abertas.**
+Vale conferir os números já usados em textos, principalmente com áudio,
+vídeo, imagens, caixas em PDF, colunas agrupadas e respondentes de
+questionário com características.
+- **Frequências de códigos:** áudio e vídeo passam a ser medidos pelo tempo
+  que a codificação cobre (antes, o áudio dava sempre 0%); caixas em imagens
+  e páginas de PDF, pela área. Uma codificação não conta mais do que o
+  documento tem, e colunas que reúnem vários documentos mostram a média.
+- **Coocorrências de códigos e Consulta:** caixas só coocorrem quando se
+  sobrepõem na mesma página; codificações de áudio e vídeo, quando se
+  sobrepõem no tempo.
+- **Códigos nos documentos e Resultados nos documentos:** o total conta cada
+  documento uma vez, e a coluna de uma característica inclui só as respostas
+  de questionário que ela marca.
+- **Codificações protegidas:** as da linha do tempo de vídeo guardam o tempo
+  exato ao salvar, e as de PDF, imagem e gravação não somem quando o arquivo
+  falta no projeto.
+
+### Novidades
+- **Concordância entre codificadores** (Análises → Equipe): compara como duas
+  ou mais pessoas codificaram os mesmos documentos, cada uma na sua cópia do
+  projeto. Dá a % de concordância e o kappa de Cohen por par, o alfa de
+  Krippendorff com três ou mais pessoas, a comparação por segmentos e a
+  visão por codificador. Clicar num resultado mostra os trechos lado a lado.
+  Os resultados podem ir para uma janela própria, para um segundo monitor.
+- **Importar do Zotero** (Início): lista as coleções da biblioteca do Zotero
+  (7 ou mais novo) aberto no computador e importa os arquivos numa pasta
+  Zotero. Autores, ano, publicação e outras informações viram
+  características do documento; resumo e notas viram memos.
+- **Frases com a palavra**, na Consulta: a caixa de texto ganha "Encontrar
+  frases que contenham", e cada resultado é a frase inteira.
+- **Datas digitadas** no seletor de documentos: "Entre" e "Fora de" aceitam
+  dia, mês e ano digitados (basta o ano).
+- **Mesclar projetos compara cadernos e pastas:** um documento movido de
+  pasta pode ser aceito como uma mudança de nome, o que vem do outro projeto
+  entra na pasta em que estava lá, e cadernos e notas têm seção própria.
+  "Selecionar tudo" age só na seção aberta.
+- **Progresso da importação:** uma janela mostra cada documento sendo
+  importado e, se algum não entrar, diz o motivo e o que tentar.
+- **Word, RTF e ODT** passam a ser montados em PDF pelo próprio programa,
+  igual no Windows e no Mac, com o texto extraído mais exato. Vale para o que
+  for importado daqui em diante; os documentos já importados não mudam.
+- **As janelas lembram onde estavam:** a principal, a Consulta destacada e
+  as janelas de Códigos, Memos e Diário de bordo reabrem no mesmo lugar e
+  tamanho, inclusive num segundo monitor.
+- **A Consulta calcula em segundo plano**, sem travar a janela em projetos
+  grandes.
+
+### Correções
+- **Mesclar projetos não congela mais.** Quando o outro projeto tinha PDFs
+  ou documentos do Word, o aviso "Lendo o texto dos PDFs" ficava por cima da
+  tela e a escolha do que mesclar não aparecia.
+- O Manual e outros links da Ajuda abrem no navegador.
+
 ## 0.2.2
 
 ### Novidades
