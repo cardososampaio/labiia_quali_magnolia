@@ -3,14 +3,16 @@
 # Help tab's Manual button and anyone without the program can read it.
 #
 # One-time setup: repo Settings → Pages → "Build and deployment" →
-# Source: "GitHub Actions". After that, every push to labiia-quali that
-# touches manuais/ republishes the manual automatically.
+# Source: "GitHub Actions", and the github-pages environment must allow
+# deployments from main. After that, every push to main that touches
+# manuais/ republishes the manual automatically, so the published manual
+# matches the released version.
 
 name: Deploy manual
 
 on:
   push:
-    branches: [labiia-quali]
+    branches: [main]
     paths:
       - 'manuais/**'
       - '.github/workflows/manual.yml'
