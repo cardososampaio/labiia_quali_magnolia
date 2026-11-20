@@ -3399,6 +3399,7 @@ version = "0.3.0"
 dependencies = [
  "base64 0.23.1",
  "chrono",
+ "encoding_rs",
  "fixed_decimal",
  "gtk",
  "icu_decimal",

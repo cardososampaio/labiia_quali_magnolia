@@ -591,7 +591,7 @@ fn read_document(
                 },
             }))
         }
-        _ => Ok(json!({ "name": name, "content": String::from_utf8_lossy(&bytes), "extension": ext })),
+        _ => Ok(json!({ "name": name, "content": crate::labiia::text_encoding::decode_text(&bytes) /* labiia_quali: old Windows encodings */, "extension": ext })),
     }
 }
 
@@ -780,7 +780,7 @@ pub async fn import_transcript(
         storage::set_last_import_dir(project.as_deref(), dir);
     }
     let content = std::fs::read(&path).map_err(|e| e.to_string())?;
-    Ok(json!({ "name": file_name(&path), "content": String::from_utf8_lossy(&content) }))
+    Ok(json!({ "name": file_name(&path), "content": crate::labiia::text_encoding::decode_text(&content) /* labiia_quali: old Windows encodings */ }))
 }
 
 // ── Export ──

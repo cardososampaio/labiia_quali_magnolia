@@ -3,6 +3,14 @@
 As novidades do Magnolia, em que o labiia_quali se baseia, estão em
 [CHANGELOG.md](CHANGELOG.md).
 
+## Próxima versão (ainda sem instalador)
+
+### Correções
+- **Textos com acentos salvos no padrão antigo do Windows** (.txt, .md,
+  legendas .srt e .vtt, .html) entram com os acentos certos. Antes, um texto
+  gravado pelo Bloco de Notas antigo ou exportado de sistemas mais velhos
+  aparecia com "�" no lugar de cada letra acentuada.
+
 ## 0.3.0
 
 O labiia_quali passa para a base do Magnolia 2.2.0. As análises léxicas não

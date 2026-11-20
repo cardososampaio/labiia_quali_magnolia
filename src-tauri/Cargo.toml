@@ -32,6 +32,7 @@ log = "0.4"
 lopdf = "0.46"
 resvg = "0.45"
 urlencoding = "2"
+encoding_rs = "0.8.42" # labiia_quali: plain-text files saved in the old Windows encoding
 icu_plurals = "2.4"
 icu_decimal = "2.4"
 icu_locale_core = "2.4"
