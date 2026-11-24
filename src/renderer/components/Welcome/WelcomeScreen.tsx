@@ -6,6 +6,7 @@ import { useTranslation } from 'react-i18next'
 // all app artwork is in one place. Replace that one file (1440×1040 ideal)
 // to change the welcome image.
 import { WelcomeArt } from './WelcomeArt'
+import { recentProjectLabel } from '../../labiia/recent-projects' // labiia_quali
 
 export function WelcomeScreen() {
   const { t } = useTranslation()
@@ -117,6 +118,7 @@ export function WelcomeScreen() {
               recentProjects.map((proj, i) => (
                 <div
                   key={proj.path}
+                  title={proj.path} // labiia_quali: the full path on hover
                   onClick={() => window.api.sendWelcomeAction('open-recent:' + proj.path)}
                   style={{
                     padding: '8px 12px',
@@ -128,10 +130,12 @@ export function WelcomeScreen() {
                   onMouseLeave={(e) => (e.currentTarget.style.background = 'transparent')}
                 >
                   <div style={{ fontSize: 'var(--font-size-base)', fontWeight: 500, color: 'var(--text-primary)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
-                    {proj.path.split('/').pop()?.replace(/\.qdpx$/i, '') || proj.name}
+                    {/* labiia_quali: the project's name, then its folder (labiia/recent-projects.ts). */}
+                    {recentProjectLabel(proj.path, proj.name).name}
                   </div>
-                  <div style={{ fontSize: 10, color: 'var(--text-muted)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', marginTop: 2 }}>
-                    {proj.path}
+                  <div style={{ fontSize: 10, color: 'var(--text-muted)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', marginTop: 2, direction: 'rtl', textAlign: 'left' }}>
+                    {/* labiia_quali: a long folder is cut at its start, keeping the folders nearest the project. */}
+                    <bdi>{recentProjectLabel(proj.path, proj.name).folder}</bdi>
                   </div>
                 </div>
               ))

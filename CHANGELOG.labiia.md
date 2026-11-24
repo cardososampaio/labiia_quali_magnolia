@@ -18,6 +18,9 @@ As novidades do Magnolia, em que o labiia_quali se baseia, estão em
   ganhou o botão Características para reabri-lo.
 - **Tela inicial:** passa a dizer só "Baseado no Magnolia, de Cale Davis",
   com o link para a página do Magnolia no GitHub, sem o pedido de apoio.
+- **Projetos recentes na tela inicial:** cada projeto aparece pelo nome, em
+  destaque, com a pasta embaixo. Antes, no Windows, o caminho inteiro
+  aparecia no lugar do nome.
 
 ### Correções
 - **Textos com acentos salvos no padrão antigo do Windows** (.txt, .md,
