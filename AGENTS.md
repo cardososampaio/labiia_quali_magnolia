@@ -45,6 +45,7 @@ npm run build               # instalador em <pasta de compilação>/release/bund
 | Ponte da interface com as análises (`window.api.lexical`) | `src/renderer/labiia/lexical-bridge.ts` |
 | Faixa, botão com menu, tema Windows, termos, configurações | `src/renderer/labiia/` |
 | Telas das análises léxicas | `src/renderer/components/Lexical/` |
+| Histórico dos códigos (registro, janela, exportação; no `.qdpx` em `labiia-codigos/historico.json`) | `src/renderer/labiia/code-history-*.ts`, `CodeHistoryDialog.tsx`, `crates/magnolia-core/src/qdpx/labiia_code_history.rs` |
 | Pré-visualização do livro de códigos | `src/renderer/components/Codebook/CodebookOutlineDialog.tsx`, `src/renderer/utils/codebook-outline.ts` |
 | Iniciar, barra de status, codificação rápida, seleção manual | `components/Toolbar/StartMenu.tsx`, `components/StatusBar.tsx`, `components/QuickCoding/`, `components/ItemPicker/` |
 | Traduções | `src/renderer/locales/en.json` e `pt-BR.json` (chaves `labiia.*` são nossas); sobreposição de termos em `src/renderer/locales/labiia/` |
@@ -125,7 +126,7 @@ npm run build               # instalador em <pasta de compilação>/release/bund
 1. Num ramo próprio, faça `git fetch upstream` e `git merge <tag do Magnolia>`.
 2. Os pontos de contato com o Magnolia estão nos arquivos abaixo; procure `labiia_quali:` em cada um.
    - Rust: `src-tauri/src/lib.rs`, `windows.rs`, `storage.rs`, `updater.rs`, `menu.rs`, `commands.rs` (ação `author`), `i18n.rs`, `crates/magnolia-core/src/qdpx/{reader,writer,mod}.rs`.
-   - Interface: `src/renderer/platform/tauri-api.ts`, `models/types.ts`, `App.tsx`, `components/Toolbar/Ribbon.tsx`, `components/Toolbar/AnalysisPopover.tsx`, `i18n/index.ts`.
+   - Interface: `src/renderer/platform/tauri-api.ts`, `models/types.ts`, `App.tsx`, `main.tsx`, `components/Toolbar/Ribbon.tsx`, `components/Toolbar/AnalysisPopover.tsx`, `components/DocumentBrowser/DocumentBrowser.tsx`, `components/CodeBrowser/CodeBrowser.tsx`, `stores/code-store.ts` e `stores/undo-store.ts` (histórico dos códigos), `utils/project-diff-apply.ts`, `i18n/index.ts`.
    - Configuração: `tauri.conf.json`.
 3. Rode `npm run i18n:sync`, os testes e a paridade léxica.
 

@@ -4,6 +4,8 @@ import { generateGuid } from '../utils/guid'
 import { useProjectStore } from './project-store'
 import { useDocumentStore } from './document-store'
 import { makeHmrSafe } from './hmr-preserve'
+// labiia_quali: tells the history of the codes why the codes change.
+import { beginCodeIntent, endCodeIntent, mergeIntent } from '../labiia/code-history-model'
 
 interface CodeState {
   codes: Code[]
@@ -115,7 +117,8 @@ function findParentGuid(codes: Code[], targetGuid: string): string | null | unde
 export const useCodeStore = create<CodeState>((set, get) => ({
   codes: [],
 
-  setCodes: (codes) => set({ codes }),
+  // labiia_quali: opening a project is not a change to record in the history.
+  setCodes: (codes) => { beginCodeIntent({ kind: 'load' }); try { set({ codes }) } finally { endCodeIntent() } },
 
   addCode: (name, color, parentGuid) => {
     const guid = generateGuid()
@@ -209,7 +212,8 @@ export const useCodeStore = create<CodeState>((set, get) => ({
     const existingGuids = new Set(flattenCodes(get().codes).map((c) => c.guid))
     const newCodes = importedCodes.filter((c) => !existingGuids.has(c.guid))
     if (newCodes.length > 0) {
-      set((state) => ({ codes: [...state.codes, ...newCodes] }))
+      beginCodeIntent({ kind: 'import' }) // labiia_quali: recorded as imported codes
+      try { set((state) => ({ codes: [...state.codes, ...newCodes] })) } finally { endCodeIntent() }
       useProjectStore.getState().markDirty()
     }
   },
@@ -228,6 +232,9 @@ export const useCodeStore = create<CodeState>((set, get) => ({
     // Recode the merged codes' segments with the target. A passage coded
     // with both would end up with the target twice; keep one.
     const ds = useDocumentStore.getState()
+    // labiia_quali: the history records the merge, with the passages recoded.
+    beginCodeIntent(mergeIntent(get().codes, ds.sources, sourceGuid, targetGuid, subcodes))
+    try {
     const newSources = ds.sources.map((s: any) => ({
       ...s,
       selections: s.selections.map((sel: any) => {
@@ -257,6 +264,7 @@ export const useCodeStore = create<CodeState>((set, get) => ({
         }))
       }
     })
+    } finally { endCodeIntent() }
     useProjectStore.getState().markDirty()
   },
 
@@ -264,7 +272,8 @@ export const useCodeStore = create<CodeState>((set, get) => ({
 
   flatCodes: () => flattenCodes(get().codes),
 
-  clearAll: () => set({ codes: [] })
+  // labiia_quali: closing a project is not a change to record in the history.
+  clearAll: () => { beginCodeIntent({ kind: 'load' }); try { set({ codes: [] }) } finally { endCodeIntent() } }
 }))
 
 makeHmrSafe('codeStore', useCodeStore)

@@ -18,6 +18,8 @@ interface UndoState {
   redoStack: Snapshot[]
   maxHistory: number
   _restoring: boolean
+  /** labiia_quali: which of the two is restoring, for the history of the codes. */
+  _labiiaRestoring?: 'undo' | 'redo'
   undo: () => void
   redo: () => void
   canUndo: () => boolean
@@ -80,12 +82,13 @@ export const useUndoStore = create<UndoState>((set, get) => ({
     set({
       undoStack: undoStack.slice(0, -1),
       redoStack: [...get().redoStack, current],
-      _restoring: true
+      _restoring: true,
+      _labiiaRestoring: 'undo'
     })
     restoreSnapshot(prev)
     // Update the saved "previous" snapshot to the restored state
     lastSnapshot = prev
-    set({ _restoring: false })
+    set({ _restoring: false, _labiiaRestoring: undefined })
   },
 
   redo: () => {
@@ -96,11 +99,12 @@ export const useUndoStore = create<UndoState>((set, get) => ({
     set({
       redoStack: redoStack.slice(0, -1),
       undoStack: [...get().undoStack, current],
-      _restoring: true
+      _restoring: true,
+      _labiiaRestoring: 'redo'
     })
     restoreSnapshot(next)
     lastSnapshot = next
-    set({ _restoring: false })
+    set({ _restoring: false, _labiiaRestoring: undefined })
   },
 
   canUndo: () => get().undoStack.length > 0,

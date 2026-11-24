@@ -9,6 +9,9 @@ import './labiia/labiia-shell.css'
 import { applyStoredAppearance, installAppearanceListeners } from './utils/apply-theme'
 // Initialize undo system (subscriptions activate on import)
 import './stores/undo-store'
+// labiia_quali: record the history of the codes (labiia/code-history-store.ts).
+import { installCodeHistory } from './labiia/code-history-store'
+installCodeHistory()
 
 // Prevent the webview from opening dropped files in the window.
 // Individual components (e.g. DocumentBrowser) selectively handle drops.

@@ -133,3 +133,26 @@ fn the_corpus_preparation_is_saved_and_reopened_with_the_project() {
     assert!(zip_entry(&plain, "labiia-lexical/preparacao.json").is_none());
     assert!(read_qdpx(&plain, None).unwrap().get("labiiaCorpusPreparation").is_none());
 }
+
+/// The history of the codes travels with the project: it is saved in its own
+/// entry, with accents intact, and comes back when the project opens; a
+/// project without a history gets no entry.
+#[test]
+fn the_code_history_is_saved_and_reopened_with_the_project() {
+    let d = temp();
+    let path = p(&d, "hist.qdpx");
+    let history = json!({ "version": 1, "enabled": true, "entries": [
+        { "id": "e1", "at": "2026-11-24T10:00:00.000Z", "user": "Ana", "action": "renamed",
+          "codeGuid": "C1", "codeName": "Saúde", "before": "Saude", "after": "Saúde", "justification": "acentuação" }
+    ] });
+    let mut proj = project();
+    proj["labiiaCodeHistory"] = history.clone();
+    write_qdpx(&path, &mut proj, &Map::new(), &opts()).unwrap();
+    assert!(zip_entry(&path, "labiia-codigos/historico.json").is_some());
+    assert_eq!(read_qdpx(&path, None).unwrap()["labiiaCodeHistory"], history);
+
+    let plain = p(&d, "plain-hist.qdpx");
+    write_qdpx(&plain, &mut project(), &Map::new(), &opts()).unwrap();
+    assert!(zip_entry(&plain, "labiia-codigos/historico.json").is_none());
+    assert!(read_qdpx(&plain, None).unwrap().get("labiiaCodeHistory").is_none());
+}

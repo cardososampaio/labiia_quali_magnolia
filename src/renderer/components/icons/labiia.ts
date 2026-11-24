@@ -29,7 +29,11 @@ import {
   ZoomIn,
   ZoomOut,
   SaveAll,
-  PanelsTopLeft
+  PanelsTopLeft,
+  SlidersHorizontal,
+  AArrowUp,
+  AArrowDown,
+  History
 } from 'lucide-react'
 
 export const faPen = Pencil
@@ -62,3 +66,11 @@ export const faZoomIn = ZoomIn
 export const faZoomOut = ZoomOut
 export const faSaveAll = SaveAll
 export const faPanelsTopLeft = PanelsTopLeft
+
+// Codes panel: view options (order, subcodes, text size).
+export const faSlidersHorizontal = SlidersHorizontal
+export const faAArrowUp = AArrowUp
+export const faAArrowDown = AArrowDown
+
+// History of the codes.
+export const faHistory = History

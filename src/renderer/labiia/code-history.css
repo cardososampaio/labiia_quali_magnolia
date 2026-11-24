@@ -1,0 +1,38 @@
+/* The history of the codes window (CodeHistoryDialog.tsx). */
+.modal.labiia-history {
+  width: min(1100px, 94vw);
+  max-height: 88vh;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+.labiia-history-intro { color: var(--text-secondary); font-size: var(--font-size-sm); margin: 0 0 10px; }
+.labiia-history-switch { display: inline-flex; align-items: center; gap: 8px; font-weight: 600; margin-bottom: 6px; cursor: pointer; }
+.labiia-history-paused { color: var(--menu-fg-danger, #b42318); font-size: var(--font-size-sm); margin: 0 0 8px; }
+.labiia-history-filters { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; margin: 6px 0 10px; }
+.labiia-history-filters input[type='search'] { flex: 1; min-width: 200px; }
+.labiia-history-chip {
+  display: inline-flex; align-items: center; gap: 4px; padding: 2px 4px 2px 8px;
+  border-radius: 999px; background: var(--bg-tertiary, var(--bg-input)); border: 1px solid var(--border-color);
+  font-size: var(--font-size-sm);
+}
+.labiia-history-chip-x { border: none; background: transparent; padding: 0 4px; min-width: 0; cursor: pointer; color: inherit; font-size: 14px; }
+.labiia-history-table-wrap { flex: 1; min-height: 160px; overflow: auto; border: 1px solid var(--border-color); border-radius: var(--radius-sm); }
+.labiia-history-table { width: 100%; border-collapse: collapse; font-size: var(--font-size-sm); }
+.labiia-history-table th {
+  position: sticky; top: 0; z-index: 1; text-align: start; padding: 6px 8px;
+  background: var(--bg-secondary); border-bottom: 1px solid var(--border-color); font-weight: 600;
+}
+.labiia-history-table td { padding: 6px 8px; border-bottom: 1px solid var(--border-color); vertical-align: top; color: var(--text-primary); }
+.labiia-history-when { white-space: nowrap; font-variant-numeric: tabular-nums; }
+.labiia-history-undo td { background: color-mix(in srgb, var(--text-muted) 8%, transparent); }
+.labiia-history-action { font-weight: 600; white-space: nowrap; }
+.labiia-history-action-deleted, .labiia-history-action-paused { color: var(--menu-fg-danger, #b42318); }
+.labiia-history-action-merged { color: var(--accent); }
+.labiia-history-muted { color: var(--text-muted); font-size: 11px; margin-top: 2px; }
+.labiia-history-change { white-space: pre-wrap; word-break: break-word; max-width: 320px; }
+.labiia-history-link { border: none; background: transparent; padding: 0; min-width: 0; color: var(--accent); cursor: pointer; text-align: start; font: inherit; }
+.labiia-history-link:hover { text-decoration: underline; }
+.labiia-history-codes { margin: 4px 0 0 16px; padding: 0; max-height: 160px; overflow: auto; }
+.labiia-history-why { width: 100%; min-width: 180px; resize: vertical; font: inherit; padding: 3px 6px; }
+.labiia-history-empty { padding: 24px; text-align: center; color: var(--text-muted); }

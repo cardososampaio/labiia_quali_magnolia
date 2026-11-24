@@ -1077,6 +1077,13 @@ pub async fn welcome_action(
                 .opener()
                 .open_url("https://github.com/sponsors/caledavis", None::<&str>);
         }
+        // labiia_quali: the welcome window credits the original Magnolia by
+        // linking to its repository, without asking for sponsorship.
+        "magnolia-github" => {
+            let _ = app
+                .opener()
+                .open_url("https://github.com/caledavis/Magnolia", None::<&str>);
+        }
         // labiia_quali: the welcome window's credit to this version's author.
         "author" => {
             let _ = app

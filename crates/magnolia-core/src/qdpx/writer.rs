@@ -270,6 +270,8 @@ pub fn write_qdpx(
     }
     // labiia_quali: the project's corpus preparation for the lexical analyses.
     super::labiia_lexical::write_preparation(project, &mut zip)?;
+    // labiia_quali: the history of the codes.
+    super::labiia_code_history::write_code_history(project, &mut zip)?;
     if let Some(tabs) = project.get("tabState").filter(|t| truthy(t)) {
         let has_tabs = !get_arr(tabs, "openTabs").is_empty();
         let has_counters = tabs

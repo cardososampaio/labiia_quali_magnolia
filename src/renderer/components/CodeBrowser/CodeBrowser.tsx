@@ -11,6 +11,10 @@ import { isMac, modKey } from '../../utils/platform'
 import { useProjectStore, useCheckoutLockedBy, checkoutLockedTitle } from '../../stores/project-store'
 import { usePreferencesStore } from '../../stores/preferences-store'
 import { codeColourPresetsFor, useCodeColourPresets } from '../../utils/code-colours'
+// labiia_quali: order, subcodes added up, documents column and text size of the list.
+import { useCodePanelView, computeCodeUsage, sortCodeTree, type CodeUsage } from '../../labiia/code-panel-view'
+import { CodePanelViewButton, useCodePanelWheelZoom } from '../../labiia/CodePanelViewMenu'
+import { openCodeHistory } from '../../labiia/code-history-store' // labiia_quali
 
 interface Props {
   onNewCode: () => void
@@ -82,7 +86,8 @@ function CodeTreeItem({
   depth,
   allCodes,
   selectedCodeGuids,
-  codeCounts,
+  codeUsage,
+  fontScale,
   onToggleSelect,
   onRename,
   onDelete,
@@ -102,7 +107,10 @@ function CodeTreeItem({
   depth: number
   allCodes: Code[]
   selectedCodeGuids: Set<string>
-  codeCounts: Map<string, number>
+  /** labiia_quali: applications and documents of each code. */
+  codeUsage: Map<string, CodeUsage>
+  /** labiia_quali: text size of the list (1 = Magnolia's size). */
+  fontScale: number
   onToggleSelect: (guid: string, e: React.MouseEvent) => void
   onRename: (guid: string, name: string) => void
   onDelete: (guid: string) => void
@@ -150,7 +158,9 @@ function CodeTreeItem({
   const dragCounterRef = useRef(0)
   const rowRef = useRef<HTMLDivElement>(null)
   const isSelected = selectedCodeGuids.has(code.guid)
-  const count = codeCounts.get(code.guid) || 0
+  const usage = codeUsage.get(code.guid)
+  const count = usage?.count ?? 0
+  const docCount = usage?.documents ?? 0
 
   // Sync edit name when parent triggers editing
   useEffect(() => {
@@ -313,7 +323,7 @@ function CodeTreeItem({
           alignItems: 'center',
           gap: 6,
           padding: '3px 8px',
-          paddingInlineStart: 8 + depth * 16,
+          paddingInlineStart: 8 + depth * 16 * fontScale, // labiia_quali: indent grows with the text
           cursor: 'grab',
           borderRadius: 'var(--radius-sm)',
           position: 'relative',
@@ -322,7 +332,7 @@ function CodeTreeItem({
             : isSelected
               ? 'var(--selection-bg)'
               : 'transparent',
-          fontSize: 'var(--font-size-sm)',
+          fontSize: `calc(var(--font-size-sm) * ${fontScale})`, // labiia_quali: text size of the list
           outline: isDragOver && dropPosition === 'child' ? '1px dashed var(--accent-hover)' : 'none',
           opacity: isSearchMatch ? 1 : 0.45,
           transition: 'background 0.1s'
@@ -345,7 +355,7 @@ function CodeTreeItem({
         {isDragOver && dropPosition !== 'child' && (
           <div style={{
             position: 'absolute',
-            insetInlineStart: 8 + depth * 16,
+            insetInlineStart: 8 + depth * 16 * fontScale,
             insetInlineEnd: 8,
             [dropPosition === 'before' ? 'top' : 'bottom']: -1,
             height: 2,
@@ -375,9 +385,9 @@ function CodeTreeItem({
             setExpanded(!expanded)
           } : undefined}
           style={{
-            fontSize: 9,
+            fontSize: 9 * fontScale,
             flexShrink: 0,
-            width: 10,
+            width: 10 * fontScale,
             textAlign: 'center',
             opacity: 0.6,
             cursor: code.children.length > 0 ? 'pointer' : 'default'
@@ -388,11 +398,11 @@ function CodeTreeItem({
           )}
         </span>
         <span
-          style={{ width: 14, flexShrink: 0, display: 'inline-flex', alignItems: 'center', justifyContent: 'center' }}
+          style={{ width: 14 * fontScale, flexShrink: 0, display: 'inline-flex', alignItems: 'center', justifyContent: 'center' }}
         >
           <span
             className={code.children.length > 0 ? 'color-pip color-pip-category' : 'color-pip'}
-            style={{ background: code.color || '#888', ['--pip' as string]: code.color || '#888' }}
+            style={{ background: code.color || '#888', ['--pip' as string]: code.color || '#888', ...(fontScale !== 1 ? { width: 10 * fontScale, height: 10 * fontScale } : {}) }}
           />
         </span>
         {editing ? (
@@ -468,11 +478,16 @@ function CodeTreeItem({
                 {t('codes.mergeDroplet')}
               </span>
             )}
-            <span style={{ width: isMac ? 24 : 40, minWidth: isMac ? 24 : 40, flexShrink: 0, fontSize: 10, color: 'var(--text-muted)', textAlign: 'end' }}>
+            <span style={{ width: (isMac ? 24 : 40) * fontScale, minWidth: (isMac ? 24 : 40) * fontScale, flexShrink: 0, fontSize: 10 * fontScale, color: 'var(--text-muted)', textAlign: 'end' }}>
               {code.hotkey !== undefined ? modKey(code.hotkey) : ''}
             </span>
-            <span style={{ width: 28, minWidth: 28, flexShrink: 0, fontSize: 10, color: 'var(--text-muted)', textAlign: 'end' }}>
-              {count > 0 ? count : ''}
+            {/* labiia_quali: applications, then documents with the code. */}
+            <span
+              title={count > 0 ? t('labiia.codesView.usageTooltip', { count, documents: docCount }) : undefined}
+              style={{ display: 'inline-flex', flexShrink: 0, fontSize: 10 * fontScale, color: 'var(--text-muted)', fontVariantNumeric: 'tabular-nums' }}
+            >
+              <span style={{ width: 28 * fontScale, minWidth: 28 * fontScale, textAlign: 'end' }}>{count > 0 ? count : ''}</span>
+              <span style={{ width: 28 * fontScale, minWidth: 28 * fontScale, textAlign: 'end', opacity: 0.8 }}>{count > 0 ? docCount : ''}</span>
             </span>
           </>
         )}
@@ -486,7 +501,8 @@ function CodeTreeItem({
             depth={depth + 1}
             allCodes={allCodes}
             selectedCodeGuids={selectedCodeGuids}
-            codeCounts={codeCounts}
+            codeUsage={codeUsage}
+            fontScale={fontScale}
             onToggleSelect={onToggleSelect}
             onRename={onRename}
             onDelete={onDelete}
@@ -586,6 +602,10 @@ function CodeTreeItem({
             }}
           >
             {t('codes.moveToTop')}
+          </div>
+          {/* labiia_quali: the history of this code (labiia/CodeHistoryDialog.tsx). */}
+          <div className="context-menu-item" onClick={() => { setContextMenu(null); openCodeHistory(code.guid) }}>
+            {t('labiia.codeHistory.ofThisCode')}
           </div>
           <div className="context-menu-separator" />
           <div
@@ -859,10 +879,18 @@ export function CodeBrowser({ onNewCode, onClose, onPopOut, isPoppedOut }: Props
     return counts
   }, [sources])
 
+  // labiia_quali: the list's view options (labiia/code-panel-view.ts).
+  const codeSort = useCodePanelView((s) => s.sort)
+  const aggregateSubcodes = useCodePanelView((s) => s.aggregateSubcodes)
+  const fontScale = useCodePanelView((s) => s.fontScale)
+  const codeUsage = useMemo(() => computeCodeUsage(codes, sources, aggregateSubcodes), [codes, sources, aggregateSubcodes])
+  const listRef = useRef<HTMLDivElement>(null)
+  useCodePanelWheelZoom(listRef)
+
   const trimmedSearch = searchQuery.trim()
   const filteredCodes = useMemo(
-    () => filterCodeTree(codes, trimmedSearch, editingCodeGuid),
-    [codes, trimmedSearch, editingCodeGuid]
+    () => sortCodeTree(filterCodeTree(codes, trimmedSearch, editingCodeGuid), codeSort, codeUsage), // labiia_quali: sorted
+    [codes, trimmedSearch, editingCodeGuid, codeSort, codeUsage]
   )
 
   // Shift-click range selection and select-all operate over what's
@@ -919,21 +947,28 @@ export function CodeBrowser({ onNewCode, onClose, onPopOut, isPoppedOut }: Props
     [addCode, findCode]
   )
 
+  // labiia_quali: with subcodes added up in the parent, opening a parent
+  // code lists its passages and those of all its subcodes, as its number says.
+  const withSubcodes = useCallback(
+    (codeGuid: string) => (aggregateSubcodes && (findCode(codeGuid)?.children.length ?? 0) > 0 ? { includeSubcodes: true } : {}),
+    [aggregateSubcodes, findCode]
+  )
+
   const handleQueryAllDocs = useCallback((codeGuid: string) => {
     useQueryStore.getState().setComplexQuery({
       documentFilter: {},
-      codeCondition: { type: 'code', codeGuid }
+      codeCondition: { type: 'code', codeGuid, ...withSubcodes(codeGuid) }
     })
-  }, [])
+  }, [withSubcodes])
 
   const handleQueryActiveDoc = useCallback((codeGuid: string) => {
     const viewedGuid = useDocumentStore.getState().viewedDocumentGuid
     if (!viewedGuid) return
     useQueryStore.getState().setComplexQuery({
       documentFilter: { sourceGuids: [viewedGuid] },
-      codeCondition: { type: 'code', codeGuid }
+      codeCondition: { type: 'code', codeGuid, ...withSubcodes(codeGuid) }
     })
-  }, [])
+  }, [withSubcodes])
 
   return (
     <div
@@ -999,6 +1034,7 @@ export function CodeBrowser({ onNewCode, onClose, onPopOut, isPoppedOut }: Props
             <Icon icon={searchOpen ? faXmark : faMagnifyingGlass} />
           </button>
         )}
+        {codes.length > 0 && <CodePanelViewButton />}{/* labiia_quali: order, subcodes, text size */}
         <button
           className="panel-header-add"
           onClick={onNewCode}
@@ -1011,7 +1047,17 @@ export function CodeBrowser({ onNewCode, onClose, onPopOut, isPoppedOut }: Props
         {onPopOut && <button className="panel-header-popout" onClick={onPopOut} title={isPoppedOut ? t('panel.popIn') : t('panel.popOut')} aria-label={isPoppedOut ? t('panel.popInLabel') : t('panel.popOutLabel')}><Icon icon={isPoppedOut ? faDownLeftAndUpRightToCenter : faUpRightFromSquare} /></button>}
         {onClose && <button className="panel-header-close" onClick={onClose} title={t('panel.close')} aria-label={t('panel.close')}><Icon icon={faXmark} /></button>}
       </div>
-      <div className="panel-content">
+      <div className="panel-content" ref={listRef}>
+        {/* labiia_quali: what the two numbers on each row are. */}
+        {filteredCodes.length > 0 && (
+          <div
+            aria-hidden
+            style={{ display: 'flex', justifyContent: 'flex-end', padding: '2px 8px 0', fontSize: 9 * fontScale, color: 'var(--text-muted)', userSelect: 'none' }}
+          >
+            <span style={{ width: 28 * fontScale, textAlign: 'end' }} title={t('labiia.codesView.countColumnHint')}>{t('labiia.codesView.countColumn')}</span>
+            <span style={{ width: 28 * fontScale, textAlign: 'end' }} title={t('labiia.codesView.docsColumnHint')}>{t('labiia.codesView.docsColumn')}</span>
+          </div>
+        )}
         {codes.length === 0 && (
           <div
             className="empty-state"
@@ -1047,7 +1093,8 @@ export function CodeBrowser({ onNewCode, onClose, onPopOut, isPoppedOut }: Props
             depth={0}
             allCodes={codes}
             selectedCodeGuids={selectedCodeGuids}
-            codeCounts={codeCounts}
+            codeUsage={codeUsage}
+            fontScale={fontScale}
             onToggleSelect={handleToggleSelect}
             onRename={renameCode}
             onDelete={removeCode}

@@ -162,16 +162,17 @@ export function WelcomeScreen() {
           </button>
         </div>
 
-        {/* Sponsor link — centred in the gap between the buttons and the
-            bottom of the window via this flex:1 region (paired with the top
-            spacer). Routed through the 'sponsor' welcome action so it opens in
-            the default browser (the welcome window has no setWindowOpenHandler). */}
+        {/* labiia_quali: credit to the original Magnolia, linking to its GitHub
+            repository. Centred in the gap between the buttons and the bottom of
+            the window via this flex:1 region (paired with the top spacer).
+            Routed through a welcome action so it opens in the default browser
+            (the welcome window has no setWindowOpenHandler). */}
         <div style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: 6 }}>
           <span
             role="button"
             tabIndex={0}
-            onClick={() => window.api.sendWelcomeAction('sponsor')}
-            onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') window.api.sendWelcomeAction('sponsor') }}
+            onClick={() => window.api.sendWelcomeAction('magnolia-github')}
+            onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') window.api.sendWelcomeAction('magnolia-github') }}
             style={{
               fontSize: 11.5,
               color: 'var(--text-secondary)',
@@ -183,7 +184,6 @@ export function WelcomeScreen() {
             onMouseEnter={(e) => (e.currentTarget.style.color = 'var(--accent)')}
             onMouseLeave={(e) => (e.currentTarget.style.color = 'var(--text-secondary)')}
           >
-            <span aria-hidden>♥</span>
             {t('labiia.welcome.basedOnMagnolia')}
           </span>
           <span style={{ fontSize: 11.5, color: 'var(--text-secondary)', textAlign: 'center' }}>

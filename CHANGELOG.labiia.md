@@ -5,6 +5,20 @@ As novidades do Magnolia, em que o labiia_quali se baseia, estão em
 
 ## Próxima versão (ainda sem instalador)
 
+### Novidades
+- **Histórico dos códigos.** O projeto guarda quando cada código foi criado,
+  renomeado, mesclado, movido, excluído ou importado, e quando a definição
+  dele mudou, com quem fez e quando. Cada mudança pode receber uma
+  justificativa. Desfazer não apaga nada: entra uma linha "Desfeito". O
+  histórico vai dentro do arquivo do projeto e pode ser exportado como
+  planilha (CSV) ou como relatório (Markdown). Abre em Análises > Histórico
+  dos códigos, no menu de visualização do painel Códigos ou pelo botão
+  direito num código. Vem ligado em todos os projetos e pode ser pausado.
+- **Painel Características:** ganhou um botão de fechar, e a aba Exibir
+  ganhou o botão Características para reabri-lo.
+- **Tela inicial:** passa a dizer só "Baseado no Magnolia, de Cale Davis",
+  com o link para a página do Magnolia no GitHub, sem o pedido de apoio.
+
 ### Correções
 - **Textos com acentos salvos no padrão antigo do Windows** (.txt, .md,
   legendas .srt e .vtt, .html) entram com os acentos certos. Antes, um texto

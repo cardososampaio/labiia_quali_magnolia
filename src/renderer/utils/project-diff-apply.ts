@@ -8,6 +8,7 @@ import { useDocumentStore } from '../stores/document-store'
 import { useProjectStore } from '../stores/project-store'
 import { anchorKey, type DiffItem, type CodeDiffItem, type CodingsDiffItem, type CodingInstance, type DocumentTextDiffItem, type SavedAnalysisDiffItem, type SourceDiffItem } from './project-diff'
 import { mediaPathField } from './binary-handles'
+import { beginCodeIntent, endCodeIntent } from '../labiia/code-history-model' // labiia_quali
 import type { Code, QDASet, TagCategory, Memo, Quote, LogbookEntry, SavedQuery, DocumentFolder, TextSource } from '../models/types'
 
 /**
@@ -83,6 +84,9 @@ function updateCodeInTree(codes: Code[], guid: string, patch: Partial<Code>): Co
 
 function applyCodeChanges(items: CodeDiffItem[]): void {
   if (items.length === 0) return
+  // labiia_quali: the history of the codes records these as coming from another copy.
+  beginCodeIntent({ kind: 'projectMerge' })
+  try {
   const toAdd: Code[] = []
   for (const item of items) {
     if (item.bucket === 'onlyTheirs' && item.theirs) {
@@ -105,6 +109,7 @@ function applyCodeChanges(items: CodeDiffItem[]): void {
     }
   }
   if (toAdd.length > 0) useCodeStore.getState().mergeCodes(toAdd)
+  } finally { endCodeIntent() }
 }
 
 function bytesEqual(a: Uint8Array, b: Uint8Array): boolean {

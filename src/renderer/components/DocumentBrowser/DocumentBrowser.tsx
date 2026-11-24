@@ -19,6 +19,7 @@ import { useTranslation } from 'react-i18next'
 import { formatNumber } from '../../i18n'
 import { SourceTypeTile, sourceTileKind } from './SourceTypeTile'
 import { describeImportErrors } from '../../utils/import-errors'
+import { useTagsPanel } from '../../labiia/tags-panel' // labiia_quali
 
 // Prefer the source's declared type (set on import for audio/video/image/
 // pdf). Only fall back to sniffing the filename for sources whose type is
@@ -2347,6 +2348,10 @@ export function DocumentBrowser({ onImport, onSurveyImport, showManageDocTags, o
       return next
     })
   }, [])
+  // labiia_quali: the Características panel can be closed (X) and reopened
+  // from the View tab; closed, Documents fills the column.
+  const tagsPanelVisible = useTagsPanel((s) => s.visible)
+  const tagsSplitCollapsed = tagsCollapsed || !tagsPanelVisible
   const [selectedTagGuids, setSelectedTagGuids] = useState<Set<string>>(new Set())
   const [tagSearchOpen, setTagSearchOpen] = useState(false)
   const [tagSearchQuery, setTagSearchQuery] = useState('')
@@ -2704,8 +2709,8 @@ export function DocumentBrowser({ onImport, onSurveyImport, showManageDocTags, o
         {onPopOut && <button className="panel-header-popout" onClick={onPopOut} title={isPoppedOut ? t('panel.popIn') : t('panel.popOut')} aria-label={isPoppedOut ? t('panel.popInLabel') : t('panel.popOutLabel')}><Icon icon={isPoppedOut ? faDownLeftAndUpRightToCenter : faUpRightFromSquare} /></button>}
         {onClose && <button className="panel-header-close" onClick={onClose} title={t('panel.close')} aria-label={t('panel.close')}><Icon icon={faXmark} /></button>}
       </div>
-      <DocumentsTagsSplit collapsed={tagsCollapsed}>
-        <DocumentsTagsSection collapsed={tagsCollapsed} which="documents">
+      <DocumentsTagsSplit collapsed={tagsSplitCollapsed}>
+        <DocumentsTagsSection collapsed={tagsSplitCollapsed} which="documents">
       <div
         className="panel-content"
         style={{ height: '100%' }}
@@ -2868,6 +2873,7 @@ export function DocumentBrowser({ onImport, onSurveyImport, showManageDocTags, o
         )}
       </div>
         </DocumentsTagsSection>
+        {tagsPanelVisible && (<>{/* labiia_quali: only while the Características panel is open */}
         {/* Internal divider between the Documents tree and the Tags
             tree. Mirrors the queries-sidebar-divider pattern: a
             visible 1 px line that survives in every theme, including
@@ -2950,6 +2956,8 @@ export function DocumentBrowser({ onImport, onSurveyImport, showManageDocTags, o
               >
                 <Icon icon={faPlus} />
               </button>
+              {/* labiia_quali: close the Características panel; View brings it back. */}
+              <button className="panel-header-close" onClick={() => useTagsPanel.getState().setVisible(false)} title={t('panel.close')} aria-label={t('panel.close')}><Icon icon={faXmark} /></button>
             </div>
             <div className="panel-content" style={{ height: '100%', display: tagsCollapsed ? 'none' : undefined }}>
               {tags.length === 0 && categories.length === 0 && (
@@ -3031,6 +3039,7 @@ export function DocumentBrowser({ onImport, onSurveyImport, showManageDocTags, o
             </div>
           </div>
         </DocumentsTagsSection>
+        </>)}
       </DocumentsTagsSplit>
 
       {/* Tag context menu */}

@@ -106,6 +106,9 @@ import { t } from './i18n'
 import { isLetterKey } from './utils/keys'
 import { useCodebookImport } from './components/Codebook/CodebookOutlineDialog'
 import { labiiaRibbonTabs } from './labiia/ribbon-tabs'
+import { useTagsPanel, tagsPanelShown, toggleTagsPanelFromView } from './labiia/tags-panel' // labiia_quali
+import { CodeHistoryDialog } from './labiia/CodeHistoryDialog' // labiia_quali
+import { openCodeHistory } from './labiia/code-history-store' // labiia_quali
 import { StartMenu } from './components/Toolbar/StartMenu'
 import { StatusBar } from './components/StatusBar'
 import labiiaIconUrl from './assets/labiia-icon.png'
@@ -481,6 +484,7 @@ function App() {
     analyses: false,
   })
   type PanelId = keyof typeof panelVisibility
+  const tagsPanelVisible = useTagsPanel((s) => s.visible) // labiia_quali: View tab's Características button
   const closePanel = useCallback((id: PanelId) => {
     setPanelVisibility((prev) => ({ ...prev, [id]: false }))
   }, [])
@@ -2825,13 +2829,17 @@ function App() {
     manageTags: () => setShowManageDocTags(true),
     openLogbook: () => openLogbook(),
     openMemos: () => openMemos(),
+    openCodeHistory: () => openCodeHistory(), // labiia_quali
     openQuery: () => openQueryBuilder(),
     openAnalysis: (toolType) => openAnalysis(toolType),
     openPreferences: () => useDocumentStore.getState().openToolTab(PREFERENCES_TAB_ID),
     openLicence: () => setShowLicenceDialog(true),
     lockedReason,
-    panelVisible: (id) => (id === 'queries' ? !queryResultsClosed : panelVisibility[id]),
-    togglePanel: (id) => (id === 'queries' ? setQueryResultsClosed((prev) => !prev) : togglePanel(id)),
+    // labiia_quali: Características lives inside the Documents panel (labiia/tags-panel.ts).
+    panelVisible: (id) => (id === 'queries' ? !queryResultsClosed : id === 'tags' ? tagsPanelShown(tagsPanelVisible, panelVisibility.documents) : panelVisibility[id]),
+    togglePanel: (id) => (id === 'queries' ? setQueryResultsClosed((prev) => !prev)
+      : id === 'tags' ? toggleTagsPanelFromView(panelVisibility.documents, () => setPanelVisibility((prev) => ({ ...prev, documents: true })))
+      : togglePanel(id)),
     memosIcon: PANE_ICONS.memos
   })
   const ribbon = useRibbon(ribbonTabs)
@@ -3741,6 +3749,7 @@ function App() {
       <StatusBar />
       {/* labiia_quali: Help → Program diagnostics, and the notice when a part did not start. */}
       <LabiiaDiagnostics />
+      <CodeHistoryDialog />{/* labiia_quali: history of the codes */}
       {codebookImportDialog}
     </div>
   )

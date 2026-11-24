@@ -12,6 +12,7 @@
  */
 import { invoke } from '@tauri-apps/api/core'
 import { rememberOpenedPreparation, withPreparation } from '../labiia/corpus-prep-state' // labiia_quali
+import { rememberOpenedHistory, withHistory } from '../labiia/code-history-model' // labiia_quali
 import { emit, emitTo } from '@tauri-apps/api/event'
 import { getCurrentWebview } from '@tauri-apps/api/webview'
 import { getCurrentWebviewWindow } from '@tauri-apps/api/webviewWindow'
@@ -139,6 +140,8 @@ async function openedProject(data: any): Promise<any> {
   const archivePath = data.filePath ?? activeProjectPath
   // labiia_quali: the project's "Preparar corpus" choices for the lexical analyses.
   rememberOpenedPreparation(data)
+  // labiia_quali: the history of the project's codes.
+  rememberOpenedHistory(data)
   return completeProjectPdfText(data, async (h) => new Uint8Array(await invoke<ArrayBuffer>('read_media', { handle: h, archivePath })))
 }
 
@@ -328,9 +331,9 @@ const api: MagnoliaAPI = {
     const buf = await invoke<ArrayBuffer>('read_compare_binary', { comparisonFilePath, handle })
     return buf.byteLength ? new Uint8Array(buf) : null
   },
-  saveProject: (data) => invoke('save_project', { data: withPreparation(data) }), // labiia_quali: + corpus preparation
-  saveProjectAs: (data) => invoke('save_project_as', { data: withPreparation(data) }), // labiia_quali: + corpus preparation
-  createProjectCopy: (data) => invoke('create_project_copy', { data: withPreparation(data) }), // labiia_quali: + corpus preparation
+  saveProject: (data) => invoke('save_project', { data: withHistory(withPreparation(data)) }), // labiia_quali: + corpus preparation, code history
+  saveProjectAs: (data) => invoke('save_project_as', { data: withHistory(withPreparation(data)) }), // labiia_quali: + corpus preparation, code history
+  createProjectCopy: (data) => invoke('create_project_copy', { data: withHistory(withPreparation(data)) }), // labiia_quali: + corpus preparation, code history
   createNewProjectFile: () => invoke('create_new_project_file'),
   importTextFile: async () => {
     const paths = await invoke<string[] | null>('pick_import_files')

@@ -25,6 +25,7 @@ import {
   faMagnifyingGlass,
   faMoon,
   faNotebookPen,
+  faHistory,
   faPanelsTopLeft,
   faScale,
   faSquareArrowRightEnter,
@@ -38,7 +39,7 @@ import { t } from '../i18n'
 import { MANUAL_URL } from './config'
 import { isMac } from '../utils/platform'
 
-export type LabiiaPanel = 'documents' | 'codes' | 'queries' | 'memos' | 'quotes' | 'analyses'
+export type LabiiaPanel = 'documents' | 'codes' | 'tags' | 'queries' | 'memos' | 'quotes' | 'analyses'
 
 export interface RibbonActions {
   newProject: () => void
@@ -52,6 +53,7 @@ export interface RibbonActions {
   manageTags: () => void
   openLogbook: () => void
   openMemos: () => void
+  openCodeHistory: () => void
   openQuery: () => void
   openAnalysis: (toolType: AnalysisToolType) => void
   openPreferences: () => void
@@ -136,7 +138,8 @@ export function labiiaRibbonTabs(a: RibbonActions): RibbonTabDef[] {
   }
   const panelButton = (id: LabiiaPanel): RibbonButtonDef => {
     const visible = a.panelVisible(id)
-    const name = t(`panes.${id}`)
+    // The Características panel takes the name it shows in its own header.
+    const name = id === 'tags' ? t('tags.heading') : t(`panes.${id}`)
     return {
       id: `panel-${id}`,
       label: name,
@@ -204,7 +207,13 @@ export function labiiaRibbonTabs(a: RibbonActions): RibbonTabDef[] {
         { label: t('toolbar.groupCodes'), buttons: (['codes-in-documents', 'framework-matrix', 'code-cooccurrences', 'code-orders', 'code-frequencies'] as AnalysisToolType[]).map(analysisButton('codes')) },
         { label: t('labiia.ribbon.groupResultsWords'), buttons: (['results-in-documents', 'word-frequencies', 'word-combinations', 'relationship-map'] as AnalysisToolType[]).map(analysisButton('results')) },
         { label: t('toolbar.groupTeam'), buttons: (['intercoder-agreement'] as AnalysisToolType[]).map(analysisButton('codes')) },
-        { label: t('labiia.ribbon.groupReports'), buttons: (['reports'] as AnalysisToolType[]).map(analysisButton('reports')) }
+        {
+          label: t('labiia.ribbon.groupReports'),
+          buttons: [
+            ...(['reports'] as AnalysisToolType[]).map(analysisButton('reports')),
+            { id: 'code-history', label: t('labiia.codeHistory.ribbon'), title: t('labiia.codeHistory.ribbonTitle'), icon: faHistory, family: 'reports', onClick: a.openCodeHistory }
+          ]
+        }
       ]
     },
     {
@@ -222,7 +231,7 @@ export function labiiaRibbonTabs(a: RibbonActions): RibbonTabDef[] {
       groups: [
         {
           label: t('toolbar.groupPanes'),
-          buttons: (['documents', 'codes', 'queries', 'memos', 'quotes', 'analyses'] as LabiiaPanel[]).map(panelButton)
+          buttons: (['documents', 'codes', 'tags', 'queries', 'memos', 'quotes', 'analyses'] as LabiiaPanel[]).map(panelButton)
         },
         {
           label: t('labiia.ribbon.groupAppearance'),

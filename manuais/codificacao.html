@@ -416,6 +416,62 @@
       <h3>Filtrar a lista</h3>
       <p>Clique na lupa no cabeçalho do painel Códigos e digite parte do nome. A lista mostra só os códigos que correspondem, com os códigos pais aparecendo esmaecidos para você ver a hierarquia. Pressione Esc para fechar a busca.</p>
 
+      <h2 id="historico-dos-codigos">Histórico dos códigos</h2>
+      <p>O projeto guarda a trajetória de cada código: quando foi criado, renomeado, mesclado, movido, excluído ou importado, e quando a definição dele mudou. Cada mudança fica com o nome de quem a fez (o nome que está nas Preferências), a data e a hora, e o valor de antes e de depois. O histórico é salvo dentro do arquivo do projeto e acompanha o arquivo quando ele é copiado ou enviado a outra pessoa. Assim, o processo de codificação pode ser descrito, revisto e replicado.</p>
+
+      <h3>Abrir o histórico</h3>
+      <ul>
+        <li>Na aba <strong>Análises</strong>, grupo Relatórios, botão <span class="botao-ui f-analises">Histórico dos códigos</span>.</li>
+        <li>No cabeçalho do painel Códigos, no botão de opções de visualização (o ícone de controles deslizantes), item <strong>Histórico dos códigos…</strong>.</li>
+        <li>Botão direito num código &gt; <strong>Histórico deste código</strong>. A janela abre mostrando só esse código. Clique no <strong>×</strong> ao lado do nome para ver todos de novo.</li>
+      </ul>
+
+      <h3>O que é registrado</h3>
+      <div class="tabela">
+        <table>
+          <caption>Mudanças registradas no histórico</caption>
+          <thead>
+            <tr>
+              <th scope="col">Mudança</th>
+              <th scope="col">O que a linha mostra</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr><td>Início do registro</td><td>A lista de códigos que o projeto já tinha quando o histórico começou. Em projetos antigos, o histórico começa na primeira mudança de um código ou quando o projeto é salvo.</td></tr>
+            <tr><td>Criado</td><td>O nome e o lugar do código novo na hierarquia.</td></tr>
+            <tr><td>Renomeado</td><td>O nome de antes e o de depois.</td></tr>
+            <tr><td>Definição alterada</td><td>A descrição do código antes e depois.</td></tr>
+            <tr><td>Movido</td><td>O código-pai de antes e o de depois (vazio quando o código está no nível de cima).</td></tr>
+            <tr><td>Mesclado</td><td>O código que saiu, o código que recebeu os trechos e quantos trechos foram recodificados.</td></tr>
+            <tr><td>Excluído</td><td>O código excluído e quantos trechos codificados ele tinha naquele momento. Os subcódigos excluídos junto aparecem em linhas próprias.</td></tr>
+            <tr><td>Importado</td><td>Cada código que entrou ao importar um livro de códigos.</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <p>Trocar a cor, a ordem na lista ou o atalho de teclado não entra no histórico, porque não muda o sentido do código. Salvar uma edição sem mudar nada também não gera linha. Mudanças que vêm de <strong>Mesclar projetos</strong> aparecem com a origem <em>Mesclagem de cópias do projeto</em>.</p>
+
+      <h3>Desfazer não apaga o histórico</h3>
+      <p>O histórico só cresce. Se você desfizer uma mudança com <kbd>Ctrl</kbd> + <kbd>Z</kbd>, a linha original continua lá e entra uma linha nova, marcada como <em>Desfeito</em>, com a mudança contrária. O mesmo vale para refazer.</p>
+
+      <h3>Justificar uma mudança</h3>
+      <p>Cada linha tem um campo <strong>Justificativa</strong>. Escreva ali, a qualquer momento, por que a mudança foi feita, por exemplo: <em>Mesclado porque os entrevistados usam os dois termos como sinônimos</em>. O texto é guardado quando você sai do campo e é salvo com o projeto.</p>
+
+      <h3>Buscar e filtrar</h3>
+      <p>A caixa de busca procura no nome e no caminho do código, na pessoa e na justificativa. A lista ao lado mostra só um tipo de mudança, e a ordem pode ser das mais recentes ou das mais antigas primeiro. Clique no nome de um código numa linha para ver só o histórico dele.</p>
+
+      <h3>Extrair o histórico</h3>
+      <ul>
+        <li><span class="botao-ui">Exportar planilha (CSV)</span>: uma linha por mudança, com data, pessoa, mudança, origem, código, caminho, antes, depois, detalhes e justificativa. Abre no Excel com os acentos certos.</li>
+        <li><span class="botao-ui">Exportar relatório (Markdown)</span>: um texto pronto para anexo metodológico, com o período, o total de mudanças, uma linha do tempo organizada por dia e, no fim, cada código atual com o seu histórico. O arquivo <code>.md</code> abre em qualquer editor de texto e pode ser convertido para Word.</li>
+      </ul>
+
+      <h3>Pausar o registro</h3>
+      <p>O histórico vem ligado em todos os projetos. A caixa <strong>Registrar o histórico neste projeto</strong>, no topo da janela, pausa o registro só nesse projeto, depois de pedir confirmação. A pausa fica registrada. Ao religar, entra a linha <em>Registro retomado</em> com a lista de códigos daquele momento, para que fique visível o que mudou durante a pausa.</p>
+      <div class="cuidado">
+        <strong>Cuidado</strong>
+        <p>O histórico é guardado pelo labiia_quali. Se o projeto for aberto e salvo no Magnolia original ou em outro programa REFI-QDA, o histórico não é mantido. Guarde uma cópia do arquivo antes de levá-lo a outro programa.</p>
+      </div>
+
       <h2>Atributos e Características</h2>
       <p>Códigos marcam <strong>trechos</strong>. Atributos e características descrevem <strong>documentos inteiros</strong>: quem é a pessoa entrevistada, em que cidade ela mora, em que data foi feita a entrevista, em que grupo ela estava. Essas informações servem para filtrar e comparar os documentos depois.</p>
       <ul>
@@ -423,6 +479,7 @@
         <li><strong>Atributo:</strong> um grupo de características que tem um tipo. Exemplo: <em>Escolaridade</em>.</li>
         <li><strong>Características sem atributo:</strong> ficam no grupo <em>Sem atributo</em>, sem tipo definido.</li>
       </ul>
+      <p>As características aparecem no painel <strong>Características</strong>, embaixo do painel Documentos. Para ganhar espaço, feche-o pelo <strong>×</strong> no cabeçalho e reabra por <strong>Exibir &gt; Características</strong>.</p>
 
       <h3>Os quatro tipos de atributo</h3>
       <div class="tabela">
