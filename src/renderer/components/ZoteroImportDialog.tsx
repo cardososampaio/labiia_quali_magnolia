@@ -51,6 +51,7 @@ export function ZoteroImportDialog({ onClose, onImport }: Props) {
   const [items, setItems] = useState<ZoteroItem[] | null>(null)
   const [chosen, setChosen] = useState<Set<string>>(new Set())
   const [filter, setFilter] = useState('')
+  const [withAnnotations, setWithAnnotations] = useState(true) // labiia_quali: highlights and comments, on unless unchecked
 
   const labels: ZoteroLabels = useMemo(() => ({
     field: (f) => names.fields.get(f) ?? humanise(f),
@@ -135,7 +136,8 @@ export function ZoteroImportDialog({ onClose, onImport }: Props) {
       library,
       labels,
       collectionNames: new Map(collections.map((c) => [c.key, c.name])),
-      noteFallbackTitle: t('zotero.noteTitle')
+      noteFallbackTitle: t('zotero.noteTitle'),
+      annotations: withAnnotations // labiia_quali
     })
   }
 
@@ -237,6 +239,11 @@ export function ZoteroImportDialog({ onClose, onImport }: Props) {
                 )}
               </div>
             </div>
+            {/* labiia_quali: also bring the PDFs' highlights and comments. */}
+            <label className="zotero-annotations-option" title={t('labiia.zotero.annotations.hint')}>
+              <input type="checkbox" checked={withAnnotations} onChange={(e) => setWithAnnotations(e.target.checked)} />
+              <span>{t('labiia.zotero.annotations.option')}</span>
+            </label>
             <div className="modal-actions">
               <button className="secondary" onClick={onClose}>{t('common.cancel')}</button>
               <button onClick={doImport} disabled={chosen.size === 0}>

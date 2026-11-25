@@ -40,7 +40,7 @@ export const HISTORY_ACTIONS: HistoryAction[] = ['start', 'created', 'renamed', 
 
 /** How the change came about: an ordinary edit, Undo/Redo, importing a
  *  codebook, merging two codes, or merging another copy of the project. */
-export type HistoryOrigin = 'edit' | 'undo' | 'redo' | 'import' | 'merge' | 'projectMerge'
+export type HistoryOrigin = 'edit' | 'undo' | 'redo' | 'import' | 'zotero' | 'merge' | 'projectMerge'
 
 /** A code as it was at that moment. */
 export interface CodeSnapshot {
@@ -248,7 +248,8 @@ export function withHistory<T extends { project?: any; userName?: string }>(data
 
 export type CodeIntent =
   | { kind: 'load' }
-  | { kind: 'import' }
+  /** Importing codes: from a codebook (the default) or from Zotero's highlight comments. */
+  | { kind: 'import'; from?: 'codebook' | 'zotero' }
   | { kind: 'projectMerge' }
   | { kind: 'merge'; sourceGuid: string; targetGuid: string; targetName: string; mode: 'move' | 'merge'; mergedGuids: string[]; passages: number }
 
@@ -305,9 +306,10 @@ export function changesToEntries(
   ctx: { user: string; at: string; intents: readonly CodeIntent[]; undoing?: 'undo' | 'redo'; passagesOf: (guid: string) => number }
 ): HistoryEntry[] {
   const merge = [...ctx.intents].reverse().find((i): i is Extract<CodeIntent, { kind: 'merge' }> => i.kind === 'merge')
-  const importing = ctx.intents.some((i) => i.kind === 'import')
+  const importIntent = ctx.intents.find((i): i is Extract<CodeIntent, { kind: 'import' }> => i.kind === 'import')
+  const importing = !!importIntent
   const projectMerge = ctx.intents.some((i) => i.kind === 'projectMerge')
-  const baseOrigin: HistoryOrigin = ctx.undoing ?? (projectMerge ? 'projectMerge' : merge ? 'merge' : importing ? 'import' : 'edit')
+  const baseOrigin: HistoryOrigin = ctx.undoing ?? (projectMerge ? 'projectMerge' : merge ? 'merge' : importing ? (importIntent?.from === 'zotero' ? 'zotero' : 'import') : 'edit')
   return changes.map((c): HistoryEntry => {
     const entry: HistoryEntry = {
       id: newEntryId(), at: ctx.at, user: ctx.user, action: c.action, origin: baseOrigin,
@@ -339,23 +341,27 @@ export function changesToEntries(
 // ── What belongs to one code's history ────────────────────────────────
 
 /**
- * The entries that concern one code, as "History of this code" shows them
- * and the report lists them under the code:
- * - its own changes (and their undo/redo);
- * - the start of the record, and each resume, when the code already existed;
- * - changes it received: a code merged into it, a subcode created in it,
- *   moved into it or out of it.
- * With `includeSubcodes`, the entries of its current subcodes come too.
- *
- * Entries recorded before the parent codes were kept by guid are matched by
- * the code's path (the parent's path is what they show before and after).
+ * How an entry concerns one code, seen from that code:
+ * - `own`: a change to the code itself (or, with subcodes included, to one of them);
+ * - `existed`: the start of the record (or a resume) when the code already existed;
+ * - `mergedIn`: another code was merged into it;
+ * - `childIn` / `childOut`: a subcode was moved into it / out of it;
+ * - `childCreated` / `childDeleted`: a subcode was created in it / deleted from it.
  */
-export function entriesForCode(
+export type CodeRelation = 'own' | 'existed' | 'mergedIn' | 'childIn' | 'childOut' | 'childCreated' | 'childDeleted'
+
+/**
+ * Which entries concern a code and how. Entries recorded before the parent
+ * codes were kept by guid are matched by the code's path (the parent's path
+ * is what they show before and after), following the code through its moves
+ * and renames.
+ */
+export function codeRelations(
   history: CodeHistory,
   codeGuid: string,
   codes: Code[],
   opts: { includeSubcodes?: boolean } = {}
-): HistoryEntry[] {
+): (e: HistoryEntry) => CodeRelation | null {
   const flat = flattenWithPaths(codes)
   const guids = new Set([codeGuid])
   if (opts.includeSubcodes) {
@@ -378,19 +384,46 @@ export function entriesForCode(
   }
   const isOne = (g: string | null | undefined) => !!g && guids.has(g)
   const byPath = (p: string | undefined) => !!p && [...paths.values()].some((set) => set.has(p))
-  return history.entries.filter((e) => {
-    if (isOne(e.codeGuid) || isOne(e.targetGuid)) return true
-    if (e.codes) return e.codes.some((c) => guids.has(c.guid))
+  return (e) => {
+    if (isOne(e.codeGuid)) return 'own'
+    if (isOne(e.targetGuid)) return 'mergedIn'
+    if (e.codes) return e.codes.some((c) => guids.has(c.guid)) ? 'existed' : null
     if (e.action === 'moved') {
-      if ('fromParentGuid' in e || 'toParentGuid' in e) return isOne(e.fromParentGuid) || isOne(e.toParentGuid)
-      return byPath(e.before) || byPath(e.after)
+      if ('fromParentGuid' in e || 'toParentGuid' in e) {
+        if (isOne(e.toParentGuid)) return 'childIn'
+        return isOne(e.fromParentGuid) ? 'childOut' : null
+      }
+      if (byPath(e.after)) return 'childIn'
+      return byPath(e.before) ? 'childOut' : null
     }
     if (e.action === 'created' || e.action === 'imported' || e.action === 'deleted') {
-      if ('parentGuid' in e) return isOne(e.parentGuid)
-      // Older entries: the parent is the path above the code's own name.
-      const cut = e.path?.lastIndexOf(PATH_SEPARATOR) ?? -1
-      return cut > 0 && byPath(e.path!.slice(0, cut))
+      let under: boolean
+      if ('parentGuid' in e) under = isOne(e.parentGuid)
+      else {
+        // Older entries: the parent is the path above the code's own name.
+        const cut = e.path?.lastIndexOf(PATH_SEPARATOR) ?? -1
+        under = cut > 0 && byPath(e.path!.slice(0, cut))
+      }
+      if (!under) return null
+      return e.action === 'deleted' ? 'childDeleted' : 'childCreated'
     }
-    return false
-  })
+    return null
+  }
+}
+
+/**
+ * The entries that concern one code, as "History of this code" shows them
+ * and the report lists them under the code: its own changes (and their
+ * undo/redo), the start of the record when it already existed, and changes
+ * it received (a code merged into it, a subcode created in it, moved into
+ * it or out of it). With `includeSubcodes`, its current subcodes' too.
+ */
+export function entriesForCode(
+  history: CodeHistory,
+  codeGuid: string,
+  codes: Code[],
+  opts: { includeSubcodes?: boolean } = {}
+): HistoryEntry[] {
+  const relationOf = codeRelations(history, codeGuid, codes, opts)
+  return history.entries.filter((e) => relationOf(e) !== null)
 }

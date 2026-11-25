@@ -1,7 +1,7 @@
 import { describe, it, expect } from 'vitest'
 import type { Code } from '../../src/renderer/models/types'
 import type { CodeHistory } from '../../src/renderer/labiia/code-history-model'
-import { historyToCsv, historyToMarkdown } from '../../src/renderer/labiia/code-history-export'
+import { historyToCsv } from '../../src/renderer/labiia/code-history-export'
 
 // The history leaves the program as a spreadsheet (one row per change) and
 // as a report for a methods appendix; both must keep the researcher's words
@@ -51,41 +51,5 @@ describe('exporting the history of the codes', () => {
     const rows = parseCsv(historyToCsv(history))
     expect(rows[3]).toContain("'=Escola")
     expect(rows[3]).not.toContain('=Escola')
-  })
-
-  it('writes a report with the period, a timeline by day and each current code', () => {
-    const md = historyToMarkdown(history, 'Projeto Recife', codes)
-    expect(md.split('\n')[0]).toContain('Projeto Recife')
-    expect(md).toContain('### 2026-11-2')
-    // Two days, so two day headings in the timeline.
-    expect(md.match(/^### \d{4}-\d{2}-\d{2}$/gm)).toHaveLength(2)
-    expect(md).toContain('Linha 1 / linha 2, com vírgula')
-    // The current code lists its rename and the merge it received, in a table.
-    const byCode = md.slice(md.indexOf('## Current codes and their history'), md.indexOf('## Codes that no longer exist'))
-    expect(byCode).toContain('Saúde, "pública"')
-    expect(byCode.match(/^\| \d{4}-/gm)).toHaveLength(2)
-    // The merged code no longer exists and keeps its own section.
-    expect(md.slice(md.indexOf('## Codes that no longer exist'))).toContain('Escola')
-  })
-})
-
-describe('the report reads step by step', () => {
-  it('keeps every table row with the same columns, whatever the text holds', () => {
-    const tricky: CodeHistory = { version: 1, enabled: true, entries: [
-      { id: 'a', at: '2026-11-20T10:00:00.000Z', user: 'Ana | Bia', action: 'renamed', origin: 'edit', codeGuid: 'A', codeName: 'x|y', path: 'x|y', before: 'a\nb', after: 'x|y', justification: 'um | dois\ntrês' }
-    ] }
-    const md = historyToMarkdown(tricky, 'P', [{ guid: 'A', name: 'x|y', isCodable: true, children: [] }] as unknown as Code[])
-    const columns = (line: string) => line.replace(/\\\|/g, '').split('|').length
-    for (const block of md.split('\n\n')) {
-      const rows = block.split('\n').filter((l) => l.startsWith('|'))
-      if (rows.length) expect(new Set(rows.map(columns)).size).toBe(1)
-    }
-  })
-
-  it('has a summary, the codes at the start and a section for each current code', () => {
-    const md = historyToMarkdown(history, 'P', codes)
-    expect(md).toContain('## Summary')
-    expect(md).toContain('## Codes when the record began')
-    expect(md).toContain('## Current codes and their history')
   })
 })

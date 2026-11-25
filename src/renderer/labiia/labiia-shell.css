@@ -528,3 +528,6 @@ p.labiia-diag-bad { color: var(--danger, #c0392b); overflow-wrap: anywhere; }
 .labiia-startup-mark { font-size: 16px; }
 .labiia-startup-text { flex: 1; display: flex; flex-direction: column; gap: 2px; }
 .labiia-startup-notice button { flex-shrink: 0; }
+
+/* Zotero import: the option to bring highlights and comments. */
+.zotero-annotations-option { display: flex; align-items: center; gap: 8px; margin: 10px 0 0; font-size: var(--font-size-sm); cursor: pointer; }

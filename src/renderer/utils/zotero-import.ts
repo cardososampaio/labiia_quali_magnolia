@@ -14,6 +14,7 @@ import {
   type ZoteroGet, type ZoteroItem, type ZoteroLabels, type ZoteroLibrary
 } from './zotero'
 import { tagDocument } from './zotero-tags'
+import { importAnnotationsFor, reportAnnotations, type AnnotationSummary } from '../labiia/zotero-annotations-import' // labiia_quali
 
 export interface ZoteroImport {
   items: ZoteroItem[]
@@ -22,6 +23,8 @@ export interface ZoteroImport {
   collectionNames: Map<string, string>
   /** The memo title for a note with no text to name it by. */
   noteFallbackTitle: string
+  /** labiia_quali: also bring the PDFs' highlights and comments. */
+  annotations?: boolean
 }
 
 /** The folder imports go in: the project's top-level "Zotero" folder,
@@ -50,6 +53,7 @@ export async function importZoteroItems(get: ZoteroGet, job: ZoteroImport): Prom
   const read = (await window.api.readTextFiles(paths)) ?? []
   let added = false
   let folder: string | undefined
+  const annotationSummary: AnnotationSummary = { found: 0, notFound: 0 } // labiia_quali
   for (const [i, item] of items.entries()) {
     const file = read[i] as any
     if (!file || file.error) continue
@@ -71,7 +75,10 @@ export async function importZoteroItems(get: ZoteroGet, job: ZoteroImport): Prom
       const content = noteToMarkdown(html)
       if (content) addMemo('document', noteTitle(content, job.noteFallbackTitle), { content, sourceGuids: [guid] })
     }
+    // labiia_quali: the PDF's highlights and comments (labiia/zotero-annotations.ts).
+    if (job.annotations) await importAnnotationsFor(get, library.path, itemFile(item)?.key, guid, itemTitle(item), file, annotationSummary)
   }
+  if (job.annotations) reportAnnotations(annotationSummary) // labiia_quali
   return added
 }
 

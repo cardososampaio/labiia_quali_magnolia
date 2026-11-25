@@ -17,6 +17,18 @@ As novidades do Magnolia, em que o labiia_quali se baseia, estão em
   "Histórico deste código" mostra tudo o que tocou o código (inclusive
   subcódigos movidos para ele e códigos mesclados nele), e o relatório se
   lê etapa por etapa, em tabelas.
+- **Histórico de um código mais limpo e organograma no relatório.** No
+  histórico de um código, as linhas vêm do ponto de vista dele ("Subcódigo
+  incluído", "Recebeu mesclagem") e sem a lista de todos os códigos. O
+  relatório em Markdown foi refeito como trilha de auditoria, legível como
+  texto puro e convertido: ficha, funil, de onde veio cada código final,
+  etapas numeradas (com justificativa, importações agrupadas e desfazer
+  ligado à decisão), árvore dos códigos com trechos, códigos que saíram e
+  apêndices. Datas no formato brasileiro.
+- **Grifos e comentários do Zotero.** Na importação do Zotero, a opção
+  "Importar grifos e comentários" traz os grifos dos PDFs como citações; o
+  comentário de cada grifo vira um código aplicado ao trecho, dentro de
+  "Comentários do Zotero". Notas soltas viram memos.
 - **Contagem dos subcódigos, código a código.** Pelo botão direito, cada
   código escolhe se o seu número não soma os subcódigos, soma só o nível
   logo abaixo (o Pai conta o Filho, não o Neto) ou soma todos os níveis.

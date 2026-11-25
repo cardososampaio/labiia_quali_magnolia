@@ -441,7 +441,7 @@
       <ul>
         <li>Na aba <strong>Análises</strong>, grupo Relatórios, botão <span class="botao-ui f-analises">Histórico dos códigos</span>.</li>
         <li>No cabeçalho do painel Códigos, no botão de opções de visualização (o ícone de controles deslizantes), item <strong>Histórico dos códigos…</strong>.</li>
-        <li>Botão direito num código &gt; <strong>Histórico deste código</strong>. A janela abre mostrando só o que tocou esse código: as mudanças dele, a linha de início do registro (<em>Já existia</em>), os códigos mesclados nele e os subcódigos criados nele, movidos para dentro ou para fora dele. A caixa <strong>Incluir subcódigos</strong> acrescenta as mudanças de todos os subcódigos atuais. Clique no <strong>×</strong> ao lado do nome para ver o histórico inteiro.</li>
+        <li>Botão direito num código &gt; <strong>Histórico deste código</strong>. A janela abre mostrando só o que aconteceu com esse código, escrito do ponto de vista dele: as mudanças dele próprio, <em>Já existia</em> (quando o registro começou), <em>Recebeu mesclagem</em>, <em>Subcódigo incluído</em>, <em>Subcódigo retirado</em>, <em>Subcódigo criado</em> e <em>Subcódigo excluído</em>. A lista com todos os códigos do início do registro aparece só no histórico geral. A caixa <strong>Incluir subcódigos</strong> acrescenta as mudanças de todos os subcódigos atuais. Clique no <strong>×</strong> ao lado do nome para ver o histórico inteiro.</li>
       </ul>
 
       <h3>O que é registrado</h3>
@@ -480,15 +480,16 @@
       <h3>Extrair o histórico</h3>
       <ul>
         <li><span class="botao-ui">Exportar planilha (CSV)</span>: uma linha por mudança, com data, pessoa, mudança, origem, código, caminho, antes, depois, detalhes e justificativa. Abre no Excel com os acentos certos.</li>
-        <li><span class="botao-ui">Exportar relatório (Markdown)</span>: um texto pronto para anexo metodológico, que se lê etapa por etapa como a janela. Ele traz:
-          <ul>
-            <li>o período, as pessoas que fizeram mudanças e um resumo com quantas mudanças houve de cada tipo;</li>
-            <li>a linha do tempo, uma tabela por dia, com data, pessoa, mudança, código, antes e depois, detalhes e justificativa;</li>
-            <li>os códigos que existiam no início do registro;</li>
-            <li>uma tabela para cada código atual, com o histórico dele;</li>
-            <li>os códigos que não existem mais (excluídos ou mesclados).</li>
-          </ul>
-          O arquivo <code>.md</code> abre em qualquer editor de texto e pode ser convertido para Word, onde as tabelas aparecem como tabelas.</li>
+        <li><span class="botao-ui">Exportar relatório (Markdown)</span>: uma trilha de auditoria para o anexo metodológico. Com ela, quem não participou da análise consegue ver com que códigos ela começou e terminou, refazer cada decisão na ordem e ver de onde veio cada código final. O relatório se lê tanto aberto como texto puro (Bloco de Notas) quanto convertido para Word ou aberto no Obsidian. Ele tem:
+          <ol>
+            <li><strong>Ficha do registro:</strong> projeto, período, pessoas, códigos no início e agora, número de decisões por tipo, decisões desfeitas e quantas ficaram sem justificativa.</li>
+            <li><strong>Funil:</strong> um desenho do início até agora, com quantos códigos foram criados, mesclados, movidos, renomeados e excluídos.</li>
+            <li><strong>De onde veio cada código final:</strong> para cada código que recebeu algo (um código mesclado nele, um subcódigo movido ou criado nele, um novo nome), o que chegou e em que etapa.</li>
+            <li><strong>Etapas, na ordem:</strong> cada decisão numerada, com data, pessoa, o que mudou e a justificativa (ou "não registrada"). Mudanças feitas de uma vez, como uma importação, formam uma etapa só. Uma decisão desfeita diz em que etapa foi desfeita e refeita.</li>
+            <li><strong>Árvore dos códigos agora</strong>, com os trechos codificados de cada código no momento da exportação.</li>
+            <li><strong>Códigos que saíram:</strong> os excluídos e os mesclados, com a etapa.</li>
+          </ol>
+          No fim vêm a árvore dos códigos no início do registro (Apêndice A) e a legenda dos símbolos (Apêndice B). As etapas são citadas pelo número em todo o relatório. A tabela completa, linha a linha, fica na planilha CSV.</li>
       </ul>
 
       <h3>Pausar o registro</h3>

@@ -1,6 +1,6 @@
 import { describe, it, expect } from 'vitest'
 import type { Code } from '../../src/renderer/models/types'
-import { type CodeHistory, type HistoryEntry, entriesForCode } from '../../src/renderer/labiia/code-history-model'
+import { type CodeHistory, type HistoryEntry, codeRelations, entriesForCode } from '../../src/renderer/labiia/code-history-model'
 
 // "History of this code" shows everything that touched a code: its own
 // changes, the start of the record when it already existed, and changes it
@@ -52,5 +52,25 @@ describe('the history of one code', () => {
     const rename = entry({ action: 'renamed', codeGuid: 'F', codeName: 'Igualdade', path: 'Democracia › Igualdade', before: 'Antigo', after: 'Igualdade' })
     const h: CodeHistory = { version: 1, enabled: true, entries: [oldCreate, rename] }
     expect(ids(entriesForCode(h, 'F', codes))).toEqual([oldCreate.id, rename.id])
+  })
+})
+
+describe('how each line concerns the code', () => {
+  it('reads changes from the code point of view: subcode added, created, received a merge', () => {
+    const rel = codeRelations(history, 'P', codes)
+    expect(rel(start)).toBe('existed')
+    expect(rel(movedIn)).toBe('childIn')
+    expect(rel(mergedIn)).toBe('mergedIn')
+    expect(codeRelations(history, 'F', codes)(createdIn)).toBe('childCreated')
+    expect(codeRelations(history, 'F', codes)(movedIn)).toBe('own')
+    expect(rel(other)).toBeNull()
+  })
+
+  it('tells a subcode moved out and one deleted, with older entries too', () => {
+    const out = entry({ action: 'moved', codeGuid: 'N', codeName: 'Internet', path: 'Outro › Internet', before: 'Democracia › Igualdade', after: 'Outro' })
+    const del = entry({ action: 'deleted', codeGuid: 'K', codeName: 'K', path: 'Democracia › Igualdade › K', parentGuid: 'F' })
+    const rel = codeRelations({ version: 1, enabled: true, entries: [out, del] }, 'F', codes)
+    expect(rel(out)).toBe('childOut')
+    expect(rel(del)).toBe('childDeleted')
   })
 })

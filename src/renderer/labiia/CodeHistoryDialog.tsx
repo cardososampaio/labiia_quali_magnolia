@@ -9,9 +9,9 @@ import { useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useCodeStore } from '../stores/code-store'
 import { useProjectStore } from '../stores/project-store'
-import { type HistoryAction, type HistoryEntry, HISTORY_ACTIONS, entriesForCode, flattenWithPaths } from './code-history-model'
+import { type CodeRelation, type HistoryAction, type HistoryEntry, HISTORY_ACTIONS, codeRelations, flattenWithPaths } from './code-history-model'
 import { closeCodeHistory, setHistoryEnabled, setJustification, useCodeHistory, useCodeHistoryDialog } from './code-history-store'
-import { actionLabel, entryDetails, exportHistoryCsv, exportHistoryMarkdown, formatWhen, originLabel } from './code-history-export'
+import { entryDetails, exportHistoryCsv, exportHistoryMarkdown, formatWhen, originLabel, relationChange, relationLabel } from './code-history-export'
 import './code-history.css'
 
 export function CodeHistoryDialog() {
@@ -44,9 +44,15 @@ function CodeHistoryWindow() {
   }, [codeGuid, codes, history.entries])
   const hasSubcodes = useMemo(() => (codeGuid ? (flattenWithPaths(codes).get(codeGuid)?.code.children.length ?? 0) > 0 : false), [codeGuid, codes])
 
+  // Filtered on one code, each line says how it concerns that code.
+  const relationOf = useMemo(
+    () => (codeGuid ? codeRelations(history, codeGuid, codes, { includeSubcodes }) : null),
+    [history, codeGuid, codes, includeSubcodes]
+  )
+
   const rows = useMemo(() => {
     const q = query.trim().toLocaleLowerCase()
-    const base = codeGuid ? entriesForCode(history, codeGuid, codes, { includeSubcodes }) : history.entries
+    const base = relationOf ? history.entries.filter((e) => relationOf(e) !== null) : history.entries
     const list = base.filter((e) => {
       if (action && e.action !== action) return false
       if (q) {
@@ -57,7 +63,7 @@ function CodeHistoryWindow() {
       return true
     })
     return newestFirst ? [...list].reverse() : list
-  }, [history, codes, codeGuid, includeSubcodes, action, query, newestFirst])
+  }, [history, relationOf, action, query, newestFirst])
 
   const toggleEnabled = () => {
     if (history.enabled && !window.confirm(t('labiia.codeHistory.pauseConfirm'))) return
@@ -129,7 +135,7 @@ function CodeHistoryWindow() {
                 </tr>
               </thead>
               <tbody>
-                {rows.map((e) => <HistoryRow key={e.id} entry={e} onPickCode={setCodeGuid} focusGuid={codeGuid} />)}
+                {rows.map((e) => <HistoryRow key={e.id} entry={e} onPickCode={setCodeGuid} focusGuid={codeGuid} relation={relationOf ? relationOf(e) : null} />)}
               </tbody>
             </table>
           )}
@@ -149,15 +155,10 @@ function CodeHistoryWindow() {
   )
 }
 
-function HistoryRow({ entry: e, onPickCode, focusGuid }: { entry: HistoryEntry; onPickCode: (guid: string) => void; focusGuid?: string }) {
+function HistoryRow({ entry: e, onPickCode, focusGuid, relation }: { entry: HistoryEntry; onPickCode: (guid: string) => void; focusGuid?: string; relation: CodeRelation | null }) {
   const { t } = useTranslation()
   const [draft, setDraft] = useState(e.justification ?? '')
-  const empty = t('labiia.codeHistory.empty')
-  let change = ''
-  if (e.action === 'merged') change = `→ ${e.targetName ?? ''}`
-  else if (e.before !== undefined && e.after !== undefined) change = `${e.before || empty} → ${e.after || empty}`
-  else if (e.after !== undefined) change = e.after
-  else if (e.before !== undefined) change = e.before
+  const change = relationChange(e, relation)
   const details = entryDetails(e)
   const origin = e.origin !== 'edit' && e.origin !== 'undo' && e.origin !== 'redo' ? originLabel(e) : ''
   return (
@@ -165,7 +166,7 @@ function HistoryRow({ entry: e, onPickCode, focusGuid }: { entry: HistoryEntry; 
       <td className="labiia-history-when">{formatWhen(e.at)}</td>
       <td>{e.user || '—'}</td>
       <td>
-        <span className={`labiia-history-action labiia-history-action-${e.action}`}>{actionLabel(e)}</span>
+        <span className={`labiia-history-action labiia-history-action-${e.action}`}>{relationLabel(e, relation)}</span>
         {origin && <div className="labiia-history-muted">{origin}</div>}
       </td>
       <td>
@@ -180,7 +181,8 @@ function HistoryRow({ entry: e, onPickCode, focusGuid }: { entry: HistoryEntry; 
           const was = e.codes.find((c) => c.guid === focusGuid)
           return was ? <div>{t('labiia.codeHistory.alreadyExisted', { path: was.path })}</div> : null
         })()}
-        {e.codes && (
+        {/* The list of every code belongs to the whole history, not to one code's. */}
+        {e.codes && !focusGuid && (
           <details>
             <summary>{details}</summary>
             <ul className="labiia-history-codes">{e.codes.map((c) => <li key={c.guid}>{c.path}</li>)}</ul>
