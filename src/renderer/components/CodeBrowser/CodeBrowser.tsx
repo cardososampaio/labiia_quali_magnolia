@@ -5,15 +5,15 @@ import { useDocumentStore } from '../../stores/document-store'
 import { useQueryStore } from '../../stores/query-store'
 import { MarkdownEditor } from '../MarkdownEditor'
 import { Icon, faChevronDown, faChevronRight, faXmark, faUpRightFromSquare, faDownLeftAndUpRightToCenter, faPlus, faMagnifyingGlass } from '../Icon'
-import type { Code } from '../../models/types'
+import type { Code, CodeCondition } from '../../models/types'
 import { useClampedMenuPosition } from '../../utils/use-clamped-menu-position'
 import { isMac, modKey } from '../../utils/platform'
 import { useProjectStore, useCheckoutLockedBy, checkoutLockedTitle } from '../../stores/project-store'
 import { usePreferencesStore } from '../../stores/preferences-store'
 import { codeColourPresetsFor, useCodeColourPresets } from '../../utils/code-colours'
 // labiia_quali: order, subcodes added up, documents column and text size of the list.
-import { useCodePanelView, computeCodeUsage, sortCodeTree, type CodeUsage } from '../../labiia/code-panel-view'
-import { CodePanelViewButton, useCodePanelWheelZoom } from '../../labiia/CodePanelViewMenu'
+import { useCodePanelView, computeCodeUsage, sortCodeTree, subcodeSumOf, countedCodeGuids, type CodeUsage } from '../../labiia/code-panel-view'
+import { CodePanelViewButton, SubcodeSumMenuItems, useCodePanelWheelZoom } from '../../labiia/CodePanelViewMenu'
 import { openCodeHistory } from '../../labiia/code-history-store' // labiia_quali
 
 interface Props {
@@ -607,6 +607,8 @@ function CodeTreeItem({
           <div className="context-menu-item" onClick={() => { setContextMenu(null); openCodeHistory(code.guid) }}>
             {t('labiia.codeHistory.ofThisCode')}
           </div>
+          {/* labiia_quali: how this code's number adds up its subcodes. */}
+          {code.children.length > 0 && <SubcodeSumMenuItems codeGuid={code.guid} onDone={() => setContextMenu(null)} />}
           <div className="context-menu-separator" />
           <div
             className="context-menu-item"
@@ -883,7 +885,11 @@ export function CodeBrowser({ onNewCode, onClose, onPopOut, isPoppedOut }: Props
   const codeSort = useCodePanelView((s) => s.sort)
   const aggregateSubcodes = useCodePanelView((s) => s.aggregateSubcodes)
   const fontScale = useCodePanelView((s) => s.fontScale)
-  const codeUsage = useMemo(() => computeCodeUsage(codes, sources, aggregateSubcodes), [codes, sources, aggregateSubcodes])
+  const subcodeSums = useCodePanelView((s) => s.subcodeSums) // labiia_quali: each code's way of adding up subcodes
+  const codeUsage = useMemo(
+    () => computeCodeUsage(codes, sources, (g) => subcodeSumOf({ aggregateSubcodes, subcodeSums }, g)),
+    [codes, sources, aggregateSubcodes, subcodeSums]
+  )
   const listRef = useRef<HTMLDivElement>(null)
   useCodePanelWheelZoom(listRef)
 
@@ -947,28 +953,35 @@ export function CodeBrowser({ onNewCode, onClose, onPopOut, isPoppedOut }: Props
     [addCode, findCode]
   )
 
-  // labiia_quali: with subcodes added up in the parent, opening a parent
-  // code lists its passages and those of all its subcodes, as its number says.
-  const withSubcodes = useCallback(
-    (codeGuid: string) => (aggregateSubcodes && (findCode(codeGuid)?.children.length ?? 0) > 0 ? { includeSubcodes: true } : {}),
-    [aggregateSubcodes, findCode]
+  // labiia_quali: opening a code lists the passages its number counts: its
+  // own, plus the subcodes right below it or at every level, as the code adds
+  // them up.
+  const codeConditionFor = useCallback(
+    (codeGuid: string): CodeCondition => {
+      const code = findCode(codeGuid)
+      const mode = code && code.children.length > 0 ? subcodeSumOf({ aggregateSubcodes, subcodeSums }, codeGuid) : 'none'
+      if (mode === 'all') return { type: 'code', codeGuid, includeSubcodes: true }
+      if (mode === 'children' && code) return { type: 'or', conditions: countedCodeGuids(code, 'children').map((g) => ({ type: 'code', codeGuid: g })) }
+      return { type: 'code', codeGuid }
+    },
+    [aggregateSubcodes, subcodeSums, findCode]
   )
 
   const handleQueryAllDocs = useCallback((codeGuid: string) => {
     useQueryStore.getState().setComplexQuery({
       documentFilter: {},
-      codeCondition: { type: 'code', codeGuid, ...withSubcodes(codeGuid) }
+      codeCondition: codeConditionFor(codeGuid)
     })
-  }, [withSubcodes])
+  }, [codeConditionFor])
 
   const handleQueryActiveDoc = useCallback((codeGuid: string) => {
     const viewedGuid = useDocumentStore.getState().viewedDocumentGuid
     if (!viewedGuid) return
     useQueryStore.getState().setComplexQuery({
       documentFilter: { sourceGuids: [viewedGuid] },
-      codeCondition: { type: 'code', codeGuid, ...withSubcodes(codeGuid) }
+      codeCondition: codeConditionFor(codeGuid)
     })
-  }, [withSubcodes])
+  }, [codeConditionFor])
 
   return (
     <div

@@ -9,7 +9,7 @@ import { useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useCodeStore } from '../stores/code-store'
 import { useProjectStore } from '../stores/project-store'
-import { type HistoryAction, type HistoryEntry, HISTORY_ACTIONS } from './code-history-model'
+import { type HistoryAction, type HistoryEntry, HISTORY_ACTIONS, entriesForCode, flattenWithPaths } from './code-history-model'
 import { closeCodeHistory, setHistoryEnabled, setJustification, useCodeHistory, useCodeHistoryDialog } from './code-history-store'
 import { actionLabel, entryDetails, exportHistoryCsv, exportHistoryMarkdown, formatWhen, originLabel } from './code-history-export'
 import './code-history.css'
@@ -31,17 +31,23 @@ function CodeHistoryWindow() {
   const [action, setAction] = useState<HistoryAction | ''>('')
   const [newestFirst, setNewestFirst] = useState(true)
   const [busy, setBusy] = useState(false)
+  const [includeSubcodes, setIncludeSubcodes] = useState(false)
 
+  // The code's name as it is now; a code that no longer exists keeps the
+  // last name its history recorded.
   const codeName = useMemo(() => {
     if (!codeGuid) return ''
+    const current = flattenWithPaths(codes).get(codeGuid)
+    if (current) return current.code.name
     const found = [...history.entries].reverse().find((e) => e.codeGuid === codeGuid)
     return found?.codeName ?? ''
-  }, [codeGuid, history.entries])
+  }, [codeGuid, codes, history.entries])
+  const hasSubcodes = useMemo(() => (codeGuid ? (flattenWithPaths(codes).get(codeGuid)?.code.children.length ?? 0) > 0 : false), [codeGuid, codes])
 
   const rows = useMemo(() => {
     const q = query.trim().toLocaleLowerCase()
-    const list = history.entries.filter((e) => {
-      if (codeGuid && e.codeGuid !== codeGuid && e.targetGuid !== codeGuid) return false
+    const base = codeGuid ? entriesForCode(history, codeGuid, codes, { includeSubcodes }) : history.entries
+    const list = base.filter((e) => {
       if (action && e.action !== action) return false
       if (q) {
         const hay = [e.codeName, e.path, e.before, e.after, e.targetName, e.user, e.justification, ...(e.codes ?? []).map((c) => c.path)]
@@ -51,7 +57,7 @@ function CodeHistoryWindow() {
       return true
     })
     return newestFirst ? [...list].reverse() : list
-  }, [history.entries, codeGuid, action, query, newestFirst])
+  }, [history, codes, codeGuid, includeSubcodes, action, query, newestFirst])
 
   const toggleEnabled = () => {
     if (history.enabled && !window.confirm(t('labiia.codeHistory.pauseConfirm'))) return
@@ -97,6 +103,12 @@ function CodeHistoryWindow() {
               <button className="labiia-history-chip-x" onClick={() => setCodeGuid(undefined)} title={t('labiia.codeHistory.showAll')} aria-label={t('labiia.codeHistory.showAll')}>×</button>
             </span>
           )}
+          {codeGuid && hasSubcodes && (
+            <label className="labiia-history-sub">
+              <input type="checkbox" checked={includeSubcodes} onChange={(e) => setIncludeSubcodes(e.target.checked)} />
+              <span>{t('labiia.codeHistory.includeSubcodes')}</span>
+            </label>
+          )}
         </div>
 
         <div className="labiia-history-table-wrap">
@@ -117,7 +129,7 @@ function CodeHistoryWindow() {
                 </tr>
               </thead>
               <tbody>
-                {rows.map((e) => <HistoryRow key={e.id} entry={e} onPickCode={setCodeGuid} />)}
+                {rows.map((e) => <HistoryRow key={e.id} entry={e} onPickCode={setCodeGuid} focusGuid={codeGuid} />)}
               </tbody>
             </table>
           )}
@@ -137,7 +149,7 @@ function CodeHistoryWindow() {
   )
 }
 
-function HistoryRow({ entry: e, onPickCode }: { entry: HistoryEntry; onPickCode: (guid: string) => void }) {
+function HistoryRow({ entry: e, onPickCode, focusGuid }: { entry: HistoryEntry; onPickCode: (guid: string) => void; focusGuid?: string }) {
   const { t } = useTranslation()
   const [draft, setDraft] = useState(e.justification ?? '')
   const empty = t('labiia.codeHistory.empty')
@@ -163,6 +175,11 @@ function HistoryRow({ entry: e, onPickCode }: { entry: HistoryEntry; onPickCode:
           </button>
         ) : null}
         {e.path && e.path !== e.codeName && <div className="labiia-history-muted">{e.path}</div>}
+        {e.codes && focusGuid && (() => {
+          // Filtered on one code: say that it already existed, and where.
+          const was = e.codes.find((c) => c.guid === focusGuid)
+          return was ? <div>{t('labiia.codeHistory.alreadyExisted', { path: was.path })}</div> : null
+        })()}
         {e.codes && (
           <details>
             <summary>{details}</summary>

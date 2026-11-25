@@ -14,6 +14,13 @@ As novidades do Magnolia, em que o labiia_quali se baseia, estão em
   planilha (CSV) ou como relatório (Markdown). Abre em Análises > Histórico
   dos códigos, no menu de visualização do painel Códigos ou pelo botão
   direito num código. Vem ligado em todos os projetos e pode ser pausado.
+  "Histórico deste código" mostra tudo o que tocou o código (inclusive
+  subcódigos movidos para ele e códigos mesclados nele), e o relatório se
+  lê etapa por etapa, em tabelas.
+- **Contagem dos subcódigos, código a código.** Pelo botão direito, cada
+  código escolhe se o seu número não soma os subcódigos, soma só o nível
+  logo abaixo (o Pai conta o Filho, não o Neto) ou soma todos os níveis.
+  Só a contagem muda; os códigos continuam separados.
 - **Painel Características:** ganhou um botão de fechar, e a aba Exibir
   ganhou o botão Características para reabri-lo.
 - **Tela inicial:** passa a dizer só "Baseado no Magnolia, de Cale Davis",

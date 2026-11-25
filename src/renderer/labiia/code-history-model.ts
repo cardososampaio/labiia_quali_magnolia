@@ -63,6 +63,11 @@ export interface HistoryEntry {
   path?: string
   before?: string
   after?: string
+  /** Created and deleted: the parent code it was under (null at the top level). */
+  parentGuid?: string | null
+  /** Moved: the parent code before and after (null at the top level). */
+  fromParentGuid?: string | null
+  toParentGuid?: string | null
   /** Merges: the code that received the passages. */
   targetGuid?: string
   targetName?: string
@@ -136,8 +141,11 @@ export interface CodeChange {
   path: string
   before?: string
   after?: string
-  /** For a move: the new parent code (none when it went to the top level). */
+  /** Created, moved: the parent code after the change; deleted: before it
+   *  (null at the top level). */
   parentGuid?: string | null
+  /** For a move: the parent code before it. */
+  fromParentGuid?: string | null
 }
 
 /**
@@ -153,7 +161,7 @@ export function diffCodeTrees(prev: Code[], next: Code[]): CodeChange[] {
   for (const [guid, n] of b) {
     const o = a.get(guid)
     if (!o) {
-      changes.push({ action: 'created', codeGuid: guid, codeName: n.code.name, path: n.path, after: n.code.name })
+      changes.push({ action: 'created', codeGuid: guid, codeName: n.code.name, path: n.path, after: n.code.name, parentGuid: n.parentGuid })
       continue
     }
     if (o.code.name !== n.code.name) {
@@ -168,12 +176,12 @@ export function diffCodeTrees(prev: Code[], next: Code[]): CodeChange[] {
       const parentPath = (m: Map<string, FlatCode>, g: string | null) => (g ? m.get(g)?.path ?? '' : '')
       changes.push({
         action: 'moved', codeGuid: guid, codeName: n.code.name, path: n.path,
-        before: parentPath(a, o.parentGuid), after: parentPath(b, n.parentGuid), parentGuid: n.parentGuid
+        before: parentPath(a, o.parentGuid), after: parentPath(b, n.parentGuid), parentGuid: n.parentGuid, fromParentGuid: o.parentGuid
       })
     }
   }
   for (const [guid, o] of a) {
-    if (!b.has(guid)) changes.push({ action: 'deleted', codeGuid: guid, codeName: o.code.name, path: o.path, before: o.code.name })
+    if (!b.has(guid)) changes.push({ action: 'deleted', codeGuid: guid, codeName: o.code.name, path: o.path, before: o.code.name, parentGuid: o.parentGuid })
   }
   return changes
 }
@@ -307,6 +315,12 @@ export function changesToEntries(
     }
     if (c.before !== undefined) entry.before = c.before
     if (c.after !== undefined) entry.after = c.after
+    if (c.action === 'moved') {
+      entry.fromParentGuid = c.fromParentGuid ?? null
+      entry.toParentGuid = c.parentGuid ?? null
+    } else if (c.parentGuid !== undefined) {
+      entry.parentGuid = c.parentGuid
+    }
     if (c.action === 'deleted' && merge && merge.mergedGuids.includes(c.codeGuid)) {
       entry.action = 'merged'
       entry.after = merge.targetName
@@ -319,5 +333,64 @@ export function changesToEntries(
       entry.action = 'imported'
     }
     return entry
+  })
+}
+
+// ── What belongs to one code's history ────────────────────────────────
+
+/**
+ * The entries that concern one code, as "History of this code" shows them
+ * and the report lists them under the code:
+ * - its own changes (and their undo/redo);
+ * - the start of the record, and each resume, when the code already existed;
+ * - changes it received: a code merged into it, a subcode created in it,
+ *   moved into it or out of it.
+ * With `includeSubcodes`, the entries of its current subcodes come too.
+ *
+ * Entries recorded before the parent codes were kept by guid are matched by
+ * the code's path (the parent's path is what they show before and after).
+ */
+export function entriesForCode(
+  history: CodeHistory,
+  codeGuid: string,
+  codes: Code[],
+  opts: { includeSubcodes?: boolean } = {}
+): HistoryEntry[] {
+  const flat = flattenWithPaths(codes)
+  const guids = new Set([codeGuid])
+  if (opts.includeSubcodes) {
+    const self = flat.get(codeGuid)
+    if (self) for (const [g] of flattenWithPaths(self.code.children ?? [])) guids.add(g)
+  }
+  // Paths a code had over time: its current path and those its own entries show.
+  const paths = new Map<string, Set<string>>()
+  for (const g of guids) paths.set(g, new Set(flat.get(g) ? [flat.get(g)!.path] : []))
+  for (const e of history.entries) {
+    if (!e.codeGuid || !guids.has(e.codeGuid) || !e.path) continue
+    const set = paths.get(e.codeGuid)!
+    set.add(e.path)
+    const cut = e.path.lastIndexOf(PATH_SEPARATOR)
+    const parent = cut >= 0 ? e.path.slice(0, cut) : ''
+    const own = cut >= 0 ? e.path.slice(cut + PATH_SEPARATOR.length) : e.path
+    // Where it was before a move, and its name before a rename.
+    if (e.action === 'moved' && e.before !== undefined) set.add(e.before ? `${e.before}${PATH_SEPARATOR}${own}` : own)
+    if (e.action === 'renamed' && e.before) set.add(parent ? `${parent}${PATH_SEPARATOR}${e.before}` : e.before)
+  }
+  const isOne = (g: string | null | undefined) => !!g && guids.has(g)
+  const byPath = (p: string | undefined) => !!p && [...paths.values()].some((set) => set.has(p))
+  return history.entries.filter((e) => {
+    if (isOne(e.codeGuid) || isOne(e.targetGuid)) return true
+    if (e.codes) return e.codes.some((c) => guids.has(c.guid))
+    if (e.action === 'moved') {
+      if ('fromParentGuid' in e || 'toParentGuid' in e) return isOne(e.fromParentGuid) || isOne(e.toParentGuid)
+      return byPath(e.before) || byPath(e.after)
+    }
+    if (e.action === 'created' || e.action === 'imported' || e.action === 'deleted') {
+      if ('parentGuid' in e) return isOne(e.parentGuid)
+      // Older entries: the parent is the path above the code's own name.
+      const cut = e.path?.lastIndexOf(PATH_SEPARATOR) ?? -1
+      return cut > 0 && byPath(e.path!.slice(0, cut))
+    }
+    return false
   })
 }

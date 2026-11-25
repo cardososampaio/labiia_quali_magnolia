@@ -36,3 +36,4 @@
 .labiia-history-codes { margin: 4px 0 0 16px; padding: 0; max-height: 160px; overflow: auto; }
 .labiia-history-why { width: 100%; min-width: 180px; resize: vertical; font: inherit; padding: 3px 6px; }
 .labiia-history-empty { padding: 24px; text-align: center; color: var(--text-muted); }
+.labiia-history-sub { display: inline-flex; align-items: center; gap: 6px; font-size: var(--font-size-sm); cursor: pointer; }

@@ -4,13 +4,15 @@
  *
  * - a spreadsheet (CSV), one row per change, that opens in Excel with its
  *   accents (the save adds a UTF-8 BOM);
- * - a report (Markdown) with the project, the period covered, a timeline
- *   grouped by day and, at the end, each current code with its own history.
+ * - a report (Markdown) that reads step by step like the history window:
+ *   a summary, the timeline in tables by day, the codes when the record
+ *   began, each current code with its own history, and the codes that no
+ *   longer exist.
  */
 import { t } from '../i18n'
 import type { Code } from '../models/types'
 import { toCsv } from '../components/Analysis/analysis-helpers'
-import { type CodeHistory, type HistoryEntry, flattenWithPaths } from './code-history-model'
+import { type CodeHistory, type HistoryEntry, HISTORY_ACTIONS, PATH_SEPARATOR, entriesForCode, flattenWithPaths } from './code-history-model'
 
 /** Local date and time, as the researcher reads it. */
 export function formatWhen(iso: string): string {
@@ -58,55 +60,127 @@ function mdEscape(s: string): string {
   return s.replace(/([\\`*_[\]|<>])/g, '\\$1').replace(/\r?\n/g, ' ')
 }
 
-function describeLine(e: HistoryEntry): string {
-  const who = e.user ? ` — ${mdEscape(e.user)}` : ''
-  const time = formatWhen(e.at).slice(11)
-  const parts = [`**${actionLabel(e)}**`]
-  if (e.path) parts.push(mdEscape(e.path))
-  if (e.before !== undefined && e.after !== undefined && e.action !== 'merged') {
-    parts.push(`(${mdEscape(e.before || t('labiia.codeHistory.empty'))} → ${mdEscape(e.after || t('labiia.codeHistory.empty'))})`)
-  } else if (e.action === 'merged' && e.targetName) {
-    parts.push(`→ ${mdEscape(e.targetName)}`)
-  }
-  const details = entryDetails(e)
-  if (details) parts.push(`· ${details}`)
-  if (e.origin !== 'edit' && e.origin !== 'undo' && e.origin !== 'redo') parts.push(`· ${originLabel(e)}`)
-  let line = `- ${time}${who}: ${parts.join(' ')}`
-  if (e.justification) line += `\n  - ${t('labiia.codeHistory.column.justification')}: ${mdEscape(e.justification)}`
-  return line
+/** Text safe inside a Markdown table cell: one line, no column breaks. */
+function cellText(s: string | undefined): string {
+  return (s ?? '')
+    .replace(/\r\n?/g, '\n')
+    .split('\n').map((l) => l.trim()).filter(Boolean).join(' / ')
+    .replace(/([\\`*_[\]<>|])/g, '\\$1')
 }
 
-export function historyToMarkdown(history: CodeHistory, projectName: string, codes: Code[]): string {
-  const out: string[] = []
-  out.push(`# ${t('labiia.codeHistory.reportTitle', { project: projectName })}`, '')
-  const entries = history.entries
-  if (entries.length > 0) {
-    out.push(t('labiia.codeHistory.reportPeriod', { from: formatWhen(entries[0].at), to: formatWhen(entries[entries.length - 1].at) }))
+/** What a line shows under "Before → after", as in the history window. */
+export function changeText(e: HistoryEntry): string {
+  const empty = t('labiia.codeHistory.empty')
+  if (e.action === 'merged') return `→ ${e.targetName ?? ''}`
+  if (e.before !== undefined && e.after !== undefined) return `${e.before || empty} → ${e.after || empty}`
+  if (e.after !== undefined) return e.after
+  if (e.before !== undefined) return e.before
+  return ''
+}
+
+function tableRow(cells: string[]): string {
+  return `| ${cells.join(' | ')} |`
+}
+
+/** One table of entries, oldest first: one line per step of the coding. */
+function entriesTable(entries: HistoryEntry[], focusGuid?: string): string[] {
+  const head = ['date', 'user', 'action', 'code', 'change', 'details', 'justification'].map((k) => t(`labiia.codeHistory.column.${k}`))
+  const out = [tableRow(head), tableRow(head.map(() => '---'))]
+  for (const e of entries) {
+    const action = e.origin !== 'edit' && e.origin !== 'undo' && e.origin !== 'redo'
+      ? `**${cellText(actionLabel(e))}** (${cellText(originLabel(e))})`
+      : `**${cellText(actionLabel(e))}**`
+    let code = ''
+    if (e.codes) {
+      const was = focusGuid ? e.codes.find((c) => c.guid === focusGuid) : undefined
+      code = was ? cellText(t('labiia.codeHistory.alreadyExisted', { path: was.path })) : ''
+    } else if (e.codeName) {
+      code = cellText(e.codeName)
+      if (e.path && e.path !== e.codeName) code += ` (${cellText(e.path)})`
+    }
+    out.push(tableRow([formatWhen(e.at), cellText(e.user) || '—', action, code, cellText(changeText(e)), cellText(entryDetails(e)), cellText(e.justification)]))
   }
-  const changes = entries.filter((e) => !['start', 'paused', 'resumed'].includes(e.action)).length
-  out.push(t('labiia.codeHistory.reportCount', { count: changes }), '')
+  return out
+}
+
+/** The codes as a nested list, from their paths. */
+function codeList(codes: { path: string }[]): string[] {
+  return codes.map((c) => {
+    const parts = c.path.split(PATH_SEPARATOR)
+    return `${'  '.repeat(parts.length - 1)}- ${mdEscape(parts[parts.length - 1])}`
+  })
+}
+
+export function historyToMarkdown(history: CodeHistory, projectName: string, codes: Code[], now = new Date()): string {
+  const out: string[] = []
+  const entries = history.entries
+  const changes = entries.filter((e) => !['start', 'paused', 'resumed'].includes(e.action))
+  const flat = flattenWithPaths(codes)
+
+  out.push(`# ${t('labiia.codeHistory.reportTitle', { project: mdEscape(projectName) })}`, '')
+  if (entries.length > 0) {
+    out.push(`- ${t('labiia.codeHistory.reportPeriod', { from: formatWhen(entries[0].at), to: formatWhen(entries[entries.length - 1].at) })}`)
+  }
+  out.push(`- ${t('labiia.codeHistory.reportExported', { when: formatWhen(now.toISOString()) })}`)
+  const people = [...new Set(changes.map((e) => e.user).filter(Boolean))]
+  if (people.length) out.push(`- ${t('labiia.codeHistory.reportPeople', { names: people.map(mdEscape).join(', ') })}`)
+  out.push(`- ${t('labiia.codeHistory.reportCurrentCodes', { count: flat.size })}`)
+  out.push(`- ${t('labiia.codeHistory.reportCount', { count: changes.length })}`, '')
+
+  // Summary: how many changes of each kind.
+  out.push(`## ${t('labiia.codeHistory.reportSummary')}`, '')
+  out.push(tableRow([t('labiia.codeHistory.column.action'), t('labiia.codeHistory.reportHowMany')]), tableRow(['---', '---:']))
+  for (const a of HISTORY_ACTIONS) {
+    if (a === 'start' || a === 'paused' || a === 'resumed') continue
+    const n = changes.filter((e) => e.action === a && e.origin !== 'undo' && e.origin !== 'redo').length
+    if (n > 0) out.push(tableRow([t(`labiia.codeHistory.action.${a}`), String(n)]))
+  }
+  const undone = changes.filter((e) => e.origin === 'undo' || e.origin === 'redo').length
+  if (undone > 0) out.push(tableRow([t('labiia.codeHistory.reportUndoRedo'), String(undone)]))
+  out.push('')
+
+  // Timeline, step by step, one table per day.
   out.push(`## ${t('labiia.codeHistory.reportTimeline')}`, '')
-  let day = ''
+  if (entries.length === 0) out.push(t('labiia.codeHistory.emptyHistory'), '')
+  const days = new Map<string, HistoryEntry[]>()
   for (const e of entries) {
     const d = formatWhen(e.at).slice(0, 10)
-    if (d !== day) {
-      day = d
-      out.push('', `### ${d}`, '')
-    }
-    out.push(describeLine(e))
-    if (e.codes && e.codes.length > 0) {
-      for (const c of e.codes) out.push(`  - ${mdEscape(c.path)}`)
+    days.set(d, [...(days.get(d) ?? []), e])
+  }
+  for (const [day, list] of days) out.push(`### ${day}`, '', ...entriesTable(list), '')
+
+  // The codes when the record began, and at each resume.
+  const snapshots = entries.filter((e) => e.codes)
+  if (snapshots.length > 0) {
+    out.push(`## ${t('labiia.codeHistory.reportSnapshots')}`, '')
+    for (const e of snapshots) {
+      out.push(`### ${actionLabel(e)} — ${formatWhen(e.at)}`, '')
+      out.push(...(e.codes!.length ? codeList(e.codes!) : [t('labiia.codeHistory.reportNoCodes')]), '')
     }
   }
-  out.push('', `## ${t('labiia.codeHistory.reportByCode')}`, '')
-  for (const [guid, { path }] of flattenWithPaths(codes)) {
-    const own = entries.filter((e) => e.codeGuid === guid || e.targetGuid === guid)
+
+  // Each current code, in the order of the tree, with its own history.
+  out.push(`## ${t('labiia.codeHistory.reportByCode')}`, '')
+  for (const [guid, { path }] of flat) {
     out.push(`### ${mdEscape(path)}`, '')
-    if (own.length === 0) out.push(t('labiia.codeHistory.reportNoChanges'))
-    for (const e of own) out.push(`- ${formatWhen(e.at)}: ${describeLine(e).replace(/^- \S+ /, '')}`)
-    out.push('')
+    const own = entriesForCode(history, guid, codes).filter((e) => !e.codes)
+    if (own.length === 0) out.push(t('labiia.codeHistory.reportNoChanges'), '')
+    else out.push(...entriesTable(own, guid), '')
   }
-  return out.join('\n') + '\n'
+
+  // Codes that no longer exist: deleted or merged into another.
+  const gone = new Map<string, string>()
+  for (const e of entries) {
+    if (e.codeGuid && !flat.has(e.codeGuid) && (e.action === 'deleted' || e.action === 'merged')) gone.set(e.codeGuid, e.path || e.codeName || '')
+  }
+  if (gone.size > 0) {
+    out.push(`## ${t('labiia.codeHistory.reportGone')}`, '')
+    for (const [guid, path] of gone) {
+      out.push(`### ${mdEscape(path)}`, '')
+      out.push(...entriesTable(entries.filter((e) => e.codeGuid === guid)), '')
+    }
+  }
+  return out.join('\n').replace(/\n{3,}/g, '\n\n').trimEnd() + '\n'
 }
 
 function toBase64(text: string): string {

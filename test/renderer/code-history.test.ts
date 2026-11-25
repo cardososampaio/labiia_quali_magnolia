@@ -153,6 +153,13 @@ describe('recording the changes made in the program', () => {
     expect(entries()[2].codes?.map((c) => c.name)).toEqual(['Ignorado', 'Escola'])
   })
 
+  it('keeps which parent code a code left and joined, so each code can show it', () => {
+    useCodeStore.getState().moveCode('B', 'A')
+    const created = useCodeStore.getState().addCode('Novo', '#000', 'A')
+    expect(entries().find((e) => e.action === 'moved')).toMatchObject({ codeGuid: 'B', fromParentGuid: null, toParentGuid: 'A' })
+    expect(entries().find((e) => e.action === 'created')).toMatchObject({ codeGuid: created, parentGuid: 'A' })
+  })
+
   it('keeps the justification written for an entry', () => {
     useCodeStore.getState().renameCode('A', 'Saúde coletiva')
     const id = entries()[1].id

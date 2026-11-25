@@ -2803,7 +2803,18 @@
       "countColumnHint": "Applications: how many passages are coded",
       "docsColumn": "Docs",
       "docsColumnHint": "Documents with at least one passage coded",
-      "usageTooltip": "Applications: {{count}} · Documents: {{documents}}"
+      "usageTooltip": "Applications: {{count}} · Documents: {{documents}}",
+      "subcodeSum": {
+        "title": "Count of subcodes",
+        "none": "Don't add subcodes",
+        "noneHint": "This code's number counts only its own passages.",
+        "children": "Add the level right below",
+        "childrenHint": "Counts its own passages and those of the subcodes right below it, not deeper ones (the parent counts its children, not its grandchildren). Only the count changes.",
+        "all": "Add every level",
+        "allHint": "Counts its own passages and those of every subcode below it, at any depth. Only the count changes.",
+        "replaceConfirm_one": "{{count}} code has its own way of adding up subcodes. This option applies to every code and replaces it. Continue?",
+        "replaceConfirm_other": "{{count}} codes have their own way of adding up subcodes. This option applies to every code and replaces them. Continue?"
+      }
     },
     "codeHistory": {
       "title": "History of the codes",
@@ -2844,7 +2855,7 @@
       "reportCount_other": "{{count}} changes recorded.",
       "reportTimeline": "Timeline",
       "reportByCode": "Current codes and their history",
-      "reportNoChanges": "No change recorded.",
+      "reportNoChanges": "No changes since the record began.",
       "action": {
         "start": "Start of the record",
         "created": "Created",
@@ -2878,7 +2889,19 @@
         "change": "Before → after",
         "justification": "Justification",
         "codeGuid": "Code identifier"
-      }
+      },
+      "includeSubcodes": "Include subcodes",
+      "alreadyExisted": "Already existed: {{path}}",
+      "reportExported": "Exported on {{when}}.",
+      "reportPeople": "People who made changes: {{names}}.",
+      "reportCurrentCodes_one": "{{count}} code in the project now.",
+      "reportCurrentCodes_other": "{{count}} codes in the project now.",
+      "reportSummary": "Summary",
+      "reportHowMany": "How many",
+      "reportUndoRedo": "Undone or redone",
+      "reportSnapshots": "Codes when the record began",
+      "reportNoCodes": "No codes.",
+      "reportGone": "Codes that no longer exist"
     }
   }
 }

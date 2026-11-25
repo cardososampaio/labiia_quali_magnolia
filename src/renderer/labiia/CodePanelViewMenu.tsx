@@ -14,7 +14,9 @@ import {
   CODE_FONT_SCALE_DEFAULT,
   CODE_FONT_SCALE_MIN,
   CODE_FONT_SCALE_MAX,
-  CODE_FONT_SCALE_STEP
+  CODE_FONT_SCALE_STEP,
+  SUBCODE_SUMS,
+  subcodeSumOf
 } from './code-panel-view'
 import { openCodeHistory } from './code-history-store'
 
@@ -96,7 +98,12 @@ export function CodePanelViewButton() {
             aria-checked={aggregateSubcodes}
             style={{ display: 'flex', alignItems: 'flex-start', gap: 6 }}
             title={t('labiia.codesView.aggregateHint')}
-            onClick={() => setAggregateSubcodes(!aggregateSubcodes)}
+            onClick={() => {
+              // The panel's choice replaces what each code chose on its own.
+              const own = Object.keys(useCodePanelView.getState().subcodeSums).length
+              if (own > 0 && !window.confirm(t('labiia.codesView.subcodeSum.replaceConfirm', { count: own }))) return
+              setAggregateSubcodes(!aggregateSubcodes)
+            }}
           >
             {check(aggregateSubcodes)}
             <span>{t('labiia.codesView.aggregate')}</span>
@@ -164,4 +171,32 @@ export function useCodePanelWheelZoom(ref: RefObject<HTMLElement>): void {
     el.addEventListener('wheel', onWheel, { passive: false })
     return () => el.removeEventListener('wheel', onWheel)
   }, [ref])
+}
+
+/** The group in a code's right-click menu that chooses how its number adds
+ *  up its subcodes (only the count changes, never the codes). */
+export function SubcodeSumMenuItems({ codeGuid, onDone }: { codeGuid: string; onDone: () => void }) {
+  const { t } = useTranslation()
+  const mode = useCodePanelView((s) => subcodeSumOf(s, codeGuid))
+  const setSubcodeSum = useCodePanelView((s) => s.setSubcodeSum)
+  return (
+    <>
+      <div className="context-menu-separator" />
+      <div style={{ padding: '4px 12px', fontSize: 11, color: 'var(--text-muted)' }}>{t('labiia.codesView.subcodeSum.title')}</div>
+      {SUBCODE_SUMS.map((m) => (
+        <div
+          key={m}
+          className="context-menu-item"
+          role="menuitemradio"
+          aria-checked={mode === m}
+          title={t(`labiia.codesView.subcodeSum.${m}Hint`)}
+          style={{ display: 'flex', alignItems: 'center', gap: 6 }}
+          onClick={() => { setSubcodeSum(codeGuid, m); onDone() }}
+        >
+          <span style={{ width: 16, display: 'inline-flex', justifyContent: 'center', flexShrink: 0 }}>{mode === m && <Icon icon={faCheck} />}</span>
+          {t(`labiia.codesView.subcodeSum.${m}`)}
+        </div>
+      ))}
+    </>
+  )
 }

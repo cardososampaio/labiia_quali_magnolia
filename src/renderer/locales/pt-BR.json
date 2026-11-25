@@ -2907,7 +2907,19 @@
       "countColumnHint": "Aplicações: quantos trechos estão codificados",
       "docsColumn": "Docs",
       "docsColumnHint": "Documentos com pelo menos um trecho codificado",
-      "usageTooltip": "Aplicações: {{count}} · Documentos: {{documents}}"
+      "usageTooltip": "Aplicações: {{count}} · Documentos: {{documents}}",
+      "subcodeSum": {
+        "title": "Contagem dos subcódigos",
+        "none": "Não somar os subcódigos",
+        "noneHint": "O número deste código conta só os trechos dele.",
+        "children": "Somar o nível logo abaixo",
+        "childrenHint": "Conta os trechos dele e os dos subcódigos logo abaixo, sem os níveis mais fundos (o Pai conta os Filhos, não os Netos). Só a contagem muda.",
+        "all": "Somar todos os níveis",
+        "allHint": "Conta os trechos dele e os de todos os subcódigos abaixo, em qualquer nível. Só a contagem muda.",
+        "replaceConfirm_one": "{{count}} código tem uma forma própria de somar os subcódigos. Esta opção vale para todos os códigos e a substitui. Continuar?",
+        "replaceConfirm_many": "{{count}} códigos têm uma forma própria de somar os subcódigos. Esta opção vale para todos os códigos e as substitui. Continuar?",
+        "replaceConfirm_other": "{{count}} códigos têm uma forma própria de somar os subcódigos. Esta opção vale para todos os códigos e as substitui. Continuar?"
+      }
     },
     "codeHistory": {
       "title": "Histórico dos códigos",
@@ -2951,7 +2963,7 @@
       "reportCount_other": "{{count}} mudanças registradas.",
       "reportTimeline": "Linha do tempo",
       "reportByCode": "Códigos atuais e seu histórico",
-      "reportNoChanges": "Nenhuma mudança registrada.",
+      "reportNoChanges": "Sem mudanças desde o início do registro.",
       "action": {
         "start": "Início do registro",
         "created": "Criado",
@@ -2985,7 +2997,20 @@
         "change": "Antes → depois",
         "justification": "Justificativa",
         "codeGuid": "Identificador do código"
-      }
+      },
+      "includeSubcodes": "Incluir subcódigos",
+      "alreadyExisted": "Já existia: {{path}}",
+      "reportExported": "Exportado em {{when}}.",
+      "reportPeople": "Pessoas que fizeram mudanças: {{names}}.",
+      "reportCurrentCodes_one": "{{count}} código no projeto agora.",
+      "reportCurrentCodes_many": "{{count}} códigos no projeto agora.",
+      "reportCurrentCodes_other": "{{count}} códigos no projeto agora.",
+      "reportSummary": "Resumo",
+      "reportHowMany": "Quantas",
+      "reportUndoRedo": "Desfeitas ou refeitas",
+      "reportSnapshots": "Códigos no início do registro",
+      "reportNoCodes": "Nenhum código.",
+      "reportGone": "Códigos que não existem mais"
     }
   }
 }
