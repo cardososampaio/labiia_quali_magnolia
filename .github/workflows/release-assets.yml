@@ -6,15 +6,18 @@
 #                its name carries the release's version
 #   windows-exe  the Windows installer, built here from the tagged commit
 #
-# Runs when a version tag (vX.Y.Z) is pushed. The release (draft or
-# published) must already exist with that tag; files with the same name
-# are replaced. Publishing stays a person's decision.
+# Runs when a version tag (vX.Y.Z) is pushed, or when the release-assets
+# branch is pushed (for a release whose tag already exists; the version then
+# comes from package.json). The release (draft or published) must already
+# exist with that tag; files with the same name are replaced. Publishing
+# stays a person's decision.
 
 name: Release assets
 
 on:
   push:
     tags: ['v*']
+    branches: [release-assets]
   workflow_dispatch:
 
 permissions:
@@ -26,8 +29,15 @@ jobs:
     runs-on: ubuntu-latest
     env:
       GH_TOKEN: ${{ github.token }}
-      TAG: ${{ github.ref_name }}
     steps:
+      - uses: actions/checkout@v4
+
+      - name: Version
+        shell: bash
+        run: |
+          if [ "$GITHUB_REF_TYPE" = tag ]; then TAG="$GITHUB_REF_NAME"; else TAG="v$(node -p "require('./package.json').version")"; fi
+          echo "TAG=$TAG" >> "$GITHUB_ENV"; echo "$TAG"
+
       - name: Download the tested .dmg
         run: |
           RUN=$(gh run list -R "$GITHUB_REPOSITORY" --workflow mac.yml --branch mac --status success --limit 1 --json databaseId -q '.[0].databaseId')
@@ -44,9 +54,14 @@ jobs:
     runs-on: windows-latest
     env:
       GH_TOKEN: ${{ github.token }}
-      TAG: ${{ github.ref_name }}
     steps:
       - uses: actions/checkout@v4
+
+      - name: Version
+        shell: bash
+        run: |
+          if [ "$GITHUB_REF_TYPE" = tag ]; then TAG="$GITHUB_REF_NAME"; else TAG="v$(node -p "require('./package.json').version")"; fi
+          echo "TAG=$TAG" >> "$GITHUB_ENV"; echo "$TAG"
 
       - uses: actions/setup-node@v4
         with:
