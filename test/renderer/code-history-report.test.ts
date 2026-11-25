@@ -140,3 +140,11 @@ describe('the whole report', () => {
     expect(md).toContain('Imported from Zotero (3 codes)')
   })
 })
+
+describe('a project file that lists a code twice', () => {
+  it('keeps the code under its parent in the tree of the start', async () => {
+    const { snapshotCodes } = await import('../../src/renderer/labiia/code-history-model')
+    const twice = [code('S', 'Sistema', [code('A', 'Alegação')]), code('A', 'Alegação')]
+    expect(snapshotTree(snapshotCodes(twice))).toEqual(['Sistema', '└── Alegação'])
+  })
+})

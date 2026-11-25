@@ -121,7 +121,9 @@ export function flattenWithPaths(codes: Code[]): Map<string, FlatCode> {
   const walk = (list: Code[], parentGuid: string | null, prefix: string) => {
     for (const code of list) {
       const path = prefix ? `${prefix}${PATH_SEPARATOR}${code.name}` : code.name
-      out.set(code.guid, { code, parentGuid, path })
+      // A code listed twice in the tree (some older project files) keeps its
+      // first place, which is under its parent code.
+      if (!out.has(code.guid)) out.set(code.guid, { code, parentGuid, path })
       walk(code.children ?? [], code.guid, path)
     }
   }
