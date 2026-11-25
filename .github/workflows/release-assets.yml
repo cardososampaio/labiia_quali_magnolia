@@ -1,0 +1,72 @@
+# Attaches the installers to the GitHub release of a version, so the
+# release always carries installers built from the tagged code:
+#
+#   mac-dmg      the .dmg of the latest successful Mac check (mac.yml), which
+#                was built and tested on GitHub's Macs, after checking that
+#                its name carries the release's version
+#   windows-exe  the Windows installer, built here from the tagged commit
+#
+# Runs when a version tag (vX.Y.Z) is pushed. The release (draft or
+# published) must already exist with that tag; files with the same name
+# are replaced. Publishing stays a person's decision.
+
+name: Release assets
+
+on:
+  push:
+    tags: ['v*']
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  actions: read
+
+jobs:
+  mac-dmg:
+    runs-on: ubuntu-latest
+    env:
+      GH_TOKEN: ${{ github.token }}
+      TAG: ${{ github.ref_name }}
+    steps:
+      - name: Download the tested .dmg
+        run: |
+          RUN=$(gh run list -R "$GITHUB_REPOSITORY" --workflow mac.yml --branch mac --status success --limit 1 --json databaseId -q '.[0].databaseId')
+          echo "Mac check run: $RUN"
+          gh run download "$RUN" -R "$GITHUB_REPOSITORY" -n labiia_quali-mac-dmg -D dmg
+          ls -la dmg
+          VERSION="${TAG#v}"
+          ls dmg/*"_${VERSION}_"*.dmg
+
+      - name: Attach it to the release
+        run: gh release upload "$TAG" dmg/*.dmg -R "$GITHUB_REPOSITORY" --clobber
+
+  windows-exe:
+    runs-on: windows-latest
+    env:
+      GH_TOKEN: ${{ github.token }}
+      TAG: ${{ github.ref_name }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+
+      - uses: dtolnay/rust-toolchain@stable
+
+      - uses: Swatinem/rust-cache@v2
+
+      - run: npm ci
+
+      - name: Build the installer
+        run: npm run build
+
+      - name: Attach it to the release
+        shell: bash
+        run: |
+          EXE=$(ls target/release/bundle/nsis/*-setup.exe 2>/dev/null || ls src-tauri/target/release/bundle/nsis/*-setup.exe)
+          echo "$EXE"
+          VERSION="${TAG#v}"
+          case "$EXE" in *"_${VERSION}_"*) ;; *) echo "installer is not version $VERSION"; exit 1;; esac
+          gh release upload "$TAG" "$EXE" -R "$GITHUB_REPOSITORY" --clobber
