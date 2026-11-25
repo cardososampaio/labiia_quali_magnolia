@@ -3,45 +3,38 @@
 As novidades do Magnolia, em que o labiia_quali se baseia, estão em
 [CHANGELOG.md](CHANGELOG.md).
 
-## Próxima versão (ainda sem instalador)
+## 0.3.1
 
 ### Novidades
 - **Histórico dos códigos.** O projeto guarda quando cada código foi criado,
   renomeado, mesclado, movido, excluído ou importado, e quando a definição
   dele mudou, com quem fez e quando. Cada mudança pode receber uma
-  justificativa. Desfazer não apaga nada: entra uma linha "Desfeito". O
-  histórico vai dentro do arquivo do projeto e pode ser exportado como
-  planilha (CSV) ou como relatório (Markdown). Abre em Análises > Histórico
-  dos códigos, no menu de visualização do painel Códigos ou pelo botão
-  direito num código. Vem ligado em todos os projetos e pode ser pausado.
-  "Histórico deste código" mostra tudo o que tocou o código (inclusive
-  subcódigos movidos para ele e códigos mesclados nele), e o relatório se
-  lê etapa por etapa, em tabelas.
-- **Histórico de um código mais limpo e organograma no relatório.** No
-  histórico de um código, as linhas vêm do ponto de vista dele ("Subcódigo
-  incluído", "Recebeu mesclagem") e sem a lista de todos os códigos. O
-  relatório em Markdown foi refeito como trilha de auditoria, legível como
-  texto puro e convertido: ficha, funil, de onde veio cada código final,
-  etapas numeradas (com justificativa, importações agrupadas e desfazer
-  ligado à decisão), árvore dos códigos com trechos, códigos que saíram e
-  apêndices. Datas no formato brasileiro.
+  justificativa, e desfazer não apaga nada: entra uma linha "Desfeito". O
+  histórico vai dentro do arquivo do projeto e vem ligado em todos os
+  projetos, com a opção de pausar. Abre em Análises > Histórico dos
+  códigos, no menu de visualização do painel Códigos ou pelo botão direito
+  num código ("Histórico deste código", escrito do ponto de vista dele).
+  Sai como planilha (CSV) ou como relatório em Markdown, uma trilha de
+  auditoria legível como texto puro e convertida: ficha, funil, de onde
+  veio cada código final, etapas numeradas com justificativa, árvore dos
+  códigos com os trechos e códigos que saíram.
 - **Grifos e comentários do Zotero.** Na importação do Zotero, a opção
-  "Importar grifos e comentários" traz os grifos dos PDFs como citações; o
-  comentário de cada grifo vira um código aplicado ao trecho, dentro de
-  "Comentários do Zotero". Notas soltas viram memos.
+  "Importar grifos e comentários" (marcada por padrão) traz os grifos dos
+  PDFs como citações; o comentário de cada grifo vira um código aplicado ao
+  trecho, dentro de "Comentários do Zotero". Notas soltas viram memos.
 - **Contagem dos subcódigos, código a código.** Pelo botão direito, cada
   código escolhe se o seu número não soma os subcódigos, soma só o nível
   logo abaixo (o Pai conta o Filho, não o Neto) ou soma todos os níveis.
   Só a contagem muda; os códigos continuam separados.
 - **Painel Características:** ganhou um botão de fechar, e a aba Exibir
   ganhou o botão Características para reabri-lo.
-- **Tela inicial:** passa a dizer só "Baseado no Magnolia, de Cale Davis",
-  com o link para a página do Magnolia no GitHub, sem o pedido de apoio.
-- **Projetos recentes na tela inicial:** cada projeto aparece pelo nome, em
-  destaque, com a pasta embaixo. Antes, no Windows, o caminho inteiro
-  aparecia no lugar do nome.
+- **Tela inicial:** diz só "Baseado no Magnolia, de Cale Davis", com o link
+  para a página do Magnolia no GitHub, e mostra os projetos recentes pelo
+  nome, com a pasta embaixo (antes, no Windows, aparecia o caminho inteiro).
 
 ### Correções
+- **Projetos com um código listado duas vezes** (alguns arquivos antigos):
+  a soma dos subcódigos e o histórico consideram o código sob o seu pai.
 - **Textos com acentos salvos no padrão antigo do Windows** (.txt, .md,
   legendas .srt e .vtt, .html) entram com os acentos certos. Antes, um texto
   gravado pelo Bloco de Notas antigo ou exportado de sistemas mais velhos
