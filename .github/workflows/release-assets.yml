@@ -1,16 +1,19 @@
-# Attaches the installers to the GitHub release of a version, so the
-# release always carries installers built from the tagged code:
+# Publishes a version's GitHub release with its installers, from the code
+# and the notes in the repository:
 #
-#   mac-dmg      the .dmg of the latest successful Mac check (mac.yml), which
-#                was built and tested on GitHub's Macs, after checking that
-#                its name carries the release's version
-#   windows-exe  the Windows installer, built here from the tagged commit
+#   release      creates the release as a draft, if there is none, titled
+#                "labiia_quali X.Y.Z", with the notes in release-notes/vX.Y.Z.md
+#   mac-dmg      waits for the Mac check (mac.yml) of this version to pass and
+#                attaches its .dmg, which was built and tested on GitHub's
+#                Macs; the .dmg's name must carry the version
+#   windows-exe  builds the Windows installer from this commit and attaches it
+#   publish      once both installers are attached, publishes the release as
+#                the latest, and applies the notes of every release-notes/*.md
+#                to its release (so a note added to an older release, such as
+#                a warning to use a newer version, reaches it)
 #
 # Runs when a version tag (vX.Y.Z) is pushed, or when the release-assets
-# branch is pushed (for a release whose tag already exists; the version then
-# comes from package.json). The release (draft or published) must already
-# exist with that tag; files with the same name are replaced. Publishing
-# stays a person's decision.
+# branch is pushed (the version then comes from package.json).
 
 name: Release assets
 
@@ -24,44 +27,69 @@ permissions:
   contents: write
   actions: read
 
+env:
+  GH_TOKEN: ${{ github.token }}
+
 jobs:
-  mac-dmg:
+  release:
     runs-on: ubuntu-latest
-    env:
-      GH_TOKEN: ${{ github.token }}
+    outputs:
+      tag: ${{ steps.version.outputs.tag }}
     steps:
       - uses: actions/checkout@v4
 
-      - name: Version
-        shell: bash
+      - id: version
+        name: Version
         run: |
           if [ "$GITHUB_REF_TYPE" = tag ]; then TAG="$GITHUB_REF_NAME"; else TAG="v$(node -p "require('./package.json').version")"; fi
-          echo "TAG=$TAG" >> "$GITHUB_ENV"; echo "$TAG"
+          echo "tag=$TAG" >> "$GITHUB_OUTPUT"; echo "$TAG"
+          [ "$TAG" = "v$(node -p "require('./package.json').version")" ] || { echo "the tag does not match package.json"; exit 1; }
 
-      - name: Download the tested .dmg
+      - name: Create the release as a draft (when there is none)
+        env:
+          TAG: ${{ steps.version.outputs.tag }}
         run: |
-          RUN=$(gh run list -R "$GITHUB_REPOSITORY" --workflow mac.yml --branch mac --status success --limit 1 --json databaseId -q '.[0].databaseId')
-          echo "Mac check run: $RUN"
-          gh run download "$RUN" -R "$GITHUB_REPOSITORY" -n labiia_quali-mac-dmg -D dmg
-          ls -la dmg
+          if gh release view "$TAG" -R "$GITHUB_REPOSITORY" >/dev/null 2>&1; then
+            echo "release $TAG already exists"
+          else
+            NOTES="release-notes/$TAG.md"
+            [ -f "$NOTES" ] || { echo "missing $NOTES"; exit 1; }
+            gh release create "$TAG" -R "$GITHUB_REPOSITORY" --draft --target "$GITHUB_SHA" \
+              --title "labiia_quali ${TAG#v}" --notes-file "$NOTES"
+          fi
+
+  mac-dmg:
+    needs: release
+    runs-on: ubuntu-latest
+    timeout-minutes: 150
+    env:
+      TAG: ${{ needs.release.outputs.tag }}
+    steps:
+      - name: Wait for this version's Mac check and download its .dmg
+        run: |
           VERSION="${TAG#v}"
-          ls dmg/*"_${VERSION}_"*.dmg
+          for i in $(seq 1 28); do
+            RUN=$(gh run list -R "$GITHUB_REPOSITORY" --workflow mac.yml --branch mac --status success --limit 1 --json databaseId -q '.[0].databaseId')
+            rm -rf dmg
+            if [ -n "$RUN" ] && gh run download "$RUN" -R "$GITHUB_REPOSITORY" -n labiia_quali-mac-dmg -D dmg 2>/dev/null \
+               && ls dmg/*"_${VERSION}_"*.dmg >/dev/null 2>&1; then
+              echo "Mac check run $RUN"; ls -la dmg; exit 0
+            fi
+            echo "no passing Mac check for $VERSION yet; waiting"
+            sleep 300
+          done
+          echo "no passing Mac check for $VERSION"; exit 1
 
       - name: Attach it to the release
         run: gh release upload "$TAG" dmg/*.dmg -R "$GITHUB_REPOSITORY" --clobber
 
   windows-exe:
+    needs: release
     runs-on: windows-latest
     env:
-      GH_TOKEN: ${{ github.token }}
+      TAG: ${{ needs.release.outputs.tag }}
     steps:
       - uses: actions/checkout@v4
-
-      - name: Version
-        shell: bash
-        run: |
-          if [ "$GITHUB_REF_TYPE" = tag ]; then TAG="$GITHUB_REF_NAME"; else TAG="v$(node -p "require('./package.json').version")"; fi
-          echo "TAG=$TAG" >> "$GITHUB_ENV"; echo "$TAG"
 
       - uses: actions/setup-node@v4
         with:
@@ -85,3 +113,23 @@ jobs:
           VERSION="${TAG#v}"
           case "$EXE" in *"_${VERSION}_"*) ;; *) echo "installer is not version $VERSION"; exit 1;; esac
           gh release upload "$TAG" "$EXE" -R "$GITHUB_REPOSITORY" --clobber
+
+  publish:
+    needs: [release, mac-dmg, windows-exe]
+    runs-on: ubuntu-latest
+    env:
+      TAG: ${{ needs.release.outputs.tag }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Publish the release as the latest
+        run: gh release edit "$TAG" -R "$GITHUB_REPOSITORY" --draft=false --latest
+
+      - name: Apply the notes in release-notes/ to their releases
+        run: |
+          for f in release-notes/v*.md; do
+            t=$(basename "$f" .md)
+            if gh release view "$t" -R "$GITHUB_REPOSITORY" >/dev/null 2>&1; then
+              gh release edit "$t" -R "$GITHUB_REPOSITORY" --notes-file "$f" && echo "notes of $t updated"
+            fi
+          done
