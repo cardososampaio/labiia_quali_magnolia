@@ -11,7 +11,7 @@
   <nav class="lateral" aria-label="Páginas do manual">
     <div class="marca">
       <strong>labiia_quali — Manual</strong>
-      <span>Versão 0.3.1 · Windows e Mac</span>
+      <span>Versão 0.3.2 · Windows e Mac</span>
     </div>
     <ul>
       <li><a href="index.html">Início</a></li>
@@ -55,6 +55,26 @@
       <p>Algumas análises léxicas usam o R, um programa gratuito de estatística. São cinco: Nuvem de palavras, CHD, Similitude, Emoções e Tópicos LDA. As outras análises léxicas e todo o restante do programa funcionam sem o R.</p>
 
       <div class="faq">
+        <details id="nao-abre">
+          <summary>O programa não abre, ou aparece “O labiia_quali não conseguiu abrir a janela”.</summary>
+          <p><strong>Causa.</strong> Um programa de segurança impediu o labiia_quali de abrir a janela. Em geral é o módulo de segurança de bancos (Warsaw / Topaz OFD), instalado por alguns bancos brasileiros, ou o antivírus. Na versão 0.3.1 isso acontecia sempre com o Warsaw: o programa ficava aberto em segundo plano, sem janela.</p>
+          <p><strong>Solução.</strong></p>
+          <ol class="passos">
+            <li>
+              <strong>Use a versão 0.3.2 ou mais nova</strong>
+              <p>Ela corrige o caso do Warsaw.</p>
+            </li>
+            <li>
+              <strong>Feche a cópia que ficou aberta</strong>
+              <p>Abra o Gerenciador de Tarefas (<kbd>Ctrl</kbd> + <kbd>Shift</kbd> + <kbd>Esc</kbd>), clique em <em>labiia_quali</em> e em <strong>Finalizar tarefa</strong>. Depois abra o programa de novo.</p>
+            </li>
+            <li>
+              <strong>Se continuar</strong>
+              <p>Permita o labiia_quali no programa de segurança (no Avast: Menu → Configurações → Geral → Exceções, acrescentando a pasta <code>%LOCALAPPDATA%\labiia_quali</code>) ou reinicie o computador. Se ainda assim não abrir, envie ao suporte o arquivo <code>labiia_quali.log</code>, que fica na pasta <code>%APPDATA%\labiia_quali\logs</code>.</p>
+            </li>
+          </ol>
+        </details>
+
         <details>
           <summary>O Windows disse que “protegeu o computador” ao abrir o instalador. Posso continuar?</summary>
           <p><strong>Causa.</strong> O instalador do labiia_quali não tem assinatura digital, então o Windows desconfia dele por padrão.</p>

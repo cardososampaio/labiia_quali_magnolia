@@ -898,6 +898,8 @@
       "native.labiia.notACodebookDocument": "new",
       "native.labiia.updatesUnavailableMessage": "new",
       "native.labiia.updatesUnavailableTitle": "new",
+      "native.labiia.windowFailedDetail": "new",
+      "native.labiia.windowFailedTitle": "new",
       "quotes.emptyHint": {
         "was": "Right-click a selection in a document and choose \"Add as Quote\", or drag the selection's grab handle here."
       }
@@ -1798,7 +1800,9 @@
       "native.labiia.macPrivacyBlocked": "new",
       "native.labiia.notACodebookDocument": "new",
       "native.labiia.updatesUnavailableMessage": "new",
-      "native.labiia.updatesUnavailableTitle": "new"
+      "native.labiia.updatesUnavailableTitle": "new",
+      "native.labiia.windowFailedDetail": "new",
+      "native.labiia.windowFailedTitle": "new"
     },
     "cs": {
       "labiia.applyCoding.answers": "new",
@@ -2696,7 +2700,9 @@
       "native.labiia.macPrivacyBlocked": "new",
       "native.labiia.notACodebookDocument": "new",
       "native.labiia.updatesUnavailableMessage": "new",
-      "native.labiia.updatesUnavailableTitle": "new"
+      "native.labiia.updatesUnavailableTitle": "new",
+      "native.labiia.windowFailedDetail": "new",
+      "native.labiia.windowFailedTitle": "new"
     },
     "da": {
       "labiia.applyCoding.answers": "new",
@@ -3594,7 +3600,9 @@
       "native.labiia.macPrivacyBlocked": "new",
       "native.labiia.notACodebookDocument": "new",
       "native.labiia.updatesUnavailableMessage": "new",
-      "native.labiia.updatesUnavailableTitle": "new"
+      "native.labiia.updatesUnavailableTitle": "new",
+      "native.labiia.windowFailedDetail": "new",
+      "native.labiia.windowFailedTitle": "new"
     },
     "de": {
       "labiia.applyCoding.answers": "new",
@@ -4493,6 +4501,8 @@
       "native.labiia.notACodebookDocument": "new",
       "native.labiia.updatesUnavailableMessage": "new",
       "native.labiia.updatesUnavailableTitle": "new",
+      "native.labiia.windowFailedDetail": "new",
+      "native.labiia.windowFailedTitle": "new",
       "quotes.emptyHint": {
         "was": "Right-click a selection in a document and choose \"Add as Quote\", or drag the selection's grab handle here."
       }
@@ -5393,7 +5403,9 @@
       "native.labiia.macPrivacyBlocked": "new",
       "native.labiia.notACodebookDocument": "new",
       "native.labiia.updatesUnavailableMessage": "new",
-      "native.labiia.updatesUnavailableTitle": "new"
+      "native.labiia.updatesUnavailableTitle": "new",
+      "native.labiia.windowFailedDetail": "new",
+      "native.labiia.windowFailedTitle": "new"
     },
     "es": {
       "labiia.applyCoding.answers": "new",
@@ -6292,6 +6304,8 @@
       "native.labiia.notACodebookDocument": "new",
       "native.labiia.updatesUnavailableMessage": "new",
       "native.labiia.updatesUnavailableTitle": "new",
+      "native.labiia.windowFailedDetail": "new",
+      "native.labiia.windowFailedTitle": "new",
       "quotes.emptyHint": {
         "was": "Right-click a selection in a document and choose \"Add as Quote\", or drag the selection's grab handle here."
       }
@@ -7193,6 +7207,8 @@
       "native.labiia.notACodebookDocument": "new",
       "native.labiia.updatesUnavailableMessage": "new",
       "native.labiia.updatesUnavailableTitle": "new",
+      "native.labiia.windowFailedDetail": "new",
+      "native.labiia.windowFailedTitle": "new",
       "quotes.emptyHint": {
         "was": "Right-click a selection in a document and choose \"Add as Quote\", or drag the selection's grab handle here."
       }
@@ -8094,6 +8110,8 @@
       "native.labiia.notACodebookDocument": "new",
       "native.labiia.updatesUnavailableMessage": "new",
       "native.labiia.updatesUnavailableTitle": "new",
+      "native.labiia.windowFailedDetail": "new",
+      "native.labiia.windowFailedTitle": "new",
       "quotes.emptyHint": {
         "was": "Right-click a selection in a document and choose \"Add as Quote\", or drag the selection's grab handle here."
       }
@@ -8994,7 +9012,9 @@
       "native.labiia.macPrivacyBlocked": "new",
       "native.labiia.notACodebookDocument": "new",
       "native.labiia.updatesUnavailableMessage": "new",
-      "native.labiia.updatesUnavailableTitle": "new"
+      "native.labiia.updatesUnavailableTitle": "new",
+      "native.labiia.windowFailedDetail": "new",
+      "native.labiia.windowFailedTitle": "new"
     },
     "hi": {
       "labiia.applyCoding.answers": "new",
@@ -9893,6 +9913,8 @@
       "native.labiia.notACodebookDocument": "new",
       "native.labiia.updatesUnavailableMessage": "new",
       "native.labiia.updatesUnavailableTitle": "new",
+      "native.labiia.windowFailedDetail": "new",
+      "native.labiia.windowFailedTitle": "new",
       "quotes.emptyHint": {
         "was": "Right-click a selection in a document and choose \"Add as Quote\", or drag the selection's grab handle here."
       }
@@ -10794,6 +10816,8 @@
       "native.labiia.notACodebookDocument": "new",
       "native.labiia.updatesUnavailableMessage": "new",
       "native.labiia.updatesUnavailableTitle": "new",
+      "native.labiia.windowFailedDetail": "new",
+      "native.labiia.windowFailedTitle": "new",
       "quotes.emptyHint": {
         "was": "Right-click a selection in a document and choose \"Add as Quote\", or drag the selection's grab handle here."
       }
@@ -11694,7 +11718,9 @@
       "native.labiia.macPrivacyBlocked": "new",
       "native.labiia.notACodebookDocument": "new",
       "native.labiia.updatesUnavailableMessage": "new",
-      "native.labiia.updatesUnavailableTitle": "new"
+      "native.labiia.updatesUnavailableTitle": "new",
+      "native.labiia.windowFailedDetail": "new",
+      "native.labiia.windowFailedTitle": "new"
     },
     "lt": {
       "labiia.applyCoding.answers": "new",
@@ -12592,7 +12618,9 @@
       "native.labiia.macPrivacyBlocked": "new",
       "native.labiia.notACodebookDocument": "new",
       "native.labiia.updatesUnavailableMessage": "new",
-      "native.labiia.updatesUnavailableTitle": "new"
+      "native.labiia.updatesUnavailableTitle": "new",
+      "native.labiia.windowFailedDetail": "new",
+      "native.labiia.windowFailedTitle": "new"
     },
     "nb": {
       "labiia.applyCoding.answers": "new",
@@ -13490,7 +13518,9 @@
       "native.labiia.macPrivacyBlocked": "new",
       "native.labiia.notACodebookDocument": "new",
       "native.labiia.updatesUnavailableMessage": "new",
-      "native.labiia.updatesUnavailableTitle": "new"
+      "native.labiia.updatesUnavailableTitle": "new",
+      "native.labiia.windowFailedDetail": "new",
+      "native.labiia.windowFailedTitle": "new"
     },
     "nl": {
       "labiia.applyCoding.answers": "new",
@@ -14389,6 +14419,8 @@
       "native.labiia.notACodebookDocument": "new",
       "native.labiia.updatesUnavailableMessage": "new",
       "native.labiia.updatesUnavailableTitle": "new",
+      "native.labiia.windowFailedDetail": "new",
+      "native.labiia.windowFailedTitle": "new",
       "quotes.emptyHint": {
         "was": "Right-click a selection in a document and choose \"Add as Quote\", or drag the selection's grab handle here."
       }
@@ -15290,6 +15322,8 @@
       "native.labiia.notACodebookDocument": "new",
       "native.labiia.updatesUnavailableMessage": "new",
       "native.labiia.updatesUnavailableTitle": "new",
+      "native.labiia.windowFailedDetail": "new",
+      "native.labiia.windowFailedTitle": "new",
       "quotes.emptyHint": {
         "was": "Right-click a selection in a document and choose \"Add as Quote\", or drag the selection's grab handle here."
       }
@@ -16191,6 +16225,8 @@
       "native.labiia.notACodebookDocument": "new",
       "native.labiia.updatesUnavailableMessage": "new",
       "native.labiia.updatesUnavailableTitle": "new",
+      "native.labiia.windowFailedDetail": "new",
+      "native.labiia.windowFailedTitle": "new",
       "quotes.emptyHint": {
         "was": "Right-click a selection in a document and choose \"Add as Quote\", or drag the selection's grab handle here."
       }
@@ -17091,7 +17127,9 @@
       "native.labiia.macPrivacyBlocked": "new",
       "native.labiia.notACodebookDocument": "new",
       "native.labiia.updatesUnavailableMessage": "new",
-      "native.labiia.updatesUnavailableTitle": "new"
+      "native.labiia.updatesUnavailableTitle": "new",
+      "native.labiia.windowFailedDetail": "new",
+      "native.labiia.windowFailedTitle": "new"
     },
     "tr": {
       "labiia.applyCoding.answers": "new",
@@ -17989,7 +18027,9 @@
       "native.labiia.macPrivacyBlocked": "new",
       "native.labiia.notACodebookDocument": "new",
       "native.labiia.updatesUnavailableMessage": "new",
-      "native.labiia.updatesUnavailableTitle": "new"
+      "native.labiia.updatesUnavailableTitle": "new",
+      "native.labiia.windowFailedDetail": "new",
+      "native.labiia.windowFailedTitle": "new"
     },
     "uk": {
       "labiia.applyCoding.answers": "new",
@@ -18887,7 +18927,9 @@
       "native.labiia.macPrivacyBlocked": "new",
       "native.labiia.notACodebookDocument": "new",
       "native.labiia.updatesUnavailableMessage": "new",
-      "native.labiia.updatesUnavailableTitle": "new"
+      "native.labiia.updatesUnavailableTitle": "new",
+      "native.labiia.windowFailedDetail": "new",
+      "native.labiia.windowFailedTitle": "new"
     },
     "zh-Hans": {
       "labiia.applyCoding.answers": "new",
@@ -19786,6 +19828,8 @@
       "native.labiia.notACodebookDocument": "new",
       "native.labiia.updatesUnavailableMessage": "new",
       "native.labiia.updatesUnavailableTitle": "new",
+      "native.labiia.windowFailedDetail": "new",
+      "native.labiia.windowFailedTitle": "new",
       "quotes.emptyHint": {
         "was": "Right-click a selection in a document and choose \"Add as Quote\", or drag the selection's grab handle here."
       }
@@ -19961,6 +20005,8 @@
     "native.labiia.closeCancel": "Cancel",
     "native.labiia.macPrivacyBlocked": "macOS did not let labiia_quali open this file. In System Settings → Privacy & Security → Files and Folders (or Full Disk Access), allow labiia_quali, or copy the file to another folder, and import again.",
     "native.labiia.diagnostics": "Program Diagnostics…",
+    "native.labiia.windowFailedTitle": "labiia_quali could not open its window.",
+    "native.labiia.windowFailedDetail": "Security software on this computer stopped the program from starting its window. It is usually the online-banking security module (Warsaw / Topaz OFD) or the antivirus. Allow labiia_quali in that program, or restart the computer, and open labiia_quali again. If it keeps happening, send the file logs\\labiia_quali.log from the program's data folder to support.",
     "tools.queryBuilder.label": "Query Builder",
     "tools.queryBuilder.description": "Build a code / text query",
     "tools.codesInDocuments.label": "Codes in Documents",

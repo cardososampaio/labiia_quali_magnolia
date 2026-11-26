@@ -3,6 +3,19 @@
 As novidades do Magnolia, em que o labiia_quali se baseia, estão em
 [CHANGELOG.md](CHANGELOG.md).
 
+## 0.3.2
+
+### Correções
+- **O programa volta a abrir em computadores com o Warsaw** (Topaz OFD, o
+  módulo de segurança de bancos brasileiros). As janelas eram criadas
+  escondidas e mostradas quando a interface carregava; o Warsaw trata um
+  navegador embutido numa janela escondida como vírus bancário e, depois da
+  primeira abertura, impedia o programa de iniciar a interface. O
+  labiia_quali ficava aberto em segundo plano, sem janela. Agora as janelas
+  nascem visíveis, já na cor do tema, e, se um programa de segurança ainda
+  impedir a janela, aparece um aviso explicando o que fazer, em vez de o
+  programa ficar aberto sem janela.
+
 ## 0.3.1
 
 ### Novidades

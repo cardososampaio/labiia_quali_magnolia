@@ -200,7 +200,9 @@
       "closeYes": "Sim",
       "closeCancel": "Cancelar",
       "macPrivacyBlocked": "O macOS não deixou o labiia_quali abrir este arquivo. Em Ajustes do Sistema → Privacidade e Segurança → Arquivos e Pastas (ou Acesso Total ao Disco), permita o labiia_quali, ou copie o arquivo para outra pasta, e importe de novo.",
-      "diagnostics": "Diagnóstico do programa…"
+      "diagnostics": "Diagnóstico do programa…",
+      "windowFailedTitle": "O labiia_quali não conseguiu abrir a janela.",
+      "windowFailedDetail": "Um programa de segurança deste computador impediu o programa de abrir a janela. Em geral é o módulo de segurança de bancos (Warsaw / Topaz OFD) ou o antivírus. Permita o labiia_quali nesse programa, ou reinicie o computador, e abra o labiia_quali de novo. Se continuar, envie ao suporte o arquivo logs\\labiia_quali.log da pasta de dados do programa."
     }
   },
   "tools": {

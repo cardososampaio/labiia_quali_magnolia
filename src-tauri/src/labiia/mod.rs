@@ -14,6 +14,7 @@ pub mod lexical;
 pub mod prefs;
 pub mod terms;
 pub mod text_encoding;
+pub mod window_start;
 
 use std::path::PathBuf;
 

@@ -93,7 +93,11 @@ fn base_builder<'a>(
         // Keep HTML5 drag-and-drop (codes, documents, OS file drops) in the
         // page; the native handler would swallow it.
         .disable_drag_drop_handler()
-        .visible(false)
+        // labiia_quali: windows come up visible, in the look's colour; a
+        // hidden window running a browser engine is blocked by Brazilian
+        // banking security software (labiia/window_start.rs).
+        .visible(true)
+        .background_color(crate::labiia::window_start::background())
         .on_page_load(|w, p| {
             if matches!(p.event(), tauri::webview::PageLoadEvent::Finished) {
                 let _ = w.show();
@@ -241,7 +245,13 @@ pub fn show_welcome(app: &AppHandle) {
                 }
             });
         }
-        Err(e) => log::error!("could not open welcome window: {e}"),
+        Err(e) => {
+            log::error!("could not open welcome window: {e}");
+            // labiia_quali: say why and close, instead of staying open with no window.
+            if app.get_webview_window(MAIN).is_none() {
+                crate::labiia::window_start::first_window_failed(app, &e.to_string());
+            }
+        }
     }
     menu::rebuild(app);
 }
@@ -302,6 +312,10 @@ pub fn open_main(app: &AppHandle) -> Option<WebviewWindow> {
         Ok(w) => w,
         Err(e) => {
             log::error!("could not open main window: {e}");
+            // labiia_quali: say why and close, instead of staying open with no window.
+            if app.get_webview_window(WELCOME).is_none() {
+                crate::labiia::window_start::first_window_failed(app, &e.to_string());
+            }
             return None;
         }
     };

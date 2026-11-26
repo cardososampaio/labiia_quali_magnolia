@@ -197,7 +197,9 @@
       "closeYes": "Yes",
       "closeCancel": "Cancel",
       "macPrivacyBlocked": "macOS did not let labiia_quali open this file. In System Settings → Privacy & Security → Files and Folders (or Full Disk Access), allow labiia_quali, or copy the file to another folder, and import again.",
-      "diagnostics": "Program Diagnostics…"
+      "diagnostics": "Program Diagnostics…",
+      "windowFailedTitle": "labiia_quali could not open its window.",
+      "windowFailedDetail": "Security software on this computer stopped the program from starting its window. It is usually the online-banking security module (Warsaw / Topaz OFD) or the antivirus. Allow labiia_quali in that program, or restart the computer, and open labiia_quali again. If it keeps happening, send the file logs\\labiia_quali.log from the program's data folder to support."
     }
   },
   "tools": {
